@@ -1,47 +1,53 @@
 package com.rbn.qtsettings
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
+import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.ui.composables.MainScreen
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.viewmodel.ViewModelFactory
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels {
+        ViewModelFactory(PreferencesManager.getInstance(this.applicationContext))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val tileSource = intent.getStringExtra("android.intent.extra.COMPONENT_NAME")
+        if (tileSource != null) {
+            if (tileSource.contains("PrivateDnsTileService")) {
+                viewModel.setInitialTab(0)
+            } else if (tileSource.contains("UsbDebuggingTileService")) {
+                viewModel.setInitialTab(1)
+            }
+        }
+
+
         setContent {
             QuickTileSettingsTheme {
-                Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainScreen(viewModel = viewModel, onOpenAdbSettings = {
+                    openAdbWirelessDebuggingSettings(this)
+                })
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    QuickTileSettingsTheme {
-        Greeting("Android")
+    private fun openAdbWirelessDebuggingSettings(context: Context) {
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            context.startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS))
+        }
     }
 }
