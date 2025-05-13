@@ -1,5 +1,9 @@
 package com.rbn.qtsettings.ui.composables
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,9 +57,10 @@ import kotlinx.coroutines.launch
 fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
     val context = LocalContext.current
     var showHelpDialog by remember { mutableStateOf(false) }
-    val hasWriteSecureSettings by remember {
-        mutableStateOf(PermissionUtils.hasWriteSecureSettingsPermission(context))
-    }
+    val hasWriteSecureSettings =
+        remember(PermissionUtils.hasWriteSecureSettingsPermission(context)) {
+            PermissionUtils.hasWriteSecureSettingsPermission(context)
+        }
     val isDevOptionsEnabled by remember {
         mutableStateOf(PermissionUtils.isDeveloperOptionsEnabled(context))
     }
@@ -64,7 +69,6 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
     LaunchedEffect(hasWriteSecureSettings, helpShown) {
         if (!hasWriteSecureSettings && !helpShown) {
             showHelpDialog = true
-            viewModel.setHelpShown(true)
         }
     }
 
@@ -80,6 +84,8 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
         initialPage = viewModel.initialTab.collectAsState().value,
         pageCount = { tabTitles.size }
     )
+
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
 
     Scaffold(
@@ -164,8 +170,18 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
 
         if (showHelpDialog) {
             HelpDialog(
-                onDismissRequest = { showHelpDialog = false },
-                onGrantPermissionClick = onOpenAdbSettings
+                onDismissRequest = {
+                    showHelpDialog = false
+                    if (!hasWriteSecureSettings) {
+                        viewModel.setHelpShown(true)
+                    }
+                },
+                onOpenAdbSettings = onOpenAdbSettings,
+                onCopyToClipboard = { textToCopy ->
+                    val clip = ClipData.newPlainText("ADB Command", textToCopy)
+                    clipboardManager.setPrimaryClip(clip)
+                    Toast.makeText(context, "Command copied!", Toast.LENGTH_SHORT).show()
+                }
             )
         }
     }

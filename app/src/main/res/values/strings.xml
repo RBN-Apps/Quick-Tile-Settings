@@ -22,7 +22,7 @@
     <string name="setting_title_usb_debugging">USB Debugging Tile</string>
     <string name="setting_desc_tile_cycles">Select states for the tile cycle:</string>
     <string name="button_save_apply_settings">Apply Settings</string>
-    <string name="tab_title_dns">DNS</string>
+    <string name="tab_title_dns">Private DNS</string>
     <string name="tab_title_usb">USB Debugging</string>
 
     <!-- Toasts & Warnings -->
@@ -40,16 +40,27 @@
     <!-- Help Dialog -->
     <string name="help_dialog_title">Permission Required</string>
     <string name="help_dialog_intro">To change system settings like Private DNS and USB Debugging, this app needs the special WRITE_SECURE_SETTINGS permission.</string>
-    <string name="help_dialog_how_to_grant_via_adb">This can only be granted via ADB (Android Debug Bridge). Connect your device to a computer with ADB set up and run the following command in your terminal/command prompt:</string>
-    <string name="adb_command_how_to">Connect your device to a computer with ADB set up and run the following command in your terminal/command prompt:</string> <!-- This one was a bit redundant with the one above, could be combined or one removed in UI if needed -->
-    <string name="help_dialog_after_grant">After granting the permission, restart the app or re-open the Quick Settings panel for the tiles to function.</string>
+    <string name="help_dialog_method_1_title">Method 1: Grant via ADB (if app is already installed)</string>
+    <string name="help_dialog_how_to_grant_via_adb">This can be granted via ADB (Android Debug Bridge). Connect your device to a computer with ADB set up and run the following command in your terminal/command prompt:</string>
+    <string name="button_copy_grant_command">Copy Grant Command</string>
+
+    <string name="help_dialog_method_2_title">Method 2: Install with ADB (grants permission during install)</string>
+    <string name="help_dialog_how_to_install_via_adb">Alternatively, if you are installing the app via ADB, you can grant the permission during installation. Uninstall the current version first, then use this command (replace path/to/your/app.apk with the actual path to the APK file):</string>
+    <string name="button_copy_install_command">Copy Install Command</string>
+    <string name="help_dialog_apk_path_note">(Note: You need the APK file for the install command. If you built the app yourself, it\'s usually in app/build/outputs/apk/debug/ or app/build/outputs/apk/release/. You can also download the latest release from GitHub.)</string>
+    <string name="github_releases_link_text">Download latest release from GitHub</string>
+    <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
+
+    <string name="help_dialog_after_grant">After granting the permission (either way), restart the app or re-open the Quick Settings panel for the tiles to function.</string>
     <string name="help_button_desc">Help</string>
     <string name="help_button_open_dev_settings_adb">Developer Options (for ADB)</string>
+    <string name="dialog_close">Close</string>
 
     <!-- Permission Warning Card -->
     <string name="warning_permission_missing_title">Permission Missing!</string>
     <string name="warning_permission_missing_desc">This app requires the WRITE_SECURE_SETTINGS permission to function. Please grant it via ADB.</string>
     <string name="button_show_permission_help">Show Instructions</string>
     <string name="warning_developer_options_disabled_config">Developer options are disabled. USB Debugging cannot be configured.</string>
+    <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
 </resources>

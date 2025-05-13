@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Quick-Tile Settings</string>
+    <string name="app_name">Quick-Tile Einstellungen</string>
 
     <!-- Tile Labels -->
-    <string name="tile_label_private_dns">Private DNS</string>
-    <string name="tile_label_usb_debugging">USB Debugging</string>
+    <string name="tile_label_private_dns">Privates DNS</string>
+    <string name="tile_label_usb_debugging">USB-Debugging</string>
 
     <!-- DNS States -->
-    <string name="dns_state_off">DNS Off</string>
+    <string name="dns_state_off">DNS Aus</string>
     <string name="dns_state_auto">DNS Auto</string>
-    <string name="dns_state_on_with_host">DNS On (Hostname)</string>
-    <string name="dns_state_unknown">DNS Status unbekannt</string>
-    <string name="dns_hostname_label">DNS Hostname</string>
+    <string name="dns_state_on_with_host">DNS Ein (Hostname)</string>
+    <string name="dns_state_unknown">DNS-Status unbekannt</string>
+    <string name="dns_hostname_label">DNS-Hostname</string>
 
     <!-- USB Debugging States -->
-    <string name="usb_state_on">USB Debug On</string>
-    <string name="usb_state_off">USB Debug Off</string>
-    <string name="usb_dev_options_off">Dev-Optionen aus</string>
+    <string name="usb_state_on">USB-Debug Ein</string>
+    <string name="usb_state_off">USB-Debug Aus</string>
+    <string name="usb_dev_options_off">Entwickleroptionen Aus</string>
 
     <!-- UI Settings Screen -->
-    <string name="setting_title_private_dns">Private DNS Tile</string>
-    <string name="setting_title_usb_debugging">USB Debugging Tile</string>
-    <string name="setting_desc_tile_cycles">Wähle Zustände für den Tile-Zyklus:</string>
+    <string name="setting_title_private_dns">Privates DNS Tile</string>
+    <string name="setting_title_usb_debugging">USB-Debugging Tile</string>
+    <string name="setting_desc_tile_cycles">Wähle Zustände für den Tile-Zyklus aus:</string>
     <string name="button_save_apply_settings">Einstellungen anwenden</string>
-    <string name="tab_title_dns">DNS</string>
+    <string name="tab_title_dns">Privates DNS</string>
     <string name="tab_title_usb">USB-Debugging</string>
 
     <!-- Toasts & Warnings -->
@@ -32,25 +32,33 @@
     <string name="toast_error_saving_settings">Fehler beim Speichern der Einstellungen.</string>
     <string name="toast_no_states_enabled_dns">Keine DNS-Zustände zum Durchschalten aktiviert.</string>
     <string name="toast_no_states_enabled_usb">Keine USB-Zustände zum Durchschalten aktiviert.</string>
-    <string name="toast_hostname_required">Hostname für DNS On erforderlich.</string>
+    <string name="toast_hostname_required">Hostname für DNS Ein erforderlich.</string>
     <string name="toast_settings_saved_tiles_updated">Einstellungen gespeichert. Tiles werden beim nächsten Öffnen der QS-Leiste aktualisiert.</string>
-    <string name="warning_hostname_blank">Hostname darf nicht leer sein, wenn "DNS On" aktiviert ist.</string>
+    <string name="warning_hostname_blank">Hostname darf nicht leer sein, wenn "DNS Ein" aktiviert ist.</string>
     <string name="warning_at_least_one_usb_option">Mindestens ein USB-Status muss aktiviert sein.</string>
-
 
     <!-- Help Dialog -->
     <string name="help_dialog_title">Berechtigung erforderlich</string>
     <string name="help_dialog_intro">Um Systemeinstellungen wie Privates DNS und USB-Debugging zu ändern, benötigt diese App die spezielle Berechtigung WRITE_SECURE_SETTINGS.</string>
-    <string name="help_dialog_how_to_grant_via_adb">Diese kann nur über ADB (Android Debug Bridge) erteilt werden. Verbinde dein Gerät mit einem Computer, auf dem ADB eingerichtet ist, und führe folgenden Befehl im Terminal/Eingabeaufforderung aus:</string>
-    <string name="adb_command_how_to">Verbinde dein Gerät mit einem Computer, auf dem ADB eingerichtet ist, und führe folgenden Befehl im Terminal/Eingabeaufforderung aus:</string>
-    <string name="help_dialog_after_grant">Nachdem die Berechtigung erteilt wurde, starte die App neu oder ziehe die Schnelleinstellungsleiste neu herunter, damit die Tiles funktionieren.</string>
+    <string name="help_dialog_method_1_title">Methode 1: Über ADB erteilen (wenn App bereits installiert ist)</string>
+    <string name="help_dialog_how_to_grant_via_adb">Diese kann über ADB (Android Debug Bridge) erteilt werden. Verbinde dein Gerät mit einem Computer, auf dem ADB eingerichtet ist, und führe folgenden Befehl im Terminal/Eingabeaufforderung aus:</string>
+    <string name="button_copy_grant_command">Grant-Befehl kopieren</string>
+
+    <string name="help_dialog_method_2_title">Methode 2: Mit ADB installieren (erteilt Berechtigung bei Installation)</string>
+    <string name="help_dialog_how_to_install_via_adb">Alternativ, wenn du die App über ADB installierst, kannst du die Berechtigung während der Installation erteilen. Deinstalliere zuerst die aktuelle Version und verwende dann diesen Befehl (ersetze pfad/zu/deiner/app.apk mit dem tatsächlichen Pfad zur APK-Datei):</string>
+    <string name="button_copy_install_command">Install-Befehl kopieren</string>
+    <string name="help_dialog_apk_path_note">(Hinweis: Du benötigst die APK-Datei für den Installationsbefehl. Wenn du die App selbst kompiliert hast, befindet sie sich normalerweise in app/build/outputs/apk/debug/ oder app/build/outputs/apk/release/. Du kannst die neueste Version auch von GitHub herunterladen.)</string>
+    <string name="github_releases_link_text">Neueste Version von GitHub herunterladen</string>
+
+    <string name="help_dialog_after_grant">Nachdem die Berechtigung (auf die eine oder andere Weise) erteilt wurde, starte die App neu oder ziehe die Schnelleinstellungsleiste neu herunter, damit die Tiles funktionieren.</string>
     <string name="help_button_desc">Hilfe</string>
     <string name="help_button_open_dev_settings_adb">Entwickleroptionen (für ADB)</string>
+    <string name="dialog_close">Schließen</string>
 
     <!-- Permission Warning Card -->
     <string name="warning_permission_missing_title">Berechtigung fehlt!</string>
     <string name="warning_permission_missing_desc">Diese App benötigt die Berechtigung WRITE_SECURE_SETTINGS, um zu funktionieren. Bitte erteile sie über ADB.</string>
     <string name="button_show_permission_help">Anleitung anzeigen</string>
     <string name="warning_developer_options_disabled_config">Entwickleroptionen sind deaktiviert. USB-Debugging kann nicht konfiguriert werden.</string>
-
+    <string name="adb_command_install_g">adb install -g -r pfad/zu/deiner/app.apk</string>
 </resources>
