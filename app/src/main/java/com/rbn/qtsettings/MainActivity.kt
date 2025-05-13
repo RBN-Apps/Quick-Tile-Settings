@@ -36,13 +36,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             QuickTileSettingsTheme {
                 MainScreen(viewModel = viewModel, onOpenAdbSettings = {
-                    openAdbWirelessDebuggingSettings(this)
+                    openUsbDebuggingSettings(this)
                 })
             }
         }
     }
 
-    private fun openAdbWirelessDebuggingSettings(context: Context) {
+    private fun openUsbDebuggingSettings(context: Context) {
         try {
             val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
             context.startActivity(intent)

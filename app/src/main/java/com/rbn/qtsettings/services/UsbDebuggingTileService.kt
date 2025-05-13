@@ -1,11 +1,15 @@
 package com.rbn.qtsettings.services
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.Icon
+import android.os.CountDownTimer
 import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.edit
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.utils.Constants
@@ -14,6 +18,10 @@ import com.rbn.qtsettings.utils.PermissionUtils
 class UsbDebuggingTileService : TileService() {
 
     private lateinit var prefsManager: PreferencesManager
+    private var revertTimer: CountDownTimer? = null
+    private val servicePrefs: SharedPreferences by lazy {
+        applicationContext.getSharedPreferences("usb_tile_service_state", Context.MODE_PRIVATE)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -22,11 +30,34 @@ class UsbDebuggingTileService : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
+        cancelRevertTimerWithMessage(null)
         updateTile()
+    }
+
+    private fun savePreviousState(isUsbEnabled: Boolean) {
+        servicePrefs.edit {
+            putBoolean(PreferencesManager.KEY_USB_PREVIOUS_STATE_FOR_REVERT, isUsbEnabled)
+        }
+    }
+
+    private fun getPreviousState(): Boolean? {
+        return if (servicePrefs.contains(PreferencesManager.KEY_USB_PREVIOUS_STATE_FOR_REVERT)) {
+            servicePrefs.getBoolean(PreferencesManager.KEY_USB_PREVIOUS_STATE_FOR_REVERT, false)
+        } else {
+            null
+        }
+    }
+
+    private fun clearPreviousState() {
+        servicePrefs.edit {
+            remove(PreferencesManager.KEY_USB_PREVIOUS_STATE_FOR_REVERT)
+        }
     }
 
     override fun onClick() {
         super.onClick()
+        cancelRevertTimerWithMessage(getString(R.string.toast_revert_cancelled))
+
         if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
             Toast.makeText(this, R.string.toast_permission_not_granted_adb, Toast.LENGTH_LONG)
                 .show()
@@ -43,23 +74,25 @@ class UsbDebuggingTileService : TileService() {
 
         val currentUsbDebuggingState =
             Settings.Global.getInt(contentResolver, Constants.ADB_ENABLED, 0) == 1
+        savePreviousState(currentUsbDebuggingState)
 
-        val nextStates = mutableListOf<Boolean>()
-        if (prefsManager.isUsbToggleEnableEnabled()) nextStates.add(true)
-        if (prefsManager.isUsbToggleDisableEnabled()) nextStates.add(false)
+        val nextStatesToCycle = mutableListOf<Boolean>()
+        if (prefsManager.isUsbToggleEnableEnabled()) nextStatesToCycle.add(true)
+        if (prefsManager.isUsbToggleDisableEnabled()) nextStatesToCycle.add(false)
 
-        if (nextStates.isEmpty()) {
+        if (nextStatesToCycle.isEmpty()) {
             Toast.makeText(this, R.string.toast_no_states_enabled_usb, Toast.LENGTH_SHORT).show()
+            clearPreviousState()
             return
         }
 
-        var currentConfigIndex = nextStates.indexOf(currentUsbDebuggingState)
+        var currentConfigIndex = nextStatesToCycle.indexOf(currentUsbDebuggingState)
         if (currentConfigIndex == -1) {
             currentConfigIndex = -1
         }
 
-        val nextConfigIndex = (currentConfigIndex + 1) % nextStates.size
-        val nextStateToSet = nextStates[nextConfigIndex]
+        val nextConfigIndex = (currentConfigIndex + 1) % nextStatesToCycle.size
+        val nextStateToSet = nextStatesToCycle[nextConfigIndex]
 
         try {
             Settings.Global.putInt(
@@ -67,15 +100,71 @@ class UsbDebuggingTileService : TileService() {
                 Constants.ADB_ENABLED,
                 if (nextStateToSet) 1 else 0
             )
-        } catch (e: SecurityException) {
-            Log.e("UsbDebuggingTile", "SecurityException: Failed to write ADB_ENABLED setting.", e)
-            Toast.makeText(this, R.string.toast_permission_not_granted_adb, Toast.LENGTH_LONG)
-                .show()
+
+            if (prefsManager.isUsbAutoRevertEnabled()) {
+                val delaySeconds = prefsManager.getUsbAutoRevertDelaySeconds()
+                if (delaySeconds > 0) {
+                    startRevertTimer(delaySeconds)
+                    val prevEnabledState = getPreviousState() ?: currentUsbDebuggingState
+                    val readablePrevState =
+                        if (prevEnabledState) getString(R.string.on_state) else getString(R.string.off_state)
+                    val toastMsg =
+                        getString(R.string.toast_reverting_usb_to, readablePrevState, delaySeconds)
+                    Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show()
+                } else {
+                    clearPreviousState()
+                }
+            } else {
+                clearPreviousState()
+            }
+
         } catch (e: Exception) {
-            Log.e("UsbDebuggingTile", "Failed to write ADB_ENABLED setting.", e)
+            Log.e("UsbDebuggingTile", "Error setting USB Debug: ${e.message}", e)
             Toast.makeText(this, R.string.toast_error_saving_settings, Toast.LENGTH_SHORT).show()
+            clearPreviousState()
         }
         updateTile()
+    }
+
+    private fun startRevertTimer(delaySeconds: Int) {
+        revertTimer?.cancel()
+        revertTimer = object : CountDownTimer(delaySeconds * 1000L, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+
+            override fun onFinish() {
+                getPreviousState()?.let { prevUsbState ->
+                    try {
+                        Settings.Global.putInt(
+                            contentResolver,
+                            Constants.ADB_ENABLED,
+                            if (prevUsbState) 1 else 0
+                        )
+                        Log.i(
+                            "UsbDebuggingTile",
+                            "Auto-reverted USB Debug to ${if (prevUsbState) "ON" else "OFF"}"
+                        )
+                    } catch (e: Exception) {
+                        Log.e("UsbDebuggingTile", "Error auto-reverting USB: ${e.message}", e)
+                    } finally {
+                        clearPreviousState()
+                        updateTile()
+                        revertTimer = null
+                    }
+                }
+            }
+        }.start()
+    }
+
+    private fun cancelRevertTimerWithMessage(message: String?) {
+        if (revertTimer != null) {
+            revertTimer?.cancel()
+            revertTimer = null
+            clearPreviousState()
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            }
+            Log.i("UsbDebuggingTile", "Revert timer cancelled.")
+        }
     }
 
     private fun updateTile() {
@@ -103,11 +192,13 @@ class UsbDebuggingTileService : TileService() {
         tile.updateTile()
     }
 
-    override fun onTileRemoved() {
-        super.onTileRemoved()
-    }
-
     override fun onStopListening() {
         super.onStopListening()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        revertTimer?.cancel()
+        revertTimer = null
     }
 }

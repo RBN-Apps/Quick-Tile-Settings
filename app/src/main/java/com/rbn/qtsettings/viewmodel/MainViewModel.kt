@@ -12,9 +12,14 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val dnsToggleAuto = prefsManager.dnsToggleAuto
     val dnsToggleOn = prefsManager.dnsToggleOn
     val dnsHostname = prefsManager.dnsHostname
+    val dnsEnableAutoRevert = prefsManager.dnsEnableAutoRevert
+    val dnsAutoRevertDelaySeconds = prefsManager.dnsAutoRevertDelaySeconds
+
 
     val usbToggleEnable = prefsManager.usbToggleEnable
     val usbToggleDisable = prefsManager.usbToggleDisable
+    val usbEnableAutoRevert = prefsManager.usbEnableAutoRevert
+    val usbAutoRevertDelaySeconds = prefsManager.usbAutoRevertDelaySeconds
 
     val helpShown = prefsManager.helpShown
 
@@ -26,9 +31,15 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun setDnsToggleAuto(enabled: Boolean) = prefsManager.setDnsToggleAuto(enabled)
     fun setDnsToggleOn(enabled: Boolean) = prefsManager.setDnsToggleOn(enabled)
     fun setDnsHostname(hostname: String) = prefsManager.setDnsHostname(hostname)
+    fun setDnsEnableAutoRevert(enabled: Boolean) = prefsManager.setDnsEnableAutoRevert(enabled)
+    fun setDnsAutoRevertDelaySeconds(delay: Int) = prefsManager.setDnsAutoRevertDelaySeconds(delay)
+
 
     fun setUsbToggleEnable(enabled: Boolean) = prefsManager.setUsbToggleEnable(enabled)
     fun setUsbToggleDisable(enabled: Boolean) = prefsManager.setUsbToggleDisable(enabled)
+    fun setUsbEnableAutoRevert(enabled: Boolean) = prefsManager.setUsbEnableAutoRevert(enabled)
+    fun setUsbAutoRevertDelaySeconds(delay: Int) = prefsManager.setUsbAutoRevertDelaySeconds(delay)
+
 
     fun setHelpShown(shown: Boolean) = prefsManager.setHelpShown(shown)
 

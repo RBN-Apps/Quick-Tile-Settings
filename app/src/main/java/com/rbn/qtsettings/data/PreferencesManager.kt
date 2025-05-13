@@ -33,6 +33,14 @@ class PreferencesManager private constructor(context: Context) {
     )
     val dnsHostname: StateFlow<String> = _dnsHostname.asStateFlow()
 
+    private val _dnsEnableAutoRevert =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_DNS_ENABLE_AUTO_REVERT, false))
+    val dnsEnableAutoRevert: StateFlow<Boolean> = _dnsEnableAutoRevert.asStateFlow()
+    private val _dnsAutoRevertDelaySeconds =
+        MutableStateFlow(sharedPreferences.getInt(KEY_DNS_AUTO_REVERT_DELAY_SECONDS, 5))
+    val dnsAutoRevertDelaySeconds: StateFlow<Int> = _dnsAutoRevertDelaySeconds.asStateFlow()
+
+
     // USB Debugging Settings
     private val _usbToggleEnable =
         MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_TOGGLE_ENABLE, true))
@@ -41,6 +49,13 @@ class PreferencesManager private constructor(context: Context) {
     private val _usbToggleDisable =
         MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_TOGGLE_DISABLE, true))
     val usbToggleDisable: StateFlow<Boolean> = _usbToggleDisable.asStateFlow()
+
+    private val _usbEnableAutoRevert =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ENABLE_AUTO_REVERT, false))
+    val usbEnableAutoRevert: StateFlow<Boolean> = _usbEnableAutoRevert.asStateFlow()
+    private val _usbAutoRevertDelaySeconds =
+        MutableStateFlow(sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5))
+    val usbAutoRevertDelaySeconds: StateFlow<Int> = _usbAutoRevertDelaySeconds.asStateFlow()
 
     // Help Shown
     private val _helpShown = MutableStateFlow(sharedPreferences.getBoolean(KEY_HELP_SHOWN, false))
@@ -67,6 +82,17 @@ class PreferencesManager private constructor(context: Context) {
         _dnsHostname.value = hostname
     }
 
+    fun setDnsEnableAutoRevert(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_DNS_ENABLE_AUTO_REVERT, enabled) }
+        _dnsEnableAutoRevert.value = enabled
+    }
+
+    fun setDnsAutoRevertDelaySeconds(delay: Int) {
+        sharedPreferences.edit { putInt(KEY_DNS_AUTO_REVERT_DELAY_SECONDS, delay) }
+        _dnsAutoRevertDelaySeconds.value = delay
+    }
+
+
     fun setUsbToggleEnable(enabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_USB_TOGGLE_ENABLE, enabled) }
         _usbToggleEnable.value = enabled
@@ -75,6 +101,16 @@ class PreferencesManager private constructor(context: Context) {
     fun setUsbToggleDisable(enabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_USB_TOGGLE_DISABLE, enabled) }
         _usbToggleDisable.value = enabled
+    }
+
+    fun setUsbEnableAutoRevert(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_USB_ENABLE_AUTO_REVERT, enabled) }
+        _usbEnableAutoRevert.value = enabled
+    }
+
+    fun setUsbAutoRevertDelaySeconds(delay: Int) {
+        sharedPreferences.edit { putInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, delay) }
+        _usbAutoRevertDelaySeconds.value = delay
     }
 
     fun setHelpShown(shown: Boolean) {
@@ -89,11 +125,23 @@ class PreferencesManager private constructor(context: Context) {
         sharedPreferences.getString(KEY_DNS_HOSTNAME, "1dot1dot1dot1.cloudflare-dns.com")
             ?: "1dot1dot1dot1.cloudflare-dns.com"
 
+    fun isDnsAutoRevertEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_DNS_ENABLE_AUTO_REVERT, false)
+
+    fun getDnsAutoRevertDelaySeconds(): Int =
+        sharedPreferences.getInt(KEY_DNS_AUTO_REVERT_DELAY_SECONDS, 5)
+
     fun isUsbToggleEnableEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_USB_TOGGLE_ENABLE, true)
 
     fun isUsbToggleDisableEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_USB_TOGGLE_DISABLE, true)
+
+    fun isUsbAutoRevertEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_USB_ENABLE_AUTO_REVERT, false)
+
+    fun getUsbAutoRevertDelaySeconds(): Int =
+        sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5)
 
 
     companion object {
@@ -101,11 +149,21 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_DNS_TOGGLE_AUTO = "dns_toggle_auto"
         private const val KEY_DNS_TOGGLE_ON = "dns_toggle_on"
         private const val KEY_DNS_HOSTNAME = "dns_hostname"
+        private const val KEY_DNS_ENABLE_AUTO_REVERT = "dns_enable_auto_revert"
+        private const val KEY_DNS_AUTO_REVERT_DELAY_SECONDS = "dns_auto_revert_delay_seconds"
+
 
         private const val KEY_USB_TOGGLE_ENABLE = "usb_toggle_enable"
         private const val KEY_USB_TOGGLE_DISABLE = "usb_toggle_disable"
+        private const val KEY_USB_ENABLE_AUTO_REVERT = "usb_enable_auto_revert"
+        private const val KEY_USB_AUTO_REVERT_DELAY_SECONDS = "usb_auto_revert_delay_seconds"
 
         private const val KEY_HELP_SHOWN = "help_shown_v1"
+
+        const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
+        const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
+        const val KEY_USB_PREVIOUS_STATE_FOR_REVERT = "usb_previous_state_for_revert"
+
 
         @Volatile
         private var INSTANCE: PreferencesManager? = null

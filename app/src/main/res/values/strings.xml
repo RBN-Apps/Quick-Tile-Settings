@@ -63,4 +63,13 @@
     <string name="warning_developer_options_disabled_config">Developer options are disabled. USB Debugging cannot be configured.</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
+    <string name="setting_enable_auto_revert">Enable auto-revert after a delay</string>
+    <string name="setting_auto_revert_delay">Revert delay (seconds):</string>
+    <string name="toast_reverting_dns_to">Reverting DNS to %1$s in %2$d sec…</string>
+    <string name="toast_reverting_usb_to">Reverting USB Debug to %1$s in %2$d sec…</string>
+    <string name="toast_revert_cancelled">Auto-revert cancelled.</string>
+    <string name="on_state">On</string>
+    <string name="off_state">Off</string>
+    <string name="auto_state">Auto</string>
+
 </resources>

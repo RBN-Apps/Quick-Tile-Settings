@@ -61,4 +61,13 @@
     <string name="button_show_permission_help">Anleitung anzeigen</string>
     <string name="warning_developer_options_disabled_config">Entwickleroptionen sind deaktiviert. USB-Debugging kann nicht konfiguriert werden.</string>
     <string name="adb_command_install_g">adb install -g -r pfad/zu/deiner/app.apk</string>
+
+    <string name="setting_enable_auto_revert">Automatisches Zurücksetzen nach Verzögerung aktivieren</string>
+    <string name="setting_auto_revert_delay">Verzögerung (Sekunden):</string>
+    <string name="toast_reverting_dns_to">DNS wird in %2$d Sek. auf %1$s zurückgesetzt…</string>
+    <string name="toast_reverting_usb_to">USB-Debug wird in %2$d Sek. auf %1$s zurückgesetzt…</string>
+    <string name="toast_revert_cancelled">Autom. Zurücksetzen abgebrochen.</string>
+    <string name="on_state">Ein</string>
+    <string name="off_state">Aus</string>
+    <string name="auto_state">Auto</string>
 </resources>
