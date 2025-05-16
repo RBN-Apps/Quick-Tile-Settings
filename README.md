@@ -1,3 +1,11 @@
+[![GitHub issues](https://img.shields.io/github/issues/RBN-Apps/Quick-Tile-Settings)](https://github.com/RBN-Apps/Quick-Tile-Settings/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/RBN-Apps/Quick-Tile-Settings)](https://github.com/RBN-Apps/Quick-Tile-Settings/commits/main)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/RBN-Apps/Quick-Tile-Settings)](https://github.com/RBN-Apps/Quick-Tile-Settings/releases/latest)
+[![Android API](https://img.shields.io/badge/API-29%2B-brightgreen.svg)](https://android-arsenal.com/api?level=29)
+[![GitHub stars](https://img.shields.io/github/stars/RBN-Apps/Quick-Tile-Settings?style=social)](https://github.com/RBN-Apps/Quick-Tile-Settings/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/RBN-Apps/Quick-Tile-Settings?style=social)](https://github.com/RBN-Apps/Quick-Tile-Settings/network/members)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/RBN-Apps/Quick-Tile-Settings)
+
 # Quick-Tile Settings
 
 **Quick-Tile Settings** is an Android application that provides customizable Quick Settings tiles for managing Private DNS and USB Debugging. It allows users to quickly toggle these settings and configure the behavior of each tile, including an auto-revert feature.
