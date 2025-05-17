@@ -1,0 +1,48 @@
+<p><strong>Quick-Tile Settings</strong> provides customizable Quick Settings tiles for easily managing Private DNS and USB Debugging on your Android device. Toggle settings quickly and configure tile behavior, including an auto-revert feature.</p>
+
+<p><strong>Features:</strong></p>
+<ul>
+    <li><strong>Private DNS Quick Tile:</strong>
+        <ul>
+            <li>Cycle through Off, Auto, and On (with custom hostname) states.</li>
+            <li>Configure which states are included in the cycle.</li>
+            <li>Set a custom hostname for the "On" state.</li>
+            <li>Optional: Automatically revert to the previous DNS state after a configurable delay.</li>
+        </ul>
+    </li>
+    <li><strong>USB Debugging Quick Tile:</strong>
+        <ul>
+            <li>Toggle USB Debugging On or Off.</li>
+            <li>Configure whether to cycle between On/Off or only include specific states.</li>
+            <li>Optional: Automatically revert to the previous USB Debugging state after a configurable delay.</li>
+        </ul>
+    </li>
+    <li><strong>User-Friendly Configuration:</strong>
+        <ul>
+            <li>In-app settings screen to customize tile behavior and auto-revert options.</li>
+            <li>Tabbed interface for easy navigation.</li>
+        </ul>
+    </li>
+    <li><strong>Permission Guidance:</strong>
+        <ul>
+            <li>Clear instructions and an in-app help dialog for granting the required <code>WRITE_SECURE_SETTINGS</code> permission via ADB.</li>
+        </ul>
+    </li>
+    <li><strong>Modern UI:</strong> Built with Jetpack Compose, supporting dynamic color (Material You) on Android 12+.</li>
+</ul>
+
+<p><strong>Requirements:</strong></p>
+<ul>
+    <li>Android 9 (Pie, API 29) or higher.</li>
+    <li>The <code>WRITE_SECURE_SETTINGS</code> permission. This <strong>must</strong> be granted via ADB (Android Debug Bridge). The app provides instructions.</li>
+</ul>
+
+<p><strong>Setup and Usage:</strong></p>
+<ol>
+    <li><strong>Grant Permission via ADB:</strong> Follow the in-app help or README instructions to grant the <code>WRITE_SECURE_SETTINGS</code> permission using ADB. This is a one-time setup.</li>
+    <li><strong>Configure Tiles in the App:</strong> Open Quick-Tile Settings, navigate to the "Private DNS" or "USB Debugging" tab, select cycle states, set DNS hostname (if applicable), and configure auto-revert options. Apply settings.</li>
+    <li><strong>Add Tiles to Quick Settings:</strong> Edit your Quick Settings panel and add the "Private DNS" and "USB Debugging" tiles.</li>
+    <li><strong>Use the Tiles:</strong> Tap a tile to cycle its state. Long-press to open the app's settings.</li>
+</ol>
+
+<p>The auto-revert feature is useful for temporarily enabling a setting (like USB Debugging for a quick ADB command) and having it automatically disable itself for security or convenience.</p>

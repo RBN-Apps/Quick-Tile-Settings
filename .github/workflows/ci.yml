@@ -1,0 +1,108 @@
+name: Android CI
+
+on:
+  push:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract VersionCode
+        id: extract_vc
+        run: |
+          VERSION_CODE=$(grep "versionCode =" app/build.gradle.kts | sed 's/.*versionCode = \(.*\)/\1/' | tr -d ' ')
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "Extracted versionCode: $VERSION_CODE"
+
+      - name: Check changelogs
+        run: |
+          for lang in en-US de-DE; do
+            file="fastlane/metadata/android/$lang/changelogs/${{ env.VERSION_CODE }}.txt"
+            if [ ! -f "$file" ]; then
+              echo "::error file=$file::Missing $lang changelog (versionCode ${{ env.VERSION_CODE }})"
+              exit 1
+            fi
+            echo "✔ Found changelog: $file"
+          done
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run linters
+        run: ./gradlew lintDebug
+
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Upload Unit Test Results (XML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: app/build/test-results/testDebugUnitTest/
+          retention-days: 7
+
+      - name: Upload Lint Report (HTML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report-debug-html
+          path: app/build/reports/lint-results-debug.html
+          retention-days: 7
+
+      - name: Upload Lint Report (XML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report-debug-xml
+          path: app/build/reports/lint-results-debug.xml
+          retention-days: 7
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Generate Job Summary
+        if: always()
+        run: |
+          echo "## CI Job Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Lint Report (Debug)" >> $GITHUB_STEP_SUMMARY
+          if [ -f app/build/reports/lint-results-debug.html ]; then
+            echo "Lint issues may have been found. Download the HTML report from the artifacts section of this run." >> $GITHUB_STEP_SUMMARY
+            echo "- [Download Lint Report (HTML)](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Lint HTML report found or lint task failed to produce one." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Unit Test Report Link
+          echo "### Unit Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "Download JUnit XML reports from the artifacts section of this run." >> $GITHUB_STEP_SUMMARY
+          echo "- [Download Unit Test Results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Changelog Status
+          echo "### Changelog Status (versionCode: ${{ env.VERSION_CODE }})" >> $GITHUB_STEP_SUMMARY
+          if [ -f "fastlane/metadata/android/en-US/changelogs/${{ env.VERSION_CODE }}.txt" ]; then
+            echo "- ✅ en-US Changelog: Found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ en-US Changelog: NOT Found" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f "fastlane/metadata/android/de-DE/changelogs/${{ env.VERSION_CODE }}.txt" ]; then
+            echo "- ✅ de-DE Changelog: Found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ de-DE Changelog: NOT Found" >> $GITHUB_STEP_SUMMARY
+          fi

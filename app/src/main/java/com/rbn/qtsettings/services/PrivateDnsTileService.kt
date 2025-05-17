@@ -30,7 +30,6 @@ class PrivateDnsTileService : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
-        cancelRevertTimerWithMessage(null)
         updateTile()
     }
 
@@ -114,7 +113,6 @@ class PrivateDnsTileService : TileService() {
             if (nextMode == Constants.DNS_MODE_ON) {
                 if (nextHostToSet.isNullOrBlank()) {
                     Toast.makeText(this, R.string.toast_hostname_required, Toast.LENGTH_LONG).show()
-
                     getPreviousState()?.let { (prevMode, prevHost) ->
                         Settings.Global.putString(
                             contentResolver,
@@ -174,6 +172,17 @@ class PrivateDnsTileService : TileService() {
         revertTimer?.cancel()
         revertTimer = object : CountDownTimer(delaySeconds * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                qsTile?.let { tile ->
+                    getPreviousState()?.let { (prevMode, _) ->
+                        val readablePrevMode = getReadableDnsMode(prevMode)
+                        tile.subtitle = getString(
+                            R.string.tile_subtitle_reverting_in_seconds,
+                            readablePrevMode,
+                            millisUntilFinished / 1000
+                        )
+                        tile.updateTile()
+                    }
+                }
             }
 
             override fun onFinish() {
@@ -192,12 +201,17 @@ class PrivateDnsTileService : TileService() {
                             )
                         }
                         Log.i("PrivateDnsTile", "Auto-reverted DNS to $prevMode")
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.dns_state_reverted_to, getReadableDnsMode(prevMode)),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } catch (e: Exception) {
                         Log.e("PrivateDnsTile", "Error auto-reverting DNS: ${e.message}", e)
                     } finally {
                         clearPreviousState()
-                        updateTile()
                         revertTimer = null
+                        updateTile()
                     }
                 }
             }
@@ -213,6 +227,7 @@ class PrivateDnsTileService : TileService() {
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             }
             Log.i("PrivateDnsTile", "Revert timer cancelled.")
+            updateTile()
         }
     }
 
@@ -228,6 +243,11 @@ class PrivateDnsTileService : TileService() {
 
     private fun updateTile() {
         val tile = qsTile ?: return
+
+        if (revertTimer == null || getPreviousState() == null) {
+            tile.subtitle = ""
+        }
+
         val dnsMode = Settings.Global.getString(contentResolver, Constants.PRIVATE_DNS_MODE)
 
         when (dnsMode) {
@@ -251,6 +271,25 @@ class PrivateDnsTileService : TileService() {
                 tile.label = if (hostname.length > 15) hostname.take(12) + "..." else hostname
                 tile.icon = Icon.createWithResource(this, R.drawable.ic_dns_on)
                 if (hostname.isBlank() && PermissionUtils.hasWriteSecureSettingsPermission(this)) {
+                    getPreviousState()?.let { (prevMode, prevHost) ->
+                        if (prevMode != Constants.DNS_MODE_ON || !prevHost.isNullOrBlank()) {
+                            Settings.Global.putString(
+                                contentResolver,
+                                Constants.PRIVATE_DNS_MODE,
+                                prevMode
+                            )
+                            if (prevMode == Constants.DNS_MODE_ON && prevHost != null) {
+                                Settings.Global.putString(
+                                    contentResolver,
+                                    Constants.PRIVATE_DNS_SPECIFIER,
+                                    prevHost
+                                )
+                            }
+                            clearPreviousState()
+                            updateTile()
+                            return
+                        }
+                    }
                     if (prefsManager.isDnsToggleOffEnabled()) {
                         Settings.Global.putString(
                             contentResolver,
