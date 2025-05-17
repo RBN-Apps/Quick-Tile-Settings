@@ -1,0 +1,141 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout current code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Extract Current VersionName and VersionCode
+        id: extract_current_versions
+        run: |
+          VERSION_NAME=$(grep "versionName =" app/build.gradle.kts | sed 's/.*versionName = "\(.*\)".*/\1/')
+          VERSION_CODE=$(grep "versionCode =" app/build.gradle.kts | sed 's/.*versionCode = \(.*\)/\1/' | tr -d ' ')
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "Current versionName: $VERSION_NAME, Current versionCode: $VERSION_CODE"
+
+      - name: Validate Tag against VersionName
+        run: |
+          TAG_NAME=${{ github.ref_name }}
+          TAG_VERSION=${TAG_NAME#v}
+          if [ "$TAG_VERSION" != "${{ env.VERSION_NAME }}" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match versionName (${{ env.VERSION_NAME }}) in app/build.gradle.kts."
+            exit 1
+          else
+            echo "Tag version ($TAG_VERSION) matches versionName (${{ env.VERSION_NAME }})."
+          fi
+
+      - name: Check VersionCode against previous release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_VERSION_CODE: ${{ env.VERSION_CODE }}
+        run: |          
+          PREVIOUS_RELEASE_TAG=$(gh release list --limit 1 --exclude-drafts --exclude-pre-releases --json tagName --jq '.[0].tagName')
+
+          if [ -z "$PREVIOUS_RELEASE_TAG" ] || [ "$PREVIOUS_RELEASE_TAG" == "null" ]; then
+            echo "No previous stable release found. Assuming this is the first release or only pre-releases/drafts exist. Skipping versionCode check against previous."
+          else
+            echo "Previous stable release tag: $PREVIOUS_RELEASE_TAG"
+            
+            mkdir ../previous_release_code
+            git clone https://x-access-token:${GITHUB_TOKEN}@${GITHUB_SERVER_URL#https://}/$GITHUB_REPOSITORY.git ../previous_release_code --branch $PREVIOUS_RELEASE_TAG --depth 1
+            
+            if [ ! -f ../previous_release_code/app/build.gradle.kts ]; then
+              echo "::error::app/build.gradle.kts not found in previous release tag $PREVIOUS_RELEASE_TAG. Cannot compare versionCode."
+              echo "Continuing without previous versionCode check due to missing file in old tag."
+            else
+              PREVIOUS_VERSION_CODE=$(grep "versionCode =" ../previous_release_code/app/build.gradle.kts | sed 's/.*versionCode = \(.*\)/\1/' | tr -d ' ')
+              echo "Previous versionCode: $PREVIOUS_VERSION_CODE"
+              echo "Current versionCode: $CURRENT_VERSION_CODE"
+
+              if [ "$PREVIOUS_VERSION_CODE" == "$CURRENT_VERSION_CODE" ]; then
+                echo "::error::Current versionCode ($CURRENT_VERSION_CODE) is the same as in the previous release ($PREVIOUS_RELEASE_TAG). Please increment versionCode."
+                exit 1
+              elif [ "$((PREVIOUS_VERSION_CODE))" -gt "$((CURRENT_VERSION_CODE))" ]; then
+                echo "::warning::Current versionCode ($CURRENT_VERSION_CODE) is lower than in the previous release ($PREVIOUS_RELEASE_TAG - $PREVIOUS_VERSION_CODE). Please increment versionCode."
+                exit 1
+              else
+                echo "VersionCode ($CURRENT_VERSION_CODE) has been incremented correctly from previous release ($PREVIOUS_VERSION_CODE)."
+              fi
+            fi
+            rm -rf ../previous_release_code
+          fi
+
+      - name: Check for en-US changelog for release
+        id: changelog_check_en
+        run: |
+          CHANGELOG_FILE="fastlane/metadata/android/en-US/changelogs/${{ env.VERSION_CODE }}.txt"
+          if [ ! -f "$CHANGELOG_FILE" ]; then
+            echo "::error file=$CHANGELOG_FILE::Changelog for en-US (versionCode ${{ env.VERSION_CODE }}) not found at $CHANGELOG_FILE. Cannot create release."
+            exit 1
+          else
+            echo "Changelog $CHANGELOG_FILE found for release."
+            CHANGELOG_CONTENT=$(cat "$CHANGELOG_FILE")
+            echo "changelog_body<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for de-DE changelog for release
+        run: |
+          CHANGELOG_FILE="fastlane/metadata/android/de-DE/changelogs/${{ env.VERSION_CODE }}.txt"
+          if [ ! -f "$CHANGELOG_FILE" ]; then
+            echo "::warning file=$CHANGELOG_FILE::Changelog for de-DE (versionCode ${{ env.VERSION_CODE }}) not found at $CHANGELOG_FILE. Release will use en-US changelog."
+          else
+            echo "Changelog $CHANGELOG_FILE found for release."
+          fi
+
+      - name: Build Release AAB and APK
+        run: |
+          ./gradlew bundleRelease assembleRelease
+
+      - name: Sign APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY_STORE }}
+          alias: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_SIGNING_KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "35.0.0"
+
+      - name: Rename APK
+        run: |
+          echo "Contents of APK release directory:"
+          ls -la app/build/outputs/apk/release
+          mv app/build/outputs/apk/release/app-release-unsigned-signed.apk app/build/outputs/apk/release/quick-tile-settings-${{ env.VERSION_NAME }}.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/build/outputs/apk/release/quick-tile-settings-${{ env.VERSION_NAME }}.apk
+          body_path: fastlane/metadata/android/en-US/changelogs/${{ env.VERSION_CODE }}.txt
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ env.VERSION_NAME }}
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

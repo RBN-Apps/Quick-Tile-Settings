@@ -1,0 +1,10 @@
+Erstveröffentlichung von Quick-Tile Settings!
+Funktionen:
+- Private DNS Schnelleinstellungs-Kachel: Wechsel zwischen Aus, Auto, Ein (eigener Hostname).
+- USB-Debugging Schnelleinstellungs-Kachel: Umschalten Ein/Aus.
+- Anpassbare Zyklus-Zustände für beide Kacheln.
+- Festlegen eines benutzerdefinierten DNS-Hostnamens.
+- Optionale Auto-Revert-Funktion zum vorherigen Zustand für beide Kacheln mit konfigurierbarer Verzögerung.
+- In-App-Einstellungs-UI mit Jetpack Compose.
+- Hilfedialog für ADB-Berechtigung (`WRITE_SECURE_SETTINGS`).
+- Deutsche und englische Lokalisierung.

@@ -1,0 +1,10 @@
+Initial release of Quick-Tile Settings!
+Features:
+- Private DNS Quick Tile: Cycle Off, Auto, On (custom hostname).
+- USB Debugging Quick Tile: Toggle On/Off.
+- Customizable cycle states for both tiles.
+- Set custom DNS hostname.
+- Optional auto-revert to previous state for both tiles with configurable delay.
+- In-app settings UI built with Jetpack Compose.
+- Help dialog for ADB permission (`WRITE_SECURE_SETTINGS`).
+- English and German localization.

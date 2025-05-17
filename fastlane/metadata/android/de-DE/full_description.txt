@@ -1,0 +1,48 @@
+<p><strong>Quick-Tile Settings</strong> bietet anpassbare Schnelleinstellungs-Kacheln (Quick Settings Tiles) zur einfachen Verwaltung von privatem DNS und USB-Debugging auf Ihrem Android-Gerät. Schalten Sie Einstellungen schnell um und konfigurieren Sie das Verhalten der Kacheln, einschließlich einer Auto-Revert-Funktion (automatisches Zurücksetzen).</p>
+
+<p><strong>Funktionen:</strong></p>
+<ul>
+    <li><strong>Private DNS Schnelleinstellungs-Kachel:</strong>
+        <ul>
+            <li>Wechseln Sie zwischen den Zuständen Aus, Automatisch und Ein (mit benutzerdefiniertem Hostname).</li>
+            <li>Konfigurieren Sie, welche Zustände im Zyklus enthalten sein sollen.</li>
+            <li>Legen Sie einen benutzerdefinierten Hostname für den "Ein"-Zustand fest.</li>
+            <li>Optional: Automatisches Zurücksetzen auf den vorherigen DNS-Status nach einer konfigurierbaren Verzögerung.</li>
+        </ul>
+    </li>
+    <li><strong>USB-Debugging Schnelleinstellungs-Kachel:</strong>
+        <ul>
+            <li>Schalten Sie USB-Debugging Ein oder Aus.</li>
+            <li>Konfigurieren Sie, ob zwischen Ein/Aus gewechselt wird oder nur bestimmte Zustände einbezogen werden.</li>
+            <li>Optional: Automatisches Zurücksetzen auf den vorherigen USB-Debugging-Status nach einer konfigurierbaren Verzögerung.</li>
+        </ul>
+    </li>
+    <li><strong>Benutzerfreundliche Konfiguration:</strong>
+        <ul>
+            <li>In-App-Einstellungsbildschirm zur Anpassung des Kachelverhaltens und der Auto-Revert-Optionen.</li>
+            <li>Oberfläche mit Tabs für einfache Navigation.</li>
+        </ul>
+    </li>
+    <li><strong>Berechtigungsanleitung:</strong>
+        <ul>
+            <li>Klare Anweisungen und ein In-App-Hilfedialog zum Erteilen der erforderlichen <code>WRITE_SECURE_SETTINGS</code>-Berechtigung über ADB.</li>
+        </ul>
+    </li>
+    <li><strong>Moderne Benutzeroberfläche:</strong> Erstellt mit Jetpack Compose, unterstützt dynamische Farben (Material You) ab Android 12+.</li>
+</ul>
+
+<p><strong>Voraussetzungen:</strong></p>
+<ul>
+    <li>Android 9 (Pie, API 29) oder höher.</li>
+    <li>Die Berechtigung <code>WRITE_SECURE_SETTINGS</code>. Diese <strong>muss</strong> über ADB (Android Debug Bridge) erteilt werden. Die App enthält eine Anleitung.</li>
+</ul>
+
+<p><strong>Einrichtung und Verwendung:</strong></p>
+<ol>
+    <li><strong>Berechtigung über ADB erteilen:</strong> Befolgen Sie die In-App-Hilfe oder die README-Anweisungen, um die Berechtigung <code>WRITE_SECURE_SETTINGS</code> mittels ADB zu erteilen. Dies ist eine einmalige Einrichtung.</li>
+    <li><strong>Kacheln in der App konfigurieren:</strong> Öffnen Sie Quick-Tile Settings, navigieren Sie zum Tab "Privates DNS" oder "USB-Debugging", wählen Sie die Zyklus-Zustände, legen Sie den DNS-Hostname fest (falls zutreffend) und konfigurieren Sie die Auto-Revert-Optionen. Einstellungen anwenden.</li>
+    <li><strong>Kacheln zu Schnelleinstellungen hinzufügen:</strong> Bearbeiten Sie Ihre Schnelleinstellungsleiste und fügen Sie die Kacheln "Privates DNS" und "USB-Debugging" hinzu.</li>
+    <li><strong>Kacheln verwenden:</strong> Tippen Sie auf eine Kachel, um ihren Zustand zu wechseln. Langes Drücken öffnet die Einstellungen der App.</li>
+</ol>
+
+<p>Die Auto-Revert-Funktion ist nützlich, um eine Einstellung vorübergehend zu aktivieren (z.B. USB-Debugging für einen schnellen ADB-Befehl) und sie aus Sicherheits- oder Bequemlichkeitsgründen automatisch wieder deaktivieren zu lassen.</p>
