@@ -30,7 +30,6 @@ class UsbDebuggingTileService : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
-        cancelRevertTimerWithMessage(null)
         updateTile()
     }
 
@@ -69,6 +68,7 @@ class UsbDebuggingTileService : TileService() {
             Toast.makeText(this, R.string.toast_developer_options_disabled, Toast.LENGTH_LONG)
                 .show()
             Log.w("UsbDebuggingTile", "Developer options are disabled.")
+            updateTile()
             return
         }
 
@@ -129,26 +129,53 @@ class UsbDebuggingTileService : TileService() {
     private fun startRevertTimer(delaySeconds: Int) {
         revertTimer?.cancel()
         revertTimer = object : CountDownTimer(delaySeconds * 1000L, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
+            override fun onTick(millisUntilFinished: Long) {
+                qsTile?.let { tile ->
+                    getPreviousState()?.let { prevUsbState ->
+                        val readablePrevState =
+                            if (prevUsbState) getString(R.string.on_state) else getString(R.string.off_state)
+                        tile.subtitle = getString(
+                            R.string.tile_subtitle_reverting_in_seconds,
+                            readablePrevState,
+                            millisUntilFinished / 1000
+                        )
+                        tile.updateTile()
+                    }
+                }
+            }
 
             override fun onFinish() {
                 getPreviousState()?.let { prevUsbState ->
                     try {
-                        Settings.Global.putInt(
-                            contentResolver,
-                            Constants.ADB_ENABLED,
-                            if (prevUsbState) 1 else 0
-                        )
-                        Log.i(
-                            "UsbDebuggingTile",
-                            "Auto-reverted USB Debug to ${if (prevUsbState) "ON" else "OFF"}"
-                        )
+                        if (PermissionUtils.isDeveloperOptionsEnabled(applicationContext)) {
+                            Settings.Global.putInt(
+                                contentResolver,
+                                Constants.ADB_ENABLED,
+                                if (prevUsbState) 1 else 0
+                            )
+                            Log.i(
+                                "UsbDebuggingTile",
+                                "Auto-reverted USB Debug to ${if (prevUsbState) "ON" else "OFF"}"
+                            )
+                            val revertedStateString =
+                                if (prevUsbState) getString(R.string.on_state) else getString(R.string.off_state)
+                            Toast.makeText(
+                                applicationContext,
+                                getString(R.string.usb_state_reverted_to, revertedStateString),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Log.w(
+                                "UsbDebuggingTile",
+                                "Developer options disabled, cannot auto-revert USB debugging."
+                            )
+                        }
                     } catch (e: Exception) {
                         Log.e("UsbDebuggingTile", "Error auto-reverting USB: ${e.message}", e)
                     } finally {
                         clearPreviousState()
-                        updateTile()
                         revertTimer = null
+                        updateTile()
                     }
                 }
             }
@@ -164,17 +191,25 @@ class UsbDebuggingTileService : TileService() {
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             }
             Log.i("UsbDebuggingTile", "Revert timer cancelled.")
+            updateTile()
         }
     }
 
     private fun updateTile() {
         val tile = qsTile ?: return
 
+        if (revertTimer == null || getPreviousState() == null) {
+            tile.subtitle = ""
+        }
+
         if (!PermissionUtils.isDeveloperOptionsEnabled(this)) {
             tile.state = Tile.STATE_UNAVAILABLE
             tile.label = getString(R.string.usb_dev_options_off)
             tile.icon = Icon.createWithResource(this, R.drawable.ic_usb_off)
             tile.updateTile()
+            if (revertTimer != null) {
+                cancelRevertTimerWithMessage(getString(R.string.toast_developer_options_disabled_revert_cancelled))
+            }
             return
         }
 

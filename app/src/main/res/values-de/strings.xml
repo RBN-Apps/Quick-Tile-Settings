@@ -5,6 +5,10 @@
     <!-- Tile Labels -->
     <string name="tile_label_private_dns">Privates DNS</string>
     <string name="tile_label_usb_debugging">USB-Debugging</string>
+    <string name="dns_state_reverted_to">DNS auf %1$s zurückgesetzt</string>
+    <string name="usb_state_reverted_to">USB-Debug auf %1$s zurückgesetzt</string>
+    <string name="toast_developer_options_disabled_revert_cancelled">Entwickleropt. aus. USB-Zurücksetzung abgebrochen.</string>
+    <string name="tile_subtitle_reverting_in_seconds">Zurück auf %1$s in %2$ds…</string>
 
     <!-- DNS States -->
     <string name="dns_state_off">DNS Aus</string>
