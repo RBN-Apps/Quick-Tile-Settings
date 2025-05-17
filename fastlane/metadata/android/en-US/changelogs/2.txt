@@ -1,0 +1,5 @@
+Version 1.0.1
+
+- Better Auto-Revert Logic
+- CI/CD Automation
+- Fastlane Integration
