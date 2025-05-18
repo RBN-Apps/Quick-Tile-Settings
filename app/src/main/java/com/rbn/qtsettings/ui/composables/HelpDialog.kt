@@ -1,6 +1,5 @@
 package com.rbn.qtsettings.ui.composables
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
@@ -23,15 +21,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
 
@@ -123,38 +122,35 @@ fun HelpDialog(
                     Text(stringResource(R.string.button_copy_install_command))
                 }
 
-                val apkNoteFullText = stringResource(id = R.string.help_dialog_apk_path_note)
-                val linkText = stringResource(id = R.string.github_releases_link_text)
+                Spacer(modifier = Modifier.height(24.dp))
+
+                val apkNoteFullText = stringResource(R.string.help_dialog_apk_path_note)
+                val linkText = stringResource(R.string.github_releases_link_text)
+
                 val annotatedString = buildAnnotatedString {
                     append(apkNoteFullText)
                     append("\n")
-                    pushStringAnnotation(tag = "URL", annotation = githubReleasesUrl)
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary,
-                            textDecoration = TextDecoration.Underline
+                    withLink(
+                        LinkAnnotation.Url(
+                            url = githubReleasesUrl,
+                            TextLinkStyles(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    textDecoration = TextDecoration.Underline
+                                )
+                            )
                         )
                     ) {
                         append(linkText)
                     }
-                    pop()
                 }
 
-                ClickableText(
+                Text(
                     text = annotatedString,
-                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
-                    modifier = Modifier.padding(top = 6.dp),
-                    onClick = { offset ->
-                        annotatedString.getStringAnnotations(
-                            tag = "URL",
-                            start = offset,
-                            end = offset
-                        )
-                            .firstOrNull()?.let { annotation ->
-                                val intent = Intent(Intent.ACTION_VIEW, annotation.item.toUri())
-                                context.startActivity(intent)
-                            }
-                    }
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.padding(top = 6.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
