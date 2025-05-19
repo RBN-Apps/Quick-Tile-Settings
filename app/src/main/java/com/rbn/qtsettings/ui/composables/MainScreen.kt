@@ -185,6 +185,33 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
             )
         }
     }
+
+    // DNS Hostname Add/Edit Dialog
+    val editingHostname by viewModel.editingHostname.collectAsState()
+    if (viewModel.showHostnameEditDialog.collectAsState().value) {
+        DnsHostnameEditDialog(
+            entry = editingHostname,
+            onDismiss = { viewModel.dismissHostnameEditDialog() },
+            onSave = { id, name, hostVal ->
+                if (id == null) {
+                    viewModel.addCustomDnsHostname(name, hostVal)
+                } else {
+                    viewModel.editCustomDnsHostname(id, name, hostVal)
+                }
+            },
+            viewModel = viewModel
+        )
+    }
+
+    // Confirm Delete Hostname Dialog
+    val hostnamePendingDeletion by viewModel.hostnamePendingDeletion.collectAsState()
+    hostnamePendingDeletion?.let { entry ->
+        ConfirmDeleteDialog(
+            hostnameEntry = entry,
+            onDismiss = { viewModel.setHostnamePendingDeletion(null) }) {
+            viewModel.deleteCustomDnsHostname(entry.id)
+        }
+    }
 }
 
 @Composable
