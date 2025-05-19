@@ -4,9 +4,15 @@
 <ul>
     <li><strong>Private DNS Schnelleinstellungs-Kachel:</strong>
         <ul>
-            <li>Wechseln Sie zwischen den Zuständen Aus, Automatisch und Ein (mit benutzerdefiniertem Hostname).</li>
-            <li>Konfigurieren Sie, welche Zustände im Zyklus enthalten sein sollen.</li>
-            <li>Legen Sie einen benutzerdefinierten Hostname für den "Ein"-Zustand fest.</li>
+            <li>Wechseln Sie zwischen Aus, Automatisch und benutzerdefinierten privaten DNS-Hostnamen.</li>
+            <li>Verwalten Sie eine Liste von DNS-Hostnamen:
+                <ul>
+                    <li>Enthält vordefinierte Optionen: Cloudflare (Performance & Datenschutz), AdGuard DNS (Werbe- & Tracker-Blocker), Quad9 (Sicherheitsfokus).</li>
+                    <li>Fügen Sie eigene DNS-Hostnameinträge hinzu, bearbeiten oder löschen Sie sie.</li>
+                    <li>Wählen Sie aus, welche Hostnamen (zusammen mit Aus/Auto) im Zyklus der Kachel enthalten sein sollen.</li>
+                </ul>
+            </li>
+            <li>Zeigen Sie Informationen zu den Vorteilen jedes vordefinierten DNS-Anbieters direkt in der App an.</li>
             <li>Optional: Automatisches Zurücksetzen auf den vorherigen DNS-Status nach einer konfigurierbaren Verzögerung.</li>
         </ul>
     </li>
@@ -40,7 +46,20 @@
 <p><strong>Einrichtung und Verwendung:</strong></p>
 <ol>
     <li><strong>Berechtigung über ADB erteilen:</strong> Befolgen Sie die In-App-Hilfe oder die README-Anweisungen, um die Berechtigung <code>WRITE_SECURE_SETTINGS</code> mittels ADB zu erteilen. Dies ist eine einmalige Einrichtung.</li>
-    <li><strong>Kacheln in der App konfigurieren:</strong> Öffnen Sie Quick-Tile Settings, navigieren Sie zum Tab "Privates DNS" oder "USB-Debugging", wählen Sie die Zyklus-Zustände, legen Sie den DNS-Hostname fest (falls zutreffend) und konfigurieren Sie die Auto-Revert-Optionen. Einstellungen anwenden.</li>
+    <li><strong>Kacheln in der App konfigurieren:</strong>
+        <ul>
+            <li>Öffnen Sie Quick-Tile Settings.</li>
+            <li>Für <strong>Privates DNS</strong>:
+                <ul>
+                    <li>Wählen Sie "DNS Aus" und/oder "DNS Auto" für den Zyklus aus.</li>
+                    <li>Verwalten Sie die Hostnamen-Liste: Aktivieren Sie die gewünschten Hostnamen für den Zyklus. Fügen Sie eigene hinzu oder bearbeiten/löschen Sie benutzerdefinierte Einträge. Info-Buttons erklären vordefinierte Server.</li>
+                </ul>
+            </li>
+            <li>Für <strong>USB-Debugging</strong>: Wählen Sie "USB-Debug Ein" und/oder "USB-Debug Aus" für den Zyklus.</li>
+            <li>Konfigurieren Sie optional die Auto-Revert-Optionen für beide Kacheln.</li>
+            <li>Einstellungen anwenden.</li>
+        </ul>
+    </li>
     <li><strong>Kacheln zu Schnelleinstellungen hinzufügen:</strong> Bearbeiten Sie Ihre Schnelleinstellungsleiste und fügen Sie die Kacheln "Privates DNS" und "USB-Debugging" hinzu.</li>
     <li><strong>Kacheln verwenden:</strong> Tippen Sie auf eine Kachel, um ihren Zustand zu wechseln. Langes Drücken öffnet die Einstellungen der App.</li>
 </ol>
