@@ -1,0 +1,121 @@
+name: 🪲 Bug Report
+description: File a bug report to help us improve Quick-Tile Settings.
+title: "Bug: [Short description of the bug]"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please provide as much detail as possible.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting the bug.
+      options:
+        - label: I have searched the [existing issues](https://github.com/RBN-Apps/Quick-Tile-Settings/issues) to make sure this bug has not already been reported.
+          required: true
+        - label: I have granted the `android.permission.WRITE_SECURE_SETTINGS` permission via ADB as described in the app's help dialog or README. (If not, this is likely the cause).
+          required: false
+        - label: If this bug is related to the USB Debugging tile, I have ensured Developer Options are enabled on my device.
+          required: false
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+      placeholder: "When I tap the Private DNS tile, it doesn't change state..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Please provide detailed steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: "The Private DNS tile should cycle to 'Auto' mode."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: A clear and concise description of what actually happened.
+      placeholder: "The tile icon flickers but the DNS state remains 'Off'."
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App Version
+      description: "Which version of Quick-Tile Settings are you using? (e.g., 1.0.1 - find in app settings or build.gradle if self-built)"
+      placeholder: "e.g., 1.0.1"
+    validations:
+      required: true
+
+  - type: input
+    id: android-version
+    attributes:
+      label: Android Version
+      description: "What version of Android is your device running?"
+      placeholder: "e.g., Android 13 (Tiramisu)"
+    validations:
+      required: true
+
+  - type: input
+    id: device-model
+    attributes:
+      label: Device Model
+      description: "What is the model of your Android device?"
+      placeholder: "e.g., Google Pixel 7 Pro"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: rooted
+    attributes:
+      label: Is your device rooted or running a custom ROM?
+      options:
+        - "No"
+        - "Yes, rooted (stock ROM)"
+        - "Yes, custom ROM (please specify below)"
+        - "Unsure"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (Logcat) or Screenshots
+      description: |
+        If applicable, add screenshots to help explain your problem.
+        For crashes or unexpected behavior, please provide relevant Logcat output.
+        You can capture Logcat using Android Studio or via ADB: `adb logcat > logcat.txt` (then filter for `com.rbn.qtsettings` or errors).
+      placeholder: "Paste Logcat output or describe screenshot here..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+    validations:
+      required: false

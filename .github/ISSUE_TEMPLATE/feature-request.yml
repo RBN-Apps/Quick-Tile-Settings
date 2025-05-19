@@ -1,0 +1,52 @@
+name: 💡Feature Request
+description: Suggest an idea for Quick-Tile Settings.
+title: "Feature: [Short description of the feature]"
+labels: ["feature-request", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an idea! Please describe your feature request in detail.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting the feature request.
+      options:
+        - label: I have searched the [existing issues](https://github.com/RBN-Apps/Quick-Tile-Settings/issues) to make sure this feature has not already been requested.
+          required: true
+
+  - type: textarea
+    id: solution-description
+    attributes:
+      label: Describe the feature you'd like
+      description: A clear and concise description of what you want to happen.
+      placeholder: "I would like the app to automatically [...] when [...]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: related-problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem is.
+      placeholder: "I'm always frustrated when [...]"
+    validations:
+      required: false
+
+  - type: textarea
+    id: importance
+    attributes:
+      label: Why is this feature important to you?
+      description: Explain why this feature would be useful or valuable.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, or screenshots about the feature request here.
+    validations:
+      required: false
