@@ -20,9 +20,13 @@ Jetpack Compose UI.
 ## Features
 
 * **Private DNS Quick Tile:**
-    * Cycle through Off, Auto, and On (with custom hostname) states.
-    * Configure which states are included in the cycle via the app.
-    * Set a custom hostname for the "On" state.
+    * Cycle through Off, Auto, and user-selected Private DNS hostnames.
+    * Manage a list of DNS hostnames:
+        * Includes predefined options: Cloudflare (Performance & Privacy), AdGuard DNS (Ad & Tracker
+          Blocking), Quad9 (Security Focus).
+        * Add, edit, and delete custom DNS hostname entries.
+        * Select which hostnames (along with Off/Auto) are included in the tile's cycle.
+    * View information about the benefits of each predefined DNS provider directly in the app.
     * Optional: Automatically revert to the previous DNS state after a configurable delay.
 * **USB Debugging Quick Tile:**
     * Toggle USB Debugging On or Off.
@@ -42,9 +46,9 @@ Jetpack Compose UI.
 
 <p align="center">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="DNS Tab" height="320"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="USB Tab" height="320"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Help Dialog" height="320"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="Quick Tile Panel" height="320"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="USB Tab" height="320"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Help Dialog" height="320"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" alt="Quick Tile Panel" height="320"/>
 </p>
 
 ## Requirements
@@ -91,10 +95,19 @@ from a computer.
 1. Open the **Quick-Tile Settings** app.
 2. You'll see a warning if the permission hasn't been granted. Use the help icon if needed.
 3. Navigate to the **"Private DNS"** or **"USB Debugging"** tab.
-4. **Select Cycle States:** Check the boxes for the states you want each tile to cycle through (
-   e.g., for DNS: Off, Auto, On).
-5. **DNS Hostname:** If you enable "DNS On (Hostname)" for the Private DNS tile, enter your desired
-   private DNS provider's hostname.
+4. **For Private DNS:**
+    * **Select Cycle States:** Check the boxes for "DNS Off" and "DNS Auto" if you want them in the
+      cycle.
+    * **Manage Hostnames:**
+        * A list of DNS providers (predefined and custom) is shown.
+        * Check the box next to each hostname to include it in the tile's cycle.
+        * For predefined hostnames, tap the info icon (ⓘ) to learn about their benefits.
+        * Tap "Add Custom Hostname" to add your own DNS provider (you'll need a display name and the
+          actual hostname).
+        * Custom hostnames can be edited or deleted.
+5. **For USB Debugging:**
+    * **Select Cycle States:** Check "USB Debug On" and/or "USB Debug Off" to include them in the
+      cycle.
 6. **Auto-Revert (Optional):**
     * Enable "Enable auto-revert after a delay".
     * Set the "Revert delay (seconds)". The setting will revert to its previous state after this

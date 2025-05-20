@@ -4,9 +4,15 @@
 <ul>
     <li><strong>Private DNS Quick Tile:</strong>
         <ul>
-            <li>Cycle through Off, Auto, and On (with custom hostname) states.</li>
-            <li>Configure which states are included in the cycle.</li>
-            <li>Set a custom hostname for the "On" state.</li>
+            <li>Cycle through Off, Auto, and user-selected Private DNS hostnames.</li>
+            <li>Manage a list of DNS hostnames:
+                <ul>
+                    <li>Includes predefined options: Cloudflare (Performance & Privacy), AdGuard DNS (Ad & Tracker Blocking), Quad9 (Security Focus).</li>
+                    <li>Add, edit, and delete custom DNS hostname entries.</li>
+                    <li>Select which hostnames (along with Off/Auto) are included in the tile's cycle.</li>
+                </ul>
+            </li>
+            <li>View information about the benefits of each predefined DNS provider directly in the app.</li>
             <li>Optional: Automatically revert to the previous DNS state after a configurable delay.</li>
         </ul>
     </li>
@@ -40,7 +46,20 @@
 <p><strong>Setup and Usage:</strong></p>
 <ol>
     <li><strong>Grant Permission via ADB:</strong> Follow the in-app help or README instructions to grant the <code>WRITE_SECURE_SETTINGS</code> permission using ADB. This is a one-time setup.</li>
-    <li><strong>Configure Tiles in the App:</strong> Open Quick-Tile Settings, navigate to the "Private DNS" or "USB Debugging" tab, select cycle states, set DNS hostname (if applicable), and configure auto-revert options. Apply settings.</li>
+    <li><strong>Configure Tiles in the App:</strong>
+        <ul>
+            <li>Open Quick-Tile Settings.</li>
+            <li>For <strong>Private DNS</strong>:
+                <ul>
+                    <li>Select "DNS Off" and/or "DNS Auto" for the cycle.</li>
+                    <li>Manage Hostname List: Check desired hostnames for the cycle. Add, edit, or delete custom entries. Info buttons explain predefined servers.</li>
+                </ul>
+            </li>
+            <li>For <strong>USB Debugging</strong>: Select "USB Debug On" and/or "USB Debug Off" for the cycle.</li>
+            <li>Optionally, configure auto-revert options for both tiles.</li>
+            <li>Apply settings.</li>
+        </ul>
+    </li>
     <li><strong>Add Tiles to Quick Settings:</strong> Edit your Quick Settings panel and add the "Private DNS" and "USB Debugging" tiles.</li>
     <li><strong>Use the Tiles:</strong> Tap a tile to cycle its state. Long-press to open the app's settings.</li>
 </ol>

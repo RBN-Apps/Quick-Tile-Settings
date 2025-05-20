@@ -68,10 +68,32 @@
 
     <string name="setting_enable_auto_revert">Automatisches Zurücksetzen nach Verzögerung aktivieren</string>
     <string name="setting_auto_revert_delay">Verzögerung (Sekunden):</string>
-    <string name="toast_reverting_dns_to">DNS wird in %2$d Sek. auf %1$s zurückgesetzt…</string>
+    <string name="toast_reverting_dns_to">DNS wird in %2$d Sek. auf \n\"%1$s\" zurückgesetzt…</string>
     <string name="toast_reverting_usb_to">USB-Debug wird in %2$d Sek. auf %1$s zurückgesetzt…</string>
     <string name="toast_revert_cancelled">Autom. Zurücksetzen abgebrochen.</string>
     <string name="on_state">Ein</string>
     <string name="off_state">Aus</string>
     <string name="auto_state">Auto</string>
+
+    <string name="dns_select_hostnames_for_cycle">Hostnamen für den Kachel-Zyklus auswählen:</string>
+    <string name="dns_add_custom_hostname_button">Eigenen Hostnamen hinzufügen</string>
+    <string name="dns_edit_hostname_title">Hostname bearbeiten</string>
+    <string name="dns_add_hostname_title">Hostname hinzufügen</string>
+    <string name="dns_hostname_name_label">Anzeigename</string>
+    <string name="dns_hostname_value_label">Hostname (z.B. dns.example.com)</string>
+    <string name="dialog_save">Speichern</string>
+    <string name="dialog_cancel">Abbrechen</string>
+    <string name="button_edit">Bearbeiten</string>
+    <string name="button_delete">Löschen</string>
+    <string name="error_hostname_name_empty">Anzeigename darf nicht leer sein.</string>
+    <string name="error_hostname_value_empty">Hostname darf nicht leer sein.</string>
+    <string name="confirm_delete_hostname_title">Hostname löschen?</string>
+    <string name="confirm_delete_hostname_message">Möchtest du \"%1$s\" wirklich löschen?</string>
+
+    <!-- DNS Info Dialogs -->
+    <string name="dns_info_dialog_title">Über %1$s</string>
+    <string name="button_info_dns">Info über %1$s</string>
+    <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one oder 1.1.1.1) ist bekannt für seine hohe Geschwindigkeit und den Fokus auf Datenschutz. Es filtert keine Inhalte und verspricht, keine Nutzerdaten zu protokollieren. Ideal für Nutzer, die Wert auf Privatsphäre und Performance legen.</string>
+    <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) blockiert Werbung, Tracker und bekannte schädliche Domains direkt auf DNS-Ebene. Dies sorgt für ein saubereres und sichereres Surferlebnis. Gut für Nutzer, die Werbung reduzieren und ihre Privatsphäre schützen möchten.</string>
+    <string name="dns_info_quad9">Quad9 (dns.quad9.net) konzentriert sich auf Sicherheit, indem es Domains blockiert, die mit Malware, Phishing und Botnetzen in Verbindung stehen. Dies erhöht den Schutz vor Online-Bedrohungen. Geeignet für Nutzer, denen Internetsicherheit besonders wichtig ist.</string>
 </resources>

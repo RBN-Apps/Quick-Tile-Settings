@@ -87,12 +87,10 @@ class PrivateDnsTileService : TileService() {
                 null
             )
         )
-        if (prefsManager.isDnsToggleOnEnabled()) nextStates.add(
-            Pair(
-                Constants.DNS_MODE_ON,
-                prefsManager.getDnsHostname()
-            )
-        )
+        val hostnamesToCycle = prefsManager.getDnsHostnamesSelectedForCycle()
+        hostnamesToCycle.forEach { entry ->
+            nextStates.add(Pair(Constants.DNS_MODE_ON, entry.hostname))
+        }
 
         if (nextStates.isEmpty()) {
             Toast.makeText(this, R.string.toast_no_states_enabled_dns, Toast.LENGTH_SHORT).show()
@@ -100,11 +98,12 @@ class PrivateDnsTileService : TileService() {
             return
         }
 
-        var currentIndex =
-            nextStates.indexOfFirst { it.first == currentMode && (it.first != Constants.DNS_MODE_ON || it.second == currentHost) }
-        if (currentIndex == -1) {
-            currentIndex = -1
-        }
+        val currentIndex =
+            if (currentMode == Constants.DNS_MODE_ON) {
+                nextStates.indexOfFirst { it.first == Constants.DNS_MODE_ON && it.second == currentHost }
+            } else {
+                nextStates.indexOfFirst { it.first == currentMode }
+            }
         val nextIndex = (currentIndex + 1) % nextStates.size
         val (nextMode, nextHostToSet) = nextStates[nextIndex]
 
@@ -147,9 +146,10 @@ class PrivateDnsTileService : TileService() {
                 if (delaySeconds > 0) {
                     startRevertTimer(delaySeconds)
                     val prevModeForToast = getPreviousState()?.first ?: currentMode
+                    val prevHostForToast = getPreviousState()?.second
                     val toastMsg = getString(
                         R.string.toast_reverting_dns_to,
-                        getReadableDnsMode(prevModeForToast),
+                        getReadableDnsMode(prevModeForToast, prevHostForToast),
                         delaySeconds
                     )
                     Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show()
@@ -173,8 +173,8 @@ class PrivateDnsTileService : TileService() {
         revertTimer = object : CountDownTimer(delaySeconds * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 qsTile?.let { tile ->
-                    getPreviousState()?.let { (prevMode, _) ->
-                        val readablePrevMode = getReadableDnsMode(prevMode)
+                    getPreviousState()?.let { (prevMode, prevHost) ->
+                        val readablePrevMode = getReadableDnsMode(prevMode, prevHost)
                         tile.subtitle = getString(
                             R.string.tile_subtitle_reverting_in_seconds,
                             readablePrevMode,
@@ -203,7 +203,10 @@ class PrivateDnsTileService : TileService() {
                         Log.i("PrivateDnsTile", "Auto-reverted DNS to $prevMode")
                         Toast.makeText(
                             applicationContext,
-                            getString(R.string.dns_state_reverted_to, getReadableDnsMode(prevMode)),
+                            getString(
+                                R.string.dns_state_reverted_to,
+                                getReadableDnsMode(prevMode, prevHost)
+                            ),
                             Toast.LENGTH_SHORT
                         ).show()
                     } catch (e: Exception) {
@@ -232,11 +235,20 @@ class PrivateDnsTileService : TileService() {
     }
 
 
-    private fun getReadableDnsMode(mode: String): String {
+    private fun getReadableDnsMode(mode: String, hostname: String? = null): String {
         return when (mode) {
             Constants.DNS_MODE_OFF -> getString(R.string.off_state)
             Constants.DNS_MODE_AUTO -> getString(R.string.auto_state)
-            Constants.DNS_MODE_ON -> getString(R.string.on_state)
+            Constants.DNS_MODE_ON -> {
+                if (hostname != null) {
+                    val entry =
+                        prefsManager.getAllDnsHostnamesBlocking().find { it.hostname == hostname }
+                    entry?.name ?: hostname
+                } else {
+                    getString(R.string.on_state)
+                }
+            }
+
             else -> mode
         }
     }
@@ -265,12 +277,29 @@ class PrivateDnsTileService : TileService() {
 
             Constants.DNS_MODE_ON -> {
                 tile.state = Tile.STATE_ACTIVE
-                val hostname =
+                val currentActualHostname =
                     Settings.Global.getString(contentResolver, Constants.PRIVATE_DNS_SPECIFIER)
-                        ?: prefsManager.getDnsHostname()
-                tile.label = if (hostname.length > 15) hostname.take(12) + "..." else hostname
+
+                if (currentActualHostname.isNullOrBlank() && PermissionUtils.hasWriteSecureSettingsPermission(
+                        this
+                    )
+                ) {
+                    tile.label =
+                        getString(R.string.dns_state_on_with_host)
+                } else if (!currentActualHostname.isNullOrBlank()) {
+                    val entry = prefsManager.getAllDnsHostnamesBlocking()
+                        .find { it.hostname == currentActualHostname }
+                    val displayName = entry?.name ?: currentActualHostname
+                    tile.label =
+                        if (displayName.length > 15) displayName.take(12) + "..." else displayName
+                } else {
+                    tile.label = getString(R.string.dns_state_on_with_host)
+                }
                 tile.icon = Icon.createWithResource(this, R.drawable.ic_dns_on)
-                if (hostname.isBlank() && PermissionUtils.hasWriteSecureSettingsPermission(this)) {
+                if (currentActualHostname.isNullOrBlank() && PermissionUtils.hasWriteSecureSettingsPermission(
+                        this
+                    )
+                ) {
                     getPreviousState()?.let { (prevMode, prevHost) ->
                         if (prevMode != Constants.DNS_MODE_ON || !prevHost.isNullOrBlank()) {
                             Settings.Global.putString(

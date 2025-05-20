@@ -2,13 +2,18 @@ package com.rbn.qtsettings.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.rbn.qtsettings.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class PreferencesManager private constructor(context: Context) {
 
+    private val gson = Gson()
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("qt_settings_prefs", Context.MODE_PRIVATE)
 
@@ -21,21 +26,14 @@ class PreferencesManager private constructor(context: Context) {
         MutableStateFlow(sharedPreferences.getBoolean(KEY_DNS_TOGGLE_AUTO, true))
     val dnsToggleAuto: StateFlow<Boolean> = _dnsToggleAuto.asStateFlow()
 
-    private val _dnsToggleOn =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_DNS_TOGGLE_ON, true))
-    val dnsToggleOn: StateFlow<Boolean> = _dnsToggleOn.asStateFlow()
-
-    private val _dnsHostname = MutableStateFlow(
-        sharedPreferences.getString(
-            KEY_DNS_HOSTNAME,
-            "1dot1dot1dot1.cloudflare-dns.com"
-        ) ?: "1dot1dot1dot1.cloudflare-dns.com"
-    )
-    val dnsHostname: StateFlow<String> = _dnsHostname.asStateFlow()
+    private val hostnameEntryListType = object : TypeToken<List<DnsHostnameEntry>>() {}.type
+    private val _dnsHostnames = MutableStateFlow<List<DnsHostnameEntry>>(emptyList())
+    val dnsHostnames: StateFlow<List<DnsHostnameEntry>> = _dnsHostnames.asStateFlow()
 
     private val _dnsEnableAutoRevert =
         MutableStateFlow(sharedPreferences.getBoolean(KEY_DNS_ENABLE_AUTO_REVERT, false))
     val dnsEnableAutoRevert: StateFlow<Boolean> = _dnsEnableAutoRevert.asStateFlow()
+
     private val _dnsAutoRevertDelaySeconds =
         MutableStateFlow(sharedPreferences.getInt(KEY_DNS_AUTO_REVERT_DELAY_SECONDS, 5))
     val dnsAutoRevertDelaySeconds: StateFlow<Int> = _dnsAutoRevertDelaySeconds.asStateFlow()
@@ -61,6 +59,10 @@ class PreferencesManager private constructor(context: Context) {
     private val _helpShown = MutableStateFlow(sharedPreferences.getBoolean(KEY_HELP_SHOWN, false))
     val helpShown: StateFlow<Boolean> = _helpShown.asStateFlow()
 
+    init {
+        loadDnsHostnames()
+    }
+
 
     fun setDnsToggleOff(enabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_DNS_TOGGLE_OFF, enabled) }
@@ -70,16 +72,6 @@ class PreferencesManager private constructor(context: Context) {
     fun setDnsToggleAuto(enabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_DNS_TOGGLE_AUTO, enabled) }
         _dnsToggleAuto.value = enabled
-    }
-
-    fun setDnsToggleOn(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_DNS_TOGGLE_ON, enabled) }
-        _dnsToggleOn.value = enabled
-    }
-
-    fun setDnsHostname(hostname: String) {
-        sharedPreferences.edit { putString(KEY_DNS_HOSTNAME, hostname) }
-        _dnsHostname.value = hostname
     }
 
     fun setDnsEnableAutoRevert(enabled: Boolean) {
@@ -118,12 +110,145 @@ class PreferencesManager private constructor(context: Context) {
         _helpShown.value = shown
     }
 
+    private fun sortDnsHostnames(hostnames: List<DnsHostnameEntry>): List<DnsHostnameEntry> {
+        return hostnames.sortedWith(
+            compareBy(
+                { !it.isPredefined },
+                { it.name }
+            )
+        )
+    }
+
+    private fun loadDnsHostnames() {
+        val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
+        val storedHostnames = if (json != null) {
+            try {
+                gson.fromJson<List<DnsHostnameEntry>>(json, hostnameEntryListType)
+            } catch (e: Exception) {
+                Log.e("PreferencesManager", "Error parsing stored DNS hostnames", e)
+                null
+            }
+        } else null
+
+        if (storedHostnames.isNullOrEmpty()) {
+            _dnsHostnames.value = getDefaultDnsHostnames()
+            saveDnsHostnamesInternal()
+        } else {
+            val defaultPredefined = getDefaultDnsHostnames().filter { it.isPredefined }
+            val customStored = storedHostnames.filter { !it.isPredefined }
+            val finalPredefined = defaultPredefined.map { defaultEntry ->
+                val storedPredefined =
+                    storedHostnames.find { it.id == defaultEntry.id && it.isPredefined }
+                storedPredefined?.copy(
+                    name = defaultEntry.name,
+                    hostname = defaultEntry.hostname,
+                    descriptionResId = defaultEntry.descriptionResId
+                ) ?: defaultEntry
+            }
+
+            _dnsHostnames.value = sortDnsHostnames(finalPredefined + customStored)
+            saveDnsHostnamesInternal()
+        }
+    }
+
+
+    private fun saveDnsHostnamesInternal() {
+        val json = gson.toJson(_dnsHostnames.value)
+        sharedPreferences.edit { putString(KEY_DNS_HOSTNAMES, json) }
+    }
+
+    fun updateDnsHostnameEntry(updatedEntry: DnsHostnameEntry) {
+        val currentList = _dnsHostnames.value.toMutableList()
+        val index = currentList.indexOfFirst { it.id == updatedEntry.id }
+        if (index != -1) {
+            currentList[index] = updatedEntry
+            _dnsHostnames.value = sortDnsHostnames(currentList.toList())
+            saveDnsHostnamesInternal()
+        }
+    }
+
+    fun addCustomDnsHostname(name: String, hostnameValue: String) {
+        val newList = _dnsHostnames.value.toMutableList()
+        newList.add(
+            DnsHostnameEntry(
+                name = name,
+                hostname = hostnameValue,
+                isPredefined = false,
+                isSelectedForCycle = true
+            )
+        )
+        _dnsHostnames.value = sortDnsHostnames(newList.toList())
+        saveDnsHostnamesInternal()
+    }
+
+    fun deleteCustomDnsHostname(id: String) {
+        val currentList = _dnsHostnames.value.toMutableList()
+        currentList.removeAll { it.id == id && !it.isPredefined }
+        _dnsHostnames.value = sortDnsHostnames(currentList.toList())
+        saveDnsHostnamesInternal()
+    }
+
+    private fun getDefaultDnsHostnames(): List<DnsHostnameEntry> {
+        return listOf(
+            DnsHostnameEntry(
+                id = "cloudflare_default",
+                name = "Cloudflare (1.1.1.1)",
+                hostname = "one.one.one.one",
+                isPredefined = true,
+                isSelectedForCycle = true,
+                descriptionResId = R.string.dns_info_cloudflare
+            ),
+            DnsHostnameEntry(
+                id = "adguard_default",
+                name = "AdGuard DNS",
+                hostname = "dns.adguard.com",
+                isPredefined = true,
+                isSelectedForCycle = true,
+                descriptionResId = R.string.dns_info_adguard
+            ),
+            DnsHostnameEntry(
+                id = "quad9_default",
+                name = "Quad9 Security",
+                hostname = "dns.quad9.net",
+                isPredefined = true,
+                isSelectedForCycle = true,
+                descriptionResId = R.string.dns_info_quad9
+            )
+        )
+    }
+
     fun isDnsToggleOffEnabled(): Boolean = sharedPreferences.getBoolean(KEY_DNS_TOGGLE_OFF, true)
     fun isDnsToggleAutoEnabled(): Boolean = sharedPreferences.getBoolean(KEY_DNS_TOGGLE_AUTO, true)
-    fun isDnsToggleOnEnabled(): Boolean = sharedPreferences.getBoolean(KEY_DNS_TOGGLE_ON, true)
-    fun getDnsHostname(): String =
-        sharedPreferences.getString(KEY_DNS_HOSTNAME, "1dot1dot1dot1.cloudflare-dns.com")
-            ?: "1dot1dot1dot1.cloudflare-dns.com"
+
+    fun getDnsHostnamesSelectedForCycle(): List<DnsHostnameEntry> {
+        val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
+        val hostnames = if (json != null) {
+            try {
+                gson.fromJson(json, hostnameEntryListType)
+            } catch (e: Exception) {
+                emptyList()
+            }
+        } else getDefaultDnsHostnames()
+        return hostnames.filter { it.isSelectedForCycle }
+    }
+
+    fun getAllDnsHostnamesBlocking(): List<DnsHostnameEntry> {
+        val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
+        return if (json != null) {
+            try {
+                gson.fromJson(json, hostnameEntryListType)
+            } catch (e: Exception) {
+                Log.e(
+                    "PreferencesManager",
+                    "Error parsing stored DNS hostnames for blocking read",
+                    e
+                )
+                getDefaultDnsHostnames()
+            }
+        } else {
+            getDefaultDnsHostnames()
+        }
+    }
 
     fun isDnsAutoRevertEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_DNS_ENABLE_AUTO_REVERT, false)
@@ -143,14 +268,12 @@ class PreferencesManager private constructor(context: Context) {
     fun getUsbAutoRevertDelaySeconds(): Int =
         sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5)
 
-
     companion object {
         private const val KEY_DNS_TOGGLE_OFF = "dns_toggle_off"
         private const val KEY_DNS_TOGGLE_AUTO = "dns_toggle_auto"
-        private const val KEY_DNS_TOGGLE_ON = "dns_toggle_on"
-        private const val KEY_DNS_HOSTNAME = "dns_hostname"
         private const val KEY_DNS_ENABLE_AUTO_REVERT = "dns_enable_auto_revert"
         private const val KEY_DNS_AUTO_REVERT_DELAY_SECONDS = "dns_auto_revert_delay_seconds"
+        private const val KEY_DNS_HOSTNAMES = "dns_hostnames_list_v2"
 
 
         private const val KEY_USB_TOGGLE_ENABLE = "usb_toggle_enable"
