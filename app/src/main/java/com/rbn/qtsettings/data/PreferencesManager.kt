@@ -110,6 +110,15 @@ class PreferencesManager private constructor(context: Context) {
         _helpShown.value = shown
     }
 
+    private fun sortDnsHostnames(hostnames: List<DnsHostnameEntry>): List<DnsHostnameEntry> {
+        return hostnames.sortedWith(
+            compareBy(
+                { !it.isPredefined },
+                { it.name }
+            )
+        )
+    }
+
     private fun loadDnsHostnames() {
         val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
         val storedHostnames = if (json != null) {
@@ -137,11 +146,7 @@ class PreferencesManager private constructor(context: Context) {
                 ) ?: defaultEntry
             }
 
-            _dnsHostnames.value = (finalPredefined + customStored).sortedWith(
-                compareBy(
-                    { !it.isPredefined },
-                    { it.name })
-            )
+            _dnsHostnames.value = sortDnsHostnames(finalPredefined + customStored)
             saveDnsHostnamesInternal()
         }
     }
@@ -157,8 +162,7 @@ class PreferencesManager private constructor(context: Context) {
         val index = currentList.indexOfFirst { it.id == updatedEntry.id }
         if (index != -1) {
             currentList[index] = updatedEntry
-            _dnsHostnames.value =
-                currentList.toList().sortedWith(compareBy({ !it.isPredefined }, { it.name }))
+            _dnsHostnames.value = sortDnsHostnames(currentList.toList())
             saveDnsHostnamesInternal()
         }
     }
@@ -173,16 +177,14 @@ class PreferencesManager private constructor(context: Context) {
                 isSelectedForCycle = true
             )
         )
-        _dnsHostnames.value =
-            newList.toList().sortedWith(compareBy({ !it.isPredefined }, { it.name }))
+        _dnsHostnames.value = sortDnsHostnames(newList.toList())
         saveDnsHostnamesInternal()
     }
 
     fun deleteCustomDnsHostname(id: String) {
         val currentList = _dnsHostnames.value.toMutableList()
         currentList.removeAll { it.id == id && !it.isPredefined }
-        _dnsHostnames.value =
-            currentList.toList().sortedWith(compareBy({ !it.isPredefined }, { it.name }))
+        _dnsHostnames.value = sortDnsHostnames(currentList.toList())
         saveDnsHostnamesInternal()
     }
 
