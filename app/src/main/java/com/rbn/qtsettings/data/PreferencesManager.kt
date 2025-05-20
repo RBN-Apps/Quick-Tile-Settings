@@ -191,20 +191,20 @@ class PreferencesManager private constructor(context: Context) {
     private fun getDefaultDnsHostnames(): List<DnsHostnameEntry> {
         return listOf(
             DnsHostnameEntry(
-                id = "cloudflare_default",
-                name = "Cloudflare (1.1.1.1)",
-                hostname = "one.one.one.one",
-                isPredefined = true,
-                isSelectedForCycle = true,
-                descriptionResId = R.string.dns_info_cloudflare
-            ),
-            DnsHostnameEntry(
                 id = "adguard_default",
                 name = "AdGuard DNS",
                 hostname = "dns.adguard.com",
                 isPredefined = true,
                 isSelectedForCycle = true,
                 descriptionResId = R.string.dns_info_adguard
+            ),
+            DnsHostnameEntry(
+                id = "cloudflare_default",
+                name = "Cloudflare (1.1.1.1)",
+                hostname = "one.one.one.one",
+                isPredefined = true,
+                isSelectedForCycle = true,
+                descriptionResId = R.string.dns_info_cloudflare
             ),
             DnsHostnameEntry(
                 id = "quad9_default",
