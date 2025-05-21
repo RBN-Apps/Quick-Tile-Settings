@@ -1,8 +1,8 @@
 Version 1.1.0
 
 - **Verbessertes Privates DNS Management:**
-  - Unterstützung für mehrere DNS-Hostnamen: Nutzer können jetzt aus vordefinierten Servern (Cloudflare, AdGuard, Quad9) wählen oder eigene Hostnamen hinzufügen.
-  - Anpassbarer Kachel-Zyklus: Wählen Sie aus, welche DNS-Server (einschließlich "Aus" und "Auto") in den Zyklus der Schnelleinstellungs-Kachel aufgenommen werden.
-  - Info-Buttons: Erfahren Sie mehr über die Vorteile der vordefinierten DNS-Server direkt in der App.
+  - Mehrere DNS-Hostnamen: Nutzer können jetzt aus vordefinierten Servern (Cloudflare, AdGuard, Quad9) wählen oder eigene Hostnamen hinzufügen.
+  - Anpassbarer Kachel-Zyklus: Wähle welche Hostnamen (inkl. Aus/Auto) im Kachel-Zyklus angezeigt werden.
+  - Info-Buttons zu jedem vordefinierten Server.
 - **UI-Verbesserung:**
-  - Die Einstellungskarte für Privates DNS ist jetzt scrollbar, um eine bessere Benutzererfahrung bei vielen Hostnamen-Einträgen zu gewährleisten.
+  - Die Einstellungskarte für Privates DNS ist jetzt scrollbar.

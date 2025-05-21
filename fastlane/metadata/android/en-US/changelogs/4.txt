@@ -1,8 +1,8 @@
 Version 1.1.0
 
 - **Enhanced Private DNS Management:**
-  - Multiple DNS Hostname Support: Users can now choose from predefined servers (Cloudflare, AdGuard, Quad9) or add their own custom hostnames.
-  - Customizable Tile Cycle: Select which DNS servers (including "Off" and "Auto") are included in the Quick Settings tile's cycle.
+  - Multiple DNS hostnames: choose from predefined servers (Cloudflare, AdGuard, Quad9) or add custom entries.
+  - Customizable Tile Cycle: select which hostnames (including Off/Auto) appear in the tile cycle.
   - Info Buttons: Learn about the benefits of predefined DNS servers directly within the app.
 - **UI Improvement:**
   - The Private DNS settings card is now scrollable for a better user experience with many hostname entries.

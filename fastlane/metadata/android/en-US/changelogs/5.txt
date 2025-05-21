@@ -1,0 +1,3 @@
+Version 1.1.1
+
+- Adjusted the length of the description and changelogs
