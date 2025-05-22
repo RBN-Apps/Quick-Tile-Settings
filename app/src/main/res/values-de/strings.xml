@@ -66,6 +66,38 @@
     <string name="warning_developer_options_disabled_config">Entwickleroptionen sind deaktiviert. USB-Debugging kann nicht konfiguriert werden.</string>
     <string name="adb_command_install_g">adb install -g -r pfad/zu/deiner/app.apk</string>
 
+    <!-- Shizuku & Root Permission Strings -->
+    <string name="help_dialog_method_3_shizuku_title">Methode 3: Mit Shizuku erteilen</string>
+    <string name="help_dialog_shizuku_desc">Shizuku ermöglicht es Apps, System-APIs mit erhöhten Rechten zu nutzen (via ADB oder Root). Wenn Shizuku auf deinem Gerät läuft und dieser App die Berechtigung erteilt wurde, kann sie versuchen, WRITE_SECURE_SETTINGS zu aktivieren.</string>
+    <string name="shizuku_link_text">Mehr über Shizuku erfahren</string>
+    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
+    <string name="shizuku_not_available_detailed">Shizuku ist nicht verfügbar oder läuft nicht. Bitte installiere und starte Shizuku.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Diese App hat keine Berechtigung von Shizuku. Bitte erteile sie zuerst.</string>
+    <string name="button_request_shizuku_permission">Shizuku-Berechtigung für diese App anfordern</string>
+    <string name="button_grant_with_shizuku">Mit Shizuku erteilen</string>
+    <string name="shizuku_not_available">Shizuku ist nicht verfügbar oder läuft nicht.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Shizuku-Berechtigung nicht erteilt. Bitte erteile sie zuerst über die Shizuku-App oder die Aufforderung.</string>
+    <string name="shizuku_permission_granted_to_app">Shizuku-Berechtigung für diese App erteilt.</string>
+    <string name="shizuku_permission_denied_to_app">Shizuku-Berechtigung für diese App verweigert.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku ist nicht verfügbar oder nicht bereit.</string>
+
+    <string name="help_dialog_method_4_root_title">Methode 4: Mit Root erteilen</string>
+    <string name="help_dialog_root_desc">Wenn dein Gerät gerootet ist, kann diese App versuchen, die Berechtigung direkt mit Root-Rechten zu erteilen.</string>
+    <string name="device_not_rooted_detailed">Dein Gerät scheint nicht gerootet zu sein oder Root-Zugriff wurde nicht gewährt.</string>
+    <string name="button_grant_with_root">Mit Root erteilen</string>
+    <string name="device_not_rooted">Gerät ist nicht gerootet.</string>
+
+    <!-- Generic Permission Grant Results -->
+    <string name="permission_granted_shizuku_success">Berechtigung erfolgreich via Shizuku erteilt!</string>
+    <string name="permission_granted_shizuku_check_failed">Shizuku-Befehl ausgeführt, aber Berechtigungsprüfung fehlgeschlagen. Bitte starte die App neu.</string>
+    <string name="permission_granted_shizuku_fail">Fehler beim Erteilen der Berechtigung via Shizuku. Exit-Code: %1$d</string>
+    <string name="permission_granted_shizuku_error">Fehler beim Erteilen der Berechtigung via Shizuku: %1$s</string>
+    <string name="permission_granted_root_success">Berechtigung erfolgreich via Root erteilt!</string>
+    <string name="permission_granted_root_check_failed">Root-Befehl ausgeführt, aber Berechtigungsprüfung fehlgeschlagen. Bitte starte die App neu.</string>
+    <string name="permission_granted_root_fail">Fehler beim Erteilen der Berechtigung via Root. Exit-Code: %1$d</string>
+    <string name="permission_granted_root_error">Fehler beim Erteilen der Berechtigung via Root: %1$s</string>
+    <string name="toast_command_copied">Befehl kopiert!</string>
+
     <string name="setting_enable_auto_revert">Automatisches Zurücksetzen nach Verzögerung aktivieren</string>
     <string name="setting_auto_revert_delay">Verzögerung (Sekunden):</string>
     <string name="toast_reverting_dns_to">DNS wird in %2$d Sek. auf \n\"%1$s\" zurückgesetzt…</string>

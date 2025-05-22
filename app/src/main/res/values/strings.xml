@@ -67,6 +67,38 @@
     <string name="warning_developer_options_disabled_config">Developer options are disabled. USB Debugging cannot be configured.</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
+    <!-- Shizuku & Root Permission Strings -->
+    <string name="help_dialog_method_3_shizuku_title">Method 3: Grant with Shizuku</string>
+    <string name="help_dialog_shizuku_desc">Shizuku allows apps to use system APIs with elevated privileges (via ADB or root). If Shizuku is running on your device and this app has been granted permission by Shizuku, it can attempt to enable WRITE_SECURE_SETTINGS.</string>
+    <string name="shizuku_link_text">Learn more about Shizuku</string>
+    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
+    <string name="shizuku_not_available_detailed">Shizuku is not available or not running. Please install and start Shizuku.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">This app does not have permission from Shizuku. Please grant it first.</string>
+    <string name="button_request_shizuku_permission">Request Shizuku Permission for this App</string>
+    <string name="button_grant_with_shizuku">Grant with Shizuku</string>
+    <string name="shizuku_not_available">Shizuku is not available or not running.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Shizuku permission not granted to this app. Please grant it first via Shizuku app or the prompt.</string>
+    <string name="shizuku_permission_granted_to_app">Shizuku permission granted to this app.</string>
+    <string name="shizuku_permission_denied_to_app">Shizuku permission denied to this app.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku is not available or not ready.</string>
+
+    <string name="help_dialog_method_4_root_title">Method 4: Grant with Root</string>
+    <string name="help_dialog_root_desc">If your device is rooted, this app can attempt to grant the permission directly using root privileges.</string>
+    <string name="device_not_rooted_detailed">Your device does not appear to be rooted or root access was not granted.</string>
+    <string name="button_grant_with_root">Grant with Root</string>
+    <string name="device_not_rooted">Device is not rooted.</string>
+
+    <!-- Generic Permission Grant Results -->
+    <string name="permission_granted_shizuku_success">Permission granted successfully via Shizuku!</string>
+    <string name="permission_granted_shizuku_check_failed">Shizuku command executed, but permission check failed. Please restart the app.</string>
+    <string name="permission_granted_shizuku_fail">Failed to grant permission via Shizuku. Exit code: %1$d</string>
+    <string name="permission_granted_shizuku_error">Error granting permission via Shizuku: %1$s</string>
+    <string name="permission_granted_root_success">Permission granted successfully via Root!</string>
+    <string name="permission_granted_root_check_failed">Root command executed, but permission check failed. Please restart the app.</string>
+    <string name="permission_granted_root_fail">Failed to grant permission via Root. Exit code: %1$d</string>
+    <string name="permission_granted_root_error">Error granting permission via Root: %1$s</string>
+    <string name="toast_command_copied">Command copied!</string>
+
     <string name="setting_enable_auto_revert">Enable auto-revert after a delay</string>
     <string name="setting_auto_revert_delay">Revert delay (seconds):</string>
     <string name="toast_reverting_dns_to">Reverting DNS to \n\"%1$s\" in %2$d sec…</string>

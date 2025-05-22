@@ -6,6 +6,11 @@
         android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
 
+    <queries>
+        <package android:name="moe.shizuku.privileged.api" />
+        <provider android:authorities="com.rbn.qtsettings.shizuku" />
+    </queries>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,6 +21,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickTileSettings"
         tools:targetApi="31">
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="com.rbn.qtsettings.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

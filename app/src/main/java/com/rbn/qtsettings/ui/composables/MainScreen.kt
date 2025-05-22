@@ -54,13 +54,15 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
+fun MainScreen(
+    viewModel: MainViewModel,
+    onOpenAdbSettings: () -> Unit,
+    onRequestShizukuPermission: () -> Unit
+) {
     val context = LocalContext.current
     var showHelpDialog by remember { mutableStateOf(false) }
-    val hasWriteSecureSettings =
-        remember(PermissionUtils.hasWriteSecureSettingsPermission(context)) {
-            PermissionUtils.hasWriteSecureSettingsPermission(context)
-        }
+    val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
+
     val isDevOptionsEnabled by remember {
         mutableStateOf(PermissionUtils.isDeveloperOptionsEnabled(context))
     }
@@ -69,6 +71,7 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
     LaunchedEffect(hasWriteSecureSettings, helpShown) {
         if (!hasWriteSecureSettings && !helpShown) {
             showHelpDialog = true
+            viewModel.checkSystemStates(context)
         }
     }
 
@@ -168,11 +171,15 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
             }
         }
 
+        val isShizukuAvailable by viewModel.isShizukuAvailable.collectAsState()
+        val appHasShizukuPermission by viewModel.appHasShizukuPermission.collectAsState()
+        val isDeviceRooted by viewModel.isDeviceRooted.collectAsState()
+
         if (showHelpDialog) {
             HelpDialog(
                 onDismissRequest = {
                     showHelpDialog = false
-                    if (!hasWriteSecureSettings) {
+                    if (!viewModel.hasWriteSecureSettings.value) {
                         viewModel.setHelpShown(true)
                     }
                 },
@@ -180,8 +187,19 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
                 onCopyToClipboard = { textToCopy ->
                     val clip = ClipData.newPlainText("ADB Command", textToCopy)
                     clipboardManager.setPrimaryClip(clip)
-                    Toast.makeText(context, "Command copied!", Toast.LENGTH_SHORT).show()
-                }
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_command_copied),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                },
+                onGrantWithShizuku = { viewModel.grantWriteSecureSettingsViaShizuku(context) },
+                onGrantWithRoot = { viewModel.grantWriteSecureSettingsViaRoot(context) },
+                onRequestShizukuPermission = onRequestShizukuPermission,
+                isShizukuAvailable = isShizukuAvailable,
+                appHasShizukuPermission = appHasShizukuPermission,
+                isDeviceRooted = isDeviceRooted
             )
         }
     }
@@ -256,6 +274,10 @@ fun MainScreenPreview() {
     QuickTileSettingsTheme {
         val context = LocalContext.current
         val fakePrefs = com.rbn.qtsettings.data.PreferencesManager.getInstance(context)
-        MainScreen(viewModel = MainViewModel(fakePrefs), onOpenAdbSettings = {})
+        MainScreen(
+            viewModel = MainViewModel(fakePrefs),
+            onOpenAdbSettings = {},
+            onRequestShizukuPermission = {}
+        )
     }
 }
