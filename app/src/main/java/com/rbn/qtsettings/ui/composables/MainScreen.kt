@@ -60,7 +60,7 @@ fun MainScreen(
     onRequestShizukuPermission: () -> Unit
 ) {
     val context = LocalContext.current
-    var showHelpDialog by remember { mutableStateOf(false) }
+    var showPermissionGrantDialog by remember { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
 
     val isDevOptionsEnabled by remember {
@@ -70,7 +70,7 @@ fun MainScreen(
     val helpShown by viewModel.helpShown.collectAsState()
     LaunchedEffect(hasWriteSecureSettings, helpShown) {
         if (!hasWriteSecureSettings && !helpShown) {
-            showHelpDialog = true
+            showPermissionGrantDialog = true
             viewModel.checkSystemStates(context)
         }
     }
@@ -97,7 +97,16 @@ fun MainScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
+                    IconButton(onClick = {
+                        if (!hasWriteSecureSettings) {
+                            showPermissionGrantDialog = true
+                            viewModel.checkSystemStates(context)
+                        } else {
+                            // TODO: Implement a general About dialog
+                            showPermissionGrantDialog = true
+                            viewModel.checkSystemStates(context)
+                        }
+                    }) {
                         Icon(
                             Icons.AutoMirrored.Filled.HelpOutline,
                             contentDescription = stringResource(R.string.help_button_desc)
@@ -116,7 +125,8 @@ fun MainScreen(
         ) {
             if (!hasWriteSecureSettings) {
                 PermissionWarningCard(onGrantPermissionClick = {
-                    showHelpDialog = true
+                    showPermissionGrantDialog = true
+                    viewModel.checkSystemStates(context)
                 })
             }
 
@@ -175,15 +185,15 @@ fun MainScreen(
         val appHasShizukuPermission by viewModel.appHasShizukuPermission.collectAsState()
         val isDeviceRooted by viewModel.isDeviceRooted.collectAsState()
 
-        if (showHelpDialog) {
-            HelpDialog(
+        if (showPermissionGrantDialog) {
+            PermissionGrantDialog(
                 onDismissRequest = {
-                    showHelpDialog = false
+                    showPermissionGrantDialog = false
                     if (!viewModel.hasWriteSecureSettings.value) {
                         viewModel.setHelpShown(true)
                     }
                 },
-                onOpenAdbSettings = onOpenAdbSettings,
+                onOpenDeveloperOptions = onOpenAdbSettings,
                 onCopyToClipboard = { textToCopy ->
                     val clip = ClipData.newPlainText("ADB Command", textToCopy)
                     clipboardManager.setPrimaryClip(clip)

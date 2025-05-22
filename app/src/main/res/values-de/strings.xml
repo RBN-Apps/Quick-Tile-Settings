@@ -40,50 +40,51 @@
     <string name="toast_settings_saved_tiles_updated">Einstellungen gespeichert. Tiles werden beim nächsten Öffnen der QS-Leiste aktualisiert.</string>
     <string name="warning_hostname_blank">Hostname darf nicht leer sein, wenn "DNS Ein" aktiviert ist.</string>
     <string name="warning_at_least_one_usb_option">Mindestens ein USB-Status muss aktiviert sein.</string>
+    <string name="toast_command_copied">Befehl kopiert!</string>
 
-    <!-- Help Dialog -->
-    <string name="help_dialog_title">Berechtigung erforderlich</string>
-    <string name="help_dialog_intro">Um Systemeinstellungen wie Privates DNS und USB-Debugging zu ändern, benötigt diese App die spezielle Berechtigung WRITE_SECURE_SETTINGS.</string>
-    <string name="help_dialog_method_1_title">Methode 1: Über ADB erteilen (wenn App bereits installiert ist)</string>
-    <string name="help_dialog_how_to_grant_via_adb">Diese kann über ADB (Android Debug Bridge) erteilt werden. Verbinde dein Gerät mit einem Computer, auf dem ADB eingerichtet ist, und führe folgenden Befehl im Terminal/Eingabeaufforderung aus:</string>
+    <!-- Permission Grant Dialog -->
+    <string name="permission_grant_dialog_title">Berechtigung erforderlich</string>
+    <string name="permission_grant_dialog_intro">Um Systemeinstellungen wie Privates DNS und USB-Debugging zu ändern, benötigt diese App die spezielle Berechtigung WRITE_SECURE_SETTINGS. Bitte wähle unten eine Methode, um sie zu erteilen:</string>
+    <string name="help_dialog_after_grant">Nachdem die Berechtigung erteilt wurde, starte die App neu oder öffne die Schnelleinstellungsleiste erneut, damit die Kacheln funktionieren.</string>
+    <string name="help_button_desc">Hilfe / Berechtigung erteilen</string>
+    <string name="button_open_developer_options">Entwickleroptionen öffnen</string>
+    <string name="dialog_close">Schließen</string>
+
+    <!-- ADB Method -->
+    <string name="permission_method_adb_title">Methode %1$d: ADB (Android Debug Bridge) %2$s</string>
+    <string name="permission_method_adb_desc">Dies ist die Standardmethode und erfordert einen Computer mit eingerichteter ADB.</string>
+    <string name="button_show_adb_instructions">ADB-Anleitung anzeigen</string>
+    <string name="adb_instructions_title">ADB-Anleitung</string>
+    <string name="adb_instructions_intro">Verbinde dein Gerät mit einem Computer, auf dem ADB eingerichtet ist. Stelle sicher, dass die Entwickleroptionen und USB-Debugging auf deinem Gerät aktiviert sind.</string>
+    <string name="help_dialog_method_1_title">Option A: Bestehender Installation erteilen</string>
+    <string name="help_dialog_how_to_grant_via_adb">Führe folgenden Befehl in deinem Terminal/Eingabeaufforderung aus:</string>
     <string name="button_copy_grant_command">Grant-Befehl kopieren</string>
-
-    <string name="help_dialog_method_2_title">Methode 2: Mit ADB installieren (erteilt Berechtigung bei Installation)</string>
-    <string name="help_dialog_how_to_install_via_adb">Alternativ, wenn du die App über ADB installierst, kannst du die Berechtigung während der Installation erteilen. Deinstalliere zuerst die aktuelle Version und verwende dann diesen Befehl (ersetze pfad/zu/deiner/app.apk mit dem tatsächlichen Pfad zur APK-Datei):</string>
+    <string name="help_dialog_method_2_title">Option B: Mit Berechtigung installieren</string>
+    <string name="help_dialog_how_to_install_via_adb">Deinstalliere zuerst die aktuelle Version und verwende dann diesen Befehl (ersetze pfad/zu/deiner/app.apk mit dem tatsächlichen APK-Pfad):</string>
     <string name="button_copy_install_command">Install-Befehl kopieren</string>
     <string name="help_dialog_apk_path_note">(Hinweis: Du benötigst die APK-Datei für den Installationsbefehl. Wenn du die App selbst kompiliert hast, befindet sie sich normalerweise in app/build/outputs/apk/debug/ oder app/build/outputs/apk/release/. Du kannst die neueste Version auch von GitHub herunterladen.)</string>
     <string name="github_releases_link_text">Neueste Version von GitHub herunterladen</string>
-
-    <string name="help_dialog_after_grant">Nachdem die Berechtigung (auf die eine oder andere Weise) erteilt wurde, starte die App neu oder ziehe die Schnelleinstellungsleiste neu herunter, damit die Tiles funktionieren.</string>
-    <string name="help_button_desc">Hilfe</string>
-    <string name="help_button_open_dev_settings_adb">Entwickleroptionen (für ADB)</string>
-    <string name="dialog_close">Schließen</string>
-
-    <!-- Permission Warning Card -->
-    <string name="warning_permission_missing_title">Berechtigung fehlt!</string>
-    <string name="warning_permission_missing_desc">Diese App benötigt die Berechtigung WRITE_SECURE_SETTINGS, um zu funktionieren. Bitte erteile sie über ADB.</string>
-    <string name="button_show_permission_help">Anleitung anzeigen</string>
-    <string name="warning_developer_options_disabled_config">Entwickleroptionen sind deaktiviert. USB-Debugging kann nicht konfiguriert werden.</string>
     <string name="adb_command_install_g">adb install -g -r pfad/zu/deiner/app.apk</string>
 
-    <!-- Shizuku & Root Permission Strings -->
-    <string name="help_dialog_method_3_shizuku_title">Methode 3: Mit Shizuku erteilen</string>
-    <string name="help_dialog_shizuku_desc">Shizuku ermöglicht es Apps, System-APIs mit erhöhten Rechten zu nutzen (via ADB oder Root). Wenn Shizuku auf deinem Gerät läuft und dieser App die Berechtigung erteilt wurde, kann sie versuchen, WRITE_SECURE_SETTINGS zu aktivieren.</string>
-    <string name="shizuku_link_text">Mehr über Shizuku erfahren</string>
-    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
-    <string name="shizuku_not_available_detailed">Shizuku ist nicht verfügbar oder läuft nicht. Bitte installiere und starte Shizuku.</string>
-    <string name="shizuku_permission_not_granted_to_app_detailed">Diese App hat keine Berechtigung von Shizuku. Bitte erteile sie zuerst.</string>
-    <string name="button_request_shizuku_permission">Shizuku-Berechtigung für diese App anfordern</string>
+    <!-- Shizuku Method -->
+    <string name="permission_method_shizuku_title">Methode %1$d: Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku ist verfügbar und diese App hat die Berechtigung, es zu nutzen. Du kannst versuchen, WRITE_SECURE_SETTINGS zu erteilen.</string>
+    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
+    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
+    <string name="shizuku_not_available_detailed">Shizuku ist nicht verfügbar oder läuft nicht. Bitte installiere und starte Shizuku zuerst.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Diese App benötigt eine Berechtigung von Shizuku, um fortzufahren. Bitte fordere sie an.</string>
+    <string name="button_request_shizuku_permission">Shizuku App-Berechtigung anfordern</string>
     <string name="button_grant_with_shizuku">Mit Shizuku erteilen</string>
     <string name="shizuku_not_available">Shizuku ist nicht verfügbar oder läuft nicht.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Shizuku-Berechtigung nicht erteilt. Bitte erteile sie zuerst über die Shizuku-App oder die Aufforderung.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Shizuku-Berechtigung für diese App nicht erteilt. Bitte erteile sie zuerst über die Shizuku-App oder die Aufforderung.</string>
     <string name="shizuku_permission_granted_to_app">Shizuku-Berechtigung für diese App erteilt.</string>
     <string name="shizuku_permission_denied_to_app">Shizuku-Berechtigung für diese App verweigert.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku ist nicht verfügbar oder nicht bereit.</string>
 
-    <string name="help_dialog_method_4_root_title">Methode 4: Mit Root erteilen</string>
-    <string name="help_dialog_root_desc">Wenn dein Gerät gerootet ist, kann diese App versuchen, die Berechtigung direkt mit Root-Rechten zu erteilen.</string>
-    <string name="device_not_rooted_detailed">Dein Gerät scheint nicht gerootet zu sein oder Root-Zugriff wurde nicht gewährt.</string>
+    <!-- Root Method -->
+    <string name="permission_method_root_title">Methode %1$d: Root %2$s</string>
+    <string name="root_ready_to_grant_desc">Dein Gerät ist gerootet. Du kannst versuchen, WRITE_SECURE_SETTINGS mit Root-Rechten zu erteilen.</string>
+    <string name="device_not_rooted_detailed">Dein Gerät scheint nicht gerootet zu sein oder Root-Zugriff wurde nicht gewährt. Diese Methode ist nicht verfügbar.</string>
     <string name="button_grant_with_root">Mit Root erteilen</string>
     <string name="device_not_rooted">Gerät ist nicht gerootet.</string>
 
@@ -96,7 +97,12 @@
     <string name="permission_granted_root_check_failed">Root-Befehl ausgeführt, aber Berechtigungsprüfung fehlgeschlagen. Bitte starte die App neu.</string>
     <string name="permission_granted_root_fail">Fehler beim Erteilen der Berechtigung via Root. Exit-Code: %1$d</string>
     <string name="permission_granted_root_error">Fehler beim Erteilen der Berechtigung via Root: %1$s</string>
-    <string name="toast_command_copied">Befehl kopiert!</string>
+
+    <!-- Permission Warning Card -->
+    <string name="warning_permission_missing_title">Berechtigung fehlt!</string>
+    <string name="warning_permission_missing_desc">Diese App benötigt die Berechtigung WRITE_SECURE_SETTINGS, um zu funktionieren. Bitte erteile sie über eine der verfügbaren Methoden.</string>
+    <string name="button_show_permission_help">Optionen zum Erteilen anzeigen</string>
+    <string name="warning_developer_options_disabled_config">Entwickleroptionen sind deaktiviert. USB-Debugging kann nicht konfiguriert werden.</string>
 
     <string name="setting_enable_auto_revert">Automatisches Zurücksetzen nach Verzögerung aktivieren</string>
     <string name="setting_auto_revert_delay">Verzögerung (Sekunden):</string>
@@ -128,4 +134,5 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one oder 1.1.1.1) ist bekannt für seine hohe Geschwindigkeit und den Fokus auf Datenschutz. Es filtert keine Inhalte und verspricht, keine Nutzerdaten zu protokollieren. Ideal für Nutzer, die Wert auf Privatsphäre und Performance legen.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) blockiert Werbung, Tracker und bekannte schädliche Domains direkt auf DNS-Ebene. Dies sorgt für ein saubereres und sichereres Surferlebnis. Gut für Nutzer, die Werbung reduzieren und ihre Privatsphäre schützen möchten.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) konzentriert sich auf Sicherheit, indem es Domains blockiert, die mit Malware, Phishing und Botnetzen in Verbindung stehen. Dies erhöht den Schutz vor Online-Bedrohungen. Geeignet für Nutzer, denen Internetsicherheit besonders wichtig ist.</string>
+    <string name="recommended_for_you">(Für dich empfohlen)</string>
 </resources>

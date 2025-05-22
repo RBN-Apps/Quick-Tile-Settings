@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,31 +35,23 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
 
 @Composable
-fun HelpDialog(
+fun AdbInstructionDialog(
     onDismissRequest: () -> Unit,
-    onOpenAdbSettings: () -> Unit,
-    onCopyToClipboard: (String) -> Unit,
-    onGrantWithShizuku: () -> Unit,
-    onGrantWithRoot: () -> Unit,
-    onRequestShizukuPermission: () -> Unit,
-    isShizukuAvailable: Boolean,
-    appHasShizukuPermission: Boolean,
-    isDeviceRooted: Boolean
+    onCopyToClipboard: (String) -> Unit
 ) {
     val context = LocalContext.current
     val adbGrantCommand =
         "adb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS"
     val adbInstallCommand = stringResource(R.string.adb_command_install_g)
     val githubReleasesUrl = stringResource(id = R.string.github_releases_url)
-    val shizukuPlayStoreUrl = stringResource(id = R.string.shizuku_play_store_url)
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text(text = stringResource(R.string.help_dialog_title)) },
+        title = { Text(text = stringResource(R.string.adb_instructions_title)) },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text(
-                    text = stringResource(R.string.help_dialog_intro),
+                    text = stringResource(R.string.adb_instructions_intro),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -130,7 +121,7 @@ fun HelpDialog(
                     Text(stringResource(R.string.button_copy_install_command))
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 val apkNoteFullText = stringResource(R.string.help_dialog_apk_path_note)
                 val linkText = stringResource(R.string.github_releases_link_text)
@@ -141,7 +132,7 @@ fun HelpDialog(
                     withLink(
                         LinkAnnotation.Url(
                             url = githubReleasesUrl,
-                            TextLinkStyles(
+                            styles = TextLinkStyles(
                                 style = SpanStyle(
                                     color = MaterialTheme.colorScheme.primary,
                                     textDecoration = TextDecoration.Underline
@@ -152,7 +143,6 @@ fun HelpDialog(
                         append(linkText)
                     }
                 }
-
                 Text(
                     text = annotatedString,
                     style = MaterialTheme.typography.labelSmall.copy(
@@ -160,100 +150,6 @@ fun HelpDialog(
                     ),
                     modifier = Modifier.padding(top = 6.dp)
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Method 3: Shizuku
-                Text(
-                    text = stringResource(R.string.help_dialog_method_3_shizuku_title),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                val shizukuDesc = stringResource(R.string.help_dialog_shizuku_desc)
-                val shizukuLinkText = stringResource(R.string.shizuku_link_text)
-                val shizukuAnnotatedString = buildAnnotatedString {
-                    append(shizukuDesc)
-                    append(" ")
-                    withLink(
-                        LinkAnnotation.Url(
-                            url = shizukuPlayStoreUrl,
-                            styles = TextLinkStyles(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textDecoration = TextDecoration.Underline
-                                )
-                            )
-                        )
-                    ) {
-                        append(shizukuLinkText)
-                    }
-                    append(".")
-                }
-                Text(
-                    text = shizukuAnnotatedString,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (!isShizukuAvailable) {
-                    Text(
-                        text = stringResource(R.string.shizuku_not_available_detailed),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                } else if (!appHasShizukuPermission) {
-                    Text(
-                        text = stringResource(R.string.shizuku_permission_not_granted_to_app_detailed),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    ElevatedButton(
-                        onClick = onRequestShizukuPermission,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(R.string.button_request_shizuku_permission))
-                    }
-                } else {
-                    ElevatedButton(
-                        onClick = onGrantWithShizuku,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(R.string.button_grant_with_shizuku))
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Method 4: Root
-                Text(
-                    text = stringResource(R.string.help_dialog_method_4_root_title),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = stringResource(R.string.help_dialog_root_desc),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                if (!isDeviceRooted) {
-                    Text(
-                        text = stringResource(R.string.device_not_rooted_detailed),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                } else {
-                    ElevatedButton(onClick = onGrantWithRoot, modifier = Modifier.fillMaxWidth()) {
-                        Text(stringResource(R.string.button_grant_with_root))
-                    }
-                }
-
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.help_dialog_after_grant),
@@ -265,32 +161,14 @@ fun HelpDialog(
             TextButton(onClick = onDismissRequest) {
                 Text(stringResource(R.string.dialog_close))
             }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onOpenAdbSettings()
-                onDismissRequest()
-            }) {
-                Text(stringResource(R.string.help_button_open_dev_settings_adb))
-            }
         }
     )
 }
 
 @Preview(showBackground = true, widthDp = 380)
 @Composable
-fun HelpDialogPreviewWithLink() {
+fun AdbInstructionDialogPreview() {
     QuickTileSettingsTheme {
-        HelpDialog(
-            onDismissRequest = {},
-            onOpenAdbSettings = {},
-            onCopyToClipboard = {},
-            onGrantWithShizuku = {},
-            onGrantWithRoot = {},
-            onRequestShizukuPermission = {},
-            isShizukuAvailable = true,
-            appHasShizukuPermission = false,
-            isDeviceRooted = true
-        )
+        AdbInstructionDialog(onDismissRequest = {}, onCopyToClipboard = {})
     }
 }
