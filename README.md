@@ -35,9 +35,9 @@ Jetpack Compose UI.
 * **User-Friendly Configuration:**
     * In-app settings screen to customize tile behavior and auto-revert options.
     * Tabbed interface for easy navigation between Private DNS and USB Debugging settings.
-* **Permission Guidance:**
-    * Clear instructions and an in-app help dialog for granting the required `WRITE_SECURE_SETTINGS`
-      permission via ADB.
+* **Multiple Permission Granting Options:**
+    * Clear instructions and an in-app dialog for granting the required `WRITE_SECURE_SETTINGS`
+      permission via ADB (Android Debug Bridge), Shizuku, or Root.
     * Convenient "Copy Command" buttons for ADB commands.
 * **Modern UI:** Built with Jetpack Compose, supporting dynamic color (Material You) on Android 12+.
 * **Localization:** Available in English and German.
@@ -47,23 +47,28 @@ Jetpack Compose UI.
 <p align="center">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="DNS Tab" height="320"/>
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="USB Tab" height="320"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Help Dialog" height="320"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Permission Grant Dialog" height="320"/>
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" alt="Quick Tile Panel" height="320"/>
 </p>
 
 ## Requirements
 
 * Android 9 (Pie, API 29) or higher.
-* The `WRITE_SECURE_SETTINGS` permission. This **must** be granted via ADB (Android Debug Bridge) as
-  it's a protected permission.
+* The `WRITE_SECURE_SETTINGS` permission. This **must** be granted using one of the methods
+  described below as it's a protected permission not available to regular apps.
 
 ## Setup and Usage
 
-### 1. Grant Permission via ADB
+### 1. Granting the `WRITE_SECURE_SETTINGS` Permission
 
 This app requires the `WRITE_SECURE_SETTINGS` permission to modify system settings for Private DNS
-and USB Debugging. This permission cannot be granted by the app itself and must be granted using ADB
-from a computer.
+and USB Debugging. This permission cannot be granted by the app itself through the standard Android
+permission dialog. You must use one of the following methods. The app provides an in-app dialog (
+accessible via the help icon "?" in the toolbar) that guides you through these options.
+
+#### Method 1: ADB (Android Debug Bridge) - Recommended for most users without Root/Shizuku
+
+This method requires a computer with ADB set up.
 
 1. **Enable Developer Options and USB Debugging on your Android device:**
     * Go to `Settings > About phone`.
@@ -74,26 +79,58 @@ from a computer.
 2. **Connect your device to your computer** via USB.
 3. **Ensure ADB is installed** on your computer. (Search "install ADB" for instructions specific to
    your OS).
-4. Now you have two options to grant the permission:
-    * **Option 1:** Grant the permission using the following command:
-      ```bash
-      adb shell pm grant com.rbn.qtsettings android.permission.WRITE_SECURE_SETTINGS
-      ```
-      This command will grant the required permission to the app.
-    * **Option 2:** Install the app with the permission granted:
-      ```bash
-      adb install -g -r path/to/your/app.apk
-      ```
-      This command will install the app and grant the required permission in one step. (-g flag
-      grants all runtime permissions at install time, and -r flag allows reinstallation of the app).
+4. **Grant the permission using one of the following ADB commands:**
+    * **Option A (If app is already installed):**
+     ```bash
+     adb shell pm grant com.rbn.qtsettings android.permission.WRITE_SECURE_SETTINGS
+     ```
+    * **Option B (Grant during installation):**
+      (First, uninstall the app if it's already present without the permission)
+     ```bash
+     adb install -g -r path/to/your/app.apk
+     ```
 
-   The app also provides a help dialog (accessible via the help icon in the app's toolbar) with this
-   command and an option to copy it.
+   Replace `path/to/your/app.apk` with the actual path to the APK file. The `-g` flag grants all
+   runtime permissions listed in the manifest, which for this app effectively grants
+   `WRITE_SECURE_SETTINGS` due to how it's declared.
+
+   The in-app help dialog provides copy buttons for these commands.
+
+#### Method 2: Shizuku
+
+[Shizuku](https://shizuku.rikka.app/) allows apps to use system APIs with elevated privileges. If
+you have Shizuku installed and running (either via ADB or Root), you can grant the permission
+through it.
+
+1. **Install and set up Shizuku** on your device. Follow the instructions provided by the Shizuku
+   app.
+2. Open **Quick-Tile Settings**. If Shizuku is running, the in-app permission dialog will offer a "
+   Grant using Shizuku" option.
+3. If Quick-Tile Settings doesn't yet have permission to *use* Shizuku, you'll first be prompted to
+   grant that via a Shizuku system dialog.
+4. Once Quick-Tile Settings has permission to use Shizuku, tapping "Grant using Shizuku" will
+   attempt to set the `WRITE_SECURE_SETTINGS` permission.
+
+#### Method 3: Root
+
+If your device is rooted, the app can attempt to grant the permission using root privileges.
+
+1. Ensure your device is properly rooted and a root management app (like Magisk) is installed and
+   allows root access requests.
+2. Open **Quick-Tile Settings**. The in-app permission dialog will detect root and offer a "Grant
+   using Root" option.
+3. Tapping this button will prompt your root management app to grant root access to Quick-Tile
+   Settings for executing the permission grant command.
+
+**After granting the permission using any method, the app should detect it. You might need to
+restart the app or pull down the Quick Settings panel again for the tiles to become fully
+functional.**
 
 ### 2. Configure Tiles in the App
 
 1. Open the **Quick-Tile Settings** app.
-2. You'll see a warning if the permission hasn't been granted. Use the help icon if needed.
+2. If the permission hasn't been granted, you'll see a warning. Use the help icon (`?`) in the
+   toolbar to access the permission granting options.
 3. Navigate to the **"Private DNS"** or **"USB Debugging"** tab.
 4. **For Private DNS:**
     * **Select Cycle States:** Check the boxes for "DNS Off" and "DNS Auto" if you want them in the
