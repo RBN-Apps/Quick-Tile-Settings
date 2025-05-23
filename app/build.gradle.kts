@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.rikkax.shizuku.api)
+    implementation(libs.rikkax.shizuku.provider)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

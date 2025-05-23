@@ -54,13 +54,16 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
+fun MainScreen(
+    viewModel: MainViewModel,
+    onOpenAdbSettings: () -> Unit,
+    onRequestShizukuPermission: () -> Unit
+) {
     val context = LocalContext.current
-    var showHelpDialog by remember { mutableStateOf(false) }
-    val hasWriteSecureSettings =
-        remember(PermissionUtils.hasWriteSecureSettingsPermission(context)) {
-            PermissionUtils.hasWriteSecureSettingsPermission(context)
-        }
+    var showPermissionGrantDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
+    val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
+
     val isDevOptionsEnabled by remember {
         mutableStateOf(PermissionUtils.isDeveloperOptionsEnabled(context))
     }
@@ -68,7 +71,8 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
     val helpShown by viewModel.helpShown.collectAsState()
     LaunchedEffect(hasWriteSecureSettings, helpShown) {
         if (!hasWriteSecureSettings && !helpShown) {
-            showHelpDialog = true
+            showPermissionGrantDialog = true
+            viewModel.checkSystemStates(context)
         }
     }
 
@@ -94,7 +98,14 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
+                    IconButton(onClick = {
+                        if (!hasWriteSecureSettings) {
+                            showPermissionGrantDialog = true
+                            viewModel.checkSystemStates(context)
+                        } else {
+                            showAboutDialog = true
+                        }
+                    }) {
                         Icon(
                             Icons.AutoMirrored.Filled.HelpOutline,
                             contentDescription = stringResource(R.string.help_button_desc)
@@ -113,7 +124,8 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
         ) {
             if (!hasWriteSecureSettings) {
                 PermissionWarningCard(onGrantPermissionClick = {
-                    showHelpDialog = true
+                    showPermissionGrantDialog = true
+                    viewModel.checkSystemStates(context)
                 })
             }
 
@@ -168,20 +180,35 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
             }
         }
 
-        if (showHelpDialog) {
-            HelpDialog(
+        val isShizukuAvailable by viewModel.isShizukuAvailable.collectAsState()
+        val appHasShizukuPermission by viewModel.appHasShizukuPermission.collectAsState()
+        val isDeviceRooted by viewModel.isDeviceRooted.collectAsState()
+
+        if (showPermissionGrantDialog) {
+            PermissionGrantDialog(
                 onDismissRequest = {
-                    showHelpDialog = false
+                    showPermissionGrantDialog = false
                     if (!hasWriteSecureSettings) {
                         viewModel.setHelpShown(true)
                     }
                 },
-                onOpenAdbSettings = onOpenAdbSettings,
+                onOpenDeveloperOptions = onOpenAdbSettings,
                 onCopyToClipboard = { textToCopy ->
                     val clip = ClipData.newPlainText("ADB Command", textToCopy)
                     clipboardManager.setPrimaryClip(clip)
-                    Toast.makeText(context, "Command copied!", Toast.LENGTH_SHORT).show()
-                }
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_command_copied),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                },
+                onGrantWithShizuku = { viewModel.grantWriteSecureSettingsViaShizuku(context) },
+                onGrantWithRoot = { viewModel.grantWriteSecureSettingsViaRoot(context) },
+                onRequestShizukuPermission = onRequestShizukuPermission,
+                isShizukuAvailable = isShizukuAvailable,
+                appHasShizukuPermission = appHasShizukuPermission,
+                isDeviceRooted = isDeviceRooted
             )
         }
     }
@@ -211,6 +238,18 @@ fun MainScreen(viewModel: MainViewModel, onOpenAdbSettings: () -> Unit) {
             onDismiss = { viewModel.setHostnamePendingDeletion(null) }) {
             viewModel.deleteCustomDnsHostname(entry.id)
         }
+    }
+
+    // About Dialog
+    if (showAboutDialog) {
+        AboutDialog(
+            onDismissRequest = { showAboutDialog = false },
+            onOpenPermissionDialog = {
+                showAboutDialog = false
+                showPermissionGrantDialog = true
+                viewModel.checkSystemStates(context)
+            }
+        )
     }
 }
 
@@ -256,6 +295,10 @@ fun MainScreenPreview() {
     QuickTileSettingsTheme {
         val context = LocalContext.current
         val fakePrefs = com.rbn.qtsettings.data.PreferencesManager.getInstance(context)
-        MainScreen(viewModel = MainViewModel(fakePrefs), onOpenAdbSettings = {})
+        MainScreen(
+            viewModel = MainViewModel(fakePrefs),
+            onOpenAdbSettings = {},
+            onRequestShizukuPermission = {}
+        )
     }
 }

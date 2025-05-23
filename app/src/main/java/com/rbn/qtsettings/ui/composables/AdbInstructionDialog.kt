@@ -35,9 +35,8 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
 
 @Composable
-fun HelpDialog(
+fun AdbInstructionDialog(
     onDismissRequest: () -> Unit,
-    onOpenAdbSettings: () -> Unit,
     onCopyToClipboard: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -48,11 +47,11 @@ fun HelpDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text(text = stringResource(R.string.help_dialog_title)) },
+        title = { Text(text = stringResource(R.string.adb_instructions_title)) },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text(
-                    text = stringResource(R.string.help_dialog_intro),
+                    text = stringResource(R.string.adb_instructions_intro),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -122,7 +121,7 @@ fun HelpDialog(
                     Text(stringResource(R.string.button_copy_install_command))
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 val apkNoteFullText = stringResource(R.string.help_dialog_apk_path_note)
                 val linkText = stringResource(R.string.github_releases_link_text)
@@ -133,7 +132,7 @@ fun HelpDialog(
                     withLink(
                         LinkAnnotation.Url(
                             url = githubReleasesUrl,
-                            TextLinkStyles(
+                            styles = TextLinkStyles(
                                 style = SpanStyle(
                                     color = MaterialTheme.colorScheme.primary,
                                     textDecoration = TextDecoration.Underline
@@ -144,7 +143,6 @@ fun HelpDialog(
                         append(linkText)
                     }
                 }
-
                 Text(
                     text = annotatedString,
                     style = MaterialTheme.typography.labelSmall.copy(
@@ -152,7 +150,6 @@ fun HelpDialog(
                     ),
                     modifier = Modifier.padding(top = 6.dp)
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.help_dialog_after_grant),
@@ -164,26 +161,14 @@ fun HelpDialog(
             TextButton(onClick = onDismissRequest) {
                 Text(stringResource(R.string.dialog_close))
             }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onOpenAdbSettings()
-                onDismissRequest()
-            }) {
-                Text(stringResource(R.string.help_button_open_dev_settings_adb))
-            }
         }
     )
 }
 
 @Preview(showBackground = true, widthDp = 380)
 @Composable
-fun HelpDialogPreviewWithLink() {
+fun AdbInstructionDialogPreview() {
     QuickTileSettingsTheme {
-        HelpDialog(
-            onDismissRequest = {},
-            onOpenAdbSettings = {},
-            onCopyToClipboard = {}
-        )
+        AdbInstructionDialog(onDismissRequest = {}, onCopyToClipboard = {})
     }
 }

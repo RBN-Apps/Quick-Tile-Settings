@@ -1,11 +1,21 @@
 package com.rbn.qtsettings.viewmodel
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.rbn.qtsettings.data.PreferencesManager
+import androidx.lifecycle.viewModelScope
+import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
+import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.utils.PermissionUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import rikka.shizuku.Shizuku
 
 class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() {
 
@@ -34,6 +44,21 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     private val _hostnamePendingDeletion = MutableStateFlow<DnsHostnameEntry?>(null)
     val hostnamePendingDeletion = _hostnamePendingDeletion.asStateFlow()
+
+    private val _hasWriteSecureSettings = MutableStateFlow(false)
+    val hasWriteSecureSettings = _hasWriteSecureSettings.asStateFlow()
+
+    private val _isShizukuAvailable = MutableStateFlow(false)
+    val isShizukuAvailable = _isShizukuAvailable.asStateFlow()
+
+    private val _appHasShizukuPermission = MutableStateFlow(false)
+    val appHasShizukuPermission = _appHasShizukuPermission.asStateFlow()
+
+    private val _isDeviceRooted = MutableStateFlow(false)
+    val isDeviceRooted = _isDeviceRooted.asStateFlow()
+
+    private val _permissionGrantStatus = MutableStateFlow<String?>(null)
+    val permissionGrantStatus = _permissionGrantStatus.asStateFlow()
 
 
     fun setDnsToggleOff(enabled: Boolean) = prefsManager.setDnsToggleOff(enabled)
@@ -68,7 +93,12 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun editCustomDnsHostname(id: String, newName: String, newHostnameValue: String) {
         val entry = dnsHostnames.value.find { it.id == id && !it.isPredefined }
         entry?.let {
-            prefsManager.updateDnsHostnameEntry(it.copy(name = newName, hostname = newHostnameValue))
+            prefsManager.updateDnsHostnameEntry(
+                it.copy(
+                    name = newName,
+                    hostname = newHostnameValue
+                )
+            )
         }
     }
 
@@ -76,10 +106,125 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         prefsManager.deleteCustomDnsHostname(id)
     }
 
-    fun startAddingNewHostname() { _editingHostname.value = null; _showHostnameEditDialog.value = true }
-    fun startEditingHostname(entry: DnsHostnameEntry) { _editingHostname.value = entry; _showHostnameEditDialog.value = true }
-    fun dismissHostnameEditDialog() { _showHostnameEditDialog.value = false; _editingHostname.value = null }
-    fun setHostnamePendingDeletion(entry: DnsHostnameEntry?) { _hostnamePendingDeletion.value = entry }
+    fun startAddingNewHostname() {
+        _editingHostname.value = null; _showHostnameEditDialog.value = true
+    }
+
+    fun startEditingHostname(entry: DnsHostnameEntry) {
+        _editingHostname.value = entry; _showHostnameEditDialog.value = true
+    }
+
+    fun dismissHostnameEditDialog() {
+        _showHostnameEditDialog.value = false; _editingHostname.value = null
+    }
+
+    fun setHostnamePendingDeletion(entry: DnsHostnameEntry?) {
+        _hostnamePendingDeletion.value = entry
+    }
+
+    fun checkSystemStates(context: Context) {
+        _hasWriteSecureSettings.value = PermissionUtils.hasWriteSecureSettingsPermission(context)
+        _isShizukuAvailable.value = PermissionUtils.isShizukuAvailableAndReady()
+        if (_isShizukuAvailable.value) {
+            _appHasShizukuPermission.value =
+                PermissionUtils.checkShizukuPermission(context) == PackageManager.PERMISSION_GRANTED
+        } else {
+            _appHasShizukuPermission.value = false
+        }
+        _isDeviceRooted.value = PermissionUtils.isDeviceRooted()
+    }
+
+    fun grantWriteSecureSettingsViaShizuku(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!_isShizukuAvailable.value) {
+                _permissionGrantStatus.value = context.getString(R.string.shizuku_not_available)
+                return@launch
+            }
+            if (!_appHasShizukuPermission.value) {
+                _permissionGrantStatus.value =
+                    context.getString(R.string.shizuku_permission_not_granted_to_app_prompt)
+                return@launch
+            }
+
+            try {
+                val packageName = context.packageName
+                val command = "pm grant $packageName android.permission.WRITE_SECURE_SETTINGS"
+                val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+
+                val deferredStdErr =
+                    async { process.errorStream.bufferedReader().use { it.readText() } }
+                val exitCode = process.waitFor()
+
+                if (exitCode == 0) {
+                    // Re-check permission directly
+                    if (PermissionUtils.hasWriteSecureSettingsPermission(context.applicationContext)) {
+                        _permissionGrantStatus.value =
+                            context.getString(R.string.permission_granted_shizuku_success)
+                    } else {
+                        _permissionGrantStatus.value =
+                            context.getString(R.string.permission_granted_shizuku_check_failed)
+                    }
+                } else {
+                    val errOutput = deferredStdErr.await()
+                    Log.e(
+                        "ShizukuGrant",
+                        "Shizuku command failed with exit code $exitCode: $errOutput"
+                    )
+                    _permissionGrantStatus.value =
+                        context.getString(R.string.permission_granted_shizuku_fail, exitCode)
+                }
+            } catch (e: Exception) {
+                Log.e("ShizukuGrant", "Error granting permission via Shizuku", e)
+                _permissionGrantStatus.value =
+                    context.getString(R.string.permission_granted_shizuku_error, e.message)
+            } finally {
+                checkSystemStates(context.applicationContext)
+            }
+        }
+    }
+
+    fun grantWriteSecureSettingsViaRoot(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!_isDeviceRooted.value) {
+                _permissionGrantStatus.value = context.getString(R.string.device_not_rooted)
+                return@launch
+            }
+            try {
+                val packageName = context.packageName
+                val command = "pm grant $packageName android.permission.WRITE_SECURE_SETTINGS"
+                val process = Runtime.getRuntime().exec(arrayOf("su", "-c", command))
+
+                val deferredStdErr =
+                    async { process.errorStream.bufferedReader().use { it.readText() } }
+                val exitCode = process.waitFor()
+
+                if (exitCode == 0) {
+                    if (PermissionUtils.hasWriteSecureSettingsPermission(context.applicationContext)) {
+                        _permissionGrantStatus.value =
+                            context.getString(R.string.permission_granted_root_success)
+                    } else {
+                        _permissionGrantStatus.value =
+                            context.getString(R.string.permission_granted_root_check_failed)
+                    }
+                } else {
+                    val errOutput = deferredStdErr.await()
+                    Log.e("RootGrant", "Root command failed with exit code $exitCode: $errOutput")
+                    _permissionGrantStatus.value =
+                        context.getString(R.string.permission_granted_root_fail, exitCode)
+                }
+            } catch (e: Exception) {
+                Log.e("RootGrant", "Error granting permission via Root", e)
+                _permissionGrantStatus.value =
+                    context.getString(R.string.permission_granted_root_error, e.message)
+            } finally {
+                checkSystemStates(context.applicationContext)
+            }
+        }
+    }
+
+    fun clearPermissionGrantStatus() {
+        _permissionGrantStatus.value = null
+    }
 }
 
 class ViewModelFactory(private val prefsManager: PreferencesManager) : ViewModelProvider.Factory {

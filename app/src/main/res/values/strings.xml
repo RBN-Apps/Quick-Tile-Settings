@@ -39,33 +39,74 @@
     <string name="toast_settings_saved_tiles_updated">Settings saved. Tiles will update when you next open the QS panel.</string>
     <string name="warning_hostname_blank">Hostname cannot be empty if "DNS On" is enabled.</string>
     <string name="warning_at_least_one_usb_option">At least one USB status must be enabled.</string>
+    <string name="toast_command_copied">Command copied!</string>
 
 
-    <!-- Help Dialog -->
-    <string name="help_dialog_title">Permission Required</string>
-    <string name="help_dialog_intro">To change system settings like Private DNS and USB Debugging, this app needs the special WRITE_SECURE_SETTINGS permission.</string>
-    <string name="help_dialog_method_1_title">Method 1: Grant via ADB (if app is already installed)</string>
-    <string name="help_dialog_how_to_grant_via_adb">This can be granted via ADB (Android Debug Bridge). Connect your device to a computer with ADB set up and run the following command in your terminal/command prompt:</string>
+    <!-- Permission Grant Dialog -->
+    <string name="permission_grant_dialog_title">Permission Required</string>
+    <string name="permission_grant_dialog_intro">To change system settings like Private DNS and USB Debugging, this app needs the special WRITE_SECURE_SETTINGS permission. Please choose a method below to grant it:</string>
+    <string name="help_dialog_after_grant">After granting the permission, restart the app or re-open the Quick Settings panel for the tiles to function.</string>
+    <string name="help_button_desc">Help / Grant Permission</string>
+    <string name="button_open_developer_options">Open Developer Options</string>
+    <string name="dialog_close">Close</string>
+
+    <!-- ADB Method -->
+    <string name="permission_method_adb_title">Method %1$d: ADB (Android Debug Bridge) %2$s</string>
+    <string name="permission_method_adb_desc">This is the standard method and requires a computer with ADB set up.</string>
+    <string name="button_show_adb_instructions">Show ADB Instructions</string>
+    <string name="adb_instructions_title">ADB Instructions</string>
+    <string name="adb_instructions_intro">Connect your device to a computer with ADB set up. Ensure Developer Options and USB Debugging are enabled on your device.</string>
+    <string name="help_dialog_method_1_title">Option A: Grant to existing installation</string>
+    <string name="help_dialog_how_to_grant_via_adb">Run the following command in your terminal/command prompt:</string>
     <string name="button_copy_grant_command">Copy Grant Command</string>
-
-    <string name="help_dialog_method_2_title">Method 2: Install with ADB (grants permission during install)</string>
-    <string name="help_dialog_how_to_install_via_adb">Alternatively, if you are installing the app via ADB, you can grant the permission during installation. Uninstall the current version first, then use this command (replace path/to/your/app.apk with the actual path to the APK file):</string>
+    <string name="help_dialog_method_2_title">Option B: Install with permission</string>
+    <string name="help_dialog_how_to_install_via_adb">Uninstall the current version first, then use this command (replace path/to/your/app.apk with the actual APK path):</string>
     <string name="button_copy_install_command">Copy Install Command</string>
     <string name="help_dialog_apk_path_note">(Note: You need the APK file for the install command. If you built the app yourself, it\'s usually in app/build/outputs/apk/debug/ or app/build/outputs/apk/release/. You can also download the latest release from GitHub.)</string>
     <string name="github_releases_link_text">Download latest release from GitHub</string>
     <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
+    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
+    <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
-    <string name="help_dialog_after_grant">After granting the permission (either way), restart the app or re-open the Quick Settings panel for the tiles to function.</string>
-    <string name="help_button_desc">Help</string>
-    <string name="help_button_open_dev_settings_adb">Developer Options (for ADB)</string>
-    <string name="dialog_close">Close</string>
+    <!-- Shizuku Method -->
+    <string name="permission_method_shizuku_title">Method %1$d: Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku is available and this app has permission to use it. You can attempt to grant WRITE_SECURE_SETTINGS.</string>
+    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
+    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
+    <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
+    <string name="shizuku_not_available_detailed">Shizuku is not available or not running. Please install and start Shizuku first.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">This app needs permission from Shizuku to proceed. Please request it.</string>
+    <string name="button_request_shizuku_permission">Request Shizuku App Permission</string>
+    <string name="button_grant_with_shizuku">Grant using Shizuku</string>
+    <string name="shizuku_not_available">Shizuku is not available or not running.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Shizuku permission not granted to this app. Please grant it first via Shizuku app or the prompt.</string>
+    <string name="shizuku_permission_granted_to_app">Shizuku permission granted to this app.</string>
+    <string name="shizuku_permission_denied_to_app">Shizuku permission denied to this app.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku is not available or not ready.</string>
+    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
+
+    <!-- Root Method -->
+    <string name="permission_method_root_title">Method %1$d: Root %2$s</string>
+    <string name="root_ready_to_grant_desc">Your device is rooted. You can attempt to grant WRITE_SECURE_SETTINGS using root privileges.</string>
+    <string name="device_not_rooted_detailed">Your device does not appear to be rooted or root access was not granted. This method is unavailable.</string>
+    <string name="button_grant_with_root">Grant using Root</string>
+    <string name="device_not_rooted">Device is not rooted.</string>
+
+    <!-- Generic Permission Grant Results -->
+    <string name="permission_granted_shizuku_success">Permission granted successfully via Shizuku!</string>
+    <string name="permission_granted_shizuku_check_failed">Shizuku command executed, but permission check failed. Please restart the app.</string>
+    <string name="permission_granted_shizuku_fail">Failed to grant permission via Shizuku. Exit code: %1$d</string>
+    <string name="permission_granted_shizuku_error">Error granting permission via Shizuku: %1$s</string>
+    <string name="permission_granted_root_success">Permission granted successfully via Root!</string>
+    <string name="permission_granted_root_check_failed">Root command executed, but permission check failed. Please restart the app.</string>
+    <string name="permission_granted_root_fail">Failed to grant permission via Root. Exit code: %1$d</string>
+    <string name="permission_granted_root_error">Error granting permission via Root: %1$s</string>
 
     <!-- Permission Warning Card -->
     <string name="warning_permission_missing_title">Permission Missing!</string>
-    <string name="warning_permission_missing_desc">This app requires the WRITE_SECURE_SETTINGS permission to function. Please grant it via ADB.</string>
-    <string name="button_show_permission_help">Show Instructions</string>
+    <string name="warning_permission_missing_desc">This app requires the WRITE_SECURE_SETTINGS permission to function. Please grant it using one of the available methods.</string>
+    <string name="button_show_permission_help">Show Grant Options</string>
     <string name="warning_developer_options_disabled_config">Developer options are disabled. USB Debugging cannot be configured.</string>
-    <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <string name="setting_enable_auto_revert">Enable auto-revert after a delay</string>
     <string name="setting_auto_revert_delay">Revert delay (seconds):</string>
@@ -97,5 +138,18 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one or 1.1.1.1) is known for its high speed and focus on privacy. It does not filter content and promises not to log user data. Ideal for users prioritizing privacy and performance.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) blocks ads, trackers, and known malicious domains directly at the DNS level. This provides a cleaner and safer browsing experience. Good for users who want to reduce ads and protect their privacy.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) focuses on security by blocking domains associated with malware, phishing, and botnets. This enhances protection against online threats. Suitable for users for whom internet security is a top priority.</string>
+    <string name="recommended_for_you">(Recommended for you)</string>
 
+    <!-- About Dialog -->
+    <string name="about_version">Version %1$s</string>
+    <string name="about_description">QuickTile Settings provides convenient Quick Settings tiles for toggling settings directly from the notification panel.</string>
+    <string name="about_features_title">Features</string>
+    <string name="about_feature_private_dns">• Private DNS tile with custom hostname support</string>
+    <string name="about_feature_usb_debugging">• USB Debugging tile for development</string>
+    <string name="about_feature_auto_revert">• Auto-revert functionality for temporary changes</string>
+    <string name="about_feature_custom_dns">• Built-in popular DNS providers (Cloudflare, AdGuard, Quad9)</string>
+    <string name="about_developer_title">Developer</string>
+    <string name="about_developer_info">Developed by RBN-Apps\nOpen source project available on GitHub</string>
+    <string name="about_button_github" translatable="false">GitHub</string>
+    <string name="about_button_permission_help">Permission Setup Help</string>
 </resources>
