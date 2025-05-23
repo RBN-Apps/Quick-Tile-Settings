@@ -65,6 +65,7 @@
     <string name="help_dialog_apk_path_note">(Note: You need the APK file for the install command. If you built the app yourself, it\'s usually in app/build/outputs/apk/debug/ or app/build/outputs/apk/release/. You can also download the latest release from GitHub.)</string>
     <string name="github_releases_link_text">Download latest release from GitHub</string>
     <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
+    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
@@ -139,4 +140,16 @@
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) focuses on security by blocking domains associated with malware, phishing, and botnets. This enhances protection against online threats. Suitable for users for whom internet security is a top priority.</string>
     <string name="recommended_for_you">(Recommended for you)</string>
 
+    <!-- About Dialog -->
+    <string name="about_version">Version %1$s</string>
+    <string name="about_description">QuickTile Settings provides convenient Quick Settings tiles for toggling settings directly from the notification panel.</string>
+    <string name="about_features_title">Features</string>
+    <string name="about_feature_private_dns">• Private DNS tile with custom hostname support</string>
+    <string name="about_feature_usb_debugging">• USB Debugging tile for development</string>
+    <string name="about_feature_auto_revert">• Auto-revert functionality for temporary changes</string>
+    <string name="about_feature_custom_dns">• Built-in popular DNS providers (Cloudflare, AdGuard, Quad9)</string>
+    <string name="about_developer_title">Developer</string>
+    <string name="about_developer_info">Developed by RBN-Apps\nOpen source project available on GitHub</string>
+    <string name="about_button_github" translatable="false">GitHub</string>
+    <string name="about_button_permission_help">Permission Setup Help</string>
 </resources>

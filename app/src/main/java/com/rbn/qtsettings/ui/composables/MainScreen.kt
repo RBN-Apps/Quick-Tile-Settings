@@ -61,6 +61,7 @@ fun MainScreen(
 ) {
     val context = LocalContext.current
     var showPermissionGrantDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
 
     val isDevOptionsEnabled by remember {
@@ -102,9 +103,7 @@ fun MainScreen(
                             showPermissionGrantDialog = true
                             viewModel.checkSystemStates(context)
                         } else {
-                            // TODO: Implement a general About dialog
-                            showPermissionGrantDialog = true
-                            viewModel.checkSystemStates(context)
+                            showAboutDialog = true
                         }
                     }) {
                         Icon(
@@ -239,6 +238,18 @@ fun MainScreen(
             onDismiss = { viewModel.setHostnamePendingDeletion(null) }) {
             viewModel.deleteCustomDnsHostname(entry.id)
         }
+    }
+
+    // About Dialog
+    if (showAboutDialog) {
+        AboutDialog(
+            onDismissRequest = { showAboutDialog = false },
+            onOpenPermissionDialog = {
+                showAboutDialog = false
+                showPermissionGrantDialog = true
+                viewModel.checkSystemStates(context)
+            }
+        )
     }
 }
 
