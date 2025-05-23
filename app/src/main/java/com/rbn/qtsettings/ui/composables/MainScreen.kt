@@ -188,7 +188,7 @@ fun MainScreen(
             PermissionGrantDialog(
                 onDismissRequest = {
                     showPermissionGrantDialog = false
-                    if (!viewModel.hasWriteSecureSettings.value) {
+                    if (!hasWriteSecureSettings) {
                         viewModel.setHelpShown(true)
                     }
                 },
