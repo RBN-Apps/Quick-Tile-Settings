@@ -253,6 +253,15 @@ class PrivateDnsTileService : TileService() {
         }
     }
 
+    private fun getDnsIcon(hostname: String?): Int {
+        return when (hostname) {
+            "dns.adguard.com" -> R.drawable.ic_dns_on_adguard
+            "one.one.one.one" -> R.drawable.ic_dns_on_cloudflare
+            "dns.quad9.net" -> R.drawable.ic_dns_on_quad9_security
+            else -> R.drawable.ic_dns_on
+        }
+    }
+
     private fun updateTile() {
         val tile = qsTile ?: return
 
@@ -295,7 +304,7 @@ class PrivateDnsTileService : TileService() {
                 } else {
                     tile.label = getString(R.string.dns_state_on_with_host)
                 }
-                tile.icon = Icon.createWithResource(this, R.drawable.ic_dns_on)
+                tile.icon = Icon.createWithResource(this, getDnsIcon(currentActualHostname))
                 if (currentActualHostname.isNullOrBlank() && PermissionUtils.hasWriteSecureSettingsPermission(
                         this
                     )
