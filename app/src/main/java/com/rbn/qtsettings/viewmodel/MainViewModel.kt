@@ -2,6 +2,7 @@ package com.rbn.qtsettings.viewmodel
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,6 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.services.VpnMonitoringService
+import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
+import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.PermissionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,6 +34,9 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val usbToggleDisable = prefsManager.usbToggleDisable
     val usbEnableAutoRevert = prefsManager.usbEnableAutoRevert
     val usbAutoRevertDelaySeconds = prefsManager.usbAutoRevertDelaySeconds
+
+    val vpnDetectionEnabled = prefsManager.vpnDetectionEnabled
+    val vpnDetectionMode = prefsManager.vpnDetectionMode
 
     val helpShown = prefsManager.helpShown
 
@@ -60,6 +67,12 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private val _permissionGrantStatus = MutableStateFlow<String?>(null)
     val permissionGrantStatus = _permissionGrantStatus.asStateFlow()
 
+    private val _requestNotificationPermission = MutableStateFlow(0)
+    val requestNotificationPermission = _requestNotificationPermission.asStateFlow()
+
+    private val _showNotificationSettingsDialog = MutableStateFlow(false)
+    val showNotificationSettingsDialog = _showNotificationSettingsDialog.asStateFlow()
+
 
     fun setDnsToggleOff(enabled: Boolean) = prefsManager.setDnsToggleOff(enabled)
     fun setDnsToggleAuto(enabled: Boolean) = prefsManager.setDnsToggleAuto(enabled)
@@ -72,6 +85,75 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun setUsbEnableAutoRevert(enabled: Boolean) = prefsManager.setUsbEnableAutoRevert(enabled)
     fun setUsbAutoRevertDelaySeconds(delay: Int) = prefsManager.setUsbAutoRevertDelaySeconds(delay)
 
+    fun setVpnDetectionEnabled(enabled: Boolean) {
+        prefsManager.setVpnDetectionEnabled(enabled)
+        manageVpnMonitoringService()
+    }
+
+    fun setVpnDetectionMode(mode: String) {
+        if (mode == BACKGROUND_DETECTION) {
+            val context = getCurrentContext()
+            if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val hasNotificationPermission =
+                    androidx.core.content.ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                if (!hasNotificationPermission) {
+                    handleMissingNotificationPermission()
+                    return
+                }
+            }
+        }
+
+        prefsManager.setVpnDetectionMode(mode)
+        manageVpnMonitoringService()
+    }
+
+    private fun handleMissingNotificationPermission() {
+        val context = getCurrentContext()
+        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            _requestNotificationPermission.value = _requestNotificationPermission.value + 1
+        }
+    }
+
+    private fun manageVpnMonitoringService() {
+        viewModelScope.launch {
+            val context = getCurrentContext() ?: return@launch
+
+            val enabled = prefsManager.isVpnDetectionEnabled()
+            val mode = prefsManager.getVpnDetectionMode()
+
+            if (enabled && mode == BACKGROUND_DETECTION) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasNotificationPermission =
+                        androidx.core.content.ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ) == PackageManager.PERMISSION_GRANTED
+
+                    if (!hasNotificationPermission) {
+                        _requestNotificationPermission.value =
+                            _requestNotificationPermission.value + 1
+                        return@launch
+                    }
+                }
+
+                VpnMonitoringService.startService(context)
+            } else {
+                VpnMonitoringService.stopService(context)
+            }
+        }
+    }
+
+    private var applicationContext: Context? = null
+
+    fun setApplicationContext(context: Context) {
+        applicationContext = context.applicationContext
+    }
+
+    private fun getCurrentContext(): Context? = applicationContext
 
     fun setHelpShown(shown: Boolean) = prefsManager.setHelpShown(shown)
 
@@ -224,6 +306,34 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     fun clearPermissionGrantStatus() {
         _permissionGrantStatus.value = null
+    }
+
+    fun clearNotificationPermissionRequest() {
+        _requestNotificationPermission.value = 0
+    }
+
+    fun clearNotificationSettingsDialog() {
+        _showNotificationSettingsDialog.value = false
+    }
+
+    fun onNotificationPermissionPermanentlyDenied() {
+        prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
+        _showNotificationSettingsDialog.value = true
+    }
+
+    fun onNotificationPermissionResult(granted: Boolean) {
+        clearNotificationPermissionRequest()
+        if (granted) {
+            manageVpnMonitoringService()
+        } else {
+            prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
+            _permissionGrantStatus.value =
+                "Notification permission denied. Switched to tile-only VPN detection mode."
+        }
+    }
+
+    fun initializeVpnMonitoring() {
+        manageVpnMonitoringService()
     }
 }
 

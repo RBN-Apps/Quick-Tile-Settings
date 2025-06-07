@@ -152,4 +152,25 @@
     <string name="about_developer_info">Developed by RBN-Apps\nOpen source project available on GitHub</string>
     <string name="about_button_github" translatable="false">GitHub</string>
     <string name="about_button_permission_help">Permission Setup Help</string>
+
+    <!-- VPN Detection Settings -->
+    <string name="setting_vpn_detection_enabled">Automatically disable DNS on VPN connections</string>
+    <string name="setting_vpn_detection_mode">VPN Detection Mode:</string>
+    <string name="vpn_detection_tile_only_title">Tile-Only Detection</string>
+    <string name="vpn_detection_tile_only_description">Checks for VPN connections when opening the Quick Settings. More battery-friendly, but detects VPN connections only when Quick Settings are opened. If you usually enable or disable VPN through Quick Settings anyway, this option is sufficient.</string>
+    <string name="vpn_detection_background_title">Background Service Detection</string>
+    <string name="vpn_detection_background_description">Continuously monitors VPN status. Provides an instant response, but uses more battery and shows a persistent notification to stay active.</string>
+
+    <!-- VPN Monitoring Service -->
+    <string name="vpn_monitoring_channel_name">VPN Monitoring</string>
+    <string name="vpn_monitoring_channel_description">Monitors VPN connections to automatically adjust Private DNS settings</string>
+    <string name="vpn_monitoring_notification_title">VPN Monitoring Active</string>
+    <string name="vpn_monitoring_status_connected">VPN connected - Private DNS set to Off</string>
+    <string name="vpn_monitoring_status_disconnected">VPN disconnected - Private DNS restored</string>
+
+    <!-- Notification Permission Dialog -->
+    <string name="notification_permission_dialog_title">Notifications Require Permission</string>
+    <string name="notification_permission_dialog_message">To receive notifications for background VPN monitoring, you must enable the permission in app settings.\n\nOnce you have granted the permission, you can enable notifications here.</string>
+    <string name="notification_permission_dialog_settings_button">Settings</string>
+    <string name="notification_permission_dialog_settings_description">Open settings</string>
 </resources>
