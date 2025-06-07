@@ -66,6 +66,7 @@
     <string name="github_releases_link_text">Download latest release from GitHub</string>
     <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
     <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
+    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
@@ -151,6 +152,7 @@
     <string name="about_developer_title">Developer</string>
     <string name="about_developer_info">Developed by RBN-Apps\nOpen source project available on GitHub</string>
     <string name="about_button_github" translatable="false">GitHub</string>
+    <string name="about_button_fdroid" translatable="false">F-Droid</string>
     <string name="about_button_permission_help">Permission Setup Help</string>
 
     <!-- VPN Detection Settings -->

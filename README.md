@@ -17,6 +17,15 @@ Wolfsohn's [Private DNS Quick Tile](https://github.com/joshuawolfsohn/Private-DN
 This project aims to expand on that idea by adding more features, a USB Debugging tile, and a modern
 Jetpack Compose UI.
 
+## Download
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+alt="Get it on F-Droid"
+height="80">](https://f-droid.org/de/packages/com.rbn.qtsettings/)
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+alt="Get it on IzzyOnDroid"
+height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.rbn.qtsettings/)
+
 ## Features
 
 * **Private DNS Quick Tile:**

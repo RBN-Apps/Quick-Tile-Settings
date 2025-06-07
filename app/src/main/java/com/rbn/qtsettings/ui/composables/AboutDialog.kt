@@ -42,10 +42,11 @@ fun AboutDialog(
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val githubUrl = stringResource(R.string.github_repo_url)
+    val fdroidUrl = stringResource(R.string.fdroid_app_url)
 
     val versionName = try {
         context.packageManager.getPackageInfo(context.packageName, 0).versionName
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         "Unknown"
     }
 
@@ -155,6 +156,27 @@ fun AboutDialog(
                     ) {
                         Text(
                             text = stringResource(R.string.about_button_github),
+                            maxLines = 1
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Icon(
+                            Icons.AutoMirrored.Filled.OpenInNew,
+                            contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            try {
+                                uriHandler.openUri(fdroidUrl)
+                            } catch (_: Exception) {
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.about_button_fdroid),
                             maxLines = 1
                         )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
