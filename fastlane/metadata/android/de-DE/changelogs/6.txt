@@ -1,0 +1,6 @@
+Version 1.1.2
+
+- Berechtigungserteilung per ADB, Root oder Shizuku über neuen Dialog möglich.
+- Neue Option: Privates DNS bei aktiver VPN-Verbindung automatisch deaktivieren, um Konflikte zu vermeiden (mit Kachel- oder Hintergrundmodus).
+- DNS-Kachel zeigt nun eigene Icons für vorkonfigurierte Anbieter (AdGuard, Cloudflare, Quad9).
+- Überarbeitete Berechtigungshilfe und neuer "Über"-Dialog hinzugefügt.

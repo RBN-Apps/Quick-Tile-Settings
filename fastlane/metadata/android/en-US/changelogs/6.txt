@@ -1,0 +1,6 @@
+Version 1.1.2
+
+- Grant permission via ADB, Root, or Shizuku using a new guided dialog.
+- New option: Automatically disable Private DNS when a VPN connection is active to prevent conflicts (with tile-only or background modes).
+- The DNS tile now shows custom icons for the preconfigured providers (AdGuard, Cloudflare, Quad9).
+- Revamped permission help flow and added a new "About" dialog.
