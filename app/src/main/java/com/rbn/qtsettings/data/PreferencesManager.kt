@@ -7,6 +7,7 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,6 +55,18 @@ class PreferencesManager private constructor(context: Context) {
     private val _usbAutoRevertDelaySeconds =
         MutableStateFlow(sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5))
     val usbAutoRevertDelaySeconds: StateFlow<Int> = _usbAutoRevertDelaySeconds.asStateFlow()
+
+    // VPN Detection Settings
+    private val _vpnDetectionEnabled =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_VPN_DETECTION_ENABLED, false))
+    val vpnDetectionEnabled: StateFlow<Boolean> = _vpnDetectionEnabled.asStateFlow()
+
+    private val _vpnDetectionMode =
+        MutableStateFlow(
+            sharedPreferences.getString(KEY_VPN_DETECTION_MODE, TILE_ONLY_DETECTION)
+                ?: TILE_ONLY_DETECTION
+        )
+    val vpnDetectionMode: StateFlow<String> = _vpnDetectionMode.asStateFlow()
 
     // Help Shown
     private val _helpShown = MutableStateFlow(sharedPreferences.getBoolean(KEY_HELP_SHOWN, false))
@@ -108,6 +121,16 @@ class PreferencesManager private constructor(context: Context) {
     fun setHelpShown(shown: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_HELP_SHOWN, shown) }
         _helpShown.value = shown
+    }
+
+    fun setVpnDetectionEnabled(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_VPN_DETECTION_ENABLED, enabled) }
+        _vpnDetectionEnabled.value = enabled
+    }
+
+    fun setVpnDetectionMode(mode: String) {
+        sharedPreferences.edit { putString(KEY_VPN_DETECTION_MODE, mode) }
+        _vpnDetectionMode.value = mode
     }
 
     private fun sortDnsHostnames(hostnames: List<DnsHostnameEntry>): List<DnsHostnameEntry> {
@@ -225,7 +248,7 @@ class PreferencesManager private constructor(context: Context) {
         val hostnames = if (json != null) {
             try {
                 gson.fromJson(json, hostnameEntryListType)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 emptyList()
             }
         } else getDefaultDnsHostnames()
@@ -268,6 +291,13 @@ class PreferencesManager private constructor(context: Context) {
     fun getUsbAutoRevertDelaySeconds(): Int =
         sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5)
 
+    fun isVpnDetectionEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_VPN_DETECTION_ENABLED, false)
+
+    fun getVpnDetectionMode(): String =
+        sharedPreferences.getString(KEY_VPN_DETECTION_MODE, TILE_ONLY_DETECTION)
+            ?: TILE_ONLY_DETECTION
+
     companion object {
         private const val KEY_DNS_TOGGLE_OFF = "dns_toggle_off"
         private const val KEY_DNS_TOGGLE_AUTO = "dns_toggle_auto"
@@ -282,6 +312,9 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_USB_AUTO_REVERT_DELAY_SECONDS = "usb_auto_revert_delay_seconds"
 
         private const val KEY_HELP_SHOWN = "help_shown_v1"
+
+        private const val KEY_VPN_DETECTION_ENABLED = "vpn_detection_enabled"
+        private const val KEY_VPN_DETECTION_MODE = "vpn_detection_mode"
 
         const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
         const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"

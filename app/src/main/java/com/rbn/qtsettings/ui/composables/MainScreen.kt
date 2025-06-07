@@ -251,6 +251,14 @@ fun MainScreen(
             }
         )
     }
+
+    // Notification Permission Settings Dialog
+    val showNotificationSettingsDialog by viewModel.showNotificationSettingsDialog.collectAsState()
+    if (showNotificationSettingsDialog) {
+        NotificationSettingsDialog(
+            onDismiss = { viewModel.clearNotificationSettingsDialog() }
+        )
+    }
 }
 
 @Composable

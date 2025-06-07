@@ -147,4 +147,25 @@
     <string name="about_developer_title">Entwickler</string>
     <string name="about_developer_info">Entwickelt von RBN-Apps\nOpen-Source-Projekt verfügbar auf GitHub</string>
     <string name="about_button_permission_help">Hilfe zur Berechtigung einrichten</string>
+
+    <!-- VPN Detection Settings -->
+    <string name="setting_vpn_detection_enabled">DNS bei VPN-Verbindungen automatisch deaktivieren</string>
+    <string name="setting_vpn_detection_mode">VPN-Erkennungsmodus:</string>
+    <string name="vpn_detection_tile_only_title">Nur-Kachel-Erkennung</string>
+    <string name="vpn_detection_tile_only_description">Prüft auf VPN-Verbindungen beim Öffnen der Schnelleinstellungen. Batteriefreundlicher, aber erkennt VPN-Verbindungen, nur wenn Schnelleinstellungen geöffnet sind. Wenn du VPN sowieso über die Schnelleinstellungen deaktivierst und aktivierst, ist diese Option ausreichend.</string>
+    <string name="vpn_detection_background_title">Hintergrunddienst-Erkennung</string>
+    <string name="vpn_detection_background_description">Überwacht VPN-Status kontinuierlich. Sofortige Reaktion, verbraucht aber mehr Batterie und zeigt eine kontinuierliche Benachrichtigung, um aktiv zu bleiben.</string>
+
+    <!-- VPN Monitoring Service -->
+    <string name="vpn_monitoring_channel_name">VPN-Überwachung</string>
+    <string name="vpn_monitoring_channel_description">Überwacht VPN-Verbindungen zur automatischen Anpassung der Private DNS-Einstellungen</string>
+    <string name="vpn_monitoring_notification_title">VPN-Überwachung aktiv</string>
+    <string name="vpn_monitoring_status_connected">VPN verbunden - Private DNS auf Aus gesetzt</string>
+    <string name="vpn_monitoring_status_disconnected">VPN getrennt - Private DNS wiederhergestellt</string>
+
+    <!-- Notification Permission Dialog -->
+    <string name="notification_permission_dialog_title">Benachrichtigungen benötigen Berechtigung</string>
+    <string name="notification_permission_dialog_message">Um Benachrichtigungen für die VPN-Hintergrundüberwachung zu erhalten, musst du die Berechtigung in den App-Einstellungen aktivieren.\n\nWenn du die Berechtigung erteilt hast, kannst du Benachrichtigungen hier aktivieren.</string>
+    <string name="notification_permission_dialog_settings_button">Einstellungen</string>
+    <string name="notification_permission_dialog_settings_description">Einstellungen öffnen</string>
 </resources>

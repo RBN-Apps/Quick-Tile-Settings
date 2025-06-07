@@ -1,15 +1,20 @@
 package com.rbn.qtsettings
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.rbn.qtsettings.data.PreferencesManager
@@ -24,6 +29,28 @@ import rikka.shizuku.Shizuku
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels {
         ViewModelFactory(PreferencesManager.getInstance(this.applicationContext))
+    }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Check if permission is permanently denied
+            val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+
+            if (!shouldShowRationale) {
+                // Permission is permanently denied, show settings dialog
+                viewModel.onNotificationPermissionPermanentlyDenied()
+            } else {
+                // Permission denied but not permanently
+                viewModel.onNotificationPermissionResult(false)
+            }
+        } else {
+            viewModel.onNotificationPermissionResult(isGranted)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +68,9 @@ class MainActivity : ComponentActivity() {
         }
 
         Shizuku.addRequestPermissionResultListener(shizukuPermissionResultListener)
+        viewModel.setApplicationContext(this)
         viewModel.checkSystemStates(this)
+        viewModel.initializeVpnMonitoring()
 
         setContent {
             QuickTileSettingsTheme {
@@ -62,13 +91,30 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.requestNotificationPermission.collect { requestCounter ->
+                if (requestCounter > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasPermission = ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                    if (!hasPermission) {
+                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        viewModel.onNotificationPermissionResult(true)
+                    }
+                }
+            }
+        }
     }
 
     private fun openUsbDebuggingSettings(context: Context) {
         try {
             val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
             context.startActivity(intent)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             context.startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS))
         }
     }

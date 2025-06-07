@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -29,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,6 +48,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
+import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
+import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.viewmodel.MainViewModel
 
 @Composable
@@ -55,6 +59,8 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
     val dnsHostnames by viewModel.dnsHostnames.collectAsState()
     val enableAutoRevert by viewModel.dnsEnableAutoRevert.collectAsState()
     val autoRevertDelay by viewModel.dnsAutoRevertDelaySeconds.collectAsState()
+    val vpnDetectionEnabled by viewModel.vpnDetectionEnabled.collectAsState()
+    val vpnDetectionMode by viewModel.vpnDetectionMode.collectAsState()
     var showDnsInfoDialogFor by remember { mutableStateOf<DnsHostnameEntry?>(null) }
 
 
@@ -134,6 +140,97 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(top = 4.dp, start = 16.dp)
                     )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // VPN Detection Section
+                val interactionSourceVpnDetection = remember { MutableInteractionSource() }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = interactionSourceVpnDetection,
+                            indication = null,
+                            onClick = { viewModel.setVpnDetectionEnabled(!vpnDetectionEnabled) }
+                        )
+                ) {
+                    Checkbox(
+                        checked = vpnDetectionEnabled,
+                        onCheckedChange = { viewModel.setVpnDetectionEnabled(it) }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.setting_vpn_detection_enabled),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+
+                if (vpnDetectionEnabled) {
+                    Text(
+                        text = stringResource(R.string.setting_vpn_detection_mode),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = vpnDetectionMode == TILE_ONLY_DETECTION,
+                                onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
+                            )
+                            .padding(vertical = 4.dp)
+                    ) {
+                        RadioButton(
+                            selected = vpnDetectionMode == TILE_ONLY_DETECTION,
+                            onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.vpn_detection_tile_only_title),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = stringResource(R.string.vpn_detection_tile_only_description),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = vpnDetectionMode == BACKGROUND_DETECTION,
+                                onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
+                            )
+                            .padding(vertical = 4.dp)
+                    ) {
+                        RadioButton(
+                            selected = vpnDetectionMode == BACKGROUND_DETECTION,
+                            onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.vpn_detection_background_title),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = stringResource(R.string.vpn_detection_background_description),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
