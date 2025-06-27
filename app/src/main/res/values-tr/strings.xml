@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">QuickTile Ayarları</string>
 
@@ -54,7 +55,7 @@
     <string name="permission_method_adb_desc">Bu, standart yöntemdir ve ADB kurulu bir bilgisayar gerektirir.</string>
     <string name="button_show_adb_instructions">ADB Talimatlarını Göster</string>
     <string name="adb_instructions_title">ADB Talimatları</string>
-    <string name="adb_instructions_intro">Cihazınızı ADB kurulu bir bilgisayara bağlayın. Cihazınızda Geliştirici Seçenekleri ve USB Hata Ayıklama'nın etkin olduğundan emin olun.</string>
+    <string name="adb_instructions_intro">Cihazınızı ADB kurulu bir bilgisayara bağlayın. Cihazınızda Geliştirici Seçenekleri ve USB Hata Ayıklama\'nın etkin olduğundan emin olun.</string>
     <string name="help_dialog_method_1_title">Seçenek A: Mevcut kuruluma izin verin</string>
     <string name="help_dialog_how_to_grant_via_adb">Aşağıdaki komutu terminalinizde/komut istemcinizde çalıştırın:</string>
     <string name="button_copy_grant_command">İzin Verme Komutunu Kopyala</string>
@@ -63,9 +64,6 @@
     <string name="button_copy_install_command">Yükleme Komutunu Kopyala</string>
     <string name="help_dialog_apk_path_note">(Not: Yükleme komutu için APK dosyasına ihtiyacınız var. Uygulamayı kendiniz derlediyseniz, genellikle app/build/outputs/apk/debug/ veya app/build/outputs/apk/release/ klasöründedir. Ayrıca en son sürümü GitHub\'dan indirebilirsiniz.)</string>
     <string name="github_releases_link_text">En son sürümü GitHub\'dan indirin</string>
-    <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
-    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
-    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
@@ -73,7 +71,6 @@
     <string name="shizuku_ready_to_grant_desc">Shizuku mevcut ve bu uygulamanın onu kullanma izni var. WRITE_SECURE_SETTINGS iznini vermeyi deneyebilirsiniz.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
-    <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
     <string name="shizuku_not_available_detailed">Shizuku mevcut değil veya çalışmıyor. Lütfen önce Shizuku\'yu kurun ve başlatın.</string>
     <string name="shizuku_permission_not_granted_to_app_detailed">Bu uygulamanın devam etmek için Shizuku\'dan izne ihtiyacı var. Lütfen bu izni isteyin.</string>
     <string name="button_request_shizuku_permission">Shizuku Uygulama İznini İste</string>
@@ -83,7 +80,6 @@
     <string name="shizuku_permission_granted_to_app">Bu uygulamaya Shizuku izni verildi.</string>
     <string name="shizuku_permission_denied_to_app">Bu uygulamaya Shizuku izni reddedildi.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku mevcut değil veya hazır değil.</string>
-    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
 
     <!-- Root Method -->
     <string name="permission_method_root_title">Yöntem %1$d: Root %2$s</string>
@@ -150,15 +146,13 @@
     <string name="about_feature_custom_dns">• Dahili popüler DNS sağlayıcıları (Cloudflare, AdGuard, Quad9)</string>
     <string name="about_developer_title">Geliştirici</string>
     <string name="about_developer_info">RBN-Apps tarafından geliştirildi\nGitHub\'da bulunan açık kaynaklı bir projedir</string>
-    <string name="about_button_github" translatable="false">GitHub</string>
-    <string name="about_button_fdroid" translatable="false">F-Droid</string>
     <string name="about_button_permission_help">İzin Kurulum Yardımı</string>
 
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">VPN bağlantılarında DNS\'i otomatik olarak devre dışı bırak</string>
     <string name="setting_vpn_detection_mode">VPN Algılama Modu:</string>
     <string name="vpn_detection_tile_only_title">Yalnızca Kutucuktan Algılama</string>
-    <string name="vpn_detection_tile_only_description">Hızlı Ayarlar açıldığında VPN bağlantılarını kontrol eder. Daha pil dostudur, ancak VPN bağlantılarını yalnızca Hızlı Ayarlar açıldığında algılar. Genellikle VPN'i Hızlı Ayarlar üzerinden etkinleştiriyor veya devre dışı bırakıyorsanız, bu seçenek yeterlidir.</string>
+    <string name="vpn_detection_tile_only_description">Hızlı Ayarlar açıldığında VPN bağlantılarını kontrol eder. Daha pil dostudur, ancak VPN bağlantılarını yalnızca Hızlı Ayarlar açıldığında algılar. Genellikle VPN\'i Hızlı Ayarlar üzerinden etkinleştiriyor veya devre dışı bırakıyorsanız, bu seçenek yeterlidir.</string>
     <string name="vpn_detection_background_title">Arka Plan Hizmetiyle Algılama</string>
     <string name="vpn_detection_background_description">VPN durumunu sürekli olarak izler. Anında tepki verir, ancak daha fazla pil kullanır ve aktif kalmak için kalıcı bir bildirim gösterir.</string>
 
