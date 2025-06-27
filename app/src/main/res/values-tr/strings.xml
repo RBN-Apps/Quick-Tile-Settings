@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuickTile Ayarları</string>
+
+    <!-- Tile Labels -->
+    <string name="tile_label_private_dns">Özel DNS</string>
+    <string name="tile_label_usb_debugging">USB Hata Ayıklama</string>
+    <string name="dns_state_reverted_to">DNS, %1$s durumuna geri alındı</string>
+    <string name="usb_state_reverted_to">USB Hata Ayıklama, %1$s durumuna geri alındı</string>
+    <string name="toast_developer_options_disabled_revert_cancelled">Geliştirici seçenekleri kapalı. USB geri alma iptal edildi.</string>
+    <string name="tile_subtitle_reverting_in_seconds">%2$ds içinde %1$s durumuna geri alınıyor…</string>
+
+    <!-- DNS States -->
+    <string name="dns_state_off">DNS Kapalı</string>
+    <string name="dns_state_auto">DNS Otomatik</string>
+    <string name="dns_state_on_with_host">DNS Açık (Ana Bilgisayar Adı)</string>
+    <string name="dns_state_unknown">DNS Durumu Bilinmiyor</string>
+    <string name="dns_hostname_label">DNS Ana Bilgisayar Adı</string>
+
+    <!-- USB Debugging States -->
+    <string name="usb_state_on">USB Hata Ayıklama Açık</string>
+    <string name="usb_state_off">USB Hata Ayıklama Kapalı</string>
+    <string name="usb_dev_options_off">Geliştirici Seçenekleri Kapalı</string>
+
+    <!-- UI Settings Screen -->
+    <string name="setting_title_private_dns">Özel DNS Kutucuğu</string>
+    <string name="setting_title_usb_debugging">USB Hata Ayıklama Kutucuğu</string>
+    <string name="setting_desc_tile_cycles">Kutucuk döngüsü için durumları seçin:</string>
+    <string name="button_save_apply_settings">Ayarları Uygula</string>
+    <string name="tab_title_dns">Özel DNS</string>
+    <string name="tab_title_usb">USB Hata Ayıklama</string>
+
+    <!-- Toasts & Warnings -->
+    <string name="toast_permission_not_granted_adb">İzin eksik. Lütfen ADB aracılığıyla verin.</string>
+    <string name="toast_developer_options_disabled">Geliştirici seçenekleri devre dışı.</string>
+    <string name="toast_error_saving_settings">Ayarlar kaydedilirken hata oluştu.</string>
+    <string name="toast_no_states_enabled_dns">Döngü için etkinleştirilmiş DNS durumu yok.</string>
+    <string name="toast_no_states_enabled_usb">Döngü için etkinleştirilmiş USB durumu yok.</string>
+    <string name="toast_hostname_required">DNS Açık durumu için ana bilgisayar adı gereklidir.</string>
+    <string name="toast_settings_saved_tiles_updated">Ayarlar kaydedildi. Kutucuklar, Hızlı Ayarlar panelini bir sonraki açışınızda güncellenecektir.</string>
+    <string name="warning_hostname_blank">"DNS Açık" etkinse ana bilgisayar adı boş bırakılamaz.</string>
+    <string name="warning_at_least_one_usb_option">En az bir USB durumu etkinleştirilmelidir.</string>
+    <string name="toast_command_copied">Komut kopyalandı!</string>
+
+    <!-- Permission Grant Dialog -->
+    <string name="permission_grant_dialog_title">İzin Gerekli</string>
+    <string name="permission_grant_dialog_intro">Özel DNS ve USB Hata Ayıklama gibi sistem ayarlarını değiştirmek için bu uygulamanın özel WRITE_SECURE_SETTINGS iznine ihtiyacı var. Lütfen bu izni vermek için aşağıdaki yöntemlerden birini seçin:</string>
+    <string name="help_dialog_after_grant">İzni verdikten sonra, kutucukların çalışması için uygulamayı yeniden başlatın veya Hızlı Ayarlar panelini tekrar açın.</string>
+    <string name="help_button_desc">Yardım / İzin Ver</string>
+    <string name="button_open_developer_options">Geliştirici Seçeneklerini Aç</string>
+    <string name="dialog_close">Kapat</string>
+
+    <!-- ADB Method -->
+    <string name="permission_method_adb_title">Yöntem %1$d: ADB (Android Hata Ayıklama Köprüsü) %2$s</string>
+    <string name="permission_method_adb_desc">Bu, standart yöntemdir ve ADB kurulu bir bilgisayar gerektirir.</string>
+    <string name="button_show_adb_instructions">ADB Talimatlarını Göster</string>
+    <string name="adb_instructions_title">ADB Talimatları</string>
+    <string name="adb_instructions_intro">Cihazınızı ADB kurulu bir bilgisayara bağlayın. Cihazınızda Geliştirici Seçenekleri ve USB Hata Ayıklama\'nın etkin olduğundan emin olun.</string>
+    <string name="help_dialog_method_1_title">Seçenek A: Mevcut kuruluma izin verin</string>
+    <string name="help_dialog_how_to_grant_via_adb">Aşağıdaki komutu terminalinizde/komut istemcinizde çalıştırın:</string>
+    <string name="button_copy_grant_command">İzin Verme Komutunu Kopyala</string>
+    <string name="help_dialog_method_2_title">Seçenek B: İzinle birlikte yükleyin</string>
+    <string name="help_dialog_how_to_install_via_adb">Önce mevcut sürümü kaldırın, ardından bu komutu kullanın (path/to/your/app.apk kısmını gerçek APK yolu ile değiştirin):</string>
+    <string name="button_copy_install_command">Yükleme Komutunu Kopyala</string>
+    <string name="help_dialog_apk_path_note">(Not: Yükleme komutu için APK dosyasına ihtiyacınız var. Uygulamayı kendiniz derlediyseniz, genellikle app/build/outputs/apk/debug/ veya app/build/outputs/apk/release/ klasöründedir. Ayrıca en son sürümü GitHub\'dan indirebilirsiniz.)</string>
+    <string name="github_releases_link_text">En son sürümü GitHub\'dan indirin</string>
+    <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
+
+    <!-- Shizuku Method -->
+    <string name="permission_method_shizuku_title">Yöntem %1$d: Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku mevcut ve bu uygulamanın onu kullanma izni var. WRITE_SECURE_SETTINGS iznini vermeyi deneyebilirsiniz.</string>
+    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
+    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
+    <string name="shizuku_not_available_detailed">Shizuku mevcut değil veya çalışmıyor. Lütfen önce Shizuku\'yu kurun ve başlatın.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Bu uygulamanın devam etmek için Shizuku\'dan izne ihtiyacı var. Lütfen bu izni isteyin.</string>
+    <string name="button_request_shizuku_permission">Shizuku Uygulama İznini İste</string>
+    <string name="button_grant_with_shizuku">Shizuku kullanarak izin ver</string>
+    <string name="shizuku_not_available">Shizuku mevcut değil veya çalışmıyor.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Bu uygulamaya Shizuku izni verilmemiş. Lütfen önce Shizuku uygulaması veya istem aracılığıyla izni verin.</string>
+    <string name="shizuku_permission_granted_to_app">Bu uygulamaya Shizuku izni verildi.</string>
+    <string name="shizuku_permission_denied_to_app">Bu uygulamaya Shizuku izni reddedildi.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku mevcut değil veya hazır değil.</string>
+
+    <!-- Root Method -->
+    <string name="permission_method_root_title">Yöntem %1$d: Root %2$s</string>
+    <string name="root_ready_to_grant_desc">Cihazınız rootlanmış. Root ayrıcalıklarını kullanarak WRITE_SECURE_SETTINGS iznini vermeyi deneyebilirsiniz.</string>
+    <string name="device_not_rooted_detailed">Cihazınız rootlu görünmüyor veya root erişimi verilmemiş. Bu yöntem kullanılamaz.</string>
+    <string name="button_grant_with_root">Root kullanarak izin ver</string>
+    <string name="device_not_rooted">Cihaz rootlu değil.</string>
+
+    <!-- Generic Permission Grant Results -->
+    <string name="permission_granted_shizuku_success">İzin, Shizuku aracılığıyla başarıyla verildi!</string>
+    <string name="permission_granted_shizuku_check_failed">Shizuku komutu çalıştırıldı, ancak izin kontrolü başarısız oldu. Lütfen uygulamayı yeniden başlatın.</string>
+    <string name="permission_granted_shizuku_fail">Shizuku aracılığıyla izin verilemedi. Çıkış kodu: %1$d</string>
+    <string name="permission_granted_shizuku_error">Shizuku aracılığıyla izin verilirken hata: %1$s</string>
+    <string name="permission_granted_root_success">İzin, Root aracılığıyla başarıyla verildi!</string>
+    <string name="permission_granted_root_check_failed">Root komutu çalıştırıldı, ancak izin kontrolü başarısız oldu. Lütfen uygulamayı yeniden başlatın.</string>
+    <string name="permission_granted_root_fail">Root aracılığıyla izin verilemedi. Çıkış kodu: %1$d</string>
+    <string name="permission_granted_root_error">Root aracılığıyla izin verilirken hata: %1$s</string>
+
+    <!-- Permission Warning Card -->
+    <string name="warning_permission_missing_title">İzin Eksik!</string>
+    <string name="warning_permission_missing_desc">Bu uygulamanın çalışabilmesi için WRITE_SECURE_SETTINGS izni gereklidir. Lütfen mevcut yöntemlerden birini kullanarak bu izni verin.</string>
+    <string name="button_show_permission_help">İzin Verme Seçeneklerini Göster</string>
+    <string name="warning_developer_options_disabled_config">Geliştirici seçenekleri devre dışı. USB Hata Ayıklama yapılandırılamaz.</string>
+
+    <string name="setting_enable_auto_revert">Belirli bir süre sonra otomatik geri almayı etkinleştir</string>
+    <string name="setting_auto_revert_delay">Geri alma gecikmesi (saniye):</string>
+    <string name="toast_reverting_dns_to">DNS, %2$d sn. içinde \n\"%1$s\" durumuna geri alınıyor…</string>
+    <string name="toast_reverting_usb_to">USB Hata Ayıklama, %2$d sn. içinde %1$s durumuna geri alınıyor…</string>
+    <string name="toast_revert_cancelled">Otomatik geri alma iptal edildi.</string>
+    <string name="on_state">Açık</string>
+    <string name="off_state">Kapalı</string>
+    <string name="auto_state">Otomatik</string>
+
+    <string name="dns_select_hostnames_for_cycle">Kutucuk döngüsüne dahil edilecek ana bilgisayar adlarını seçin:</string>
+    <string name="dns_add_custom_hostname_button">Özel Ana Bilgisayar Adı Ekle</string>
+    <string name="dns_edit_hostname_title">Ana Bilgisayar Adını Düzenle</string>
+    <string name="dns_add_hostname_title">Ana Bilgisayar Adı Ekle</string>
+    <string name="dns_hostname_name_label">Görünen Ad</string>
+    <string name="dns_hostname_value_label">Ana Bilgisayar Adı (ör., dns.example.com)</string>
+    <string name="dialog_save">Kaydet</string>
+    <string name="dialog_cancel">İptal</string>
+    <string name="button_edit">Düzenle</string>
+    <string name="button_delete">Sil</string>
+    <string name="error_hostname_name_empty">Görünen ad boş bırakılamaz.</string>
+    <string name="error_hostname_value_empty">Ana bilgisayar adı boş bırakılamaz.</string>
+    <string name="confirm_delete_hostname_title">Ana Bilgisayar Adı Silinsin mi?</string>
+    <string name="confirm_delete_hostname_message">\'%1$s\' adlı ana bilgisayar adını silmek istediğinizden emin misiniz?</string>
+
+    <!-- DNS Info Dialogs -->
+    <string name="dns_info_dialog_title">%1$s Hakkında</string>
+    <string name="button_info_dns">%1$s hakkında bilgi</string>
+    <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one veya 1.1.1.1), yüksek hızı ve gizlilik odaklılığıyla bilinir. İçeriği filtrelemez ve kullanıcı verilerini kaydetmemeyi taahhüt eder. Gizlilik ve performansa öncelik veren kullanıcılar için idealdir.</string>
+    <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com), reklamları, izleyicileri ve bilinen kötü amaçlı alan adlarını doğrudan DNS seviyesinde engeller. Bu, daha temiz ve güvenli bir gezinme deneyimi sağlar. Reklamları azaltmak ve gizliliğini korumak isteyen kullanıcılar için iyidir.</string>
+    <string name="dns_info_quad9">Quad9 (dns.quad9.net), kötü amaçlı yazılım, kimlik avı ve botnet\'lerle ilişkili alan adlarını engelleyerek güvenliğe odaklanır. Bu, çevrimiçi tehditlere karşı korumayı artırır. İnternet güvenliğinin en önemli öncelik olduğu kullanıcılar için uygundur.</string>
+    <string name="recommended_for_you">(Sizin için önerilir)</string>
+
+    <!-- About Dialog -->
+    <string name="about_version">Sürüm %1$s</string>
+    <string name="about_description">QuickTile Ayarları, bildirim panelinden ayarları doğrudan değiştirmek için kullanışlı Hızlı Ayarlar kutucukları sağlar.</string>
+    <string name="about_features_title">Özellikler</string>
+    <string name="about_feature_private_dns">• Özel ana bilgisayar adı destekli Özel DNS kutucuğu</string>
+    <string name="about_feature_usb_debugging">• Geliştirme için USB Hata Ayıklama kutucuğu</string>
+    <string name="about_feature_auto_revert">• Geçici değişiklikler için otomatik geri alma işlevi</string>
+    <string name="about_feature_custom_dns">• Dahili popüler DNS sağlayıcıları (Cloudflare, AdGuard, Quad9)</string>
+    <string name="about_developer_title">Geliştirici</string>
+    <string name="about_developer_info">RBN-Apps tarafından geliştirildi\nGitHub\'da bulunan açık kaynaklı bir projedir</string>
+    <string name="about_button_permission_help">İzin Kurulum Yardımı</string>
+
+    <!-- VPN Detection Settings -->
+    <string name="setting_vpn_detection_enabled">VPN bağlantılarında DNS\'i otomatik olarak devre dışı bırak</string>
+    <string name="setting_vpn_detection_mode">VPN Algılama Modu:</string>
+    <string name="vpn_detection_tile_only_title">Yalnızca Kutucuktan Algılama</string>
+    <string name="vpn_detection_tile_only_description">Hızlı Ayarlar açıldığında VPN bağlantılarını kontrol eder. Daha pil dostudur, ancak VPN bağlantılarını yalnızca Hızlı Ayarlar açıldığında algılar. Genellikle VPN\'i Hızlı Ayarlar üzerinden etkinleştiriyor veya devre dışı bırakıyorsanız, bu seçenek yeterlidir.</string>
+    <string name="vpn_detection_background_title">Arka Plan Hizmetiyle Algılama</string>
+    <string name="vpn_detection_background_description">VPN durumunu sürekli olarak izler. Anında tepki verir, ancak daha fazla pil kullanır ve aktif kalmak için kalıcı bir bildirim gösterir.</string>
+
+    <!-- VPN Monitoring Service -->
+    <string name="vpn_monitoring_channel_name">VPN İzleme</string>
+    <string name="vpn_monitoring_channel_description">Özel DNS ayarlarını otomatik olarak düzenlemek için VPN bağlantılarını izler</string>
+    <string name="vpn_monitoring_notification_title">VPN İzleme Aktif</string>
+    <string name="vpn_monitoring_status_connected">VPN bağlandı - Özel DNS Kapalı olarak ayarlandı</string>
+    <string name="vpn_monitoring_status_disconnected">VPN bağlantısı kesildi - Özel DNS geri yüklendi</string>
+
+    <!-- Notification Permission Dialog -->
+    <string name="notification_permission_dialog_title">Bildirimler İçin İzin Gerekli</string>
+    <string name="notification_permission_dialog_message">Arka planda VPN izleme için bildirim almak üzere, uygulama ayarlarından bu izni etkinleştirmeniz gerekir.\n\nİzni verdikten sonra, bildirimleri buradan etkinleştirebilirsiniz.</string>
+    <string name="notification_permission_dialog_settings_button">Ayarlar</string>
+    <string name="notification_permission_dialog_settings_description">Ayarları aç</string>
+</resources>

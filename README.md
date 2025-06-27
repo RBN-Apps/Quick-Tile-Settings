@@ -52,7 +52,7 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
       permission via ADB (Android Debug Bridge), Shizuku, or Root.
     * Convenient "Copy Command" buttons for ADB commands.
 * **Modern UI:** Built with Jetpack Compose, supporting dynamic color (Material You) on Android 12+.
-* **Localization:** Available in English and German.
+* **Localization:** Available in English, German and Turkish.
 
 ## Screenshots
 
