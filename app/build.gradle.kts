@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.rbn.qtsettings"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.rbn.qtsettings"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 6
         versionName = "1.1.2"
 
