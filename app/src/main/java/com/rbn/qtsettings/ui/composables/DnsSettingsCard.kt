@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -347,10 +348,16 @@ fun DnsHostnameRow(
                 Spacer(Modifier.size(48.dp))
             }
         } else {
-            IconButton(onClick = onEditClicked) {
+            IconButton(
+                onClick = onEditClicked,
+                modifier = Modifier.testTag("dns_edit_button_${entry.hostname}_${entry.name}")
+            ) {
                 Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.button_edit))
             }
-            IconButton(onClick = onDeleteClicked) {
+            IconButton(
+                onClick = onDeleteClicked,
+                modifier = Modifier.testTag("dns_delete_button_${entry.hostname}_${entry.name}")
+            ) {
                 Icon(
                     Icons.Filled.Delete,
                     contentDescription = stringResource(R.string.button_delete),

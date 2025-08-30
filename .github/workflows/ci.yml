@@ -73,9 +73,6 @@ jobs:
           path: app/build/reports/lint-results-debug.xml
           retention-days: 7
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug
-
       - name: Generate Job Summary
         if: always()
         run: |
@@ -109,3 +106,109 @@ jobs:
           else
             echo "- ❌ de-DE Changelog: NOT Found" >> $GITHUB_STEP_SUMMARY
           fi
+
+  instrumented-tests:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [ 35 ]
+        profile: [ "Nexus 6", "Nexus 10", "7.6in Foldable" ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Make gradlew executable (+ normalize endings)
+        run: |
+          chmod +x ./gradlew
+          if command -v dos2unix >/dev/null; then dos2unix ./gradlew || true; fi
+
+      - name: Enable KVM for hardware acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Cache AVD & SDK
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ runner.os }}-api-${{ matrix.api-level }}-arch-x86_64-profile-${{ matrix.profile }}
+
+      - name: Generate AVD snapshot for API ${{ matrix.api-level }} on ${{ matrix.profile }}
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: google_apis
+          profile: ${{ matrix.profile }}
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
+          disable-animations: false
+          script: echo "First boot complete; snapshot created."
+
+      - name: Run Instrumented Tests on API ${{ matrix.api-level }} on ${{ matrix.profile }}
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: google_apis
+          profile: ${{ matrix.profile }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
+          disable-animations: true
+          script: |
+            timeout --preserve-status 15m ./gradlew connectedDebugAndroidTest
+
+      - name: Upload Instrumented Test Results for API ${{ matrix.api-level }} on ${{ matrix.profile }}
+        if: always()
+        shell: bash
+        run: |
+          echo "## Instrumented Tests (API ${{ matrix.api-level }} - ${{ matrix.profile }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Suite                                   | Total | ✅ Pass | 🔴 Fail | ⚪ Skip | ⏱️ Duration (s) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --------------------------------------- | -----: | ------: | ------: | -----: | ----------: |" >> "$GITHUB_STEP_SUMMARY"
+          REPORT=$(find app/build -type f -path "*/connected/**/TEST-*.xml" | head -n1)
+          if [[ -f "$REPORT" ]]; then
+            NAME=$(grep -oP '<testsuite[^>]* name="\K[^"]+' "$REPORT" | head -1)
+            TOTAL=$(grep -oP 'tests="\K[0-9]+' "$REPORT" | head -1)
+            FAIL=$(grep -oP 'failures="\K[0-9]+' "$REPORT" | head -1)
+            ERR=$(grep -oP 'errors="\K[0-9]+' "$REPORT" | head -1)
+            SKIP=$(grep -oP 'skipped="\K[0-9]+' "$REPORT" | head -1 || echo 0)
+            TIME=$(grep -oP 'time="\K[0-9.]+' "$REPORT" | head -1)
+            PASSED=$((TOTAL - FAIL - ERR - SKIP))
+            echo "| $NAME | $TOTAL | $PASSED | $((FAIL+ERR)) | $SKIP | $TIME |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "_No instrumented test results found._" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Instrumented Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumented-test-results-api-${{ matrix.api-level }}-${{ matrix.profile }}
+          path: |
+            app/build/reports/androidTests/connected/**/*
+            app/build/outputs/androidTest-results/connected/**/*
+          retention-days: 7
