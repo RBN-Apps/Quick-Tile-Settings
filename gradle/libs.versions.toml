@@ -11,7 +11,7 @@ activityCompose = "1.11.0"
 composeBom = "2025.08.01"
 materialIconsExtended = "1.7.8"
 shizuku = "13.1.0"
-gson = "2.13.1"
+gson = "2.13.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
