@@ -128,7 +128,7 @@ jobs:
           java-version: '17'
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
@@ -148,7 +148,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Cache AVD & SDK
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: avd-cache
         with:
           path: |
