@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload Unit Test Results (XML)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: unit-test-results
           path: app/build/test-results/testDebugUnitTest/
@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload Lint Report (HTML)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: lint-report-debug-html
           path: app/build/reports/lint-results-debug.html
@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload Lint Report (XML)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: lint-report-debug-xml
           path: app/build/reports/lint-results-debug.xml
@@ -205,7 +205,7 @@ jobs:
 
       - name: Upload Instrumented Test Artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: instrumented-test-results-api-${{ matrix.api-level }}-${{ matrix.profile }}
           path: |
