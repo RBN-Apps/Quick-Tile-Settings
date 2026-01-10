@@ -38,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -62,8 +61,8 @@ fun MainScreen(
     val context = LocalContext.current
     val tilesUpdatedMessage = stringResource(R.string.toast_settings_saved_tiles_updated)
     val commandCopiedMessage = stringResource(R.string.toast_command_copied)
-    var showPermissionGrantDialog by remember { mutableStateOf(false) }
-    var showAboutDialog by remember { mutableStateOf(false) }
+    val showPermissionGrantDialog = remember { mutableStateOf(false) }
+    val showAboutDialog = remember { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
 
     val isDevOptionsEnabled by remember {
@@ -73,7 +72,7 @@ fun MainScreen(
     val helpShown by viewModel.helpShown.collectAsState()
     LaunchedEffect(hasWriteSecureSettings, helpShown) {
         if (!hasWriteSecureSettings && !helpShown) {
-            showPermissionGrantDialog = true
+            showPermissionGrantDialog.value = true
             viewModel.checkSystemStates(context)
         }
     }
@@ -102,10 +101,10 @@ fun MainScreen(
                 actions = {
                     IconButton(onClick = {
                         if (!hasWriteSecureSettings) {
-                            showPermissionGrantDialog = true
+                            showPermissionGrantDialog.value = true
                             viewModel.checkSystemStates(context)
                         } else {
-                            showAboutDialog = true
+                            showAboutDialog.value = true
                         }
                     }) {
                         Icon(
@@ -126,7 +125,7 @@ fun MainScreen(
         ) {
             if (!hasWriteSecureSettings) {
                 PermissionWarningCard(onGrantPermissionClick = {
-                    showPermissionGrantDialog = true
+                    showPermissionGrantDialog.value = true
                     viewModel.checkSystemStates(context)
                 })
             }
@@ -186,10 +185,10 @@ fun MainScreen(
         val appHasShizukuPermission by viewModel.appHasShizukuPermission.collectAsState()
         val isDeviceRooted by viewModel.isDeviceRooted.collectAsState()
 
-        if (showPermissionGrantDialog) {
+        if (showPermissionGrantDialog.value) {
             PermissionGrantDialog(
                 onDismissRequest = {
-                    showPermissionGrantDialog = false
+                    showPermissionGrantDialog.value = false
                     if (!hasWriteSecureSettings) {
                         viewModel.setHelpShown(true)
                     }
@@ -243,12 +242,12 @@ fun MainScreen(
     }
 
     // About Dialog
-    if (showAboutDialog) {
+    if (showAboutDialog.value) {
         AboutDialog(
-            onDismissRequest = { showAboutDialog = false },
+            onDismissRequest = { showAboutDialog.value = false },
             onOpenPermissionDialog = {
-                showAboutDialog = false
-                showPermissionGrantDialog = true
+                showAboutDialog.value = false
+                showPermissionGrantDialog.value = true
                 viewModel.checkSystemStates(context)
             }
         )
