@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
@@ -37,6 +38,13 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     val vpnDetectionEnabled = prefsManager.vpnDetectionEnabled
     val vpnDetectionMode = prefsManager.vpnDetectionMode
+
+    val networkTypeDetectionEnabled = prefsManager.networkTypeDetectionEnabled
+    val networkTypeDetectionMode = prefsManager.networkTypeDetectionMode
+    val dnsStateOnWifi = prefsManager.dnsStateOnWifi
+    val dnsHostnameOnWifi = prefsManager.dnsHostnameOnWifi
+    val dnsStateOnMobile = prefsManager.dnsStateOnMobile
+    val dnsHostnameOnMobile = prefsManager.dnsHostnameOnMobile
 
     val helpShown = prefsManager.helpShown
 
@@ -110,6 +118,37 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         prefsManager.setVpnDetectionMode(mode)
         manageVpnMonitoringService()
     }
+
+    fun setNetworkTypeDetectionEnabled(enabled: Boolean) {
+        prefsManager.setNetworkTypeDetectionEnabled(enabled)
+        manageNetworkMonitoringService()
+    }
+
+    fun setNetworkTypeDetectionMode(mode: String) {
+        if (mode == BACKGROUND_DETECTION) {
+            val context = getCurrentContext()
+            if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val hasNotificationPermission =
+                    androidx.core.content.ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                if (!hasNotificationPermission) {
+                    handleMissingNotificationPermission()
+                    return
+                }
+            }
+        }
+
+        prefsManager.setNetworkTypeDetectionMode(mode)
+        manageNetworkMonitoringService()
+    }
+
+    fun setDnsStateOnWifi(state: String) = prefsManager.setDnsStateOnWifi(state)
+    fun setDnsHostnameOnWifi(hostname: String?) = prefsManager.setDnsHostnameOnWifi(hostname)
+    fun setDnsStateOnMobile(state: String) = prefsManager.setDnsStateOnMobile(state)
+    fun setDnsHostnameOnMobile(hostname: String?) = prefsManager.setDnsHostnameOnMobile(hostname)
 
     private fun handleMissingNotificationPermission() {
         val context = getCurrentContext()
@@ -334,6 +373,39 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     fun initializeVpnMonitoring() {
         manageVpnMonitoringService()
+    }
+
+    private fun manageNetworkMonitoringService() {
+        viewModelScope.launch {
+            val context = getCurrentContext() ?: return@launch
+
+            val enabled = prefsManager.isNetworkTypeDetectionEnabled()
+            val mode = prefsManager.getNetworkTypeDetectionMode()
+
+            if (enabled && mode == BACKGROUND_DETECTION) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasNotificationPermission =
+                        androidx.core.content.ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ) == PackageManager.PERMISSION_GRANTED
+
+                    if (!hasNotificationPermission) {
+                        _requestNotificationPermission.value =
+                            _requestNotificationPermission.value + 1
+                        return@launch
+                    }
+                }
+
+                NetworkMonitoringService.startService(context)
+            } else {
+                NetworkMonitoringService.stopService(context)
+            }
+        }
+    }
+
+    fun initializeNetworkMonitoring() {
+        manageNetworkMonitoringService()
     }
 }
 
