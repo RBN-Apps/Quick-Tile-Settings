@@ -60,6 +60,8 @@ fun MainScreen(
     onRequestShizukuPermission: () -> Unit
 ) {
     val context = LocalContext.current
+    val tilesUpdatedMessage = stringResource(R.string.toast_settings_saved_tiles_updated)
+    val commandCopiedMessage = stringResource(R.string.toast_command_copied)
     var showPermissionGrantDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
@@ -163,7 +165,7 @@ fun MainScreen(
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(context.getString(R.string.toast_settings_saved_tiles_updated))
+                        snackbarHostState.showSnackbar(tilesUpdatedMessage)
                     }
                 },
                 modifier = Modifier
@@ -198,7 +200,7 @@ fun MainScreen(
                     clipboardManager.setPrimaryClip(clip)
                     Toast.makeText(
                         context,
-                        context.getString(R.string.toast_command_copied),
+                        commandCopiedMessage,
                         Toast.LENGTH_SHORT
                     )
                         .show()
