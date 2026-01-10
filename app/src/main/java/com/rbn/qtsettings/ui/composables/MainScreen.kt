@@ -25,10 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -38,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -60,8 +59,10 @@ fun MainScreen(
     onRequestShizukuPermission: () -> Unit
 ) {
     val context = LocalContext.current
-    var showPermissionGrantDialog by remember { mutableStateOf(false) }
-    var showAboutDialog by remember { mutableStateOf(false) }
+    val tilesUpdatedMessage = stringResource(R.string.toast_settings_saved_tiles_updated)
+    val commandCopiedMessage = stringResource(R.string.toast_command_copied)
+    val showPermissionGrantDialog = remember { mutableStateOf(false) }
+    val showAboutDialog = remember { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
 
     val isDevOptionsEnabled by remember {
@@ -71,7 +72,7 @@ fun MainScreen(
     val helpShown by viewModel.helpShown.collectAsState()
     LaunchedEffect(hasWriteSecureSettings, helpShown) {
         if (!hasWriteSecureSettings && !helpShown) {
-            showPermissionGrantDialog = true
+            showPermissionGrantDialog.value = true
             viewModel.checkSystemStates(context)
         }
     }
@@ -100,10 +101,10 @@ fun MainScreen(
                 actions = {
                     IconButton(onClick = {
                         if (!hasWriteSecureSettings) {
-                            showPermissionGrantDialog = true
+                            showPermissionGrantDialog.value = true
                             viewModel.checkSystemStates(context)
                         } else {
-                            showAboutDialog = true
+                            showAboutDialog.value = true
                         }
                     }) {
                         Icon(
@@ -124,12 +125,12 @@ fun MainScreen(
         ) {
             if (!hasWriteSecureSettings) {
                 PermissionWarningCard(onGrantPermissionClick = {
-                    showPermissionGrantDialog = true
+                    showPermissionGrantDialog.value = true
                     viewModel.checkSystemStates(context)
                 })
             }
 
-            TabRow(selectedTabIndex = pagerState.currentPage) {
+            SecondaryTabRow(selectedTabIndex = pagerState.currentPage) {
                 tabTitles.forEachIndexed { index, title ->
                     Tab(
                         selected = pagerState.currentPage == index,
@@ -163,7 +164,7 @@ fun MainScreen(
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(context.getString(R.string.toast_settings_saved_tiles_updated))
+                        snackbarHostState.showSnackbar(tilesUpdatedMessage)
                     }
                 },
                 modifier = Modifier
@@ -184,10 +185,10 @@ fun MainScreen(
         val appHasShizukuPermission by viewModel.appHasShizukuPermission.collectAsState()
         val isDeviceRooted by viewModel.isDeviceRooted.collectAsState()
 
-        if (showPermissionGrantDialog) {
+        if (showPermissionGrantDialog.value) {
             PermissionGrantDialog(
                 onDismissRequest = {
-                    showPermissionGrantDialog = false
+                    showPermissionGrantDialog.value = false
                     if (!hasWriteSecureSettings) {
                         viewModel.setHelpShown(true)
                     }
@@ -198,7 +199,7 @@ fun MainScreen(
                     clipboardManager.setPrimaryClip(clip)
                     Toast.makeText(
                         context,
-                        context.getString(R.string.toast_command_copied),
+                        commandCopiedMessage,
                         Toast.LENGTH_SHORT
                     )
                         .show()
@@ -241,12 +242,12 @@ fun MainScreen(
     }
 
     // About Dialog
-    if (showAboutDialog) {
+    if (showAboutDialog.value) {
         AboutDialog(
-            onDismissRequest = { showAboutDialog = false },
+            onDismissRequest = { showAboutDialog.value = false },
             onOpenPermissionDialog = {
-                showAboutDialog = false
-                showPermissionGrantDialog = true
+                showAboutDialog.value = false
+                showPermissionGrantDialog.value = true
                 viewModel.checkSystemStates(context)
             }
         )
