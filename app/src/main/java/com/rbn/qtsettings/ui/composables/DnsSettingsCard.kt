@@ -71,8 +71,8 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
     val dnsHostnameOnWifi by viewModel.dnsHostnameOnWifi.collectAsState()
     val dnsStateOnMobile by viewModel.dnsStateOnMobile.collectAsState()
     val dnsHostnameOnMobile by viewModel.dnsHostnameOnMobile.collectAsState()
-    var showDnsInfoDialogFor by remember { mutableStateOf<DnsHostnameEntry?>(null) }
-    var showNetworkTypeInfoDialog by remember { mutableStateOf(false) }
+    val showDnsInfoDialogFor = remember { mutableStateOf<DnsHostnameEntry?>(null) }
+    val showNetworkTypeInfoDialog = remember { mutableStateOf(false) }
 
 
     Card(
@@ -126,7 +126,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         },
                         onEditClicked = { viewModel.startEditingHostname(entry) },
                         onDeleteClicked = { viewModel.setHostnamePendingDeletion(entry) },
-                        onInfoClicked = { showDnsInfoDialogFor = entry }
+                        onInfoClicked = { showDnsInfoDialogFor.value = entry }
                     )
                 }
 
@@ -274,7 +274,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                             style = MaterialTheme.typography.titleMedium,
                         )
                     }
-                    IconButton(onClick = { showNetworkTypeInfoDialog = true }) {
+                    IconButton(onClick = { showNetworkTypeInfoDialog.value = true }) {
                         Icon(
                             Icons.Outlined.Info,
                             contentDescription = stringResource(R.string.network_type_info_title)
@@ -459,18 +459,18 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
             }
         }
     }
-    showDnsInfoDialogFor?.let { entry ->
+    showDnsInfoDialogFor.value?.let { entry ->
         if (entry.isPredefined && entry.descriptionResId != null) {
             DnsInfoDialog(
                 entry = entry,
-                onDismissRequest = { showDnsInfoDialogFor = null }
+                onDismissRequest = { showDnsInfoDialogFor.value = null }
             )
         }
     }
 
-    if (showNetworkTypeInfoDialog) {
+    if (showNetworkTypeInfoDialog.value) {
         NetworkTypeInfoDialog(
-            onDismissRequest = { showNetworkTypeInfoDialog = false }
+            onDismissRequest = { showNetworkTypeInfoDialog.value = false }
         )
     }
 }
