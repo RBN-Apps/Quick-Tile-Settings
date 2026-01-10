@@ -7,6 +7,7 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.utils.Constants
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -67,6 +68,40 @@ class PreferencesManager private constructor(context: Context) {
                 ?: TILE_ONLY_DETECTION
         )
     val vpnDetectionMode: StateFlow<String> = _vpnDetectionMode.asStateFlow()
+
+    // Network Type Detection Settings
+    private val _networkTypeDetectionEnabled =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, false))
+    val networkTypeDetectionEnabled: StateFlow<Boolean> = _networkTypeDetectionEnabled.asStateFlow()
+
+    private val _networkTypeDetectionMode =
+        MutableStateFlow(
+            sharedPreferences.getString(KEY_NETWORK_TYPE_DETECTION_MODE, TILE_ONLY_DETECTION)
+                ?: TILE_ONLY_DETECTION
+        )
+    val networkTypeDetectionMode: StateFlow<String> = _networkTypeDetectionMode.asStateFlow()
+
+    private val _dnsStateOnWifi =
+        MutableStateFlow(
+            sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, Constants.DNS_MODE_OFF)
+                ?: Constants.DNS_MODE_OFF
+        )
+    val dnsStateOnWifi: StateFlow<String> = _dnsStateOnWifi.asStateFlow()
+
+    private val _dnsHostnameOnWifi =
+        MutableStateFlow(sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_WIFI, null))
+    val dnsHostnameOnWifi: StateFlow<String?> = _dnsHostnameOnWifi.asStateFlow()
+
+    private val _dnsStateOnMobile =
+        MutableStateFlow(
+            sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, Constants.DNS_MODE_AUTO)
+                ?: Constants.DNS_MODE_AUTO
+        )
+    val dnsStateOnMobile: StateFlow<String> = _dnsStateOnMobile.asStateFlow()
+
+    private val _dnsHostnameOnMobile =
+        MutableStateFlow(sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_MOBILE, null))
+    val dnsHostnameOnMobile: StateFlow<String?> = _dnsHostnameOnMobile.asStateFlow()
 
     // Help Shown
     private val _helpShown = MutableStateFlow(sharedPreferences.getBoolean(KEY_HELP_SHOWN, false))
@@ -131,6 +166,36 @@ class PreferencesManager private constructor(context: Context) {
     fun setVpnDetectionMode(mode: String) {
         sharedPreferences.edit { putString(KEY_VPN_DETECTION_MODE, mode) }
         _vpnDetectionMode.value = mode
+    }
+
+    fun setNetworkTypeDetectionEnabled(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, enabled) }
+        _networkTypeDetectionEnabled.value = enabled
+    }
+
+    fun setNetworkTypeDetectionMode(mode: String) {
+        sharedPreferences.edit { putString(KEY_NETWORK_TYPE_DETECTION_MODE, mode) }
+        _networkTypeDetectionMode.value = mode
+    }
+
+    fun setDnsStateOnWifi(state: String) {
+        sharedPreferences.edit { putString(KEY_DNS_STATE_ON_WIFI, state) }
+        _dnsStateOnWifi.value = state
+    }
+
+    fun setDnsHostnameOnWifi(hostname: String?) {
+        sharedPreferences.edit { putString(KEY_DNS_HOSTNAME_ON_WIFI, hostname) }
+        _dnsHostnameOnWifi.value = hostname
+    }
+
+    fun setDnsStateOnMobile(state: String) {
+        sharedPreferences.edit { putString(KEY_DNS_STATE_ON_MOBILE, state) }
+        _dnsStateOnMobile.value = state
+    }
+
+    fun setDnsHostnameOnMobile(hostname: String?) {
+        sharedPreferences.edit { putString(KEY_DNS_HOSTNAME_ON_MOBILE, hostname) }
+        _dnsHostnameOnMobile.value = hostname
     }
 
     private fun sortDnsHostnames(hostnames: List<DnsHostnameEntry>): List<DnsHostnameEntry> {
@@ -298,6 +363,27 @@ class PreferencesManager private constructor(context: Context) {
         sharedPreferences.getString(KEY_VPN_DETECTION_MODE, TILE_ONLY_DETECTION)
             ?: TILE_ONLY_DETECTION
 
+    fun isNetworkTypeDetectionEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, false)
+
+    fun getNetworkTypeDetectionMode(): String =
+        sharedPreferences.getString(KEY_NETWORK_TYPE_DETECTION_MODE, TILE_ONLY_DETECTION)
+            ?: TILE_ONLY_DETECTION
+
+    fun getDnsStateOnWifi(): String =
+        sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, Constants.DNS_MODE_OFF)
+            ?: Constants.DNS_MODE_OFF
+
+    fun getDnsHostnameOnWifi(): String? =
+        sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_WIFI, null)
+
+    fun getDnsStateOnMobile(): String =
+        sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, Constants.DNS_MODE_AUTO)
+            ?: Constants.DNS_MODE_AUTO
+
+    fun getDnsHostnameOnMobile(): String? =
+        sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_MOBILE, null)
+
     companion object {
         private const val KEY_DNS_TOGGLE_OFF = "dns_toggle_off"
         private const val KEY_DNS_TOGGLE_AUTO = "dns_toggle_auto"
@@ -315,6 +401,13 @@ class PreferencesManager private constructor(context: Context) {
 
         private const val KEY_VPN_DETECTION_ENABLED = "vpn_detection_enabled"
         private const val KEY_VPN_DETECTION_MODE = "vpn_detection_mode"
+
+        private const val KEY_NETWORK_TYPE_DETECTION_ENABLED = "network_type_detection_enabled"
+        private const val KEY_NETWORK_TYPE_DETECTION_MODE = "network_type_detection_mode"
+        private const val KEY_DNS_STATE_ON_WIFI = "dns_state_on_wifi"
+        private const val KEY_DNS_HOSTNAME_ON_WIFI = "dns_hostname_on_wifi"
+        private const val KEY_DNS_STATE_ON_MOBILE = "dns_state_on_mobile"
+        private const val KEY_DNS_HOSTNAME_ON_MOBILE = "dns_hostname_on_mobile"
 
         const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
         const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
