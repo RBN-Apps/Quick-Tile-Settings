@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">QuickTile Settings</string>
+
+    <!-- Tile Labels -->
+    <string name="tile_label_private_dns">Частный DNS</string>
+    <string name="tile_label_usb_debugging">Отладка по USB</string>
+    <string name="dns_state_reverted_to">DNS возвращен к %1$s</string>
+    <string name="usb_state_reverted_to">Отладка по USB возвращена к %1$s</string>
+    <string name="toast_developer_options_disabled_revert_cancelled">Параметры разработчика выкл. Откат USB отменен.</string>
+    <string name="tile_subtitle_reverting_in_seconds">Возврат к %1$s через %2$d сек…</string>
+
+    <!-- DNS States -->
+    <string name="dns_state_off">DNS Выкл.</string>
+    <string name="dns_state_auto">DNS Авто</string>
+    <string name="dns_state_on_with_host">DNS Вкл. (Hostname)</string>
+    <string name="dns_state_unknown">Статус DNS неизвестен</string>
+    <string name="dns_hostname_label">Имя хоста DNS</string>
+
+    <!-- USB Debugging States -->
+    <string name="usb_state_on">Отладка по USB Вкл</string>
+    <string name="usb_state_off">Отладка по USB Выкл</string>
+    <string name="usb_dev_options_off">Параметры разработчика выкл</string>
+
+    <!-- UI Settings Screen -->
+    <string name="setting_title_private_dns">Плитка «Частный DNS»</string>
+    <string name="setting_title_usb_debugging">Плитка «Отладка по USB»</string>
+    <string name="setting_desc_tile_cycles">Выберите состояния для цикла плитки:</string>
+    <string name="button_save_apply_settings">Применить настройки</string>
+    <string name="tab_title_dns">Частный DNS</string>
+    <string name="tab_title_usb">Отладка по USB</string>
+
+    <!-- Toasts & Warnings -->
+    <string name="toast_permission_not_granted_adb">Разрешение отсутствует. Предоставьте его через ADB.</string>
+    <string name="toast_developer_options_disabled">Параметры разработчика отключены.</string>
+    <string name="toast_error_saving_settings">Ошибка при сохранении настроек.</string>
+    <string name="toast_no_states_enabled_dns">Не выбрано ни одного состояния DNS для переключения.</string>
+    <string name="toast_no_states_enabled_usb">Не выбрано ни одного состояния USB для переключения.</string>
+    <string name="toast_hostname_required">Для включения DNS требуется имя хоста.</string>
+    <string name="toast_settings_saved_tiles_updated">Настройки сохранены. Плитки обновятся при следующем открытии панели быстрых настроек.</string>
+    <string name="warning_hostname_blank">Имя хоста не может быть пустым, если включен режим «DNS Вкл».</string>
+    <string name="warning_at_least_one_usb_option">Должен быть выбран хотя бы один статус USB.</string>
+    <string name="toast_command_copied">Команда скопирована!</string>
+
+    <!-- Permission Grant Dialog -->
+    <string name="permission_grant_dialog_title">Требуется разрешение</string>
+    <string name="permission_grant_dialog_intro">Для изменения системных настроек, таких как Частный DNS и Отладка по USB, этому приложению требуется специальное разрешение WRITE_SECURE_SETTINGS. Пожалуйста, выберите способ его предоставления ниже:</string>
+    <string name="help_dialog_after_grant">После предоставления разрешения перезапустите приложение или заново откройте панель быстрых настроек для работы плиток.</string>
+    <string name="help_button_desc">Справка / Предоставить разрешение</string>
+    <string name="button_open_developer_options">Открыть параметры разработчика</string>
+    <string name="dialog_close">Закрыть</string>
+
+    <!-- ADB Method -->
+    <string name="permission_method_adb_title">Способ %1$d: ADB (Android Debug Bridge) %2$s</string>
+    <string name="permission_method_adb_desc">Это стандартный способ, для которого требуется компьютер с настроенным ADB.</string>
+    <string name="button_show_adb_instructions">Показать инструкции ADB</string>
+    <string name="adb_instructions_title">Инструкции ADB</string>
+    <string name="adb_instructions_intro">Подключите устройство к компьютеру с настроенным ADB. Убедитесь, что на вашем устройстве включены Параметры разработчика и Отладка по USB.</string>
+    <string name="help_dialog_method_1_title">Вариант А: Предоставить для уже установленного приложения</string>
+    <string name="help_dialog_how_to_grant_via_adb">Выполните следующую команду в терминале или командной строке:</string>
+    <string name="button_copy_grant_command">Копировать команду разрешений</string>
+    <string name="help_dialog_method_2_title">Вариант Б: Установка сразу с разрешениями</string>
+    <string name="help_dialog_how_to_install_via_adb">Сначала удалите текущую версию, затем используйте эту команду (замените path/to/your/app.apk на реальный путь к файлу APK):</string>
+    <string name="button_copy_install_command">Копировать команду установки</string>
+    <string name="help_dialog_apk_path_note">(Примечание: для команды установки вам понадобится файл APK. Если вы собрали приложение самостоятельно, обычно оно находится в app/build/outputs/apk/debug/ или app/build/outputs/apk/release/. Вы также можете скачать последнюю версию на GitHub.)</string>
+    <string name="github_releases_link_text">Скачать последнюю версию на GitHub</string>
+    <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
+    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
+    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
+    <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
+
+    <!-- Shizuku Method -->
+    <string name="permission_method_shizuku_title">Способ %1$d: Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku доступен, и у этого приложения есть разрешение на его использование. Вы можете попробовать предоставить WRITE_SECURE_SETTINGS.</string>
+    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
+    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
+    <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
+    <string name="shizuku_not_available_detailed">Shizuku недоступен или не запущен. Пожалуйста, сначала установите и запустите Shizuku.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Этому приложению требуется разрешение от Shizuku для продолжения. Пожалуйста, запросите его.</string>
+    <string name="button_request_shizuku_permission">Запросить разрешение Shizuku</string>
+    <string name="button_grant_with_shizuku">Предоставить через Shizuku</string>
+    <string name="shizuku_not_available">Shizuku недоступен или не запущен.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Разрешение Shizuku не предоставлено этому приложению. Пожалуйста, сначала предоставьте его через приложение Shizuku или по запросу.</string>
+    <string name="shizuku_permission_granted_to_app">Разрешение Shizuku предоставлено этому приложению.</string>
+    <string name="shizuku_permission_denied_to_app">В разрешении Shizuku для этого приложения отказано.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku недоступен или не готов.</string>
+    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
+
+    <!-- Root Method -->
+    <string name="permission_method_root_title">Способ %1$d: Root %2$s</string>
+    <string name="root_ready_to_grant_desc">Ваше устройство имеет Root-права. Вы можете попробовать предоставить WRITE_SECURE_SETTINGS, используя привилегии суперпользователя.</string>
+    <string name="device_not_rooted_detailed">Похоже, ваше устройство не имеет Root-прав или доступ суперпользователя не был предоставлен. Этот способ недоступен.</string>
+    <string name="button_grant_with_root">Предоставить через Root</string>
+    <string name="device_not_rooted">Устройство не имеет Root-прав.</string>
+
+    <!-- Generic Permission Grant Results -->
