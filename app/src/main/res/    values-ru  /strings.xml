@@ -41,6 +41,7 @@
     <string name="warning_at_least_one_usb_option">Должен быть выбран хотя бы один статус USB.</string>
     <string name="toast_command_copied">Команда скопирована!</string>
 
+
     <!-- Permission Grant Dialog -->
     <string name="permission_grant_dialog_title">Требуется разрешение</string>
     <string name="permission_grant_dialog_intro">Для изменения системных настроек, таких как Частный DNS и Отладка по USB, этому приложению требуется специальное разрешение WRITE_SECURE_SETTINGS. Пожалуйста, выберите способ его предоставления ниже:</string>
@@ -93,3 +94,85 @@
     <string name="device_not_rooted">Устройство не имеет Root-прав.</string>
 
     <!-- Generic Permission Grant Results -->
+    <string name="permission_granted_shizuku_success">Разрешение успешно предоставлено через Shizuku!</string>
+    <string name="permission_granted_shizuku_check_failed">Команда Shizuku выполнена, но проверка разрешений не удалась. Пожалуйста, перезапустите приложение.</string>
+    <string name="permission_granted_shizuku_fail">Не удалось предоставить разрешение через Shizuku. Код ошибки: %1$d</string>
+    <string name="permission_granted_shizuku_error">Ошибка при предоставлении разрешения через Shizuku: %1$s</string>
+    <string name="permission_granted_root_success">Разрешение успешно предоставлено через Root!</string>
+    <string name="permission_granted_root_check_failed">Команда Root выполнена, но проверка разрешений не удалась. Пожалуйста, перезапустите приложение.</string>
+    <string name="permission_granted_root_fail">Не удалось предоставить разрешение через Root. Код ошибки: %1$d</string>
+    <string name="permission_granted_root_error">Ошибка при предоставлении разрешения через Root: %1$s</string>
+
+    <!-- Permission Warning Card -->
+    <string name="warning_permission_missing_title">Разрешение отсутствует!</string>
+    <string name="warning_permission_missing_desc">Для работы этого приложения требуется разрешение WRITE_SECURE_SETTINGS. Пожалуйста, предоставьте его одним из доступных способов.</string>
+    <string name="button_show_permission_help">Показать варианты предоставления</string>
+    <string name="warning_developer_options_disabled_config">Параметры разработчика отключены. Настройка отладки по USB невозможна.</string>
+
+    <string name="setting_enable_auto_revert">Включить автооткат после задержки</string>
+    <string name="setting_auto_revert_delay">Задержка отката (в секундах):</string>
+    <string name="toast_reverting_dns_to">Откат DNS на \n\"%1$s\" через %2$d сек…</string>
+    <string name="toast_reverting_usb_to">Откат отладки по USB на %1$s через %2$d сек…</string>
+    <string name="toast_revert_cancelled">Автооткат отменён.</string>
+    <string name="on_state">Вкл.</string>
+    <string name="off_state">Выкл.</string>
+    <string name="auto_state">Авто</string>
+
+    <string name="dns_select_hostnames_for_cycle">Выберите хосты для переключения в плитке:</string>
+    <string name="dns_add_custom_hostname_button">Добавить свой хост</string>
+    <string name="dns_edit_hostname_title">Изменить хост</string>
+    <string name="dns_add_hostname_title">Добавить хост</string>
+    <string name="dns_hostname_name_label">Отображаемое имя</string>
+    <string name="dns_hostname_value_label">Хост (например, dns.example.com)</string>
+    <string name="dialog_save">Сохранить</string>
+    <string name="dialog_cancel">Отмена</string>
+    <string name="button_edit">Изменить</string>
+    <string name="button_delete">Удалить</string>
+    <string name="error_hostname_name_empty">Отображаемое имя не может быть пустым.</string>
+    <string name="error_hostname_value_empty">Хост не может быть пустым.</string>
+    <string name="confirm_delete_hostname_title">Удалить хост?</string>
+    <string name="confirm_delete_hostname_message">Вы уверены, что хотите удалить \'%1$s\'?</string>
+
+    <!-- DNS Info Dialogs -->
+    <string name="dns_info_dialog_title">О %1$s</string>
+    <string name="button_info_dns">Информация о %1$s</string>
+    <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one или 1.1.1.1) известен своей высокой скоростью и упором на конфиденциальность. Он не фильтрует контент и обещает не хранить логи данных. Идеален для тех, кто ценит приватность и производительность.</string>
+    <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) блокирует рекламу, трекеры и вредоносные домены на уровне DNS. Это делает работу в сети чище и безопаснее. Подходит пользователям, которые хотят избавиться от рекламы и защитить частную жизнь.</string>
+    <string name="dns_info_quad9">Quad9 (dns.quad9.net) фокусируется на безопасности, блокируя домены, связанные с вредоносным ПО, фишингом и ботнетами. Это усиливает защиту от онлайн-угроз. Рекомендуется тем, для кого безопасность в интернете является приоритетом.</string>
+    <string name="recommended_for_you">(Рекомендуется вам)</string>
+
+    <!-- About Dialog -->
+    <string name="about_version">Версия %1$s</string>
+    <string name="about_description">QuickTile Settings предоставляет удобные плитки быстрых настроек для переключения параметров прямо из панели уведомлений.</string>
+    <string name="about_features_title">Возможности</string>
+    <string name="about_feature_private_dns">• Плитка «Частный DNS» с поддержкой своих хостов</string>
+    <string name="about_feature_usb_debugging">• Плитка «Отладка по USB» для разработки</string>
+    <string name="about_feature_auto_revert">• Функция автоотката для временных изменений</string>
+    <string name="about_feature_custom_dns">• Встроенные популярные DNS-провайдеры (Cloudflare, AdGuard, Quad9)</string>
+    <string name="about_developer_title">Разработчик</string>
+    <string name="about_developer_info">Разработано RBN-Apps\nOpen-source проект доступен на GitHub</string>
+    <string name="about_button_github" translatable="false">GitHub</string>
+    <string name="about_button_fdroid" translatable="false">F-Droid</string>
+    <string name="about_button_permission_help">Справка по настройке разрешений</string>
+
+    <!-- VPN Detection Settings -->
+    <string name="setting_vpn_detection_enabled">Автоматически отключать DNS при подключении к VPN</string>
+    <string name="setting_vpn_detection_mode">Режим обнаружения VPN:</string>
+    <string name="vpn_detection_tile_only_title">Только через плитку</string>
+    <string name="vpn_detection_tile_only_description">Проверяет наличие VPN при открытии быстрых настроек. Это экономит заряд батареи, но VPN обнаруживается только при открытии шторки. Если вы обычно включаете или выключаете VPN через быстрые настройки, этого варианта будет достаточно.</string>
+    <string name="vpn_detection_background_title">Фоновая служба</string>
+    <string name="vpn_detection_background_description">Постоянно отслеживает статус VPN. Обеспечивает мгновенную реакцию, но расходует больше заряда батареи и требует постоянного уведомления для работы в фоне.</string>
+
+    <!-- VPN Monitoring Service -->
+    <string name="vpn_monitoring_channel_name">Мониторинг VPN</string>
+    <string name="vpn_monitoring_channel_description">Отслеживает VPN-подключения для автоматической настройки Частного DNS</string>
+    <string name="vpn_monitoring_notification_title">Мониторинг VPN активен</string>
+    <string name="vpn_monitoring_status_connected">VPN подключен — Частный DNS выключен</string>
+    <string name="vpn_monitoring_status_disconnected">VPN отключен — Частный DNS восстановлен</string>
+
+    <!-- Notification Permission Dialog -->
+    <string name="notification_permission_dialog_title">Уведомления требуют разрешения</string>
+    <string name="notification_permission_dialog_message">Для получения уведомлений о фоновом мониторинге VPN необходимо включить разрешение в настройках приложения.\n\nКак только вы предоставите разрешение, вы сможете включить уведомления здесь.</string>
+    <string name="notification_permission_dialog_settings_button">Настройки</string>
+    <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
+</resources>
