@@ -91,22 +91,17 @@ class NetworkMonitoringService : Service() {
     }
 
     private fun startNetworkMonitoring() {
-        // Initialize current network type
         currentNetworkType = NetworkTypeDetectionUtils.getCurrentNetworkType(this)
 
-        // Check if we need to restore saved state
         val savedNetworkType = getSavedNetworkType()
         if (savedNetworkType != null && savedNetworkType != currentNetworkType) {
-            // Network changed while service was stopped, apply settings
             handleNetworkTypeChange(currentNetworkType)
         }
 
-        // Save current network type
         saveNetworkType(currentNetworkType)
 
         registerNetworkCallback()
 
-        // Periodic check as backup
         serviceJob = serviceScope.launch {
             while (isActive) {
                 try {
@@ -152,7 +147,6 @@ class NetworkMonitoringService : Service() {
         val oldNetworkType = currentNetworkType
         currentNetworkType = newNetworkType
 
-        // Save current network type
         saveNetworkType(newNetworkType)
 
         Log.i(TAG, "Network type changed from $oldNetworkType to $newNetworkType")
@@ -164,7 +158,6 @@ class NetworkMonitoringService : Service() {
             return
         }
 
-        // Apply DNS settings based on new network type
         when (newNetworkType) {
             NETWORK_TYPE_WIFI -> {
                 val dnsState = prefsManager.getDnsStateOnWifi()
