@@ -21,7 +21,11 @@ import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
+import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_MOBILE
+import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_NONE
+import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
+import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.utils.VpnDetectionUtils
 
@@ -35,6 +39,8 @@ class PrivateDnsTileService : TileService() {
 
     private var isVpnConnected = false
     private var vpnMonitorTimer: CountDownTimer? = null
+    private var currentNetworkType: String = NETWORK_TYPE_NONE
+    private var networkTypeMonitorTimer: CountDownTimer? = null
 
     private var dnsSettingsObserver: ContentObserver? = null
 
@@ -47,6 +53,8 @@ class PrivateDnsTileService : TileService() {
         super.onStartListening()
         initializeVpnState()
         startVpnMonitoring()
+        initializeNetworkTypeState()
+        startNetworkTypeMonitoring()
         startObservingDnsSettings()
         updateTile()
     }
@@ -544,6 +552,7 @@ class PrivateDnsTileService : TileService() {
     override fun onStopListening() {
         super.onStopListening()
         stopVpnMonitoring()
+        stopNetworkTypeMonitoring()
         stopObservingDnsSettings()
     }
 
@@ -552,6 +561,98 @@ class PrivateDnsTileService : TileService() {
         revertTimer?.cancel()
         revertTimer = null
         stopVpnMonitoring()
+        stopNetworkTypeMonitoring()
         stopObservingDnsSettings()
+    }
+
+    private fun initializeNetworkTypeState() {
+        if (!prefsManager.isNetworkTypeDetectionEnabled()) {
+            currentNetworkType = NETWORK_TYPE_NONE
+            return
+        }
+
+        val detectionMode = prefsManager.getNetworkTypeDetectionMode()
+        if (detectionMode != TILE_ONLY_DETECTION) {
+            return
+        }
+
+        if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
+            return
+        }
+
+        currentNetworkType = NetworkTypeDetectionUtils.getCurrentNetworkType(this)
+    }
+
+    private fun startNetworkTypeMonitoring() {
+        if (!prefsManager.isNetworkTypeDetectionEnabled() ||
+            prefsManager.getNetworkTypeDetectionMode() != TILE_ONLY_DETECTION
+        ) {
+            return
+        }
+
+        if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
+            return
+        }
+
+        networkTypeMonitorTimer?.cancel()
+        networkTypeMonitorTimer = object : CountDownTimer(Long.MAX_VALUE, 2000) { // Check every 2 seconds
+            override fun onTick(millisUntilFinished: Long) {
+                val detectedNetworkType = NetworkTypeDetectionUtils.getCurrentNetworkType(
+                    this@PrivateDnsTileService
+                )
+
+                if (detectedNetworkType != currentNetworkType) {
+                    handleNetworkTypeChange(detectedNetworkType)
+                    currentNetworkType = detectedNetworkType
+                    updateTile()
+                }
+            }
+
+            override fun onFinish() {
+            }
+        }.start()
+    }
+
+    private fun stopNetworkTypeMonitoring() {
+        networkTypeMonitorTimer?.cancel()
+        networkTypeMonitorTimer = null
+    }
+
+    private fun handleNetworkTypeChange(newNetworkType: String) {
+        // Don't apply DNS changes if VPN is active (VPN takes priority)
+        if (isVpnConnected) {
+            Log.d("PrivateDnsTile", "VPN is active, skipping network type DNS change")
+            return
+        }
+
+        Log.i("PrivateDnsTile", "Network type changed to: $newNetworkType")
+
+        when (newNetworkType) {
+            NETWORK_TYPE_WIFI -> {
+                val dnsState = prefsManager.getDnsStateOnWifi()
+                val dnsHostname = prefsManager.getDnsHostnameOnWifi()
+                NetworkTypeDetectionUtils.setPrivateDnsForNetworkType(
+                    this,
+                    NETWORK_TYPE_WIFI,
+                    dnsState,
+                    dnsHostname
+                )
+            }
+
+            NETWORK_TYPE_MOBILE -> {
+                val dnsState = prefsManager.getDnsStateOnMobile()
+                val dnsHostname = prefsManager.getDnsHostnameOnMobile()
+                NetworkTypeDetectionUtils.setPrivateDnsForNetworkType(
+                    this,
+                    NETWORK_TYPE_MOBILE,
+                    dnsState,
+                    dnsHostname
+                )
+            }
+
+            NETWORK_TYPE_NONE -> {
+                Log.d("PrivateDnsTile", "No active network")
+            }
+        }
     }
 }

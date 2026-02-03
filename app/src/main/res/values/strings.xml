@@ -175,4 +175,33 @@
     <string name="notification_permission_dialog_message">To receive notifications for background VPN monitoring, you must enable the permission in app settings.\n\nOnce you have granted the permission, you can enable notifications here.</string>
     <string name="notification_permission_dialog_settings_button">Settings</string>
     <string name="notification_permission_dialog_settings_description">Open settings</string>
+
+    <!-- Network Type Detection Settings -->
+    <string name="setting_network_type_detection_enabled">Auto-switch DNS based on network type</string>
+    <string name="setting_network_type_detection_description">Automatically change Private DNS settings when switching between WiFi and mobile data</string>
+    <string name="setting_network_type_detection_mode">Network Detection Mode:</string>
+    <string name="network_type_detection_tile_only_title">Tile-Only Detection</string>
+    <string name="network_type_detection_tile_only_description">Checks network type when opening Quick Settings. Battery-friendly, but only detects network changes when Quick Settings are opened.</string>
+    <string name="network_type_detection_background_title">Background Service Detection</string>
+    <string name="network_type_detection_background_description">Continuously monitors network type changes. Instant response when switching networks, but uses more battery and shows a persistent notification.</string>
+
+    <string name="setting_dns_state_on_wifi">DNS on WiFi:</string>
+    <string name="setting_dns_state_on_mobile">DNS on Mobile Data:</string>
+    <string name="setting_select_hostname">Select hostname…</string>
+
+    <string name="dns_mode_off_label">Off</string>
+    <string name="dns_mode_auto_label">Auto</string>
+    <string name="dns_mode_hostname_label">Specific Hostname</string>
+
+    <string name="network_type_info_title">Network Type Detection</string>
+    <string name="network_type_info_message">This feature automatically switches Private DNS settings based on whether you\'re connected to WiFi or mobile data.\n\nVPN Priority: When a VPN is active, VPN detection takes priority and DNS will be set to Off regardless of network type settings.\n\nExample use case: If your home WiFi router uses NextDNS, set \"DNS on WiFi\" to Off. Set \"DNS on Mobile Data\" to Auto or a specific hostname for protection when on cellular networks.</string>
+
+    <!-- Network Monitoring Service -->
+    <string name="network_monitoring_channel_name">Network Type Monitoring</string>
+    <string name="network_monitoring_channel_description">Monitors network type changes to automatically adjust Private DNS settings</string>
+    <string name="network_monitoring_notification_title">Network Monitoring Active</string>
+    <string name="network_type_wifi">Connected to WiFi</string>
+    <string name="network_type_mobile">Connected to Mobile Data</string>
+    <string name="network_type_none">No network connection</string>
+    <string name="network_type_unknown">Unknown network type</string>
 </resources>
