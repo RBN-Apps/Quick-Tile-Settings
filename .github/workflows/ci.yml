@@ -180,7 +180,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
           disable-animations: true
           script: |
-            timeout --preserve-status 15m ./gradlew connectedDebugAndroidTest
+            timeout --preserve-status 25m ./gradlew connectedDebugAndroidTest
 
       - name: Upload Instrumented Test Results for API ${{ matrix.api-level }} on ${{ matrix.profile }}
         if: always()

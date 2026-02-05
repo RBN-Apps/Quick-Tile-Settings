@@ -50,6 +50,9 @@ import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.viewmodel.MainViewModel
 
@@ -62,7 +65,14 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
     val autoRevertDelay by viewModel.dnsAutoRevertDelaySeconds.collectAsState()
     val vpnDetectionEnabled by viewModel.vpnDetectionEnabled.collectAsState()
     val vpnDetectionMode by viewModel.vpnDetectionMode.collectAsState()
-    var showDnsInfoDialogFor by remember { mutableStateOf<DnsHostnameEntry?>(null) }
+    val networkTypeDetectionEnabled by viewModel.networkTypeDetectionEnabled.collectAsState()
+    val networkTypeDetectionMode by viewModel.networkTypeDetectionMode.collectAsState()
+    val dnsStateOnWifi by viewModel.dnsStateOnWifi.collectAsState()
+    val dnsHostnameOnWifi by viewModel.dnsHostnameOnWifi.collectAsState()
+    val dnsStateOnMobile by viewModel.dnsStateOnMobile.collectAsState()
+    val dnsHostnameOnMobile by viewModel.dnsHostnameOnMobile.collectAsState()
+    val showDnsInfoDialogFor = remember { mutableStateOf<DnsHostnameEntry?>(null) }
+    val showNetworkTypeInfoDialog = remember { mutableStateOf(false) }
 
 
     Card(
@@ -116,7 +126,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         },
                         onEditClicked = { viewModel.startEditingHostname(entry) },
                         onDeleteClicked = { viewModel.setHostnamePendingDeletion(entry) },
-                        onInfoClicked = { showDnsInfoDialogFor = entry }
+                        onInfoClicked = { showDnsInfoDialogFor.value = entry }
                     )
                 }
 
@@ -238,6 +248,164 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Network Type Detection Section
+                val interactionSourceNetworkDetection = remember { MutableInteractionSource() }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(
+                                interactionSource = interactionSourceNetworkDetection,
+                                indication = null,
+                                onClick = { viewModel.setNetworkTypeDetectionEnabled(!networkTypeDetectionEnabled) }
+                            )
+                    ) {
+                        Checkbox(
+                            checked = networkTypeDetectionEnabled,
+                            onCheckedChange = { viewModel.setNetworkTypeDetectionEnabled(it) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.setting_network_type_detection_enabled),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                    IconButton(onClick = { showNetworkTypeInfoDialog.value = true }) {
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription = stringResource(R.string.network_type_info_title)
+                        )
+                    }
+                }
+
+                if (networkTypeDetectionEnabled) {
+                    Text(
+                        text = stringResource(R.string.setting_network_type_detection_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 40.dp, top = 4.dp, bottom = 12.dp)
+                    )
+
+                    // WiFi DNS State
+                    Text(
+                        text = stringResource(R.string.setting_dns_state_on_wifi),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                    DnsStateSelector(
+                        dnsState = dnsStateOnWifi,
+                        dnsHostname = dnsHostnameOnWifi,
+                        dnsHostnames = dnsHostnames,
+                        onDnsStateChange = { state, hostname ->
+                            viewModel.setDnsStateOnWifi(state)
+                            if (state == DNS_MODE_ON) {
+                                viewModel.setDnsHostnameOnWifi(hostname)
+                            } else {
+                                viewModel.setDnsHostnameOnWifi(null)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Mobile Data DNS State
+                    Text(
+                        text = stringResource(R.string.setting_dns_state_on_mobile),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                    DnsStateSelector(
+                        dnsState = dnsStateOnMobile,
+                        dnsHostname = dnsHostnameOnMobile,
+                        dnsHostnames = dnsHostnames,
+                        onDnsStateChange = { state, hostname ->
+                            viewModel.setDnsStateOnMobile(state)
+                            if (state == DNS_MODE_ON) {
+                                viewModel.setDnsHostnameOnMobile(hostname)
+                            } else {
+                                viewModel.setDnsHostnameOnMobile(null)
+                            }
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Detection Mode Selection
+                    Text(
+                        text = stringResource(R.string.setting_network_type_detection_mode),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("network_type_detection_tile_only_option")
+                            .selectable(
+                                selected = networkTypeDetectionMode == TILE_ONLY_DETECTION,
+                                onClick = { viewModel.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION) }
+                            )
+                            .padding(vertical = 4.dp)
+                    ) {
+                        RadioButton(
+                            selected = networkTypeDetectionMode == TILE_ONLY_DETECTION,
+                            onClick = { viewModel.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.network_type_detection_tile_only_title),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = stringResource(R.string.network_type_detection_tile_only_description),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("network_type_detection_background_option")
+                            .selectable(
+                                selected = networkTypeDetectionMode == BACKGROUND_DETECTION,
+                                onClick = { viewModel.setNetworkTypeDetectionMode(BACKGROUND_DETECTION) }
+                            )
+                            .padding(vertical = 4.dp)
+                    ) {
+                        RadioButton(
+                            selected = networkTypeDetectionMode == BACKGROUND_DETECTION,
+                            onClick = { viewModel.setNetworkTypeDetectionMode(BACKGROUND_DETECTION) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.network_type_detection_background_title),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = stringResource(R.string.network_type_detection_background_description),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Auto-Revert Section
                 val interactionSourceAutoRevert = remember { MutableInteractionSource() }
                 Row(
@@ -291,13 +459,19 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
             }
         }
     }
-    showDnsInfoDialogFor?.let { entry ->
+    showDnsInfoDialogFor.value?.let { entry ->
         if (entry.isPredefined && entry.descriptionResId != null) {
             DnsInfoDialog(
                 entry = entry,
-                onDismissRequest = { showDnsInfoDialogFor = null }
+                onDismissRequest = { showDnsInfoDialogFor.value = null }
             )
         }
+    }
+
+    if (showNetworkTypeInfoDialog.value) {
+        NetworkTypeInfoDialog(
+            onDismissRequest = { showNetworkTypeInfoDialog.value = false }
+        )
     }
 }
 
@@ -496,6 +670,92 @@ fun DnsInfoDialog(entry: DnsHostnameEntry, onDismissRequest: () -> Unit) {
             entry.descriptionResId?.let {
                 Text(stringResource(it))
             }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.dialog_close))
+            }
+        }
+    )
+}
+
+@Composable
+fun DnsStateSelector(
+    dnsState: String,
+    dnsHostname: String?,
+    dnsHostnames: List<DnsHostnameEntry>,
+    onDnsStateChange: (String, String?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = when (dnsState) {
+                    DNS_MODE_OFF -> stringResource(R.string.dns_mode_off_label)
+                    DNS_MODE_AUTO -> stringResource(R.string.dns_mode_auto_label)
+                    DNS_MODE_ON -> {
+                        val entry = dnsHostnames.find { it.hostname == dnsHostname }
+                        entry?.name ?: dnsHostname ?: stringResource(R.string.setting_select_hostname)
+                    }
+                    else -> stringResource(R.string.dns_mode_auto_label)
+                },
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        androidx.compose.material3.DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            androidx.compose.material3.DropdownMenuItem(
+                text = { Text(stringResource(R.string.dns_mode_off_label)) },
+                onClick = {
+                    onDnsStateChange(DNS_MODE_OFF, null)
+                    expanded = false
+                }
+            )
+            androidx.compose.material3.DropdownMenuItem(
+                text = { Text(stringResource(R.string.dns_mode_auto_label)) },
+                onClick = {
+                    onDnsStateChange(DNS_MODE_AUTO, null)
+                    expanded = false
+                }
+            )
+            HorizontalDivider()
+            dnsHostnames.forEach { entry ->
+                androidx.compose.material3.DropdownMenuItem(
+                    text = {
+                        Column {
+                            Text(entry.name)
+                            Text(
+                                text = entry.hostname,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    onClick = {
+                        onDnsStateChange(DNS_MODE_ON, entry.hostname)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NetworkTypeInfoDialog(onDismissRequest: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(stringResource(R.string.network_type_info_title)) },
+        text = {
+            Text(stringResource(R.string.network_type_info_message))
         },
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
