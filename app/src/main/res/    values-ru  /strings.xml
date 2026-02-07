@@ -74,7 +74,10 @@
     <string name="button_grant_with_shizuku">Предоставить через Shizuku</string>
     <string name="shizuku_not_available">Shizuku недоступен или не запущен.</string>
     <string name="shizuku_permission_not_granted_to_app_prompt">Разрешение Shizuku не предоставлено этому приложению. Пожалуйста, сначала предоставьте его через приложение Shizuku или по запросу.</string>
-
+    <string name="shizuku_permission_granted_to_app">Разрешение Shizuku предоставлено этому приложению.</string>
+    <string name="shizuku_permission_denied_to_app">В разрешении Shizuku для этого приложения отказано.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku недоступен или не готов.</string>
+    
     <!-- Root Method -->
     <string name="permission_method_root_title">Способ %1$d: Root %2$s</string>
     <string name="root_ready_to_grant_desc">Ваше устройство имеет Root-права. Вы можете попробовать предоставить WRITE_SECURE_SETTINGS, используя привилегии суперпользователя.</string>
