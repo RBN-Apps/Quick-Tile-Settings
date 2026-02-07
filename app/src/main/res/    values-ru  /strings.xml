@@ -64,27 +64,16 @@
     <string name="button_copy_install_command">Копировать команду установки</string>
     <string name="help_dialog_apk_path_note">(Примечание: для команды установки вам понадобится файл APK. Если вы собрали приложение самостоятельно, обычно оно находится в app/build/outputs/apk/debug/ или app/build/outputs/apk/release/. Вы также можете скачать последнюю версию на GitHub.)</string>
     <string name="github_releases_link_text">Скачать последнюю версию на GitHub</string>
-    <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
-    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
-    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
     <string name="permission_method_shizuku_title">Способ %1$d: Shizuku %2$s</string>
-    <string name="shizuku_ready_to_grant_desc">Shizuku доступен, и у этого приложения есть разрешение на его использование. Вы можете попробовать предоставить WRITE_SECURE_SETTINGS.</string>
-    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
-    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
-    <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
     <string name="shizuku_not_available_detailed">Shizuku недоступен или не запущен. Пожалуйста, сначала установите и запустите Shizuku.</string>
     <string name="shizuku_permission_not_granted_to_app_detailed">Этому приложению требуется разрешение от Shizuku для продолжения. Пожалуйста, запросите его.</string>
     <string name="button_request_shizuku_permission">Запросить разрешение Shizuku</string>
     <string name="button_grant_with_shizuku">Предоставить через Shizuku</string>
     <string name="shizuku_not_available">Shizuku недоступен или не запущен.</string>
     <string name="shizuku_permission_not_granted_to_app_prompt">Разрешение Shizuku не предоставлено этому приложению. Пожалуйста, сначала предоставьте его через приложение Shizuku или по запросу.</string>
-    <string name="shizuku_permission_granted_to_app">Разрешение Shizuku предоставлено этому приложению.</string>
-    <string name="shizuku_permission_denied_to_app">В разрешении Shizuku для этого приложения отказано.</string>
-    <string name="shizuku_not_available_or_not_ready">Shizuku недоступен или не готов.</string>
-    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
 
     <!-- Root Method -->
     <string name="permission_method_root_title">Способ %1$d: Root %2$s</string>
@@ -151,8 +140,6 @@
     <string name="about_feature_custom_dns">• Встроенные популярные DNS-провайдеры (Cloudflare, AdGuard, Quad9)</string>
     <string name="about_developer_title">Разработчик</string>
     <string name="about_developer_info">Разработано RBN-Apps\nOpen-source проект доступен на GitHub</string>
-    <string name="about_button_github" translatable="false">GitHub</string>
-    <string name="about_button_fdroid" translatable="false">F-Droid</string>
     <string name="about_button_permission_help">Справка по настройке разрешений</string>
 
     <!-- VPN Detection Settings -->
