@@ -134,8 +134,9 @@ jobs:
           files: |
             app/build/outputs/apk/release/quick-tile-settings-${{ env.VERSION_NAME }}.apk
           body_path: fastlane/metadata/android/en-US/changelogs/${{ env.VERSION_CODE }}.txt
+          generate_release_notes: true
           tag_name: ${{ github.ref_name }}
           name: Release ${{ env.VERSION_NAME }}
-          draft: false
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

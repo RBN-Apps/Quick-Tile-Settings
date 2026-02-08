@@ -40,6 +40,10 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
         * Select which hostnames (along with Off/Auto) are included in the tile's cycle.
     * View information about the benefits of each predefined DNS provider directly in the app.
     * Optional: Automatically revert to the previous DNS state after a configurable delay.
+* **Smart DNS Automation:**
+    * Optionally auto-disable Private DNS when a VPN connection is active.
+    * Optionally auto-switch Private DNS based on network type (WiFi vs mobile data).
+    * Choose between tile-only detection or continuous background detection.
 * **USB Debugging Quick Tile:**
     * Toggle USB Debugging On or Off.
     * Configure whether to cycle between On/Off or only include specific states.
@@ -52,7 +56,7 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
       permission via ADB (Android Debug Bridge), Shizuku, or Root.
     * Convenient "Copy Command" buttons for ADB commands.
 * **Modern UI:** Built with Jetpack Compose, supporting dynamic color (Material You) on Android 12+.
-* **Localization:** Available in English, German and Turkish.
+* **Localization:** Available in English, German, Turkish, and Russian.
 
 ## Screenshots
 
@@ -68,6 +72,8 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
 * Android 9 (Pie, API 29) or higher.
 * The `WRITE_SECURE_SETTINGS` permission. This **must** be granted using one of the methods
   described below as it's a protected permission not available to regular apps.
+* On Android 13+, enabling background monitoring modes may require `POST_NOTIFICATIONS`
+  permission for the persistent service notification.
 
 ## Setup and Usage
 
@@ -154,6 +160,10 @@ functional.**
         * Tap "Add Custom Hostname" to add your own DNS provider (you'll need a display name and the
           actual hostname).
         * Custom hostnames can be edited or deleted.
+    * **Automation Options (Optional):**
+        * Enable automatic DNS handling for VPN connections.
+        * Enable network type detection and configure separate DNS behavior for WiFi and mobile data.
+        * Choose tile-only detection (battery-friendly) or background detection (instant switching).
 5. **For USB Debugging:**
     * **Select Cycle States:** Check "USB Debug On" and/or "USB Debug Off" to include them in the
       cycle.
