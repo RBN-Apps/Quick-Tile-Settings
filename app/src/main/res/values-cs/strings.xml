@@ -1,207 +1,207 @@
 <resources>
-    <string name="app_name">QuickTile Settings</string>
+    <string name="app_name">Nastavení QuickTile</string>
 
     <!-- Tile Labels -->
     <string name="tile_label_private_dns">Privátní DNS</string>
-    <string name="tile_label_usb_debugging">USB ladění</string>
-    <string name="dns_state_reverted_to">DNS vrácena na %1$s</string>
-    <string name="usb_state_reverted_to">USB Debug reverted to %1$s</string>
-    <string name="toast_developer_options_disabled_revert_cancelled">Dev options off. USB revert cancelled.</string>
-    <string name="tile_subtitle_reverting_in_seconds">Reverting to %1$s in %2$ds…</string>
+    <string name="tile_label_usb_debugging">Ladění USB</string>
+    <string name="dns_state_reverted_to">DNS vráceno na %1$s</string>
+    <string name="usb_state_reverted_to">USB ladění vráceno na %1$s</string>
+    <string name="toast_developer_options_disabled_revert_cancelled">Možnosti pro vývojáře vypnuty. Obnovení USB zrušeno.</string>
+    <string name="tile_subtitle_reverting_in_seconds">Obnovení na %1$s v %2$d s…</string>
 
     <!-- DNS States -->
-    <string name="dns_state_off">DNS Off</string>
-    <string name="dns_state_auto">DNS Auto</string>
-    <string name="dns_state_on_with_host">DNS On (Hostname)</string>
-    <string name="dns_state_unknown">DNS Status Unknown</string>
-    <string name="dns_hostname_label">DNS Hostname</string>
+    <string name="dns_state_off">DNS vypnuto</string>
+    <string name="dns_state_auto">DNS automaticky</string>
+    <string name="dns_state_on_with_host">DNS zapnuto (hostname)</string>
+    <string name="dns_state_unknown">Neznámý stav DNS</string>
+    <string name="dns_hostname_label">DNS hostname</string>
 
     <!-- USB Debugging States -->
-    <string name="usb_state_on">USB Debug On</string>
-    <string name="usb_state_off">USB Debug Off</string>
-    <string name="usb_dev_options_off">Dev Options Off</string>
+    <string name="usb_state_on">USB ladění zapnuto</string>
+    <string name="usb_state_off">USB ladění vypnuto</string>
+    <string name="usb_dev_options_off">Možnosti pro vývojáře vypnuty</string>
 
     <!-- UI Settings Screen -->
-    <string name="setting_title_private_dns">Private DNS Tile</string>
-    <string name="setting_title_usb_debugging">USB Debugging Tile</string>
-    <string name="setting_desc_tile_cycles">Select states for the tile cycle:</string>
-    <string name="button_save_apply_settings">Apply Settings</string>
-    <string name="tab_title_dns">Private DNS</string>
-    <string name="tab_title_usb">USB Debugging</string>
+    <string name="setting_title_private_dns">Dlaždice Privátní DNS</string>
+    <string name="setting_title_usb_debugging">Dlaždice USB ladění</string>
+    <string name="setting_desc_tile_cycles">Vyber stavy pro přepínání dlaždice:</string>
+    <string name="button_save_apply_settings">Použít nastavení</string>
+    <string name="tab_title_dns">Privátní DNS</string>
+    <string name="tab_title_usb">USB ladění</string>
 
     <!-- Toasts & Warnings -->
-    <string name="toast_permission_not_granted_adb">Permission missing. Please grant via ADB.</string>
-    <string name="toast_developer_options_disabled">Developer options are disabled.</string>
-    <string name="toast_error_saving_settings">Error saving settings.</string>
-    <string name="toast_no_states_enabled_dns">No DNS states enabled for cycling.</string>
-    <string name="toast_no_states_enabled_usb">No USB states enabled for cycling.</string>
-    <string name="toast_hostname_required">Hostname required for DNS On.</string>
-    <string name="toast_settings_saved_tiles_updated">Settings saved. Tiles will update when you next open the QS panel.</string>
-    <string name="warning_hostname_blank">Hostname cannot be empty if "DNS On" is enabled.</string>
-    <string name="warning_at_least_one_usb_option">At least one USB status must be enabled.</string>
-    <string name="toast_command_copied">Command copied!</string>
+    <string name="toast_permission_not_granted_adb">Chybí oprávnění. Uděl je přes ADB.</string>
+    <string name="toast_developer_options_disabled">Možnosti pro vývojáře jsou vypnuté.</string>
+    <string name="toast_error_saving_settings">Chyba při ukládání nastavení.</string>
+    <string name="toast_no_states_enabled_dns">Nejsou povoleny žádné stavy DNS pro přepínání.</string>
+    <string name="toast_no_states_enabled_usb">Nejsou povoleny žádné stavy USB pro přepínání.</string>
+    <string name="toast_hostname_required">Pro zapnutí DNS je nutný hostname.</string>
+    <string name="toast_settings_saved_tiles_updated">Nastavení uloženo. Dlaždice se aktualizují při příštím otevření panelu rychlých nastavení.</string>
+    <string name="warning_hostname_blank">Hostname nemůže být prázdný, pokud je zapnuto „DNS zapnuto“.</string>
+    <string name="warning_at_least_one_usb_option">Musí být povolen alespoň jeden stav USB.</string>
+    <string name="toast_command_copied">Příkaz zkopírován!</string>
 
-
+    
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">Permission Required</string>
-    <string name="permission_grant_dialog_intro">To change system settings like Private DNS and USB Debugging, this app needs the special WRITE_SECURE_SETTINGS permission. Please choose a method below to grant it:</string>
-    <string name="help_dialog_after_grant">After granting the permission, restart the app or re-open the Quick Settings panel for the tiles to function.</string>
-    <string name="help_button_desc">Help / Grant Permission</string>
-    <string name="button_open_developer_options">Open Developer Options</string>
-    <string name="dialog_close">Close</string>
+    <string name="permission_grant_dialog_title">Vyžadováno oprávnění</string>
+    <string name="permission_grant_dialog_intro">Pro změnu systémových nastavení, jako je Privátní DNS a USB ladění, potřebuje aplikace speciální oprávnění WRITE_SECURE_SETTINGS. Vyber níže způsob, jak jej udělit:</string>
+    <string name="help_dialog_after_grant">Po udělení oprávnění restartuj aplikaci nebo znovu otevři panel rychlých nastavení.</string>
+    <string name="help_button_desc">Nápověda / Udělit oprávnění</string>
+    <string name="button_open_developer_options">Otevřít možnosti pro vývojáře</string>
+    <string name="dialog_close">Zavřít</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Method %1$d: ADB (Android Debug Bridge) %2$s</string>
-    <string name="permission_method_adb_desc">This is the standard method and requires a computer with ADB set up.</string>
-    <string name="button_show_adb_instructions">Show ADB Instructions</string>
-    <string name="adb_instructions_title">ADB Instructions</string>
-    <string name="adb_instructions_intro">Connect your device to a computer with ADB set up. Ensure Developer Options and USB Debugging are enabled on your device.</string>
-    <string name="help_dialog_method_1_title">Option A: Grant to existing installation</string>
-    <string name="help_dialog_how_to_grant_via_adb">Run the following command in your terminal/command prompt:</string>
-    <string name="button_copy_grant_command">Copy Grant Command</string>
-    <string name="help_dialog_method_2_title">Option B: Install with permission</string>
-    <string name="help_dialog_how_to_install_via_adb">Uninstall the current version first, then use this command (replace path/to/your/app.apk with the actual APK path):</string>
-    <string name="button_copy_install_command">Copy Install Command</string>
-    <string name="help_dialog_apk_path_note">(Note: You need the APK file for the install command. If you built the app yourself, it\'s usually in app/build/outputs/apk/debug/ or app/build/outputs/apk/release/. You can also download the latest release from GitHub.)</string>
-    <string name="github_releases_link_text">Download latest release from GitHub</string>
+    <string name="permission_method_adb_title">Metoda %1$d: ADB (Android Debug Bridge) %2$s</string>
+    <string name="permission_method_adb_desc">Standardní metoda vyžadující počítač s nastaveným ADB.</string>
+    <string name="button_show_adb_instructions">Zobrazit ADB instrukce</string>
+    <string name="adb_instructions_title">ADB instrukce</string>
+    <string name="adb_instructions_intro">Připoj zařízení k počítači s ADB. Ujisti se, že jsou zapnuté možnosti pro vývojáře a USB ladění.</string>
+    <string name="help_dialog_method_1_title">Možnost A: Udělit stávající instalaci</string>
+    <string name="help_dialog_how_to_grant_via_adb">Spusť následující příkaz v terminálu:</string>
+    <string name="button_copy_grant_command">Kopírovat příkaz</string>
+    <string name="help_dialog_method_2_title">Možnost B: Instalace s oprávněním</string>
+    <string name="help_dialog_how_to_install_via_adb">Nejprve odinstaluj aktuální verzi a poté použij tento příkaz (nahraď cestu k APK):</string>
+    <string name="button_copy_install_command">Kopírovat instalační příkaz</string>
+    <string name="help_dialog_apk_path_note">(Poznámka: Potřebuješ APK soubor. Při vlastním buildu bývá v app/build/outputs/apk/… nebo jej stáhneš z GitHubu.)</string>
+    <string name="github_releases_link_text">Stáhnout nejnovější verzi z GitHubu</string>
     <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
     <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
     <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Method %1$d: Shizuku %2$s</string>
-    <string name="shizuku_ready_to_grant_desc">Shizuku is available and this app has permission to use it. You can attempt to grant WRITE_SECURE_SETTINGS.</string>
+    <string name="permission_method_shizuku_title">Metoda %1$d: Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku je dostupné a aplikace má oprávnění jej použít. Můžeš zkusit udělit WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
     <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
-    <string name="shizuku_not_available_detailed">Shizuku is not available or not running. Please install and start Shizuku first.</string>
-    <string name="shizuku_permission_not_granted_to_app_detailed">This app needs permission from Shizuku to proceed. Please request it.</string>
-    <string name="button_request_shizuku_permission">Request Shizuku App Permission</string>
-    <string name="button_grant_with_shizuku">Grant using Shizuku</string>
-    <string name="shizuku_not_available">Shizuku is not available or not running.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Shizuku permission not granted to this app. Please grant it first via Shizuku app or the prompt.</string>
-    <string name="shizuku_permission_granted_to_app">Shizuku permission granted to this app.</string>
-    <string name="shizuku_permission_denied_to_app">Shizuku permission denied to this app.</string>
-    <string name="shizuku_not_available_or_not_ready">Shizuku is not available or not ready.</string>
+    <string name="shizuku_not_available_detailed">Shizuku není dostupné nebo neběží. Nejprve jej nainstaluj a spusť.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Aplikace potřebuje oprávnění od Shizuku. Požádej o něj.</string>
+    <string name="button_request_shizuku_permission">Požádat o oprávnění Shizuku</string>
+    <string name="button_grant_with_shizuku">Udělit přes Shizuku</string>
+    <string name="shizuku_not_available">Shizuku není dostupné nebo neběží.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Oprávnění Shizuku nebylo aplikaci uděleno.</string>
+    <string name="shizuku_permission_granted_to_app">Oprávnění Shizuku uděleno.</string>
+    <string name="shizuku_permission_denied_to_app">Oprávnění Shizuku zamítnuto.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku není dostupné nebo připravené.</string>
     <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Method %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Your device is rooted. You can attempt to grant WRITE_SECURE_SETTINGS using root privileges.</string>
-    <string name="device_not_rooted_detailed">Your device does not appear to be rooted or root access was not granted. This method is unavailable.</string>
-    <string name="button_grant_with_root">Grant using Root</string>
-    <string name="device_not_rooted">Device is not rooted.</string>
+    <string name="permission_method_root_title">Metoda %1$d: Root %2$s</string>
+    <string name="root_ready_to_grant_desc">Zařízení je rootnuté. Můžeš zkusit udělit WRITE_SECURE_SETTINGS pomocí root práv.</string>
+    <string name="device_not_rooted_detailed">Zařízení není rootnuté nebo nebyl udělen přístup root.</string>
+    <string name="button_grant_with_root">Udělit pomocí rootu</string>
+    <string name="device_not_rooted">Zařízení není rootnuté.</string>
 
     <!-- Generic Permission Grant Results -->
-    <string name="permission_granted_shizuku_success">Permission granted successfully via Shizuku!</string>
-    <string name="permission_granted_shizuku_check_failed">Shizuku command executed, but permission check failed. Please restart the app.</string>
-    <string name="permission_granted_shizuku_fail">Failed to grant permission via Shizuku. Exit code: %1$d</string>
-    <string name="permission_granted_shizuku_error">Error granting permission via Shizuku: %1$s</string>
-    <string name="permission_granted_root_success">Permission granted successfully via Root!</string>
-    <string name="permission_granted_root_check_failed">Root command executed, but permission check failed. Please restart the app.</string>
-    <string name="permission_granted_root_fail">Failed to grant permission via Root. Exit code: %1$d</string>
-    <string name="permission_granted_root_error">Error granting permission via Root: %1$s</string>
+    <string name="permission_granted_shizuku_success">Oprávnění úspěšně uděleno přes Shizuku!</string>
+    <string name="permission_granted_shizuku_check_failed">Příkaz proběhl, ale kontrola selhala. Restartuj aplikaci.</string>
+    <string name="permission_granted_shizuku_fail">Nepodařilo se udělit oprávnění přes Shizuku. Kód: %1$d</string>
+    <string name="permission_granted_shizuku_error">Chyba při udělování přes Shizuku: %1$s</string>
+    <string name="permission_granted_root_success">Oprávnění úspěšně uděleno přes root!</string>
+    <string name="permission_granted_root_check_failed">Root příkaz proběhl, ale kontrola selhala. Restartuj aplikaci.</string>
+    <string name="permission_granted_root_fail">Nepodařilo se udělit oprávnění přes root. Kód: %1$d</string>
+    <string name="permission_granted_root_error">Chyba při udělování přes root: %1$s</string>
 
     <!-- Permission Warning Card -->
-    <string name="warning_permission_missing_title">Permission Missing!</string>
-    <string name="warning_permission_missing_desc">This app requires the WRITE_SECURE_SETTINGS permission to function. Please grant it using one of the available methods.</string>
-    <string name="button_show_permission_help">Show Grant Options</string>
-    <string name="warning_developer_options_disabled_config">Developer options are disabled. USB Debugging cannot be configured.</string>
+    <string name="warning_permission_missing_title">Chybí oprávnění!</string>
+    <string name="warning_permission_missing_desc">Aplikace vyžaduje oprávnění WRITE_SECURE_SETTINGS. Prosím udělej jej pomocí jedné z nabízených metod.</string>
+    <string name="button_show_permission_help">Zobrazit možnosti udělení</string>
+    <string name="warning_developer_options_disabled_config">Možnosti pro vývojáře jsou vypnuté. USB ladění nelze nastavit.</string>
 
-    <string name="setting_enable_auto_revert">Enable auto-revert after a delay</string>
-    <string name="setting_auto_revert_delay">Revert delay (seconds):</string>
-    <string name="toast_reverting_dns_to">Reverting DNS to \n\"%1$s\" in %2$d sec…</string>
-    <string name="toast_reverting_usb_to">Reverting USB Debug to %1$s in %2$d sec…</string>
-    <string name="toast_revert_cancelled">Auto-revert cancelled.</string>
-    <string name="on_state">On</string>
-    <string name="off_state">Off</string>
-    <string name="auto_state">Auto</string>
+    <string name="setting_enable_auto_revert">Povolit automatické obnovení po prodlevě</string>
+    <string name="setting_auto_revert_delay">Prodleva obnovení (sekundy):</string>
+    <string name="toast_reverting_dns_to">Obnovení DNS na \n\"%1$s\" za %2$d s…</string>
+    <string name="toast_reverting_usb_to">Obnovení USB ladění na %1$s za %2$d s…</string>
+    <string name="toast_revert_cancelled">Automatické obnovení zrušeno.</string>
+    <string name="on_state">Zapnuto</string>
+    <string name="off_state">Vypnuto</string>
+    <string name="auto_state">Automaticky</string>
 
-    <string name="dns_select_hostnames_for_cycle">Select hostnames to include in tile cycle:</string>
-    <string name="dns_add_custom_hostname_button">Add Custom Hostname</string>
-    <string name="dns_edit_hostname_title">Edit Hostname</string>
-    <string name="dns_add_hostname_title">Add Hostname</string>
-    <string name="dns_hostname_name_label">Display Name</string>
-    <string name="dns_hostname_value_label">Hostname (e.g., dns.example.com)</string>
-    <string name="dialog_save">Save</string>
-    <string name="dialog_cancel">Cancel</string>
-    <string name="button_edit">Edit</string>
-    <string name="button_delete">Delete</string>
-    <string name="error_hostname_name_empty">Display name cannot be empty.</string>
-    <string name="error_hostname_value_empty">Hostname cannot be empty.</string>
-    <string name="confirm_delete_hostname_title">Delete Hostname?</string>
-    <string name="confirm_delete_hostname_message">Are you sure you want to delete \'%1$s\'?</string>
+    <string name="dns_select_hostnames_for_cycle">Vyber hostname pro přepínání:</string>
+    <string name="dns_add_custom_hostname_button">Přidat vlastní hostname</string>
+    <string name="dns_edit_hostname_title">Upravit hostname</string>
+    <string name="dns_add_hostname_title">Přidat hostname</string>
+    <string name="dns_hostname_name_label">Zobrazovaný název</string>
+    <string name="dns_hostname_value_label">Hostname (např. dns.example.com)</string>
+    <string name="dialog_save">Uložit</string>
+    <string name="dialog_cancel">Zrušit</string>
+    <string name="button_edit">Upravit</string>
+    <string name="button_delete">Smazat</string>
+    <string name="error_hostname_name_empty">Zobrazovaný název nemůže být prázdný.</string>
+    <string name="error_hostname_value_empty">Hostname nemůže být prázdný.</string>
+    <string name="confirm_delete_hostname_title">Smazat hostname?</string>
+    <string name="confirm_delete_hostname_message">Opravdu chceš smazat \'%1$s\'?</string>
 
     <!-- DNS Info Dialogs -->
-    <string name="dns_info_dialog_title">About %1$s</string>
-    <string name="button_info_dns">Info about %1$s</string>
-    <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one or 1.1.1.1) is known for its high speed and focus on privacy. It does not filter content and promises not to log user data. Ideal for users prioritizing privacy and performance.</string>
-    <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) blocks ads, trackers, and known malicious domains directly at the DNS level. This provides a cleaner and safer browsing experience. Good for users who want to reduce ads and protect their privacy.</string>
-    <string name="dns_info_quad9">Quad9 (dns.quad9.net) focuses on security by blocking domains associated with malware, phishing, and botnets. This enhances protection against online threats. Suitable for users for whom internet security is a top priority.</string>
-    <string name="recommended_for_you">(Recommended for you)</string>
+    <string name="dns_info_dialog_title">O %1$s</string>
+    <string name="button_info_dns">Informace o %1$s</string>
+    <string name="dns_info_cloudflare">Cloudflare DNS je rychlé a zaměřené na soukromí. Nefiltruje obsah a nesbírá data.</string>
+    <string name="dns_info_adguard">AdGuard DNS blokuje reklamy, trackery a škodlivé domény přímo na úrovni DNS.</string>
+    <string name="dns_info_quad9">Quad9 blokuje škodlivé a phishingové domény pro vyšší bezpečnost.</string>
+    <string name="recommended_for_you">(Doporučeno pro tebe)</string>
 
     <!-- About Dialog -->
-    <string name="about_version">Version %1$s</string>
-    <string name="about_description">QuickTile Settings provides convenient Quick Settings tiles for toggling settings directly from the notification panel.</string>
-    <string name="about_features_title">Features</string>
-    <string name="about_feature_private_dns">• Private DNS tile with custom hostname support</string>
-    <string name="about_feature_usb_debugging">• USB Debugging tile for development</string>
-    <string name="about_feature_auto_revert">• Auto-revert functionality for temporary changes</string>
-    <string name="about_feature_custom_dns">• Built-in popular DNS providers (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Developer</string>
-    <string name="about_developer_info">Developed by RBN-Apps\nOpen source project available on GitHub</string>
+    <string name="about_version">Verze %1$s</string>
+    <string name="about_description">QuickTile Settings přidává praktické dlaždice do panelu rychlých nastavení.</string>
+    <string name="about_features_title">Funkce</string>
+    <string name="about_feature_private_dns">• Dlaždice Privátní DNS s podporou vlastních hostname</string>
+    <string name="about_feature_usb_debugging">• Dlaždice USB ladění pro vývoj</string>
+    <string name="about_feature_auto_revert">• Automatické obnovení změn</string>
+    <string name="about_feature_custom_dns">• Vestavění populární DNS poskytovatelé</string>
+    <string name="about_developer_title">Vývojář</string>
+    <string name="about_developer_info">Vyvinuto RBN-Apps\nOpen source projekt na GitHubu</string>
     <string name="about_button_github" translatable="false">GitHub</string>
     <string name="about_button_fdroid" translatable="false">F-Droid</string>
-    <string name="about_button_permission_help">Permission Setup Help</string>
+    <string name="about_button_permission_help">Nápověda k nastavení oprávnění</string>
 
     <!-- VPN Detection Settings -->
-    <string name="setting_vpn_detection_enabled">Automatically disable DNS on VPN connections</string>
-    <string name="setting_vpn_detection_mode">VPN Detection Mode:</string>
-    <string name="vpn_detection_tile_only_title">Tile-Only Detection</string>
-    <string name="vpn_detection_tile_only_description">Checks for VPN connections when opening the Quick Settings. More battery-friendly, but detects VPN connections only when Quick Settings are opened. If you usually enable or disable VPN through Quick Settings anyway, this option is sufficient.</string>
-    <string name="vpn_detection_background_title">Background Service Detection</string>
-    <string name="vpn_detection_background_description">Continuously monitors VPN status. Provides an instant response, but uses more battery and shows a persistent notification to stay active.</string>
+    <string name="setting_vpn_detection_enabled">Automaticky vypnout DNS při připojení k VPN</string>
+    <string name="setting_vpn_detection_mode">Režim detekce VPN:</string>
+    <string name="vpn_detection_tile_only_title">Detekce jen při otevření dlaždic</string>
+    <string name="vpn_detection_tile_only_description">Kontroluje VPN při otevření rychlých nastavení. Šetří baterii.</string>
+    <string name="vpn_detection_background_title">Detekce na pozadí</string>
+    <string name="vpn_detection_background_description">Nepřetržitě sleduje stav VPN, reaguje okamžitě, ale spotřebovává více baterie.</string>
 
     <!-- VPN Monitoring Service -->
-    <string name="vpn_monitoring_channel_name">VPN Monitoring</string>
-    <string name="vpn_monitoring_channel_description">Monitors VPN connections to automatically adjust Private DNS settings</string>
-    <string name="vpn_monitoring_notification_title">VPN Monitoring Active</string>
-    <string name="vpn_monitoring_status_connected">VPN connected - Private DNS set to Off</string>
-    <string name="vpn_monitoring_status_disconnected">VPN disconnected - Private DNS restored</string>
+    <string name="vpn_monitoring_channel_name">Sledování VPN</string>
+    <string name="vpn_monitoring_channel_description">Sleduje VPN a upravuje nastavení Privátní DNS</string>
+    <string name="vpn_monitoring_notification_title">Sledování VPN aktivní</string>
+    <string name="vpn_monitoring_status_connected">VPN připojena – DNS vypnuto</string>
+    <string name="vpn_monitoring_status_disconnected">VPN odpojena – DNS obnoveno</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_title">Notifications Require Permission</string>
-    <string name="notification_permission_dialog_message">To receive notifications for background VPN monitoring, you must enable the permission in app settings.\n\nOnce you have granted the permission, you can enable notifications here.</string>
-    <string name="notification_permission_dialog_settings_button">Settings</string>
-    <string name="notification_permission_dialog_settings_description">Open settings</string>
+    <string name="notification_permission_dialog_title">Oznámení vyžadují oprávnění</string>
+    <string name="notification_permission_dialog_message">Pro oznámení sledování VPN musíš povolit oprávnění v nastavení aplikace.</string>
+    <string name="notification_permission_dialog_settings_button">Nastavení</string>
+    <string name="notification_permission_dialog_settings_description">Otevřít nastavení</string>
 
     <!-- Network Type Detection Settings -->
-    <string name="setting_network_type_detection_enabled">Auto-switch DNS based on network type</string>
-    <string name="setting_network_type_detection_description">Automatically change Private DNS settings when switching between WiFi and mobile data</string>
-    <string name="setting_network_type_detection_mode">Network Detection Mode:</string>
-    <string name="network_type_detection_tile_only_title">Tile-Only Detection</string>
-    <string name="network_type_detection_tile_only_description">Checks network type when opening Quick Settings. Battery-friendly, but only detects network changes when Quick Settings are opened.</string>
-    <string name="network_type_detection_background_title">Background Service Detection</string>
-    <string name="network_type_detection_background_description">Continuously monitors network type changes. Instant response when switching networks, but uses more battery and shows a persistent notification.</string>
+    <string name="setting_network_type_detection_enabled">Automaticky přepínat DNS podle typu sítě</string>
+    <string name="setting_network_type_detection_description">Mění DNS při přechodu mezi Wi-Fi a mobilními daty</string>
+    <string name="setting_network_type_detection_mode">Režim detekce sítě:</string>
+    <string name="network_type_detection_tile_only_title">Pouze při otevření dlaždic</string>
+    <string name="network_type_detection_tile_only_description">Kontrola jen při otevření rychlých nastavení.</string>
+    <string name="network_type_detection_background_title">Na pozadí</string>
+    <string name="network_type_detection_background_description">Nepřetržité sledování změn sítě.</string>
 
-    <string name="setting_dns_state_on_wifi">DNS on WiFi:</string>
-    <string name="setting_dns_state_on_mobile">DNS on Mobile Data:</string>
-    <string name="setting_select_hostname">Select hostname…</string>
+    <string name="setting_dns_state_on_wifi">DNS na Wi-Fi:</string>
+    <string name="setting_dns_state_on_mobile">DNS na mobilních datech:</string>
+    <string name="setting_select_hostname">Vybrat hostname…</string>
 
-    <string name="dns_mode_off_label">Off</string>
-    <string name="dns_mode_auto_label">Auto</string>
-    <string name="dns_mode_hostname_label">Specific Hostname</string>
+    <string name="dns_mode_off_label">Vypnuto</string>
+    <string name="dns_mode_auto_label">Automaticky</string>
+    <string name="dns_mode_hostname_label">Konkrétní hostname</string>
 
-    <string name="network_type_info_title">Network Type Detection</string>
-    <string name="network_type_info_message">This feature automatically switches Private DNS settings based on whether you\'re connected to WiFi or mobile data.\n\nVPN Priority: When a VPN is active, VPN detection takes priority and DNS will be set to Off regardless of network type settings.\n\nExample use case: If your home WiFi router uses NextDNS, set \"DNS on WiFi\" to Off. Set \"DNS on Mobile Data\" to Auto or a specific hostname for protection when on cellular networks.</string>
+    <string name="network_type_info_title">Detekce typu sítě</string>
+    <string name="network_type_info_message">Funkce automaticky přepíná Privátní DNS podle Wi-Fi nebo mobilních dat.</string>
 
     <!-- Network Monitoring Service -->
-    <string name="network_monitoring_channel_name">Network Type Monitoring</string>
-    <string name="network_monitoring_channel_description">Monitors network type changes to automatically adjust Private DNS settings</string>
-    <string name="network_monitoring_notification_title">Network Monitoring Active</string>
-    <string name="network_type_wifi">Connected to WiFi</string>
-    <string name="network_type_mobile">Connected to Mobile Data</string>
-    <string name="network_type_none">No network connection</string>
-    <string name="network_type_unknown">Unknown network type</string>
+    <string name="network_monitoring_channel_name">Sledování typu sítě</string>
+    <string name="network_monitoring_channel_description">Sleduje změny sítě a upravuje Privátní DNS</string>
+    <string name="network_monitoring_notification_title">Sledování sítě aktivní</string>
+    <string name="network_type_wifi">Připojeno k Wi-Fi</string>
+    <string name="network_type_mobile">Připojeno k mobilním datům</string>
+    <string name="network_type_none">Bez připojení k síti</string>
+    <string name="network_type_unknown">Neznámý typ sítě</string>
 </resources>
