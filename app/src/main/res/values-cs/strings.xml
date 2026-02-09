@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nastavení QuickTile</string>
+    <string name="app_name">QuickTile Settings</string>
 
     <!-- Tile Labels -->
     <string name="tile_label_private_dns">Privátní DNS</string>
@@ -205,3 +205,4 @@
     <string name="network_type_none">Bez připojení k síti</string>
     <string name="network_type_unknown">Neznámý typ sítě</string>
 </resources>
+
