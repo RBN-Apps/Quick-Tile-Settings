@@ -30,7 +30,7 @@
     <string name="tab_title_usb">USB ladění</string>
 
     <!-- Toasts & Warnings -->
-    <string name="toast_permission_not_granted_adb">Chybí oprávnění. Uděl je přes ADB.</string>
+    <string name="toast_permission_not_granted_adb">Chybí oprávnění. Udělte jej prosím přes ADB.</string>
     <string name="toast_developer_options_disabled">Možnosti pro vývojáře jsou vypnuté.</string>
     <string name="toast_error_saving_settings">Chyba při ukládání nastavení.</string>
     <string name="toast_no_states_enabled_dns">Nejsou povoleny žádné stavy DNS pro přepínání.</string>
@@ -45,7 +45,7 @@
     <!-- Permission Grant Dialog -->
     <string name="permission_grant_dialog_title">Vyžadováno oprávnění</string>
     <string name="permission_grant_dialog_intro">Pro změnu systémových nastavení, jako je Privátní DNS a USB ladění, potřebuje aplikace speciální oprávnění WRITE_SECURE_SETTINGS. Vyber níže způsob, jak jej udělit:</string>
-    <string name="help_dialog_after_grant">Po udělení oprávnění restartuj aplikaci nebo znovu otevři panel rychlých nastavení.</string>
+    <string name="help_dialog_after_grant">Po udělení oprávnění restartujte aplikaci nebo znovu otevřete panel rychlého nastavení, aby dlaždice fungovaly.</string>
     <string name="help_button_desc">Nápověda / Udělit oprávnění</string>
     <string name="button_open_developer_options">Otevřít možnosti pro vývojáře</string>
     <string name="dialog_close">Zavřít</string>
@@ -64,9 +64,6 @@
     <string name="button_copy_install_command">Kopírovat instalační příkaz</string>
     <string name="help_dialog_apk_path_note">(Poznámka: Potřebuješ APK soubor. Při vlastním buildu bývá v app/build/outputs/apk/… nebo jej stáhneš z GitHubu.)</string>
     <string name="github_releases_link_text">Stáhnout nejnovější verzi z GitHubu</string>
-    <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
-    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
-    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
@@ -74,17 +71,15 @@
     <string name="shizuku_ready_to_grant_desc">Shizuku je dostupné a aplikace má oprávnění jej použít. Můžeš zkusit udělit WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
-    <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
     <string name="shizuku_not_available_detailed">Shizuku není dostupné nebo neběží. Nejprve jej nainstaluj a spusť.</string>
     <string name="shizuku_permission_not_granted_to_app_detailed">Aplikace potřebuje oprávnění od Shizuku. Požádej o něj.</string>
     <string name="button_request_shizuku_permission">Požádat o oprávnění Shizuku</string>
     <string name="button_grant_with_shizuku">Udělit přes Shizuku</string>
     <string name="shizuku_not_available">Shizuku není dostupné nebo neběží.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Oprávnění Shizuku nebylo aplikaci uděleno.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Této aplikaci nebylo uděleno oprávnění Shizuku. Nejprve jej prosím udělte prostřednictvím aplikace Shizuku nebo výzvy.</string>
     <string name="shizuku_permission_granted_to_app">Oprávnění Shizuku uděleno.</string>
     <string name="shizuku_permission_denied_to_app">Oprávnění Shizuku zamítnuto.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku není dostupné nebo připravené.</string>
-    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
 
     <!-- Root Method -->
     <string name="permission_method_root_title">Metoda %1$d: Root %2$s</string>
@@ -105,7 +100,7 @@
 
     <!-- Permission Warning Card -->
     <string name="warning_permission_missing_title">Chybí oprávnění!</string>
-    <string name="warning_permission_missing_desc">Aplikace vyžaduje oprávnění WRITE_SECURE_SETTINGS. Prosím udělej jej pomocí jedné z nabízených metod.</string>
+    <string name="warning_permission_missing_desc">Aplikace vyžaduje oprávnění WRITE_SECURE_SETTINGS. Prosím udělte jej pomocí jedné z nabízených metod.</string>
     <string name="button_show_permission_help">Zobrazit možnosti udělení</string>
     <string name="warning_developer_options_disabled_config">Možnosti pro vývojáře jsou vypnuté. USB ladění nelze nastavit.</string>
 
@@ -148,20 +143,18 @@
     <string name="about_feature_private_dns">• Dlaždice Privátní DNS s podporou vlastních hostname</string>
     <string name="about_feature_usb_debugging">• Dlaždice USB ladění pro vývoj</string>
     <string name="about_feature_auto_revert">• Automatické obnovení změn</string>
-    <string name="about_feature_custom_dns">• Vestavění populární DNS poskytovatelé</string>
+    <string name="about_feature_custom_dns">• Oblíbení poskytovatelé DNS (Cloudflare, AdGuard, Quad9)</string>
     <string name="about_developer_title">Vývojář</string>
     <string name="about_developer_info">Vyvinuto RBN-Apps\nOpen source projekt na GitHubu</string>
-    <string name="about_button_github" translatable="false">GitHub</string>
-    <string name="about_button_fdroid" translatable="false">F-Droid</string>
     <string name="about_button_permission_help">Nápověda k nastavení oprávnění</string>
 
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">Automaticky vypnout DNS při připojení k VPN</string>
     <string name="setting_vpn_detection_mode">Režim detekce VPN:</string>
     <string name="vpn_detection_tile_only_title">Detekce jen při otevření dlaždic</string>
-    <string name="vpn_detection_tile_only_description">Kontroluje VPN při otevření rychlých nastavení. Šetří baterii.</string>
+    <string name="vpn_detection_tile_only_description">Kontroluje připojení VPN při otevření rychlého nastavení. Šetří baterii, ale detekuje připojení VPN pouze při otevření rychlého nastavení. Pokud obvykle VPN povolujete nebo zakazujete prostřednictvím rychlého nastavení, tato možnost je dostačující.</string>
     <string name="vpn_detection_background_title">Detekce na pozadí</string>
-    <string name="vpn_detection_background_description">Nepřetržitě sleduje stav VPN, reaguje okamžitě, ale spotřebovává více baterie.</string>
+    <string name="vpn_detection_background_description">Neustále monitoruje stav VPN. Poskytuje okamžitou odpověď, ale spotřebovává více baterie a zobrazuje trvalé upozornění, abys zůstala VPN aktivní.</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">Sledování VPN</string>
@@ -181,9 +174,9 @@
     <string name="setting_network_type_detection_description">Mění DNS při přechodu mezi Wi-Fi a mobilními daty</string>
     <string name="setting_network_type_detection_mode">Režim detekce sítě:</string>
     <string name="network_type_detection_tile_only_title">Pouze při otevření dlaždic</string>
-    <string name="network_type_detection_tile_only_description">Kontrola jen při otevření rychlých nastavení.</string>
+    <string name="network_type_detection_tile_only_description">Kontroluje typ sítě při otevření rychlého nastavení. Šetří baterii, ale detekuje změny sítě pouze při otevření rychlého nastavení.</string>
     <string name="network_type_detection_background_title">Na pozadí</string>
-    <string name="network_type_detection_background_description">Nepřetržité sledování změn sítě.</string>
+    <string name="network_type_detection_background_description">Neustále sleduje změny typu sítě. Reaguje okamžitě při přepnutí sítí, ale spotřebovává více baterie a také zobrazuje trvalé upozornění.</string>
 
     <string name="setting_dns_state_on_wifi">DNS na Wi-Fi:</string>
     <string name="setting_dns_state_on_mobile">DNS na mobilních datech:</string>
@@ -194,7 +187,7 @@
     <string name="dns_mode_hostname_label">Konkrétní hostname</string>
 
     <string name="network_type_info_title">Detekce typu sítě</string>
-    <string name="network_type_info_message">Funkce automaticky přepíná Privátní DNS podle Wi-Fi nebo mobilních dat.</string>
+    <string name="network_type_info_message">Tato funkce automaticky přepíná nastavení privátního DNS na základě toho, zda jste připojeni k Wi-Fi nebo mobilním datům.\n\nPriorita VPN: Pokud je VPN aktivní, má detekce VPN prioritu a DNS bude vypnuto bez ohledu na nastavení typu sítě.\n\nPříklad použití: Pokud váš domácí WiFi router používá NextDNS, nastavte „DNS na Wi-Fi“ na Vypnuto. Nastavte „DNS na mobilních datech“ na Automaticky nebo konkrétní název hostitele pro ochranu v mobilních sítích.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Sledování typu sítě</string>
@@ -205,4 +198,5 @@
     <string name="network_type_none">Bez připojení k síti</string>
     <string name="network_type_unknown">Neznámý typ sítě</string>
 </resources>
+
 
