@@ -165,4 +165,33 @@
     <string name="notification_permission_dialog_message">Для получения уведомлений о фоновом мониторинге VPN необходимо включить разрешение в настройках приложения.\n\nКак только вы предоставите разрешение, вы сможете включить уведомления здесь.</string>
     <string name="notification_permission_dialog_settings_button">Настройки</string>
     <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
+
+    <!-- Network Type Detection Settings -->
+    <string name="setting_network_type_detection_enabled">Автопереключение DNS в зависимости от типа сети</string>
+    <string name="setting_network_type_detection_description">Автоматически изменять настройки частного DNS при переключении между Wi-Fi и мобильными данными</string>
+    <string name="setting_network_type_detection_mode">Режим обнаружения сети:</string>
+    <string name="network_type_detection_tile_only_title">Обнаружение только для плитки</string>
+    <string name="network_type_detection_tile_only_description">Проверяет тип сети при открытии быстрых настроек. Экономит заряд батареи, но обнаруживает изменения сети только когда панель настроек открыта.</string>
+    <string name="network_type_detection_background_title">Обнаружение фоновой службой</string>
+    <string name="network_type_detection_background_description">Постоянно отслеживает изменения типа сети. Мгновенно реагирует на смену сети, но потребляет больше заряда батареи и показывает постоянное уведомление.</string>
+
+    <string name="setting_dns_state_on_wifi">DNS через Wi-Fi:</string>
+    <string name="setting_dns_state_on_mobile">DNS через мобильные данные:</string>
+    <string name="setting_select_hostname">Выберите имя хоста…</string>
+
+    <string name="dns_mode_off_label">Выкл.</string>
+    <string name="dns_mode_auto_label">Авто</string>
+    <string name="dns_mode_hostname_label">Указанное имя хоста</string>
+
+    <string name="network_type_info_title">Обнаружение типа сети</string>
+    <string name="network_type_info_message">Эта функция автоматически переключает настройки частного DNS в зависимости от того, подключены ли вы к Wi-Fi или мобильным данным.\n\nПриоритет VPN: когда активен VPN, его обнаружение имеет приоритет, и DNS будет переведен в режим «Выкл.» независимо от настроек типа сети.\n\nПример использования: если ваш домашний Wi-Fi роутер использует NextDNS, установите «DNS через Wi-Fi» в значение «Выкл.». Установите «DNS через мобильные данные» в значение «Авто» или укажите конкретное имя хоста для защиты в мобильных сетях.</string> 
+
+    <!-- Network Monitoring Service -->
+   <string name="network_monitoring_channel_name">Мониторинг типа сети</string>
+   <string name="network_monitoring_channel_description">Отслеживает изменения типа сети для автоматической настройки частного DNS</string>
+   <string name="network_monitoring_notification_title">Мониторинг сети активен</string>
+   <string name="network_type_wifi">Подключено к Wi-Fi</string>
+   <string name="network_type_mobile">Подключено к мобильным данным</string>
+   <string name="network_type_none">Нет подключения к сети</string>
+   <string name="network_type_unknown">Неизвестный тип сети</string>
 </resources>
