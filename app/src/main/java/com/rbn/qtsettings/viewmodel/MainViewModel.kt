@@ -33,6 +33,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     val usbToggleEnable = prefsManager.usbToggleEnable
     val usbToggleDisable = prefsManager.usbToggleDisable
+    val usbAlsoHideDevOptions = prefsManager.usbAlsoHideDevOptions
+    val usbAlsoDisableWirelessDebugging = prefsManager.usbAlsoDisableWirelessDebugging
     val usbEnableAutoRevert = prefsManager.usbEnableAutoRevert
     val usbAutoRevertDelaySeconds = prefsManager.usbAutoRevertDelaySeconds
 
@@ -90,6 +92,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     fun setUsbToggleEnable(enabled: Boolean) = prefsManager.setUsbToggleEnable(enabled)
     fun setUsbToggleDisable(enabled: Boolean) = prefsManager.setUsbToggleDisable(enabled)
+    fun setUsbAlsoHideDevOptions(enabled: Boolean) = prefsManager.setUsbAlsoHideDevOptions(enabled)
+    fun setUsbAlsoDisableWirelessDebugging(enabled: Boolean) = prefsManager.setUsbAlsoDisableWirelessDebugging(enabled)
     fun setUsbEnableAutoRevert(enabled: Boolean) = prefsManager.setUsbEnableAutoRevert(enabled)
     fun setUsbAutoRevertDelaySeconds(delay: Int) = prefsManager.setUsbAutoRevertDelaySeconds(delay)
 
