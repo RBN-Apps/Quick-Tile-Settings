@@ -4,6 +4,7 @@ object Constants {
     const val PRIVATE_DNS_MODE = "private_dns_mode"
     const val PRIVATE_DNS_SPECIFIER = "private_dns_specifier" // Hostname for DNS_MODE_ON
     const val ADB_ENABLED = "adb_enabled" // USB Debugging (0 or 1)
+    const val ADB_WIFI_ENABLED = "adb_wifi_enabled" // Wireless Debugging (0 or 1)
     const val DEVELOPMENT_SETTINGS_ENABLED =
         "development_settings_enabled" // Developer Options (0 or 1)
 

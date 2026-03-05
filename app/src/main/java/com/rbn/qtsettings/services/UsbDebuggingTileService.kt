@@ -33,9 +33,11 @@ class UsbDebuggingTileService : TileService() {
         updateTile()
     }
 
-    private fun savePreviousState(isUsbEnabled: Boolean) {
+    private fun savePreviousState(isUsbEnabled: Boolean, isDevOptionsEnabled: Boolean, isWirelessDebuggingEnabled: Boolean) {
         servicePrefs.edit {
             putBoolean(PreferencesManager.KEY_USB_PREVIOUS_STATE_FOR_REVERT, isUsbEnabled)
+            putBoolean(PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT, isDevOptionsEnabled)
+            putBoolean(PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT, isWirelessDebuggingEnabled)
         }
     }
 
@@ -47,9 +49,27 @@ class UsbDebuggingTileService : TileService() {
         }
     }
 
+    private fun getPreviousDevOptionsState(): Boolean? {
+        return if (servicePrefs.contains(PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT)) {
+            servicePrefs.getBoolean(PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT, true)
+        } else {
+            null
+        }
+    }
+
+    private fun getPreviousWirelessDebuggingState(): Boolean? {
+        return if (servicePrefs.contains(PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT)) {
+            servicePrefs.getBoolean(PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT, false)
+        } else {
+            null
+        }
+    }
+
     private fun clearPreviousState() {
         servicePrefs.edit {
             remove(PreferencesManager.KEY_USB_PREVIOUS_STATE_FOR_REVERT)
+            remove(PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT)
+            remove(PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT)
         }
     }
 
@@ -64,7 +84,10 @@ class UsbDebuggingTileService : TileService() {
             return
         }
 
-        if (!PermissionUtils.isDeveloperOptionsEnabled(this)) {
+        val alsoHideDevOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled()
+        val alsoDisableWirelessDebugging = prefsManager.isUsbAlsoDisableWirelessDebuggingEnabled()
+
+        if (!alsoHideDevOptions && !PermissionUtils.isDeveloperOptionsEnabled(this)) {
             Toast.makeText(this, R.string.toast_developer_options_disabled, Toast.LENGTH_LONG)
                 .show()
             Log.w("UsbDebuggingTile", "Developer options are disabled.")
@@ -74,7 +97,11 @@ class UsbDebuggingTileService : TileService() {
 
         val currentUsbDebuggingState =
             Settings.Global.getInt(contentResolver, Constants.ADB_ENABLED, 0) == 1
-        savePreviousState(currentUsbDebuggingState)
+        val currentDevOptionsState =
+            Settings.Global.getInt(contentResolver, Constants.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1
+        val currentWirelessDebuggingState =
+            Settings.Global.getInt(contentResolver, Constants.ADB_WIFI_ENABLED, 0) == 1
+        savePreviousState(currentUsbDebuggingState, currentDevOptionsState, currentWirelessDebuggingState)
 
         val nextStatesToCycle = mutableListOf<Boolean>()
         if (prefsManager.isUsbToggleEnableEnabled()) nextStatesToCycle.add(true)
@@ -86,7 +113,15 @@ class UsbDebuggingTileService : TileService() {
             return
         }
 
-        var currentConfigIndex = nextStatesToCycle.indexOf(currentUsbDebuggingState)
+        // When also hiding dev options, determine current effective state:
+        // If dev options are off, treat as "USB off" regardless of adb_enabled value
+        val effectiveCurrentState = if (alsoHideDevOptions && !currentDevOptionsState) {
+            false
+        } else {
+            currentUsbDebuggingState
+        }
+
+        var currentConfigIndex = nextStatesToCycle.indexOf(effectiveCurrentState)
         if (currentConfigIndex == -1) {
             currentConfigIndex = -1
         }
@@ -95,11 +130,48 @@ class UsbDebuggingTileService : TileService() {
         val nextStateToSet = nextStatesToCycle[nextConfigIndex]
 
         try {
-            Settings.Global.putInt(
-                contentResolver,
-                Constants.ADB_ENABLED,
-                if (nextStateToSet) 1 else 0
-            )
+            if (alsoHideDevOptions) {
+                if (nextStateToSet) {
+                    // Turning ON: enable dev options first, then USB debugging
+                    Settings.Global.putInt(
+                        contentResolver,
+                        Constants.DEVELOPMENT_SETTINGS_ENABLED,
+                        1
+                    )
+                    Settings.Global.putInt(
+                        contentResolver,
+                        Constants.ADB_ENABLED,
+                        1
+                    )
+                } else {
+                    // Turning OFF: disable USB debugging first, then dev options
+                    Settings.Global.putInt(
+                        contentResolver,
+                        Constants.ADB_ENABLED,
+                        0
+                    )
+                    Settings.Global.putInt(
+                        contentResolver,
+                        Constants.DEVELOPMENT_SETTINGS_ENABLED,
+                        0
+                    )
+                }
+            } else {
+                Settings.Global.putInt(
+                    contentResolver,
+                    Constants.ADB_ENABLED,
+                    if (nextStateToSet) 1 else 0
+                )
+            }
+
+            // Also toggle wireless debugging if enabled
+            if (alsoDisableWirelessDebugging) {
+                Settings.Global.putInt(
+                    contentResolver,
+                    Constants.ADB_WIFI_ENABLED,
+                    if (nextStateToSet) 1 else 0
+                )
+            }
 
             if (prefsManager.isUsbAutoRevertEnabled()) {
                 val delaySeconds = prefsManager.getUsbAutoRevertDelaySeconds()
@@ -147,29 +219,73 @@ class UsbDebuggingTileService : TileService() {
             override fun onFinish() {
                 getPreviousState()?.let { prevUsbState ->
                     try {
-                        if (PermissionUtils.isDeveloperOptionsEnabled(applicationContext)) {
+                        val alsoHideDevOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled()
+                        val alsoDisableWirelessDebugging = prefsManager.isUsbAlsoDisableWirelessDebuggingEnabled()
+                        val prevDevOptionsState = getPreviousDevOptionsState()
+                        val prevWirelessDebuggingState = getPreviousWirelessDebuggingState()
+
+                        if (alsoHideDevOptions) {
+                            if (prevUsbState) {
+                                // Restoring to ON: enable dev options first, then USB
+                                Settings.Global.putInt(
+                                    contentResolver,
+                                    Constants.DEVELOPMENT_SETTINGS_ENABLED,
+                                    1
+                                )
+                                Settings.Global.putInt(
+                                    contentResolver,
+                                    Constants.ADB_ENABLED,
+                                    1
+                                )
+                            } else {
+                                // Restoring to OFF: disable USB first, then dev options
+                                Settings.Global.putInt(
+                                    contentResolver,
+                                    Constants.ADB_ENABLED,
+                                    0
+                                )
+                                Settings.Global.putInt(
+                                    contentResolver,
+                                    Constants.DEVELOPMENT_SETTINGS_ENABLED,
+                                    if (prevDevOptionsState == true) 1 else 0
+                                )
+                            }
+                        } else {
+                            if (PermissionUtils.isDeveloperOptionsEnabled(applicationContext)) {
+                                Settings.Global.putInt(
+                                    contentResolver,
+                                    Constants.ADB_ENABLED,
+                                    if (prevUsbState) 1 else 0
+                                )
+                            } else {
+                                Log.w(
+                                    "UsbDebuggingTile",
+                                    "Developer options disabled, cannot auto-revert USB debugging."
+                                )
+                            }
+                        }
+
+                        // Restore wireless debugging state if applicable
+                        if (alsoDisableWirelessDebugging && prevWirelessDebuggingState != null) {
                             Settings.Global.putInt(
                                 contentResolver,
-                                Constants.ADB_ENABLED,
-                                if (prevUsbState) 1 else 0
-                            )
-                            Log.i(
-                                "UsbDebuggingTile",
-                                "Auto-reverted USB Debug to ${if (prevUsbState) "ON" else "OFF"}"
-                            )
-                            val revertedStateString =
-                                if (prevUsbState) getString(R.string.on_state) else getString(R.string.off_state)
-                            Toast.makeText(
-                                applicationContext,
-                                getString(R.string.usb_state_reverted_to, revertedStateString),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Log.w(
-                                "UsbDebuggingTile",
-                                "Developer options disabled, cannot auto-revert USB debugging."
+                                Constants.ADB_WIFI_ENABLED,
+                                if (prevWirelessDebuggingState) 1 else 0
                             )
                         }
+
+                        Log.i(
+                            "UsbDebuggingTile",
+                            "Auto-reverted USB Debug to ${if (prevUsbState) "ON" else "OFF"}" +
+                                    if (alsoHideDevOptions) " (dev options also reverted)" else ""
+                        )
+                        val revertedStateString =
+                            if (prevUsbState) getString(R.string.on_state) else getString(R.string.off_state)
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.usb_state_reverted_to, revertedStateString),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } catch (e: Exception) {
                         Log.e("UsbDebuggingTile", "Error auto-reverting USB: ${e.message}", e)
                     } finally {
@@ -202,7 +318,10 @@ class UsbDebuggingTileService : TileService() {
             tile.subtitle = ""
         }
 
-        if (!PermissionUtils.isDeveloperOptionsEnabled(this)) {
+        val alsoHideDevOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled()
+        val devOptionsEnabled = PermissionUtils.isDeveloperOptionsEnabled(this)
+
+        if (!alsoHideDevOptions && !devOptionsEnabled) {
             tile.state = Tile.STATE_UNAVAILABLE
             tile.label = getString(R.string.usb_dev_options_off)
             tile.icon = Icon.createWithResource(this, R.drawable.ic_usb_off)
@@ -215,7 +334,14 @@ class UsbDebuggingTileService : TileService() {
 
         val adbEnabled = Settings.Global.getInt(contentResolver, Constants.ADB_ENABLED, 0) == 1
 
-        if (adbEnabled) {
+        // When also hiding dev options, consider "active" only when both are on
+        val isActive = if (alsoHideDevOptions) {
+            adbEnabled && devOptionsEnabled
+        } else {
+            adbEnabled
+        }
+
+        if (isActive) {
             tile.state = Tile.STATE_ACTIVE
             tile.label = getString(R.string.usb_state_on)
             tile.icon = Icon.createWithResource(this, R.drawable.ic_usb_on)

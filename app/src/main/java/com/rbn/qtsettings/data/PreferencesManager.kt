@@ -50,6 +50,14 @@ class PreferencesManager private constructor(context: Context) {
         MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_TOGGLE_DISABLE, true))
     val usbToggleDisable: StateFlow<Boolean> = _usbToggleDisable.asStateFlow()
 
+    private val _usbAlsoHideDevOptions =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, false))
+    val usbAlsoHideDevOptions: StateFlow<Boolean> = _usbAlsoHideDevOptions.asStateFlow()
+
+    private val _usbAlsoDisableWirelessDebugging =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING, false))
+    val usbAlsoDisableWirelessDebugging: StateFlow<Boolean> = _usbAlsoDisableWirelessDebugging.asStateFlow()
+
     private val _usbEnableAutoRevert =
         MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ENABLE_AUTO_REVERT, false))
     val usbEnableAutoRevert: StateFlow<Boolean> = _usbEnableAutoRevert.asStateFlow()
@@ -141,6 +149,16 @@ class PreferencesManager private constructor(context: Context) {
     fun setUsbToggleDisable(enabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_USB_TOGGLE_DISABLE, enabled) }
         _usbToggleDisable.value = enabled
+    }
+
+    fun setUsbAlsoHideDevOptions(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, enabled) }
+        _usbAlsoHideDevOptions.value = enabled
+    }
+
+    fun setUsbAlsoDisableWirelessDebugging(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING, enabled) }
+        _usbAlsoDisableWirelessDebugging.value = enabled
     }
 
     fun setUsbEnableAutoRevert(enabled: Boolean) {
@@ -350,6 +368,12 @@ class PreferencesManager private constructor(context: Context) {
     fun isUsbToggleDisableEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_USB_TOGGLE_DISABLE, true)
 
+    fun isUsbAlsoHideDevOptionsEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, false)
+
+    fun isUsbAlsoDisableWirelessDebuggingEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING, false)
+
     fun isUsbAutoRevertEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_USB_ENABLE_AUTO_REVERT, false)
 
@@ -394,6 +418,8 @@ class PreferencesManager private constructor(context: Context) {
 
         private const val KEY_USB_TOGGLE_ENABLE = "usb_toggle_enable"
         private const val KEY_USB_TOGGLE_DISABLE = "usb_toggle_disable"
+        private const val KEY_USB_ALSO_HIDE_DEV_OPTIONS = "usb_also_hide_dev_options"
+        private const val KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING = "usb_also_disable_wireless_debugging"
         private const val KEY_USB_ENABLE_AUTO_REVERT = "usb_enable_auto_revert"
         private const val KEY_USB_AUTO_REVERT_DELAY_SECONDS = "usb_auto_revert_delay_seconds"
 
@@ -412,6 +438,8 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
         const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
         const val KEY_USB_PREVIOUS_STATE_FOR_REVERT = "usb_previous_state_for_revert"
+        const val KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT = "dev_options_previous_state_for_revert"
+        const val KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT = "wireless_debugging_previous_state_for_revert"
 
 
         @Volatile

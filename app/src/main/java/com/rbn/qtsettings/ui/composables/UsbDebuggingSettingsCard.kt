@@ -33,6 +33,8 @@ import com.rbn.qtsettings.viewmodel.MainViewModel
 fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Boolean) {
     val usbToggleEnable by viewModel.usbToggleEnable.collectAsState()
     val usbToggleDisable by viewModel.usbToggleDisable.collectAsState()
+    val alsoHideDevOptions by viewModel.usbAlsoHideDevOptions.collectAsState()
+    val alsoDisableWirelessDebugging by viewModel.usbAlsoDisableWirelessDebugging.collectAsState()
     val enableAutoRevert by viewModel.usbEnableAutoRevert.collectAsState()
     val autoRevertDelay by viewModel.usbAutoRevertDelaySeconds.collectAsState()
 
@@ -67,16 +69,16 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                 checked = usbToggleEnable,
                 onCheckedChange = { viewModel.setUsbToggleEnable(it) },
                 label = stringResource(R.string.usb_state_on),
-                enabled = isDevOptionsEnabled
+                enabled = isDevOptionsEnabled || alsoHideDevOptions
             )
             CheckboxItem(
                 checked = usbToggleDisable,
                 onCheckedChange = { viewModel.setUsbToggleDisable(it) },
                 label = stringResource(R.string.usb_state_off),
-                enabled = isDevOptionsEnabled
+                enabled = isDevOptionsEnabled || alsoHideDevOptions
             )
             Spacer(modifier = Modifier.height(8.dp))
-            if (!usbToggleDisable && !usbToggleEnable && isDevOptionsEnabled) {
+            if (!usbToggleDisable && !usbToggleEnable && (isDevOptionsEnabled || alsoHideDevOptions)) {
                 Text(
                     text = stringResource(R.string.warning_at_least_one_usb_option),
                     style = MaterialTheme.typography.bodySmall,
@@ -84,6 +86,36 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Also Hide Developer Options Section
+            CheckboxItem(
+                checked = alsoHideDevOptions,
+                onCheckedChange = { viewModel.setUsbAlsoHideDevOptions(it) },
+                label = stringResource(R.string.setting_also_hide_dev_options)
+            )
+            Text(
+                text = stringResource(R.string.setting_also_hide_dev_options_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+            )
+
+            // Also Disable Wireless Debugging Section
+            CheckboxItem(
+                checked = alsoDisableWirelessDebugging,
+                onCheckedChange = { viewModel.setUsbAlsoDisableWirelessDebugging(it) },
+                label = stringResource(R.string.setting_also_disable_wireless_debugging)
+            )
+            Text(
+                text = stringResource(R.string.setting_also_disable_wireless_debugging_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
@@ -98,20 +130,20 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                     .clickable(
                         interactionSource = interactionSourceAutoRevert,
                         indication = null,
-                        onClick = { if (isDevOptionsEnabled) viewModel.setUsbEnableAutoRevert(!enableAutoRevert) },
-                        enabled = isDevOptionsEnabled
+                        onClick = { if (isDevOptionsEnabled || alsoHideDevOptions) viewModel.setUsbEnableAutoRevert(!enableAutoRevert) },
+                        enabled = isDevOptionsEnabled || alsoHideDevOptions
                     )
             ) {
                 Checkbox(
                     checked = enableAutoRevert,
                     onCheckedChange = { viewModel.setUsbEnableAutoRevert(it) },
-                    enabled = isDevOptionsEnabled
+                    enabled = isDevOptionsEnabled || alsoHideDevOptions
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.setting_enable_auto_revert),
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (isDevOptionsEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+                    color = if (isDevOptionsEnabled || alsoHideDevOptions) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
                         alpha = 0.38f
                     )
                 )
@@ -126,7 +158,7 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                     text = stringResource(R.string.setting_auto_revert_delay),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
-                    color = if (enableAutoRevert && isDevOptionsEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+                    color = if (enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
                         alpha = 0.38f
                     )
                 )
@@ -140,7 +172,7 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                     modifier = Modifier.width(80.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    enabled = enableAutoRevert && isDevOptionsEnabled
+                    enabled = enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)
                 )
             }
         }
