@@ -264,6 +264,15 @@ class PrivateDnsTileService : TileService() {
             return
         }
 
+        if (prefsManager.isDnsRequireUnlockEnabled() && isLocked) {
+            unlockAndRun { performDnsToggle() }
+            return
+        }
+
+        performDnsToggle()
+    }
+
+    private fun performDnsToggle() {
         val currentMode = Settings.Global.getString(contentResolver, PRIVATE_DNS_MODE)
             ?: DNS_MODE_OFF
         val currentHost =
@@ -595,22 +604,23 @@ class PrivateDnsTileService : TileService() {
         }
 
         networkTypeMonitorTimer?.cancel()
-        networkTypeMonitorTimer = object : CountDownTimer(Long.MAX_VALUE, 2000) { // Check every 2 seconds
-            override fun onTick(millisUntilFinished: Long) {
-                val detectedNetworkType = NetworkTypeDetectionUtils.getCurrentNetworkType(
-                    this@PrivateDnsTileService
-                )
+        networkTypeMonitorTimer =
+            object : CountDownTimer(Long.MAX_VALUE, 2000) { // Check every 2 seconds
+                override fun onTick(millisUntilFinished: Long) {
+                    val detectedNetworkType = NetworkTypeDetectionUtils.getCurrentNetworkType(
+                        this@PrivateDnsTileService
+                    )
 
-                if (detectedNetworkType != currentNetworkType) {
-                    handleNetworkTypeChange(detectedNetworkType)
-                    currentNetworkType = detectedNetworkType
-                    updateTile()
+                    if (detectedNetworkType != currentNetworkType) {
+                        handleNetworkTypeChange(detectedNetworkType)
+                        currentNetworkType = detectedNetworkType
+                        updateTile()
+                    }
                 }
-            }
 
-            override fun onFinish() {
-            }
-        }.start()
+                override fun onFinish() {
+                }
+            }.start()
     }
 
     private fun stopNetworkTypeMonitoring() {

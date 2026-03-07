@@ -55,8 +55,14 @@ class PreferencesManager private constructor(context: Context) {
     val usbAlsoHideDevOptions: StateFlow<Boolean> = _usbAlsoHideDevOptions.asStateFlow()
 
     private val _usbAlsoDisableWirelessDebugging =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING, false))
-    val usbAlsoDisableWirelessDebugging: StateFlow<Boolean> = _usbAlsoDisableWirelessDebugging.asStateFlow()
+        MutableStateFlow(
+            sharedPreferences.getBoolean(
+                KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING,
+                false
+            )
+        )
+    val usbAlsoDisableWirelessDebugging: StateFlow<Boolean> =
+        _usbAlsoDisableWirelessDebugging.asStateFlow()
 
     private val _usbEnableAutoRevert =
         MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ENABLE_AUTO_REVERT, false))
@@ -110,6 +116,15 @@ class PreferencesManager private constructor(context: Context) {
     private val _dnsHostnameOnMobile =
         MutableStateFlow(sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_MOBILE, null))
     val dnsHostnameOnMobile: StateFlow<String?> = _dnsHostnameOnMobile.asStateFlow()
+
+    // Security Settings
+    private val _dnsRequireUnlock =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_DNS_REQUIRE_UNLOCK, false))
+    val dnsRequireUnlock: StateFlow<Boolean> = _dnsRequireUnlock.asStateFlow()
+
+    private val _usbRequireUnlock =
+        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_REQUIRE_UNLOCK, false))
+    val usbRequireUnlock: StateFlow<Boolean> = _usbRequireUnlock.asStateFlow()
 
     // Help Shown
     private val _helpShown = MutableStateFlow(sharedPreferences.getBoolean(KEY_HELP_SHOWN, false))
@@ -169,6 +184,16 @@ class PreferencesManager private constructor(context: Context) {
     fun setUsbAutoRevertDelaySeconds(delay: Int) {
         sharedPreferences.edit { putInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, delay) }
         _usbAutoRevertDelaySeconds.value = delay
+    }
+
+    fun setDnsRequireUnlock(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_DNS_REQUIRE_UNLOCK, enabled) }
+        _dnsRequireUnlock.value = enabled
+    }
+
+    fun setUsbRequireUnlock(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_USB_REQUIRE_UNLOCK, enabled) }
+        _usbRequireUnlock.value = enabled
     }
 
     fun setHelpShown(shown: Boolean) {
@@ -380,6 +405,12 @@ class PreferencesManager private constructor(context: Context) {
     fun getUsbAutoRevertDelaySeconds(): Int =
         sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5)
 
+    fun isDnsRequireUnlockEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_DNS_REQUIRE_UNLOCK, false)
+
+    fun isUsbRequireUnlockEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_USB_REQUIRE_UNLOCK, false)
+
     fun isVpnDetectionEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_VPN_DETECTION_ENABLED, false)
 
@@ -419,9 +450,13 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_USB_TOGGLE_ENABLE = "usb_toggle_enable"
         private const val KEY_USB_TOGGLE_DISABLE = "usb_toggle_disable"
         private const val KEY_USB_ALSO_HIDE_DEV_OPTIONS = "usb_also_hide_dev_options"
-        private const val KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING = "usb_also_disable_wireless_debugging"
+        private const val KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING =
+            "usb_also_disable_wireless_debugging"
         private const val KEY_USB_ENABLE_AUTO_REVERT = "usb_enable_auto_revert"
         private const val KEY_USB_AUTO_REVERT_DELAY_SECONDS = "usb_auto_revert_delay_seconds"
+
+        private const val KEY_DNS_REQUIRE_UNLOCK = "dns_require_unlock"
+        private const val KEY_USB_REQUIRE_UNLOCK = "usb_require_unlock"
 
         private const val KEY_HELP_SHOWN = "help_shown_v1"
 
@@ -438,8 +473,10 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
         const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
         const val KEY_USB_PREVIOUS_STATE_FOR_REVERT = "usb_previous_state_for_revert"
-        const val KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT = "dev_options_previous_state_for_revert"
-        const val KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT = "wireless_debugging_previous_state_for_revert"
+        const val KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT =
+            "dev_options_previous_state_for_revert"
+        const val KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT =
+            "wireless_debugging_previous_state_for_revert"
 
 
         @Volatile

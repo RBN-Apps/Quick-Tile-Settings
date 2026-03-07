@@ -109,6 +109,9 @@
     <string name="button_show_permission_help">Show Grant Options</string>
     <string name="warning_developer_options_disabled_config">Developer options are disabled. USB Debugging cannot be configured.</string>
 
+    <string name="setting_require_unlock">Require device unlock to toggle</string>
+    <string name="setting_require_unlock_desc">When enabled, the tile will prompt you to unlock the device before applying any changes.</string>
+
     <string name="setting_also_hide_dev_options">Also toggle Developer Options</string>
     <string name="setting_also_hide_dev_options_desc">When enabled, toggling USB Debugging will also enable/disable Developer Options. This allows the tile to work even when Developer Options are currently off.</string>
     <string name="setting_also_disable_wireless_debugging">Also toggle Wireless Debugging</string>

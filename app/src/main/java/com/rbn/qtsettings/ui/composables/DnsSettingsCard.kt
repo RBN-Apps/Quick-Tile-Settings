@@ -63,6 +63,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
     val dnsHostnames by viewModel.dnsHostnames.collectAsState()
     val enableAutoRevert by viewModel.dnsEnableAutoRevert.collectAsState()
     val autoRevertDelay by viewModel.dnsAutoRevertDelaySeconds.collectAsState()
+    val dnsRequireUnlock by viewModel.dnsRequireUnlock.collectAsState()
     val vpnDetectionEnabled by viewModel.vpnDetectionEnabled.collectAsState()
     val vpnDetectionMode by viewModel.vpnDetectionMode.collectAsState()
     val networkTypeDetectionEnabled by viewModel.networkTypeDetectionEnabled.collectAsState()
@@ -350,7 +351,11 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                             .testTag("network_type_detection_tile_only_option")
                             .selectable(
                                 selected = networkTypeDetectionMode == TILE_ONLY_DETECTION,
-                                onClick = { viewModel.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION) }
+                                onClick = {
+                                    viewModel.setNetworkTypeDetectionMode(
+                                        TILE_ONLY_DETECTION
+                                    )
+                                }
                             )
                             .padding(vertical = 4.dp)
                     ) {
@@ -379,7 +384,11 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                             .testTag("network_type_detection_background_option")
                             .selectable(
                                 selected = networkTypeDetectionMode == BACKGROUND_DETECTION,
-                                onClick = { viewModel.setNetworkTypeDetectionMode(BACKGROUND_DETECTION) }
+                                onClick = {
+                                    viewModel.setNetworkTypeDetectionMode(
+                                        BACKGROUND_DETECTION
+                                    )
+                                }
                             )
                             .padding(vertical = 4.dp)
                     ) {
@@ -456,6 +465,23 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         enabled = enableAutoRevert
                     )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Require Unlock Section
+                CheckboxItem(
+                    checked = dnsRequireUnlock,
+                    onCheckedChange = { viewModel.setDnsRequireUnlock(it) },
+                    label = stringResource(R.string.setting_require_unlock)
+                )
+                Text(
+                    text = stringResource(R.string.setting_require_unlock_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+                )
             }
         }
     }
@@ -700,8 +726,10 @@ fun DnsStateSelector(
                     DNS_MODE_AUTO -> stringResource(R.string.dns_mode_auto_label)
                     DNS_MODE_ON -> {
                         val entry = dnsHostnames.find { it.hostname == dnsHostname }
-                        entry?.name ?: dnsHostname ?: stringResource(R.string.setting_select_hostname)
+                        entry?.name ?: dnsHostname
+                        ?: stringResource(R.string.setting_select_hostname)
                     }
+
                     else -> stringResource(R.string.dns_mode_auto_label)
                 },
                 modifier = Modifier.weight(1f)
