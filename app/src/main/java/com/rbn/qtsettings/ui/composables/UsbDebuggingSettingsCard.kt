@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -37,6 +39,7 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
     val alsoDisableWirelessDebugging by viewModel.usbAlsoDisableWirelessDebugging.collectAsState()
     val enableAutoRevert by viewModel.usbEnableAutoRevert.collectAsState()
     val autoRevertDelay by viewModel.usbAutoRevertDelaySeconds.collectAsState()
+    val usbRequireUnlock by viewModel.usbRequireUnlock.collectAsState()
 
     Card(
         modifier = Modifier
@@ -53,126 +56,154 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
             Text(
                 text = stringResource(R.string.setting_desc_tile_cycles),
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 4.dp)
             )
 
-            if (!isDevOptionsEnabled) {
-                Text(
-                    text = stringResource(R.string.warning_developer_options_disabled_config),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-
-            CheckboxItem(
-                checked = usbToggleEnable,
-                onCheckedChange = { viewModel.setUsbToggleEnable(it) },
-                label = stringResource(R.string.usb_state_on),
-                enabled = isDevOptionsEnabled || alsoHideDevOptions
-            )
-            CheckboxItem(
-                checked = usbToggleDisable,
-                onCheckedChange = { viewModel.setUsbToggleDisable(it) },
-                label = stringResource(R.string.usb_state_off),
-                enabled = isDevOptionsEnabled || alsoHideDevOptions
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            if (!usbToggleDisable && !usbToggleEnable && (isDevOptionsEnabled || alsoHideDevOptions)) {
-                Text(
-                    text = stringResource(R.string.warning_at_least_one_usb_option),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Also Hide Developer Options Section
-            CheckboxItem(
-                checked = alsoHideDevOptions,
-                onCheckedChange = { viewModel.setUsbAlsoHideDevOptions(it) },
-                label = stringResource(R.string.setting_also_hide_dev_options)
-            )
-            Text(
-                text = stringResource(R.string.setting_also_hide_dev_options_desc),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
-            )
-
-            // Also Disable Wireless Debugging Section
-            CheckboxItem(
-                checked = alsoDisableWirelessDebugging,
-                onCheckedChange = { viewModel.setUsbAlsoDisableWirelessDebugging(it) },
-                label = stringResource(R.string.setting_also_disable_wireless_debugging)
-            )
-            Text(
-                text = stringResource(R.string.setting_also_disable_wireless_debugging_desc),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Auto-Revert Section
-            val interactionSourceAutoRevert = remember { MutableInteractionSource() }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        interactionSource = interactionSourceAutoRevert,
-                        indication = null,
-                        onClick = { if (isDevOptionsEnabled || alsoHideDevOptions) viewModel.setUsbEnableAutoRevert(!enableAutoRevert) },
-                        enabled = isDevOptionsEnabled || alsoHideDevOptions
-                    )
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Checkbox(
-                    checked = enableAutoRevert,
-                    onCheckedChange = { viewModel.setUsbEnableAutoRevert(it) },
+
+                if (!isDevOptionsEnabled) {
+                    Text(
+                        text = stringResource(R.string.warning_developer_options_disabled_config),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
+                CheckboxItem(
+                    checked = usbToggleEnable,
+                    onCheckedChange = { viewModel.setUsbToggleEnable(it) },
+                    label = stringResource(R.string.usb_state_on),
                     enabled = isDevOptionsEnabled || alsoHideDevOptions
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.setting_enable_auto_revert),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = if (isDevOptionsEnabled || alsoHideDevOptions) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
-                        alpha = 0.38f
-                    )
+                CheckboxItem(
+                    checked = usbToggleDisable,
+                    onCheckedChange = { viewModel.setUsbToggleDisable(it) },
+                    label = stringResource(R.string.usb_state_off),
+                    enabled = isDevOptionsEnabled || alsoHideDevOptions
                 )
-            }
+                Spacer(modifier = Modifier.height(8.dp))
+                if (!usbToggleDisable && !usbToggleEnable && (isDevOptionsEnabled || alsoHideDevOptions)) {
+                    Text(
+                        text = stringResource(R.string.warning_at_least_one_usb_option),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Also Hide Developer Options Section
+                CheckboxItem(
+                    checked = alsoHideDevOptions,
+                    onCheckedChange = { viewModel.setUsbAlsoHideDevOptions(it) },
+                    label = stringResource(R.string.setting_also_hide_dev_options)
+                )
+                Text(
+                    text = stringResource(R.string.setting_also_hide_dev_options_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+                )
+
+                // Also Disable Wireless Debugging Section
+                CheckboxItem(
+                    checked = alsoDisableWirelessDebugging,
+                    onCheckedChange = { viewModel.setUsbAlsoDisableWirelessDebugging(it) },
+                    label = stringResource(R.string.setting_also_disable_wireless_debugging)
+                )
+                Text(
+                    text = stringResource(R.string.setting_also_disable_wireless_debugging_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Auto-Revert Section
+                val interactionSourceAutoRevert = remember { MutableInteractionSource() }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = interactionSourceAutoRevert,
+                            indication = null,
+                            onClick = {
+                                if (isDevOptionsEnabled || alsoHideDevOptions) viewModel.setUsbEnableAutoRevert(
+                                    !enableAutoRevert
+                                )
+                            },
+                            enabled = isDevOptionsEnabled || alsoHideDevOptions
+                        )
+                ) {
+                    Checkbox(
+                        checked = enableAutoRevert,
+                        onCheckedChange = { viewModel.setUsbEnableAutoRevert(it) },
+                        enabled = isDevOptionsEnabled || alsoHideDevOptions
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.setting_enable_auto_revert),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (isDevOptionsEnabled || alsoHideDevOptions) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.38f
+                        )
+                    )
+                }
 
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.setting_auto_revert_delay),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                    color = if (enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
-                        alpha = 0.38f
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.setting_auto_revert_delay),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f),
+                        color = if (enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.38f
+                        )
                     )
+                    OutlinedTextField(
+                        value = autoRevertDelay.toString(),
+                        onValueChange = { value ->
+                            val newDelay =
+                                value.toIntOrNull() ?: viewModel.usbAutoRevertDelaySeconds.value
+                            viewModel.setUsbAutoRevertDelaySeconds(newDelay)
+                        },
+                        modifier = Modifier.width(80.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        enabled = enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Require Unlock Section
+                CheckboxItem(
+                    checked = usbRequireUnlock,
+                    onCheckedChange = { viewModel.setUsbRequireUnlock(it) },
+                    label = stringResource(R.string.setting_require_unlock)
                 )
-                OutlinedTextField(
-                    value = autoRevertDelay.toString(),
-                    onValueChange = { value ->
-                        val newDelay =
-                            value.toIntOrNull() ?: viewModel.usbAutoRevertDelaySeconds.value
-                        viewModel.setUsbAutoRevertDelaySeconds(newDelay)
-                    },
-                    modifier = Modifier.width(80.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    enabled = enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)
+                Text(
+                    text = stringResource(R.string.setting_require_unlock_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
                 )
             }
         }

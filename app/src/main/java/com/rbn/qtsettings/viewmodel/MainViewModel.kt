@@ -48,6 +48,9 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val dnsStateOnMobile = prefsManager.dnsStateOnMobile
     val dnsHostnameOnMobile = prefsManager.dnsHostnameOnMobile
 
+    val dnsRequireUnlock = prefsManager.dnsRequireUnlock
+    val usbRequireUnlock = prefsManager.usbRequireUnlock
+
     val helpShown = prefsManager.helpShown
 
     private val _initialTab = MutableStateFlow(0)
@@ -93,9 +96,14 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun setUsbToggleEnable(enabled: Boolean) = prefsManager.setUsbToggleEnable(enabled)
     fun setUsbToggleDisable(enabled: Boolean) = prefsManager.setUsbToggleDisable(enabled)
     fun setUsbAlsoHideDevOptions(enabled: Boolean) = prefsManager.setUsbAlsoHideDevOptions(enabled)
-    fun setUsbAlsoDisableWirelessDebugging(enabled: Boolean) = prefsManager.setUsbAlsoDisableWirelessDebugging(enabled)
+    fun setUsbAlsoDisableWirelessDebugging(enabled: Boolean) =
+        prefsManager.setUsbAlsoDisableWirelessDebugging(enabled)
+
     fun setUsbEnableAutoRevert(enabled: Boolean) = prefsManager.setUsbEnableAutoRevert(enabled)
     fun setUsbAutoRevertDelaySeconds(delay: Int) = prefsManager.setUsbAutoRevertDelaySeconds(delay)
+
+    fun setDnsRequireUnlock(enabled: Boolean) = prefsManager.setDnsRequireUnlock(enabled)
+    fun setUsbRequireUnlock(enabled: Boolean) = prefsManager.setUsbRequireUnlock(enabled)
 
     fun setVpnDetectionEnabled(enabled: Boolean) {
         prefsManager.setVpnDetectionEnabled(enabled)

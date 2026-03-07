@@ -33,11 +33,21 @@ class UsbDebuggingTileService : TileService() {
         updateTile()
     }
 
-    private fun savePreviousState(isUsbEnabled: Boolean, isDevOptionsEnabled: Boolean, isWirelessDebuggingEnabled: Boolean) {
+    private fun savePreviousState(
+        isUsbEnabled: Boolean,
+        isDevOptionsEnabled: Boolean,
+        isWirelessDebuggingEnabled: Boolean
+    ) {
         servicePrefs.edit {
             putBoolean(PreferencesManager.KEY_USB_PREVIOUS_STATE_FOR_REVERT, isUsbEnabled)
-            putBoolean(PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT, isDevOptionsEnabled)
-            putBoolean(PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT, isWirelessDebuggingEnabled)
+            putBoolean(
+                PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT,
+                isDevOptionsEnabled
+            )
+            putBoolean(
+                PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT,
+                isWirelessDebuggingEnabled
+            )
         }
     }
 
@@ -51,7 +61,10 @@ class UsbDebuggingTileService : TileService() {
 
     private fun getPreviousDevOptionsState(): Boolean? {
         return if (servicePrefs.contains(PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT)) {
-            servicePrefs.getBoolean(PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT, true)
+            servicePrefs.getBoolean(
+                PreferencesManager.KEY_DEV_OPTIONS_PREVIOUS_STATE_FOR_REVERT,
+                true
+            )
         } else {
             null
         }
@@ -59,7 +72,10 @@ class UsbDebuggingTileService : TileService() {
 
     private fun getPreviousWirelessDebuggingState(): Boolean? {
         return if (servicePrefs.contains(PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT)) {
-            servicePrefs.getBoolean(PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT, false)
+            servicePrefs.getBoolean(
+                PreferencesManager.KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT,
+                false
+            )
         } else {
             null
         }
@@ -84,6 +100,15 @@ class UsbDebuggingTileService : TileService() {
             return
         }
 
+        if (prefsManager.isUsbRequireUnlockEnabled() && isLocked) {
+            unlockAndRun { performUsbToggle() }
+            return
+        }
+
+        performUsbToggle()
+    }
+
+    private fun performUsbToggle() {
         val alsoHideDevOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled()
         val alsoDisableWirelessDebugging = prefsManager.isUsbAlsoDisableWirelessDebuggingEnabled()
 
@@ -101,7 +126,11 @@ class UsbDebuggingTileService : TileService() {
             Settings.Global.getInt(contentResolver, Constants.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1
         val currentWirelessDebuggingState =
             Settings.Global.getInt(contentResolver, Constants.ADB_WIFI_ENABLED, 0) == 1
-        savePreviousState(currentUsbDebuggingState, currentDevOptionsState, currentWirelessDebuggingState)
+        savePreviousState(
+            currentUsbDebuggingState,
+            currentDevOptionsState,
+            currentWirelessDebuggingState
+        )
 
         val nextStatesToCycle = mutableListOf<Boolean>()
         if (prefsManager.isUsbToggleEnableEnabled()) nextStatesToCycle.add(true)
@@ -220,7 +249,8 @@ class UsbDebuggingTileService : TileService() {
                 getPreviousState()?.let { prevUsbState ->
                     try {
                         val alsoHideDevOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled()
-                        val alsoDisableWirelessDebugging = prefsManager.isUsbAlsoDisableWirelessDebuggingEnabled()
+                        val alsoDisableWirelessDebugging =
+                            prefsManager.isUsbAlsoDisableWirelessDebuggingEnabled()
                         val prevDevOptionsState = getPreviousDevOptionsState()
                         val prevWirelessDebuggingState = getPreviousWirelessDebuggingState()
 
