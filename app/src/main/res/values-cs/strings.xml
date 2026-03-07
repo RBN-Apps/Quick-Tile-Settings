@@ -104,6 +104,9 @@
     <string name="button_show_permission_help">Zobrazit možnosti udělení</string>
     <string name="warning_developer_options_disabled_config">Možnosti pro vývojáře jsou vypnuté. USB ladění nelze nastavit.</string>
 
+    <string name="setting_require_unlock">Pro přepnutí vyžadovat odemčení zařízení</string>
+    <string name="setting_require_unlock_desc">Pokud je tato možnost povolena, dlaždice vás před provedením jakýchkoli změn vyzve k odemčení zařízení.</string>
+
     <string name="setting_also_hide_dev_options">Také přeonout Možnosti pro vývojáře</string>
     <string name="setting_also_hide_dev_options_desc">Při zapnutí této volby bude přepnutí USB ladění zároveň zapínat nebo vypínat Možnosti pro vývojáře.</string>
     <string name="setting_also_disable_wireless_debugging">Také přepínat Bezdrátové ladění</string>
@@ -203,3 +206,4 @@
     <string name="network_type_none">Bez připojení k síti</string>
     <string name="network_type_unknown">Neznámý typ sítě</string>
 </resources>
+
