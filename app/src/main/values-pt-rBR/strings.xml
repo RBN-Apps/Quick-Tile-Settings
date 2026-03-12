@@ -1,0 +1,140 @@
+<resources>
+    <string name="app_name">Configurações QuickTile</string>
+
+    <!-- Tile Labels -->
+    <string name="tile_label_private_dns">DNS Privado</string>
+    <string name="tile_label_usb_debugging">Depuração USB</string>
+    <string name="dns_state_reverted_to">DNS revertido para %1$s</string>
+    <string name="usb_state_reverted_to">Depuração USB revertida para %1$s</string>
+    <string name="toast_developer_options_disabled_revert_cancelled">Opções do desenvolvedor desativadas. Reversão da USB cancelada.</string>
+    <string name="tile_subtitle_reverting_in_seconds">Revertendo para %1$s em %2$ds…</string>
+
+    <!-- DNS States -->
+    <string name="dns_state_off">DNS Desativado</string>
+    <string name="dns_state_auto">DNS Automático</string>
+    <string name="dns_state_on_with_host">DNS Ativado (Hostname)</string>
+    <string name="dns_state_unknown">Status do DNS desconhecido</string>
+    <string name="dns_hostname_label">Hostname do DNS</string>
+
+    <!-- USB Debugging States -->
+    <string name="usb_state_on">Depuração USB Ativada</string>
+    <string name="usb_state_off">Depuração USB Desativada</string>
+    <string name="usb_dev_options_off">Opções do desenvolvedor desativadas</string>
+
+    <!-- UI Settings Screen -->
+    <string name="setting_title_private_dns">Tile de DNS Privado</string>
+    <string name="setting_title_usb_debugging">Tile de Depuração USB</string>
+    <string name="setting_desc_tile_cycles">Selecione os estados para o ciclo do tile:</string>
+    <string name="button_save_apply_settings">Aplicar configurações</string>
+    <string name="tab_title_dns">DNS Privado</string>
+    <string name="tab_title_usb">Depuração USB</string>
+
+    <!-- Toasts & Warnings -->
+    <string name="toast_permission_not_granted_adb">Permissão ausente. Conceda via ADB.</string>
+    <string name="toast_developer_options_disabled">As opções do desenvolvedor estão desativadas.</string>
+    <string name="toast_error_saving_settings">Erro ao salvar configurações.</string>
+    <string name="toast_no_states_enabled_dns">Nenhum estado de DNS ativado para alternância.</string>
+    <string name="toast_no_states_enabled_usb">Nenhum estado de USB ativado para alternância.</string>
+    <string name="toast_hostname_required">Hostname obrigatório para DNS Ativado.</string>
+    <string name="toast_settings_saved_tiles_updated">Configurações salvas. Os tiles serão atualizados quando você abrir novamente o painel de Configurações Rápidas.</string>
+    <string name="warning_hostname_blank">O hostname não pode estar vazio se "DNS Ativado" estiver habilitado.</string>
+    <string name="warning_at_least_one_usb_option">Pelo menos um estado de USB deve estar habilitado.</string>
+    <string name="toast_command_copied">Comando copiado!</string>
+
+    <!-- Permission Grant Dialog -->
+    <string name="permission_grant_dialog_title">Permissão necessária</string>
+    <string name="permission_grant_dialog_intro">Para alterar configurações do sistema como DNS Privado e Depuração USB, este app precisa da permissão especial WRITE_SECURE_SETTINGS. Escolha um método abaixo para concedê-la:</string>
+    <string name="help_dialog_after_grant">Após conceder a permissão, reinicie o app ou abra novamente o painel de Configurações Rápidas para que os tiles funcionem.</string>
+    <string name="help_button_desc">Ajuda / Conceder permissão</string>
+    <string name="button_open_developer_options">Abrir opções do desenvolvedor</string>
+    <string name="dialog_close">Fechar</string>
+
+    <!-- ADB Method -->
+    <string name="permission_method_adb_title">Método %1$d: ADB (Android Debug Bridge) %2$s</string>
+    <string name="permission_method_adb_desc">Este é o método padrão e requer um computador com ADB configurado.</string>
+    <string name="button_show_adb_instructions">Mostrar instruções do ADB</string>
+    <string name="adb_instructions_title">Instruções do ADB</string>
+    <string name="adb_instructions_intro">Conecte seu dispositivo a um computador com ADB configurado. Certifique-se de que as Opções do desenvolvedor e a Depuração USB estejam ativadas no dispositivo.</string>
+    <string name="help_dialog_method_1_title">Opção A: Conceder à instalação existente</string>
+    <string name="help_dialog_how_to_grant_via_adb">Execute o seguinte comando no terminal/prompt:</string>
+    <string name="button_copy_grant_command">Copiar comando de concessão</string>
+    <string name="help_dialog_method_2_title">Opção B: Instalar com permissão</string>
+    <string name="help_dialog_how_to_install_via_adb">Desinstale primeiro a versão atual e depois use este comando (substitua path/to/your/app.apk pelo caminho real do APK):</string>
+    <string name="button_copy_install_command">Copiar comando de instalação</string>
+    <string name="help_dialog_apk_path_note">(Nota: você precisa do arquivo APK para o comando de instalação. Se compilou o app, normalmente ele está em app/build/outputs/apk/debug/ ou app/build/outputs/apk/release/. Você também pode baixar a versão mais recente no GitHub.)</string>
+    <string name="github_releases_link_text">Baixar versão mais recente no GitHub</string>
+
+    <!-- Shizuku Method -->
+    <string name="permission_method_shizuku_title">Método %1$d: Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">O Shizuku está disponível e este app tem permissão para usá-lo. Você pode tentar conceder WRITE_SECURE_SETTINGS.</string>
+    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
+    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
+    <string name="shizuku_not_available_detailed">O Shizuku não está disponível ou não está em execução. Instale e inicie o Shizuku primeiro.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Este app precisa de permissão do Shizuku para continuar. Solicite-a.</string>
+    <string name="button_request_shizuku_permission">Solicitar permissão do Shizuku</string>
+    <string name="button_grant_with_shizuku">Conceder usando Shizuku</string>
+    <string name="shizuku_not_available">O Shizuku não está disponível ou não está em execução.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Permissão do Shizuku não concedida para este app. Conceda primeiro pelo app do Shizuku ou pelo prompt.</string>
+    <string name="shizuku_permission_granted_to_app">Permissão do Shizuku concedida para este app.</string>
+    <string name="shizuku_permission_denied_to_app">Permissão do Shizuku negada para este app.</string>
+    <string name="shizuku_not_available_or_not_ready">O Shizuku não está disponível ou não está pronto.</string>
+
+    <!-- Root Method -->
+    <string name="permission_method_root_title">Método %1$d: Root %2$s</string>
+    <string name="root_ready_to_grant_desc">Seu dispositivo possui root. Você pode tentar conceder WRITE_SECURE_SETTINGS usando privilégios de root.</string>
+    <string name="device_not_rooted_detailed">Seu dispositivo não parece ter root ou o acesso root não foi concedido. Este método não está disponível.</string>
+    <string name="button_grant_with_root">Conceder usando Root</string>
+    <string name="device_not_rooted">O dispositivo não possui root.</string>
+
+    <!-- Permission Warning Card -->
+    <string name="warning_permission_missing_title">Permissão ausente!</string>
+    <string name="warning_permission_missing_desc">Este app precisa da permissão WRITE_SECURE_SETTINGS para funcionar. Conceda-a usando um dos métodos disponíveis.</string>
+    <string name="button_show_permission_help">Mostrar opções de concessão</string>
+    <string name="warning_developer_options_disabled_config">As opções do desenvolvedor estão desativadas. A depuração USB não pode ser configurada.</string>
+
+    <string name="setting_require_unlock">Exigir desbloqueio do dispositivo para alternar</string>
+    <string name="setting_require_unlock_desc">Quando ativado, o tile solicitará que você desbloqueie o dispositivo antes de aplicar alterações.</string>
+
+    <string name="setting_also_hide_dev_options">Também alternar Opções do desenvolvedor</string>
+    <string name="setting_also_hide_dev_options_desc">Quando ativado, alternar a Depuração USB também ativará/desativará as Opções do desenvolvedor.</string>
+
+    <string name="setting_also_disable_wireless_debugging">Também alternar Depuração sem fio</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Quando ativado, a Depuração sem fio também será alternada junto com a Depuração USB.</string>
+
+    <string name="setting_enable_auto_revert">Ativar reversão automática após um atraso</string>
+    <string name="setting_auto_revert_delay">Tempo para reversão (segundos):</string>
+    <string name="toast_reverting_dns_to">Revertendo DNS para \n\"%1$s\" em %2$d seg…</string>
+    <string name="toast_reverting_usb_to">Revertendo Depuração USB para %1$s em %2$d seg…</string>
+    <string name="toast_revert_cancelled">Reversão automática cancelada.</string>
+
+    <string name="on_state">Ligado</string>
+    <string name="off_state">Desligado</string>
+    <string name="auto_state">Automático</string>
+
+    <!-- About Dialog -->
+    <string name="about_version">Versão %1$s</string>
+    <string name="about_description">O QuickTile Settings fornece tiles práticos de Configurações Rápidas para alternar configurações diretamente pelo painel de notificações.</string>
+    <string name="about_features_title">Recursos</string>
+    <string name="about_feature_private_dns">• Tile de DNS Privado com suporte a hostname personalizado</string>
+    <string name="about_feature_usb_debugging">• Tile de Depuração USB para desenvolvimento</string>
+    <string name="about_feature_auto_revert">• Função de reversão automática para alterações temporárias</string>
+    <string name="about_feature_custom_dns">• Provedores DNS populares integrados (Cloudflare, AdGuard, Quad9)</string>
+    <string name="about_developer_title">Desenvolvedor</string>
+    <string name="about_developer_info">Desenvolvido por RBN-Apps\nProjeto open source disponível no GitHub</string>
+
+    <!-- VPN Monitoring -->
+    <string name="vpn_monitoring_channel_name">Monitoramento de VPN</string>
+    <string name="vpn_monitoring_channel_description">Monitora conexões VPN para ajustar automaticamente o DNS Privado</string>
+    <string name="vpn_monitoring_notification_title">Monitoramento de VPN ativo</string>
+    <string name="vpn_monitoring_status_connected">VPN conectada — DNS Privado definido como Desligado</string>
+    <string name="vpn_monitoring_status_disconnected">VPN desconectada — DNS Privado restaurado</string>
+
+    <!-- Network Monitoring -->
+    <string name="network_monitoring_channel_name">Monitoramento de Tipo de Rede</string>
+    <string name="network_monitoring_channel_description">Monitora mudanças no tipo de rede para ajustar automaticamente o DNS Privado</string>
+    <string name="network_monitoring_notification_title">Monitoramento de rede ativo</string>
+    <string name="network_type_wifi">Conectado ao Wi-Fi</string>
+    <string name="network_type_mobile">Conectado aos dados móveis</string>
+    <string name="network_type_none">Sem conexão de rede</string>
+    <string name="network_type_unknown">Tipo de rede desconhecido</string>
+</resources>
