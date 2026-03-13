@@ -93,11 +93,10 @@
     <string name="warning_developer_options_disabled_config">As opções do desenvolvedor estão desativadas. A depuração USB não pode ser configurada.</string>
 
     <string name="setting_require_unlock">Exigir desbloqueio do dispositivo para alternar</string>
-    <string name="setting_require_unlock_desc">Quando ativado, o tile solicitará que você desbloqueie o dispositivo antes de aplicar alterações.</string>
+    <string name="setting_require_unlock_desc">Quando ativado, o bloco solicitará que você desbloqueie o dispositivo antes de aplicar qualquer alteração.</string>
 
-    <string name="setting_also_hide_dev_options">Também alternar Opções do desenvolvedor</string>
-    <string name="setting_also_hide_dev_options_desc">Quando ativado, alternar a Depuração USB também ativará/desativará as Opções do desenvolvedor.</string>
-
+    <string name="setting_also_hide_dev_options">Também ativar/desativar Opções do desenvolvedor</string> 
+    <string name="setting_also_hide_dev_options_desc">Quando ativado, ao ativar ou desativar a Depuração USB, as Opções do desenvolvedor também serão ativadas ou desativadas. Isso permite que o bloco funcione mesmo quando as Opções do desenvolvedor estiverem desativadas.</string>
     <string name="setting_also_disable_wireless_debugging">Também alternar Depuração sem fio</string>
     <string name="setting_also_disable_wireless_debugging_desc">Quando ativado, a Depuração sem fio também será alternada junto com a Depuração USB.</string>
 
