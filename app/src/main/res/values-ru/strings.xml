@@ -187,11 +187,11 @@
     <string name="network_type_info_message">Эта функция автоматически переключает настройки частного DNS в зависимости от того, подключены ли вы к Wi-Fi или мобильным данным.\n\nПриоритет VPN: когда активен VPN, его обнаружение имеет приоритет, и DNS будет переведен в режим «Выкл.» независимо от настроек типа сети.\n\nПример использования: если ваш домашний Wi-Fi роутер использует NextDNS, установите «DNS через Wi-Fi» в значение «Выкл.». Установите «DNS через мобильные данные» в значение «Авто» или укажите конкретное имя хоста для защиты в мобильных сетях.</string> 
 
     <!-- Network Monitoring Service -->
-   <string name="network_monitoring_channel_name">Мониторинг типа сети</string>
-   <string name="network_monitoring_channel_description">Отслеживает изменения типа сети для автоматической настройки частного DNS</string>
-   <string name="network_monitoring_notification_title">Мониторинг сети активен</string>
-   <string name="network_type_wifi">Подключено к Wi-Fi</string>
-   <string name="network_type_mobile">Подключено к мобильным данным</string>
-   <string name="network_type_none">Нет подключения к сети</string>
-   <string name="network_type_unknown">Неизвестный тип сети</string>
+    <string name="network_monitoring_channel_name">Мониторинг типа сети</string>
+    <string name="network_monitoring_channel_description">Отслеживает изменения типа сети для автоматической настройки частного DNS</string>
+    <string name="network_monitoring_notification_title">Мониторинг сети активен</string>
+    <string name="network_type_wifi">Подключено к Wi-Fi</string>
+    <string name="network_type_mobile">Подключено к мобильным данным</string>
+    <string name="network_type_none">Нет подключения к сети</string>
+    <string name="network_type_unknown">Неизвестный тип сети</string>
 </resources>
