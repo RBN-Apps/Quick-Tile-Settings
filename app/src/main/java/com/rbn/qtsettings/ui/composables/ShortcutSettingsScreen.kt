@@ -430,11 +430,8 @@ private fun ShortcutToggleRow(
             )
         }
         IconButton(
+            enabled = checked,
             onClick = {
-                if (!checked) {
-                    // Disabled shortcuts cannot be favorited.
-                    return@IconButton
-                }
                 if (favoriteEnabled) {
                     onFavoriteChange(!favorite)
                 } else {
