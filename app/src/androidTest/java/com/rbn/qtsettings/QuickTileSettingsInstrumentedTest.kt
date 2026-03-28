@@ -30,7 +30,8 @@ import java.io.InputStreamReader
 
 private const val TAG = "QuickTileSettingsTest"
 private const val TAG_NETWORK_TYPE_DETECTION_TILE_OPTION = "network_type_detection_tile_only_option"
-private const val TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION = "network_type_detection_background_option"
+private const val TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION =
+    "network_type_detection_background_option"
 
 @RunWith(AndroidJUnit4::class)
 class QuickTileSettingsInstrumentedTest {
@@ -51,7 +52,9 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.dismissInitialDialogsIfPresent(context)
 
         canUseBackgroundDetection =
-            hasPostNotificationsPermission && PermissionUtils.hasWriteSecureSettingsPermission(context)
+            hasPostNotificationsPermission && PermissionUtils.hasWriteSecureSettingsPermission(
+                context
+            )
     }
 
     @Test
@@ -69,9 +72,6 @@ class QuickTileSettingsInstrumentedTest {
             .assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(R.string.tab_title_usb))
             .assertIsDisplayed()
-
-        // Verify apply settings button is present
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.button_save_apply_settings))
 
         Log.i(TAG, "Main screen loaded successfully with all expected elements")
     }
@@ -169,24 +169,6 @@ class QuickTileSettingsInstrumentedTest {
     }
 
     @Test
-    fun applySettingsButton_shouldShowSnackbarWhenClicked() {
-        // Click apply settings button
-        composeTestRule.clickApplySettings(context)
-
-        // Wait for snackbar to appear
-        composeTestRule.waitUntil(timeoutMillis = 5_000) {
-            composeTestRule.onAllNodesWithText(context.getString(R.string.toast_settings_saved_tiles_updated))
-                .fetchSemanticsNodes().isNotEmpty()
-        }
-
-        // Verify snackbar message is displayed
-        composeTestRule.onNodeWithText(context.getString(R.string.toast_settings_saved_tiles_updated))
-            .assertIsDisplayed()
-
-        Log.i(TAG, "Apply settings button works and shows success message")
-    }
-
-    @Test
     fun permissionWarningCard_shouldShowWhenPermissionMissing() {
         // The permission warning card should be visible by default
         // since we don't have WRITE_SECURE_SETTINGS in test environment
@@ -268,9 +250,6 @@ class QuickTileSettingsInstrumentedTest {
             .assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(R.string.tab_title_usb))
             .assertIsDisplayed()
-
-        // Main action button should be accessible
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.button_save_apply_settings))
 
         Log.i(TAG, "UI accessibility verification completed")
     }
@@ -781,7 +760,7 @@ class QuickTileSettingsInstrumentedTest {
         }
 
         Log.i(TAG, "DNS state options in Network Type Detection work correctly")
-}
+    }
 
     private fun ensureNetworkTypeDetectionEnabled() {
         val networkTypeAlreadyEnabled = try {
@@ -824,9 +803,10 @@ class QuickTileSettingsInstrumentedTest {
         }
 
         runCatching {
-            instrumentation.uiAutomation.executeShellCommand("pm grant $packageName $permission").use { fd ->
-                drainCommandOutput(fd)
-            }
+            instrumentation.uiAutomation.executeShellCommand("pm grant $packageName $permission")
+                .use { fd ->
+                    drainCommandOutput(fd)
+                }
             instrumentation.waitForIdleSync()
         }.onFailure { error ->
             Log.w(TAG, "Failed to grant POST_NOTIFICATIONS permission: ${error.message}")

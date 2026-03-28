@@ -25,7 +25,6 @@
     <string name="setting_title_private_dns">Private DNS Tile</string>
     <string name="setting_title_usb_debugging">USB Debugging Tile</string>
     <string name="setting_desc_tile_cycles">Select states for the tile cycle:</string>
-    <string name="button_save_apply_settings">Apply Settings</string>
     <string name="tab_title_dns">Private DNS</string>
     <string name="tab_title_usb">USB Debugging</string>
 
@@ -36,7 +35,6 @@
     <string name="toast_no_states_enabled_dns">No DNS states enabled for cycling.</string>
     <string name="toast_no_states_enabled_usb">No USB states enabled for cycling.</string>
     <string name="toast_hostname_required">Hostname required for DNS On.</string>
-    <string name="toast_settings_saved_tiles_updated">Settings saved. Tiles will update when you next open the QS panel.</string>
     <string name="warning_hostname_blank">Hostname cannot be empty if "DNS On" is enabled.</string>
     <string name="warning_at_least_one_usb_option">At least one USB status must be enabled.</string>
     <string name="toast_command_copied">Command copied!</string>
@@ -212,4 +210,48 @@
     <string name="network_type_mobile">Connected to Mobile Data</string>
     <string name="network_type_none">No network connection</string>
     <string name="network_type_unknown">Unknown network type</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_dns_off_short">DNS Off</string>
+    <string name="shortcut_dns_off_long">Disable Private DNS</string>
+    <string name="shortcut_dns_auto_short">DNS Auto</string>
+    <string name="shortcut_dns_auto_long">Enable Private DNS (Auto)</string>
+    <string name="shortcut_dns_adguard_short">AdGuard DNS</string>
+    <string name="shortcut_dns_adguard_long">Enable AdGuard DNS</string>
+    <string name="shortcut_dns_cloudflare_short">Cloudflare DNS</string>
+    <string name="shortcut_dns_cloudflare_long">Enable Cloudflare DNS</string>
+    <string name="shortcut_dns_quad9_short">Quad9 DNS</string>
+    <string name="shortcut_dns_quad9_long">Enable Quad9 DNS</string>
+    <string name="shortcut_usb_on_short">USB Debug On</string>
+    <string name="shortcut_usb_on_long">Enable USB Debugging</string>
+    <string name="shortcut_usb_off_short">USB Debug Off</string>
+    <string name="shortcut_usb_off_long">Disable USB Debugging</string>
+    <string name="shortcut_dns_custom_long">Enable DNS: %1$s</string>
+    <string name="shortcut_toast_dns_off">Private DNS disabled</string>
+    <string name="shortcut_toast_dns_auto">Private DNS set to Auto</string>
+    <string name="shortcut_toast_dns_hostname">Private DNS set to %1$s</string>
+    <string name="shortcut_toast_usb_on">USB Debugging enabled</string>
+    <string name="shortcut_toast_usb_off">USB Debugging disabled</string>
+    <string name="shortcut_toast_permission_missing">Permission missing. Open the app to grant it.</string>
+    <string name="shortcut_toast_action_disabled">Shortcut action is disabled. Enable it in the app first.</string>
+    <string name="shortcut_toast_action_unavailable">Shortcut action is no longer available. Check the app configuration.</string>
+
+    <!-- Shortcut Settings -->
+    <string name="shortcut_settings_title">Shortcut Actions</string>
+    <string name="shortcut_settings_description">Choose which actions are exposed as Android app shortcuts. They can be used from launchers, Samsung Routines, Tasker, or as pinned home screen shortcuts.\n\nAndroid allows up to %1$d discoverable shortcuts per app at the same time, so a maximum of %1$d actions can be activated here.\n\nYou can mark up to %2$d active actions as favorites using the star icon. Favorites are published with highest priority and are more likely to appear first in launcher shortcut menus. Disabled actions cannot be favorited.\n\nBy default, disabled actions are fully blocked and can no longer be executed by the app. Enable the option below only if you want already pinned shortcuts to keep working after they are disabled here.</string>
+    <string name="shortcut_settings_limit">Active shortcuts: %1$d / %2$d</string>
+    <string name="shortcut_settings_limit_reached_title">Shortcut limit reached</string>
+    <string name="shortcut_settings_limit_reached">Shortcut limit reached. Disable another action first.</string>
+    <string name="shortcut_settings_favorite_limit_reached_title">Favorite limit reached</string>
+    <string name="shortcut_settings_favorite_limit_reached">You can mark up to 4 favorites.</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled">Allow disabled pinned shortcuts</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled_desc">If enabled, shortcuts that were already pinned or launched externally may still run even after you disable them here.</string>
+    <string name="shortcut_settings_allow_pinned_info_desc">Show details about disabled pinned shortcuts</string>
+    <string name="shortcut_settings_allow_pinned_warning_title">Allow disabled shortcuts?</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Enabling this weakens the default safety behavior. Disabled shortcut actions may still be executed when they are launched externally or from shortcuts that were already pinned before.\n\nThis is mainly useful if you want to keep using more actions than Android allows as simultaneously active shortcuts.</string>
+    <string name="shortcut_settings_allow_pinned_warning_confirm">Enable anyway</string>
+    <string name="shortcut_settings_mark_favorite_desc">Mark %1$s as favorite</string>
+    <string name="shortcut_settings_remove_favorite_desc">Remove %1$s from favorites</string>
+    <string name="shortcut_settings_open_desc">Open shortcut settings</string>
+    <string name="shortcut_settings_back_desc">Back to tile settings</string>
 </resources>

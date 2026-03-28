@@ -26,7 +26,6 @@
     <string name="setting_title_private_dns">Privates DNS Tile</string>
     <string name="setting_title_usb_debugging">USB-Debugging Tile</string>
     <string name="setting_desc_tile_cycles">Wähle Zustände für den Tile-Zyklus aus:</string>
-    <string name="button_save_apply_settings">Einstellungen anwenden</string>
     <string name="tab_title_dns">Privates DNS</string>
     <string name="tab_title_usb">USB-Debugging</string>
 
@@ -37,7 +36,6 @@
     <string name="toast_no_states_enabled_dns">Keine DNS-Zustände zum Durchschalten aktiviert.</string>
     <string name="toast_no_states_enabled_usb">Keine USB-Zustände zum Durchschalten aktiviert.</string>
     <string name="toast_hostname_required">Hostname für DNS Ein erforderlich.</string>
-    <string name="toast_settings_saved_tiles_updated">Einstellungen gespeichert. Tiles werden beim nächsten Öffnen der QS-Leiste aktualisiert.</string>
     <string name="warning_hostname_blank">Hostname darf nicht leer sein, wenn "DNS Ein" aktiviert ist.</string>
     <string name="warning_at_least_one_usb_option">Mindestens ein USB-Status muss aktiviert sein.</string>
     <string name="toast_command_copied">Befehl kopiert!</string>
@@ -205,4 +203,48 @@
     <string name="network_type_mobile">Mit mobilen Daten verbunden</string>
     <string name="network_type_none">Keine Netzwerkverbindung</string>
     <string name="network_type_unknown">Unbekannter Netzwerktyp</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_dns_off_short">DNS Aus</string>
+    <string name="shortcut_dns_off_long">Privates DNS deaktivieren</string>
+    <string name="shortcut_dns_auto_short">DNS Auto</string>
+    <string name="shortcut_dns_auto_long">Privates DNS aktivieren (Auto)</string>
+    <string name="shortcut_dns_adguard_short">AdGuard DNS</string>
+    <string name="shortcut_dns_adguard_long">AdGuard DNS aktivieren</string>
+    <string name="shortcut_dns_cloudflare_short">Cloudflare DNS</string>
+    <string name="shortcut_dns_cloudflare_long">Cloudflare DNS aktivieren</string>
+    <string name="shortcut_dns_quad9_short">Quad9 DNS</string>
+    <string name="shortcut_dns_quad9_long">Quad9 DNS aktivieren</string>
+    <string name="shortcut_usb_on_short">USB-Debug Ein</string>
+    <string name="shortcut_usb_on_long">USB-Debugging aktivieren</string>
+    <string name="shortcut_usb_off_short">USB-Debug Aus</string>
+    <string name="shortcut_usb_off_long">USB-Debugging deaktivieren</string>
+    <string name="shortcut_dns_custom_long">DNS aktivieren: %1$s</string>
+    <string name="shortcut_toast_dns_off">Privates DNS deaktiviert</string>
+    <string name="shortcut_toast_dns_auto">Privates DNS auf Auto gesetzt</string>
+    <string name="shortcut_toast_dns_hostname">Privates DNS auf %1$s gesetzt</string>
+    <string name="shortcut_toast_usb_on">USB-Debugging aktiviert</string>
+    <string name="shortcut_toast_usb_off">USB-Debugging deaktiviert</string>
+    <string name="shortcut_toast_permission_missing">Berechtigung fehlt. Öffne die App, um sie zu erteilen.</string>
+    <string name="shortcut_toast_action_disabled">Shortcut-Aktion ist deaktiviert. Aktiviere sie zuerst in der App.</string>
+    <string name="shortcut_toast_action_unavailable">Shortcut-Aktion ist nicht mehr verfügbar. Prüfe die App-Konfiguration.</string>
+
+    <!-- Shortcut Settings -->
+    <string name="shortcut_settings_title">Shortcut-Aktionen</string>
+    <string name="shortcut_settings_description">Wähle aus, welche Aktionen als Android-App-Shortcuts bereitgestellt werden. Sie können über Launcher, Samsung Routines, Tasker oder als angeheftete Homescreen-Verknüpfungen genutzt werden.\n\nAndroid erlaubt pro App gleichzeitig maximal %1$d auffindbare Shortcuts, deswegen können hier höchstens %1$d Aktionen aktiviert werden.\n\nDu kannst bis zu %2$d aktive Aktionen mit dem Stern als Favoriten markieren. Favoriten erhalten die höchste Priorität und werden eher zuerst in den Shortcut-Menüs des Launchers angezeigt. Deaktivierte Aktionen können nicht als Favorit markiert werden.\n\nStandardmäßig werden deaktivierte Aktionen vollständig blockiert und nicht mehr von der App ausgeführt. Aktiviere die Option unten nur, wenn bereits angeheftete Shortcuts nach dem Deaktivieren hier weiter funktionieren sollen.</string>
+    <string name="shortcut_settings_limit">Aktive Shortcuts: %1$d / %2$d</string>
+    <string name="shortcut_settings_limit_reached_title">Shortcut-Limit erreicht</string>
+    <string name="shortcut_settings_limit_reached">Shortcut-Limit erreicht. Deaktiviere zuerst eine andere Aktion.</string>
+    <string name="shortcut_settings_favorite_limit_reached_title">Favoritenlimit erreicht</string>
+    <string name="shortcut_settings_favorite_limit_reached">Du kannst maximal 4 Favoriten markieren.</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled">Deaktivierte angeheftete Shortcuts erlauben</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled_desc">Wenn aktiviert, können bereits angeheftete oder extern gestartete Shortcuts auch nach dem Deaktivieren hier weiterhin ausgeführt werden.</string>
+    <string name="shortcut_settings_allow_pinned_info_desc">Details zu deaktivierten angehefteten Shortcuts anzeigen</string>
+    <string name="shortcut_settings_allow_pinned_warning_title">Deaktivierte Shortcuts erlauben?</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Wenn du das aktivierst, wird das sichere Standardverhalten abgeschwächt. Deaktivierte Shortcut-Aktionen können dann möglicherweise weiterhin ausgeführt werden, wenn sie extern gestartet oder bereits vorher angeheftet wurden.\n\nSinnvoll ist das vor allem dann, wenn du mehr Aktionen nutzen willst, als Android gleichzeitig als aktive Shortcuts zulässt.</string>
+    <string name="shortcut_settings_allow_pinned_warning_confirm">Trotzdem aktivieren</string>
+    <string name="shortcut_settings_mark_favorite_desc">%1$s als Favorit markieren</string>
+    <string name="shortcut_settings_remove_favorite_desc">%1$s aus Favoriten entfernen</string>
+    <string name="shortcut_settings_open_desc">Shortcut-Einstellungen öffnen</string>
+    <string name="shortcut_settings_back_desc">Zurück zu Tile-Einstellungen</string>
 </resources>
