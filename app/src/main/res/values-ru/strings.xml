@@ -25,7 +25,6 @@
     <string name="setting_title_private_dns">Плитка «Частный DNS»</string>
     <string name="setting_title_usb_debugging">Плитка «Отладка по USB»</string>
     <string name="setting_desc_tile_cycles">Выберите состояния для цикла плитки:</string>
-    <string name="button_save_apply_settings">Применить настройки</string>
     <string name="tab_title_dns">Частный DNS</string>
     <string name="tab_title_usb">Отладка по USB</string>
 
@@ -36,7 +35,6 @@
     <string name="toast_no_states_enabled_dns">Не выбрано ни одного состояния DNS для переключения.</string>
     <string name="toast_no_states_enabled_usb">Не выбрано ни одного состояния USB для переключения.</string>
     <string name="toast_hostname_required">Для включения DNS требуется имя хоста.</string>
-    <string name="toast_settings_saved_tiles_updated">Настройки сохранены. Плитки обновятся при следующем открытии панели быстрых настроек.</string>
     <string name="warning_hostname_blank">Имя хоста не может быть пустым, если включен режим «DNS Вкл».</string>
     <string name="warning_at_least_one_usb_option">Должен быть выбран хотя бы один статус USB.</string>
     <string name="toast_command_copied">Команда скопирована!</string>

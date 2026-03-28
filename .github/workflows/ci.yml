@@ -88,10 +88,32 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Unit Test Report Link
+          # Unit Test Summary Table
           echo "### Unit Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "Download JUnit XML reports from the artifacts section of this run." >> $GITHUB_STEP_SUMMARY
-          echo "- [Download Unit Test Results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)" >> $GITHUB_STEP_SUMMARY
+          UNIT_REPORTS=$(find app/build/test-results/testDebugUnitTest -name "TEST-*.xml" 2>/dev/null)
+          if [[ -n "$UNIT_REPORTS" ]]; then
+            echo "| Suite | Total | ✅ Pass | 🔴 Fail | ⚪ Skip | ⏱️ Duration (s) |" >> $GITHUB_STEP_SUMMARY
+            echo "| ----- | -----: | ------: | ------: | -----: | ----------: |" >> $GITHUB_STEP_SUMMARY
+            GRAND_TOTAL=0; GRAND_PASS=0; GRAND_FAIL=0; GRAND_SKIP=0
+            while IFS= read -r REPORT; do
+              NAME=$(grep -oP '<testsuite[^>]* name="\K[^"]+' "$REPORT" | head -1)
+              TOTAL=$(grep -oP 'tests="\K[0-9]+' "$REPORT" | head -1); TOTAL=${TOTAL:-0}
+              FAIL=$(grep -oP 'failures="\K[0-9]+' "$REPORT" | head -1); FAIL=${FAIL:-0}
+              ERR=$(grep -oP 'errors="\K[0-9]+' "$REPORT" | head -1); ERR=${ERR:-0}
+              SKIP=$(grep -oP 'skipped="\K[0-9]+' "$REPORT" | head -1); SKIP=${SKIP:-0}
+              TIME=$(grep -oP 'time="\K[0-9.]+' "$REPORT" | head -1)
+              FAIL_TOT=$((FAIL + ERR))
+              PASSED=$((TOTAL - FAIL_TOT - SKIP))
+              echo "| $NAME | $TOTAL | $PASSED | $FAIL_TOT | $SKIP | $TIME |" >> $GITHUB_STEP_SUMMARY
+              GRAND_TOTAL=$((GRAND_TOTAL + TOTAL))
+              GRAND_PASS=$((GRAND_PASS + PASSED))
+              GRAND_FAIL=$((GRAND_FAIL + FAIL_TOT))
+              GRAND_SKIP=$((GRAND_SKIP + SKIP))
+            done <<< "$UNIT_REPORTS"
+            echo "| **Total** | **$GRAND_TOTAL** | **$GRAND_PASS** | **$GRAND_FAIL** | **$GRAND_SKIP** | — |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "_No unit test results found._" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Changelog Status

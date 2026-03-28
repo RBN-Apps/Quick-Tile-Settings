@@ -19,4 +19,17 @@ object Constants {
     const val NETWORK_TYPE_WIFI = "wifi"
     const val NETWORK_TYPE_MOBILE = "mobile"
     const val NETWORK_TYPE_NONE = "none"
+
+    // Shortcut actions
+    const val ACTION_DNS_OFF = "com.rbn.qtsettings.action.DNS_OFF"
+    const val ACTION_DNS_AUTO = "com.rbn.qtsettings.action.DNS_AUTO"
+    const val ACTION_DNS_ADGUARD = "com.rbn.qtsettings.action.DNS_ADGUARD"
+    const val ACTION_DNS_CLOUDFLARE = "com.rbn.qtsettings.action.DNS_CLOUDFLARE"
+    const val ACTION_DNS_QUAD9 = "com.rbn.qtsettings.action.DNS_QUAD9"
+    const val ACTION_DNS_CUSTOM = "com.rbn.qtsettings.action.DNS_CUSTOM"
+    const val ACTION_USB_ON = "com.rbn.qtsettings.action.USB_ON"
+    const val ACTION_USB_OFF = "com.rbn.qtsettings.action.USB_OFF"
+
+    // Shortcut intent extras
+    const val EXTRA_DNS_ENTRY_ID = "extra_dns_entry_id"
 }

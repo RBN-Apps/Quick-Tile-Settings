@@ -53,6 +53,11 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     val helpShown = prefsManager.helpShown
 
+    val shortcutMaxCount = prefsManager.shortcutMaxCount
+    val enabledShortcutIds = prefsManager.enabledShortcutIds
+    val favoriteShortcutIds = prefsManager.favoriteShortcutIds
+    val allowPinnedShortcutsWhenDisabled = prefsManager.allowPinnedShortcutsWhenDisabled
+
     private val _initialTab = MutableStateFlow(0)
     val initialTab = _initialTab.asStateFlow()
 
@@ -161,6 +166,13 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun setDnsHostnameOnWifi(hostname: String?) = prefsManager.setDnsHostnameOnWifi(hostname)
     fun setDnsStateOnMobile(state: String) = prefsManager.setDnsStateOnMobile(state)
     fun setDnsHostnameOnMobile(hostname: String?) = prefsManager.setDnsHostnameOnMobile(hostname)
+    fun setShortcutExposureEnabled(shortcutId: String, enabled: Boolean): Boolean =
+        prefsManager.setShortcutExposureEnabled(shortcutId, enabled)
+    fun setShortcutFavorite(shortcutId: String, favorite: Boolean): Boolean =
+        prefsManager.setShortcutFavorite(shortcutId, favorite)
+    fun setAllowPinnedShortcutsWhenDisabled(enabled: Boolean) =
+        prefsManager.setAllowPinnedShortcutsWhenDisabled(enabled)
+    fun refreshShortcutConfiguration() = prefsManager.refreshShortcutConfiguration()
 
     private fun handleMissingNotificationPermission() {
         val context = getCurrentContext()
