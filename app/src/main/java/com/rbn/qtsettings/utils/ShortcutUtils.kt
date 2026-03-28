@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
+import android.os.UserManager
 import android.util.Log
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.ShortcutActionActivity
@@ -21,6 +22,8 @@ import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
 import java.util.Locale
 
 object ShortcutUtils {
+    private const val TAG = "ShortcutUtils"
+
     const val MAX_FAVORITE_SHORTCUTS = 4
 
     const val SHORTCUT_ID_DNS_OFF = "dyn_dns_off"
@@ -225,24 +228,55 @@ object ShortcutUtils {
             }
 
         try {
-            shortcutManager.dynamicShortcuts = orderedShortcutInfos
+            publishDynamicShortcuts(
+                context = context,
+                shortcutManager = shortcutManager,
+                shortcuts = orderedShortcutInfos
+            )
         } catch (e: IllegalArgumentException) {
             Log.e(
-                "ShortcutUtils",
+                TAG,
                 "Unable to publish dynamic shortcuts. Falling back to custom DNS shortcuts only.",
                 e
             )
             val customOnly =
                 orderedShortcutInfos.filter { it.id.startsWith(CUSTOM_DNS_SHORTCUT_PREFIX) }
             try {
-                shortcutManager.dynamicShortcuts = customOnly
-            } catch (fallbackError: Exception) {
+                publishDynamicShortcuts(
+                    context = context,
+                    shortcutManager = shortcutManager,
+                    shortcuts = customOnly
+                )
+            } catch (fallbackError: IllegalArgumentException) {
                 Log.e(
-                    "ShortcutUtils",
+                    TAG,
                     "Fallback dynamic shortcut publish also failed.",
                     fallbackError
                 )
             }
+        }
+    }
+
+    private fun publishDynamicShortcuts(
+        context: Context,
+        shortcutManager: ShortcutManager,
+        shortcuts: List<ShortcutInfo>
+    ): Boolean {
+        val userManager = context.getSystemService(UserManager::class.java)
+        if (userManager?.isUserUnlocked == false) {
+            Log.w(TAG, "Skipping dynamic shortcut publish because the user is locked.")
+            return false
+        }
+
+        return try {
+            shortcutManager.setDynamicShortcuts(shortcuts).also { success ->
+                if (!success) {
+                    Log.w(TAG, "Skipping dynamic shortcut publish because updates are rate-limited.")
+                }
+            }
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, "Unable to publish dynamic shortcuts because the user is locked.", e)
+            false
         }
     }
 
