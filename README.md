@@ -51,12 +51,17 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
 * **User-Friendly Configuration:**
     * In-app settings screen to customize tile behavior and auto-revert options.
     * Tabbed interface for easy navigation between Private DNS and USB Debugging settings.
+* **Shortcut Actions (App Shortcuts):**
+    * Choose which actions are exposed as Android app shortcuts.
+    * Use these actions from launchers and automation tools (e.g., Samsung Routines, Tasker).
+    * Disabled actions are blocked by default, with an optional setting to keep already pinned
+      shortcuts working.
 * **Multiple Permission Granting Options:**
     * Clear instructions and an in-app dialog for granting the required `WRITE_SECURE_SETTINGS`
       permission via ADB (Android Debug Bridge), Shizuku, or Root.
     * Convenient "Copy Command" buttons for ADB commands.
 * **Modern UI:** Built with Jetpack Compose, supporting dynamic color (Material You) on Android 12+.
-* **Localization:** Available in English, German, Turkish, and Russian.
+* **Localization:** Available in English, German, Czech, Turkish, Russian, and Brazilian Portuguese.
 
 ## Screenshots
 
@@ -171,8 +176,12 @@ functional.**
     * Enable "Enable auto-revert after a delay".
     * Set the "Revert delay (seconds)". The setting will revert to its previous state after this
       many seconds.
-7. Tap the **"Apply Settings"** button (checkmark icon at the bottom). A snackbar will confirm that
-   settings are saved.
+7. Settings are saved automatically as you make changes in the app.
+8. **For Shortcut Actions (Optional):**
+    * Open the shortcut settings screen from the app (shortcut icon in the top bar).
+    * Enable the actions you want to expose as app shortcuts.
+    * Keep automation-required actions enabled so Tasker/Samsung Routines can discover them.
+    * If needed, you can allow already pinned shortcuts to keep working after an action is disabled.
 
 ### 3. Add Tiles to Your Quick Settings Panel
 
@@ -213,3 +222,13 @@ functional.**
 4. Build the project (e.g., `Build > Make Project` or `Run 'app'`).
    The APK will typically be found in `app/build/outputs/apk/debug/` or
    `app/build/outputs/apk/release/`.
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=RBN-Apps%2FQuick-Tile-Settings&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
+ </picture>
+</a>
