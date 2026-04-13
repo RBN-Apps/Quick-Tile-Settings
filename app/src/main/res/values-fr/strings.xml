@@ -1,0 +1,248 @@
+<resources>
+    <string name="app_name">QuickTile Settings</string>
+    <!--  Tile Labels  -->
+    <string name="tile_label_private_dns">DNS privé</string>
+    <string name="tile_label_usb_debugging">Débogage USB</string>
+    <string name="dns_state_reverted_to">DNS rétabli sur %1$s</string>
+    <string name="usb_state_reverted_to">Débogage USB rétabli sur %1$s</string>
+    <string name="toast_developer_options_disabled_revert_cancelled">Options développeur désactivées. Restauration USB annulée.</string>
+    <string name="tile_subtitle_reverting_in_seconds">Retour à %1$s dans %2$d s…</string>
+
+    <!--  DNS States  -->
+    <string name="dns_state_off">DNS privé désactivé</string>
+    <string name="dns_state_auto">DNS privé automatique</string>
+    <string name="dns_state_on_with_host">DNS privé activé (Nom d\'hôte)</string>
+    <string name="dns_state_unknown">Statut DNS inconnu</string>
+    <string name="dns_hostname_label">Nom d\'hôte DNS</string>
+
+    <!--  USB Debugging States  -->
+    <string name="usb_state_on">Débogage USB activé</string>
+    <string name="usb_state_off">Débogage USB désactivé</string>
+    <string name="usb_dev_options_off">Options développeur désactivées</string>
+
+    <!--  UI Settings Screen  -->
+    <string name="setting_title_private_dns">Tuile DNS privé</string>
+    <string name="setting_title_usb_debugging">Tuile Débogage USB</string>
+    <string name="setting_desc_tile_cycles">Sélectionnez les modes pour le cycle de tuiles :</string>
+    <string name="tab_title_dns">DNS privé</string>
+    <string name="tab_title_usb">Débogage USB</string>
+
+    <!--  Toasts & Warnings  -->
+    <string name="toast_permission_not_granted_adb">Permission manquante. Veuillez l\'accorder via ADB.</string>
+    <string name="toast_developer_options_disabled">Les options développeur sont désactivées.</string>
+    <string name="toast_error_saving_settings">Erreur lors de la sauvegarde des paramètres.</string>
+    <string name="toast_no_states_enabled_dns">Aucun DNS activé pour le cycle.</string>
+    <string name="toast_no_states_enabled_usb">Aucune valeur USB activé pour le cycle.</string>
+    <string name="toast_hostname_required">Nom d\'hôte requis.</string>
+    <string name="warning_hostname_blank">Le nom d\'hôte ne peut pas être vide si "DNS privé" est activé.</string>
+    <string name="warning_at_least_one_usb_option">Au moins un statut USB doit être activé.</string>
+    <string name="toast_command_copied">Commande copiée !</string>
+
+    <!--  Permission Grant Dialog  -->
+    <string name="permission_grant_dialog_title">Permission requise</string>
+    <string name="permission_grant_dialog_intro">Pour modifier les paramètres système comme le DNS privé et le débogage USB, cette application nécessite la permission spéciale WRITE_SECURE_SETTINGS. Veuillez choisir une méthode ci-dessous pour l\'accorder :</string>
+    <string name="help_dialog_after_grant">Après avoir accordé la permission spéciale, redémarrez l\'application ou rouvrez le panneau des paramètres rapides.</string>
+    <string name="help_button_desc">Aide / Accorder la permission</string>
+    <string name="button_open_developer_options">Ouvrir les options développeur</string>
+    <string name="dialog_close">Fermer</string>
+
+    <!--  ADB Method  -->
+    <string name="permission_method_adb_title">Méthode %1$d : ADB (Android Debug Bridge) %2$s</string>
+    <string name="permission_method_adb_desc">Il s\'agit de la méthode standard et nécessite un ordinateur avec l'utilitaire ADB.</string>
+    <string name="button_show_adb_instructions">Afficher les instructions</string>
+    <string name="adb_instructions_title">Instructions ADB</string>
+    <string name="adb_instructions_intro">Connectez votre appareil à un ordinateur avec ADB. Assurez-vous que les options développeur et le débogage USB sont activés sur votre appareil.</string>
+    <string name="help_dialog_method_1_title">Option A : Accorder à l\'installation existante</string>
+    <string name="help_dialog_how_to_grant_via_adb">Exécutez la commande suivante dans votre terminal :</string>
+    <string name="button_copy_grant_command">Copier la commande</string>
+    <string name="help_dialog_method_2_title">Option B : Réinstaller avec la permission spéciale</string>
+    <string name="help_dialog_how_to_install_via_adb">Désinstallez d\'abord la version actuelle, puis utilisez cette commande (remplacez chemin/vers/votre/app.apk par le chemin APK réel) :</string>
+    <string name="button_copy_install_command">Copier la commande d\'installation</string>
+    <string name="help_dialog_apk_path_note">(Note : Vous avez besoin du fichier APK pour la commande d\'installation. Si vous avez compilé l\'application vous-même, il se trouve généralement dans app/build/outputs/apk/debug/ ou app/build/outputs/apk/release/. Vous pouvez également télécharger la dernière version depuis GitHub.)</string>
+    <string name="github_releases_link_text">Télécharger la dernière version depuis GitHub</string>
+    <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
+    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
+    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
+    <string name="adb_command_install_g">adb install -g -r chemin/vers/votre/app.apk</string>
+
+    <!--  Shizuku Method  -->
+    <string name="permission_method_shizuku_title">Méthode %1$d : Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku est disponible et cette application a la permission de l\'utiliser. Vous pouvez essayer d\'accorder WRITE_SECURE_SETTINGS.</string>
+    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
+    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
+    <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
+    <string name="shizuku_not_available_detailed">Shizuku n\'est pas disponible ou ne fonctionne pas. Veuillez d\'abord installer et démarrer Shizuku.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Cette application nécessite la permission de Shizuku pour continuer.</string>
+    <string name="button_request_shizuku_permission">Demander la permission Shizuku</string>
+    <string name="button_grant_with_shizuku">Accorder via Shizuku</string>
+    <string name="shizuku_not_available">Shizuku n\'est pas disponible ou ne fonctionne pas.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Permission Shizuku non accordée à cette application. Veuillez d\'abord l\'accorder via l\'application Shizuku ou l\'invite.</string>
+    <string name="shizuku_permission_granted_to_app">Permission Shizuku accordée à cette application.</string>
+    <string name="shizuku_permission_denied_to_app">Permission Shizuku refusée à cette application.</string>
+    <string name="shizuku_not_available_or_not_ready">Shizuku n\'est pas disponible ou n\'est pas prêt.</string>
+    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
+
+    <!--  Root Method  -->
+    <string name="permission_method_root_title">Méthode %1$d : Root %2$s</string>
+    <string name="root_ready_to_grant_desc">Votre appareil est rooté. Vous pouvez essayer d\'accorder WRITE_SECURE_SETTINGS en utilisant les privilèges root.</string>
+    <string name="device_not_rooted_detailed">Votre appareil ne semble pas être rooté ou l\'accès root n\'a pas été accordé. Cette méthode n\'est pas disponible.</string>
+    <string name="button_grant_with_root">Accorder via Root</string>
+    <string name="device_not_rooted">L\'appareil n\'est pas rooté.</string>
+
+    <!--  Generic Permission Grant Results  -->
+    <string name="permission_granted_shizuku_success">Permission accordée avec succès via Shizuku !</string>
+    <string name="permission_granted_shizuku_check_failed">Commande Shizuku exécutée, mais la vérification de la permission a échoué. Veuillez redémarrer l\'application.</string>
+    <string name="permission_granted_shizuku_fail">Échec de l\'octroi de la permission via Shizuku. Code de sortie : %1$d</string>
+    <string name="permission_granted_shizuku_error">Erreur lors de l\'octroi de la permission via Shizuku : %1$s</string>
+    <string name="permission_granted_root_success">Permission accordée avec succès via Root !</string>
+    <string name="permission_granted_root_check_failed">Commande Root exécutée, mais la vérification de la permission a échoué. Veuillez redémarrer l\'application.</string>
+    <string name="permission_granted_root_fail">Échec de l\'octroi de la permission via Root. Code de sortie : %1$d</string>
+    <string name="permission_granted_root_error">Erreur lors de l\'octroi de la permission via Root : %1$s</string>
+
+    <!--  Permission Warning Card  -->
+    <string name="warning_permission_missing_title">Permission manquante !</string>
+    <string name="warning_permission_missing_desc">Cette application nécessite la permission WRITE_SECURE_SETTINGS pour fonctionner. Veuillez l\'accorder en utilisant l\'une des méthodes disponibles.</string>
+    <string name="button_show_permission_help">Afficher les options d\'autorisation</string>
+    <string name="warning_developer_options_disabled_config">Les options développeur sont désactivées. Le débogage USB ne peut pas être configuré.</string>
+    <string name="setting_require_unlock">Nécessite le déverrouillage de l\'appareil pour basculer</string>
+    <string name="setting_require_unlock_desc">Lorsqu\'elle est activée, la tuile vous demandera de déverrouiller l\'appareil avant d\'appliquer les modifications.</string>
+    <string name="setting_also_hide_dev_options">Basculer également les options développeur</string>
+    <string name="setting_also_hide_dev_options_desc">Lorsqu\'elle est activée, le basculement du débogage USB activera/désactivera également les options développeur. Cela permet à la tuile de fonctionner même lorsque les options développeur sont actuellement désactivées.</string>
+    <string name="setting_also_disable_wireless_debugging">Basculer également le débogage sans fil</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Lorsqu\'elle est activée, le débogage sans fil sera également basculé avec le débogage USB.</string>
+    <string name="setting_enable_auto_revert">Activer la restauration automatique après un délai</string>
+    <string name="setting_auto_revert_delay">Délai de restauration (secondes) :</string>
+    <string name="toast_reverting_dns_to">Rétablissement du DNS sur \n« %1$s » dans %2$d s…</string>
+    <string name="toast_reverting_usb_to">Rétablissement du débogage USB sur %1$s dans %2$d s…</string>
+    <string name="toast_revert_cancelled">Restauration automatique annulée.</string>
+    <string name="on_state">Activé</string>
+    <string name="off_state">Désactivé</string>
+    <string name="auto_state">Auto</string>
+    <string name="dns_select_hostnames_for_cycle">Sélectionnez les noms d\'hôtes à inclure dans le cycle de tuiles :</string>
+    <string name="dns_add_custom_hostname_button">Ajouter un nom d\'hôte personnalisé</string>
+    <string name="dns_edit_hostname_title">Modifier le nom d\'hôte</string>
+    <string name="dns_add_hostname_title">Ajouter un nom d\'hôte</string>
+    <string name="dns_hostname_name_label">Nom d\'affichage</string>
+    <string name="dns_hostname_value_label">Nom d\'hôte (ex. : dns.exemple.com)</string>
+    <string name="dialog_save">Enregistrer</string>
+    <string name="dialog_cancel">Annuler</string>
+    <string name="button_edit">Modifier</string>
+    <string name="button_delete">Supprimer</string>
+    <string name="error_hostname_name_empty">Le nom d\'affichage ne peut pas être vide.</string>
+    <string name="error_hostname_value_empty">Le nom d\'hôte ne peut pas être vide.</string>
+    <string name="confirm_delete_hostname_title">Supprimer le nom d\'hôte ?</string>
+    <string name="confirm_delete_hostname_message">Êtes-vous sûr de vouloir supprimer « %1$s » ?</string>
+
+    <!--  DNS Info Dialogs  -->
+    <string name="dns_info_dialog_title">À propos de %1$s</string>
+    <string name="button_info_dns">Infos sur %1$s</string>
+    <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one ou 1.1.1.1) est connu pour sa haute vitesse et son accent sur la confidentialité. Il ne filtre pas le contenu et promet de ne pas enregistrer les données utilisateur. Idéal pour les utilisateurs privilégiant la confidentialité et les performances.</string>
+    <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) bloque les publicités, les traqueurs et les domaines malveillants connus directement au niveau DNS. Cela offre une expérience de navigation plus propre et plus sûre. Bon pour les utilisateurs qui souhaitent réduire les publicités et protéger leur vie privée.</string>
+    <string name="dns_info_quad9">Quad9 (dns.quad9.net) se concentre sur la sécurité en bloquant les domaines associés aux logiciels malveillants, au phishing et aux botnets. Cela renforce la protection contre les menaces en ligne. Convient aux utilisateurs pour qui la sécurité Internet est une priorité absolue.</string>
+    <string name="recommended_for_you">(Recommandé pour vous)</string>
+
+    <!--  About Dialog  -->
+    <string name="about_version">Version %1$s</string>
+    <string name="about_description">QuickTile Settings fournit des tuiles de paramètres rapides pratiques pour basculer les paramètres directement depuis le panneau de notifications.</string>
+    <string name="about_features_title">Fonctionnalités</string>
+    <string name="about_feature_private_dns">• Tuile DNS privé avec prise en charge du nom d\'hôte personnalisé</string>
+    <string name="about_feature_usb_debugging">• Tuile de débogage USB pour le développement</string>
+    <string name="about_feature_auto_revert">• Fonctionnalité de restauration automatique pour les modifications temporaires</string>
+    <string name="about_feature_custom_dns">• Fournisseurs DNS populaires intégrés (Cloudflare, AdGuard, Quad9)</string>
+    <string name="about_developer_title">Développeur</string>
+    <string name="about_developer_info">Développé par RBN-Apps\nProjet open source disponible sur GitHub</string>
+    <string name="about_button_github" translatable="false">GitHub</string>
+    <string name="about_button_fdroid" translatable="false">F-Droid</string>
+    <string name="about_button_permission_help">Aide à la configuration des permissions</string>
+
+    <!--  VPN Detection Settings  -->
+    <string name="setting_vpn_detection_enabled">Désactiver automatiquement le DNS sur les connexions VPN</string>
+    <string name="setting_vpn_detection_mode">Mode de détection VPN :</string>
+    <string name="vpn_detection_tile_only_title">Détection via tuile uniquement</string>
+    <string name="vpn_detection_tile_only_description">Vérifie les connexions VPN lors de l\'ouverture des paramètres rapides. Plus économe en batterie, mais détecte les connexions VPN uniquement lorsque les paramètres rapides sont ouverts. Si vous activez ou désactivez généralement le VPN via les paramètres rapides de toute façon, cette option est suffisante.</string>
+    <string name="vpn_detection_background_title">Détection par service en arrière-plan</string>
+    <string name="vpn_detection_background_description">Surveille en continu l\'état du VPN. Fournit une réponse instantanée, mais utilise plus de batterie et affiche une notification persistante pour rester actif.</string>
+
+    <!--  VPN Monitoring Service  -->
+    <string name="vpn_monitoring_channel_name">Surveillance VPN</string>
+    <string name="vpn_monitoring_channel_description">Surveille les connexions VPN pour ajuster automatiquement les paramètres DNS privés</string>
+    <string name="vpn_monitoring_notification_title">Surveillance VPN active</string>
+    <string name="vpn_monitoring_status_connected">VPN connecté - DNS privé défini sur Désactivé</string>
+    <string name="vpn_monitoring_status_disconnected">VPN déconnecté - DNS privé restauré</string>
+
+    <!--  Notification Permission Dialog  -->
+    <string name="notification_permission_dialog_title">Les notifications nécessitent une permission</string>
+    <string name="notification_permission_dialog_message">Pour recevoir des notifications pour la surveillance VPN en arrière-plan, vous devez activer la permission dans les paramètres de l\'application.\n\nUne fois que vous avez accordé la permission, vous pouvez activer les notifications ici.</string>
+    <string name="notification_permission_dialog_settings_button">Paramètres</string>
+    <string name="notification_permission_dialog_settings_description">Ouvrir les paramètres</string>
+
+    <!--  Network Type Detection Settings  -->
+    <string name="setting_network_type_detection_enabled">Basculer automatiquement le DNS selon le type de réseau</string>
+    <string name="setting_network_type_detection_description">Modifier automatiquement les paramètres DNS privés lors du passage entre WiFi et données mobiles</string>
+    <string name="setting_network_type_detection_mode">Mode de détection réseau :</string>
+    <string name="network_type_detection_tile_only_title">Détection via tuile uniquement</string>
+    <string name="network_type_detection_tile_only_description">Vérifie le type de réseau lors de l\'ouverture des paramètres rapides. Économe en batterie, mais détecte uniquement les changements de réseau lorsque les paramètres rapides sont ouverts.</string>
+    <string name="network_type_detection_background_title">Détection par service en arrière-plan</string>
+    <string name="network_type_detection_background_description">Surveille en continu les changements de type de réseau. Réponse instantanée lors du changement de réseau, mais utilise plus de batterie et affiche une notification persistante.</string>
+    <string name="setting_dns_state_on_wifi">DNS privé sur WiFi :</string>
+    <string name="setting_dns_state_on_mobile">DNS privé sur données mobiles :</string>
+    <string name="setting_select_hostname">Sélectionner un nom d\'hôte…</string>
+    <string name="dns_mode_off_label">Désactivé</string>
+    <string name="dns_mode_auto_label">Auto</string>
+    <string name="dns_mode_hostname_label">Nom d\'hôte spécifique</string>
+    <string name="network_type_info_title">Détection du type de réseau</string>
+    <string name="network_type_info_message">Cette fonctionnalité bascule automatiquement les paramètres DNS privés selon que vous\'re connecté au WiFi ou aux données mobiles.\n\nPriorité VPN : Lorsqu\'un VPN est actif, la détection VPN a la priorité et le DNS sera défini sur Désactivé indépendamment des paramètres de type de réseau.\n\nExemple d\'utilisation : Si votre routeur WiFi domestique utilise NextDNS, définissez « DNS sur WiFi » sur Désactivé. Définissez « DNS sur données mobiles » sur Auto ou un nom d\'hôte spécifique pour une protection sur les réseaux cellulaires.</string>
+
+    <!--  Network Monitoring Service  -->
+    <string name="network_monitoring_channel_name">Surveillance du type de réseau</string>
+    <string name="network_monitoring_channel_description">Surveille les changements de type de réseau pour ajuster automatiquement les paramètres DNS privés</string>
+    <string name="network_monitoring_notification_title">Surveillance réseau active</string>
+    <string name="network_type_wifi">Connecté au WiFi</string>
+    <string name="network_type_mobile">Connecté aux données mobiles</string>
+    <string name="network_type_none">Aucune connexion réseau</string>
+    <string name="network_type_unknown">Type de réseau inconnu</string>
+
+    <!--  App Shortcuts  -->
+    <string name="shortcut_dns_off_short">DNS désactivé</string>
+    <string name="shortcut_dns_off_long">Désactiver le DNS privé</string>
+    <string name="shortcut_dns_auto_short">DNS auto</string>
+    <string name="shortcut_dns_auto_long">Activer le DNS privé (Auto)</string>
+    <string name="shortcut_dns_adguard_short">DNS AdGuard</string>
+    <string name="shortcut_dns_adguard_long">Activer AdGuard DNS</string>
+    <string name="shortcut_dns_cloudflare_short">DNS Cloudflare</string>
+    <string name="shortcut_dns_cloudflare_long">Activer Cloudflare DNS</string>
+    <string name="shortcut_dns_quad9_short">DNS Quad9</string>
+    <string name="shortcut_dns_quad9_long">Activer Quad9 DNS</string>
+    <string name="shortcut_usb_on_short">Débogage USB activé</string>
+    <string name="shortcut_usb_on_long">Activer le débogage USB</string>
+    <string name="shortcut_usb_off_short">Débogage USB désactivé</string>
+    <string name="shortcut_usb_off_long">Désactiver le débogage USB</string>
+    <string name="shortcut_dns_custom_long">Activer DNS : %1$s</string>
+    <string name="shortcut_toast_dns_off">DNS privé désactivé</string>
+    <string name="shortcut_toast_dns_auto">DNS privé défini sur Auto</string>
+    <string name="shortcut_toast_dns_hostname">DNS privé défini sur %1$s</string>
+    <string name="shortcut_toast_usb_on">Débogage USB activé</string>
+    <string name="shortcut_toast_usb_off">Débogage USB désactivé</string>
+    <string name="shortcut_toast_permission_missing">Permission manquante. Ouvrez l\'application pour l\'accorder.</string>
+    <string name="shortcut_toast_action_disabled">Action de raccourci désactivée. Activez-la d\'abord dans l\'application.</string>
+    <string name="shortcut_toast_action_unavailable">L\'action de raccourci n\'est plus disponible. Vérifiez la configuration de l\'application.</string>
+
+    <!--  Shortcut Settings  -->
+    <string name="shortcut_settings_title">Actions de raccourci</string>
+    <string name="shortcut_settings_description">Choisissez les actions exposées en tant que raccourcis d\'application Android. Elles peuvent être utilisées depuis les lanceurs, Samsung Routines, Tasker ou en tant que raccourcis épinglés sur l\'écran d\'accueil.\n\nAndroid limite le nombre de raccourcis dynamiques visibles dans le lanceur pour cette activité d\'application à %1$d, donc seules %1$d actions peuvent être activées ici en même temps.\n\nVous pouvez marquer jusqu\'à %2$d actions actives comme favorites en utilisant l\'icône étoile. Les favoris sont publiés avec la priorité la plus élevée et sont plus susceptibles d\'apparaître en premier dans les menus de raccourci du lanceur. Les actions désactivées ne peuvent pas être mises en favoris.\n\nPar défaut, les actions désactivées sont complètement bloquées et ne peuvent plus être exécutées par l\'application. Activez l\'option ci-dessous uniquement si vous souhaitez que les raccourcis déjà épinglés continuent de fonctionner après avoir été désactivés ici.</string>
+    <string name="shortcut_settings_limit">Raccourcis actifs : %1$d / %2$d</string>
+    <string name="shortcut_settings_limit_reached_title">Limite de raccourcis atteinte</string>
+    <string name="shortcut_settings_limit_reached">Limite de raccourcis atteinte. Désactivez d\'abord une autre action.</string>
+    <string name="shortcut_settings_favorite_limit_reached_title">Limite de favoris atteinte</string>
+    <string name="shortcut_settings_favorite_limit_reached">Vous pouvez marquer jusqu\'à 4 favoris.</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled">Autoriser les raccourcis épinglés désactivés</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled_desc">Si activé, les raccourcis qui ont déjà été épinglés ou lancés en externe peuvent toujours s\'exécuter même après les avoir désactivés ici.</string>
+    <string name="shortcut_settings_allow_pinned_info_desc">Afficher les détails sur les raccourcis épinglés désactivés</string>
+    <string name="shortcut_settings_allow_pinned_warning_title">Autoriser les raccourcis désactivés ?</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">L\'activation de cette option affaiblit le comportement de sécurité par défaut. Les actions de raccourci désactivées peuvent toujours être exécutées lorsqu\'elles sont lancées en externe ou à partir de raccourcis qui ont déjà été épinglés auparavant.\n\nCeci est principalement utile si vous souhaitez continuer à utiliser plus d\'actions qu\'Android n\'en autorise simultanément comme raccourcis actifs.</string>
+    <string name="shortcut_settings_allow_pinned_warning_confirm">Activer quand même</string>
+    <string name="shortcut_settings_mark_favorite_desc">Marquer %1$s comme favori</string>
+    <string name="shortcut_settings_remove_favorite_desc">Retirer %1$s des favoris</string>
+    <string name="shortcut_settings_open_desc">Ouvrir les paramètres de raccourcis</string>
+    <string name="shortcut_settings_back_desc">Retour aux paramètres des tuiles</string>
+</resources>
