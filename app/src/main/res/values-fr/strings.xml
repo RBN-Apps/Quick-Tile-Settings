@@ -48,7 +48,7 @@
 
     <!--  ADB Method  -->
     <string name="permission_method_adb_title">Méthode %1$d : ADB (Android Debug Bridge) %2$s</string>
-    <string name="permission_method_adb_desc">Il s\'agit de la méthode standard et nécessite un ordinateur avec l'utilitaire ADB.</string>
+    <string name="permission_method_adb_desc">Il s\'agit de la méthode standard et nécessite un ordinateur avec l\'utilitaire ADB.</string>
     <string name="button_show_adb_instructions">Afficher les instructions</string>
     <string name="adb_instructions_title">Instructions ADB</string>
     <string name="adb_instructions_intro">Connectez votre appareil à un ordinateur avec ADB. Assurez-vous que les options développeur et le débogage USB sont activés sur votre appareil.</string>
@@ -60,9 +60,6 @@
     <string name="button_copy_install_command">Copier la commande d\'installation</string>
     <string name="help_dialog_apk_path_note">(Note : Vous avez besoin du fichier APK pour la commande d\'installation. Si vous avez compilé l\'application vous-même, il se trouve généralement dans app/build/outputs/apk/debug/ ou app/build/outputs/apk/release/. Vous pouvez également télécharger la dernière version depuis GitHub.)</string>
     <string name="github_releases_link_text">Télécharger la dernière version depuis GitHub</string>
-    <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
-    <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
-    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
     <string name="adb_command_install_g">adb install -g -r chemin/vers/votre/app.apk</string>
 
     <!--  Shizuku Method  -->
@@ -70,7 +67,7 @@
     <string name="shizuku_ready_to_grant_desc">Shizuku est disponible et cette application a la permission de l\'utiliser. Vous pouvez essayer d\'accorder WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
-    <string name="shizuku_github_releases_url" translatable="false">https://github.com/RikkaApps/Shizuku/releases</string>
+
     <string name="shizuku_not_available_detailed">Shizuku n\'est pas disponible ou ne fonctionne pas. Veuillez d\'abord installer et démarrer Shizuku.</string>
     <string name="shizuku_permission_not_granted_to_app_detailed">Cette application nécessite la permission de Shizuku pour continuer.</string>
     <string name="button_request_shizuku_permission">Demander la permission Shizuku</string>
@@ -80,7 +77,7 @@
     <string name="shizuku_permission_granted_to_app">Permission Shizuku accordée à cette application.</string>
     <string name="shizuku_permission_denied_to_app">Permission Shizuku refusée à cette application.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku n\'est pas disponible ou n\'est pas prêt.</string>
-    <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
+
 
     <!--  Root Method  -->
     <string name="permission_method_root_title">Méthode %1$d : Root %2$s</string>
@@ -151,8 +148,6 @@
     <string name="about_feature_custom_dns">• Fournisseurs DNS populaires intégrés (Cloudflare, AdGuard, Quad9)</string>
     <string name="about_developer_title">Développeur</string>
     <string name="about_developer_info">Développé par RBN-Apps\nProjet open source disponible sur GitHub</string>
-    <string name="about_button_github" translatable="false">GitHub</string>
-    <string name="about_button_fdroid" translatable="false">F-Droid</string>
     <string name="about_button_permission_help">Aide à la configuration des permissions</string>
 
     <!--  VPN Detection Settings  -->
