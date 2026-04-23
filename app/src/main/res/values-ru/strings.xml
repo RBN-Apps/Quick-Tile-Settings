@@ -6,13 +6,13 @@
     <string name="tile_label_usb_debugging">Отладка по USB</string>
     <string name="dns_state_reverted_to">DNS возвращен к %1$s</string>
     <string name="usb_state_reverted_to">Отладка по USB возвращена к %1$s</string>
-    <string name="toast_developer_options_disabled_revert_cancelled">Параметры разработчика выкл. Откат USB отменен.</string>
-    <string name="tile_subtitle_reverting_in_seconds">Возврат к %1$s через %2$d сек…</string>
+    <string name="toast_developer_options_disabled_revert_cancelled">Параметры разработчика выкл. Возврат USB отменен.</string>
+    <string name="tile_subtitle_reverting_in_seconds">Возврат к %1$s через %2$d с…</string>
 
     <!-- DNS States -->
-    <string name="dns_state_off">DNS Выкл.</string>
-    <string name="dns_state_auto">DNS Авто</string>
-    <string name="dns_state_on_with_host">DNS Вкл. (Hostname)</string>
+    <string name="dns_state_off">DNS выкл.</string>
+    <string name="dns_state_auto">DNS авто</string>
+    <string name="dns_state_on_with_host">DNS вкл. (Hostname)</string>
     <string name="dns_state_unknown">Статус DNS неизвестен</string>
     <string name="dns_hostname_label">Имя хоста DNS</string>
 
@@ -25,7 +25,6 @@
     <string name="setting_title_private_dns">Плитка «Частный DNS»</string>
     <string name="setting_title_usb_debugging">Плитка «Отладка по USB»</string>
     <string name="setting_desc_tile_cycles">Выберите состояния для цикла плитки:</string>
-    <string name="button_save_apply_settings">Применить настройки</string>
     <string name="tab_title_dns">Частный DNS</string>
     <string name="tab_title_usb">Отладка по USB</string>
 
@@ -35,39 +34,41 @@
     <string name="toast_error_saving_settings">Ошибка при сохранении настроек.</string>
     <string name="toast_no_states_enabled_dns">Не выбрано ни одного состояния DNS для переключения.</string>
     <string name="toast_no_states_enabled_usb">Не выбрано ни одного состояния USB для переключения.</string>
-    <string name="toast_hostname_required">Для включения DNS требуется имя хоста.</string>
-    <string name="toast_settings_saved_tiles_updated">Настройки сохранены. Плитки обновятся при следующем открытии панели быстрых настроек.</string>
-    <string name="warning_hostname_blank">Имя хоста не может быть пустым, если включен режим «DNS Вкл».</string>
-    <string name="warning_at_least_one_usb_option">Должен быть выбран хотя бы один статус USB.</string>
+    <string name="toast_hostname_required">Требуется имя хоста для включения DNS.</string>
+    <string name="warning_hostname_blank">Имя хоста не может быть пустым, если включен «DNS вкл.».</string>
+    <string name="warning_at_least_one_usb_option">Должен быть включен хотя бы один статус USB.</string>
     <string name="toast_command_copied">Команда скопирована!</string>
 
 
     <!-- Permission Grant Dialog -->
     <string name="permission_grant_dialog_title">Требуется разрешение</string>
-    <string name="permission_grant_dialog_intro">Для изменения системных настроек, таких как Частный DNS и Отладка по USB, этому приложению требуется специальное разрешение WRITE_SECURE_SETTINGS. Пожалуйста, выберите способ его предоставления ниже:</string>
-    <string name="help_dialog_after_grant">После предоставления разрешения перезапустите приложение или заново откройте панель быстрых настроек для работы плиток.</string>
-    <string name="help_button_desc">Справка / Предоставить разрешение</string>
+    <string name="permission_grant_dialog_intro">Для изменения системных настроек, таких как Частный DNS и Отладка по USB, этому приложению требуется специальное разрешение WRITE_SECURE_SETTINGS. Пожалуйста, выберите метод ниже, чтобы предоставить его:</string>
+    <string name="help_dialog_after_grant">После предоставления разрешения перезапустите приложение или заново откройте QuickTile Settings, чтобы плитки заработали.</string>
+    <string name="help_button_desc">Помощь / Предоставить разрешение</string>
     <string name="button_open_developer_options">Открыть параметры разработчика</string>
     <string name="dialog_close">Закрыть</string>
 
     <!-- ADB Method -->
     <string name="permission_method_adb_title">Способ %1$d: ADB (Android Debug Bridge) %2$s</string>
-    <string name="permission_method_adb_desc">Это стандартный способ, для которого требуется компьютер с настроенным ADB.</string>
+    <string name="permission_method_adb_desc">Это стандартный способ, требующий наличия компьютера с настроенным ADB.</string>
     <string name="button_show_adb_instructions">Показать инструкции ADB</string>
     <string name="adb_instructions_title">Инструкции ADB</string>
-    <string name="adb_instructions_intro">Подключите устройство к компьютеру с настроенным ADB. Убедитесь, что на вашем устройстве включены Параметры разработчика и Отладка по USB.</string>
-    <string name="help_dialog_method_1_title">Вариант А: Предоставить для уже установленного приложения</string>
-    <string name="help_dialog_how_to_grant_via_adb">Выполните следующую команду в терминале или командной строке:</string>
-    <string name="button_copy_grant_command">Копировать команду разрешений</string>
-    <string name="help_dialog_method_2_title">Вариант Б: Установка сразу с разрешениями</string>
-    <string name="help_dialog_how_to_install_via_adb">Сначала удалите текущую версию, затем используйте эту команду (замените path/to/your/app.apk на реальный путь к файлу APK):</string>
+    <string name="adb_instructions_intro">Подключите устройство к компьютеру с настроенным ADB. Убедитесь, что параметры разработчика и отладка по USB включены на вашем устройстве.</string>
+    <string name="help_dialog_method_1_title">Вариант А: Предоставить для текущей установки</string>
+    <string name="help_dialog_how_to_grant_via_adb">Запустите следующую команду в терминале / командной строке:</string>
+    <string name="button_copy_grant_command">Копировать команду разрешения</string>
+    <string name="help_dialog_method_2_title">Вариант Б: Установка с разрешением</string>
+    <string name="help_dialog_how_to_install_via_adb">Сначала удалите текущую версию, затем используйте эту команду (замените path/to/your/app.apk на фактический путь к APK):</string>
     <string name="button_copy_install_command">Копировать команду установки</string>
-    <string name="help_dialog_apk_path_note">(Примечание: для команды установки вам понадобится файл APK. Если вы собрали приложение самостоятельно, обычно оно находится в app/build/outputs/apk/debug/ или app/build/outputs/apk/release/. Вы также можете скачать последнюю версию на GitHub.)</string>
-    <string name="github_releases_link_text">Скачать последнюю версию на GitHub</string>
+    <string name="help_dialog_apk_path_note">(Примечание: Вам понадобится файл APK для команды установки. Если вы собрали приложение самостоятельно, оно обычно находится в app/build/outputs/apk/debug/ или app/build/outputs/apk/release/. Вы также можете скачать последний релиз с GitHub.)</string>
+    <string name="github_releases_link_text">Скачать последний релиз с GitHub</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
     <string name="permission_method_shizuku_title">Способ %1$d: Shizuku %2$s</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku доступен, и у этого приложения есть разрешение на его использование. Вы можете попытаться предоставить WRITE_SECURE_SETTINGS.</string>
+    <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
+    <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
     <string name="shizuku_not_available_detailed">Shizuku недоступен или не запущен. Пожалуйста, сначала установите и запустите Shizuku.</string>
     <string name="shizuku_permission_not_granted_to_app_detailed">Этому приложению требуется разрешение от Shizuku для продолжения. Пожалуйста, запросите его.</string>
     <string name="button_request_shizuku_permission">Запросить разрешение Shizuku</string>
@@ -75,13 +76,13 @@
     <string name="shizuku_not_available">Shizuku недоступен или не запущен.</string>
     <string name="shizuku_permission_not_granted_to_app_prompt">Разрешение Shizuku не предоставлено этому приложению. Пожалуйста, сначала предоставьте его через приложение Shizuku или по запросу.</string>
     <string name="shizuku_permission_granted_to_app">Разрешение Shizuku предоставлено этому приложению.</string>
-    <string name="shizuku_permission_denied_to_app">В разрешении Shizuku для этого приложения отказано.</string>
+    <string name="shizuku_permission_denied_to_app">В разрешении Shizuku отказано.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku недоступен или не готов.</string>
-    
+
     <!-- Root Method -->
     <string name="permission_method_root_title">Способ %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Ваше устройство имеет Root-права. Вы можете попробовать предоставить WRITE_SECURE_SETTINGS, используя привилегии суперпользователя.</string>
-    <string name="device_not_rooted_detailed">Похоже, ваше устройство не имеет Root-прав или доступ суперпользователя не был предоставлен. Этот способ недоступен.</string>
+    <string name="root_ready_to_grant_desc">Ваше устройство имеет Root-права. Вы можете попытаться предоставить WRITE_SECURE_SETTINGS, используя привилегии суперпользователя.</string>
+    <string name="device_not_rooted_detailed">Похоже, ваше устройство не имеет Root-прав или доступ не был предоставлен. Этот метод недоступен.</string>
     <string name="button_grant_with_root">Предоставить через Root</string>
     <string name="device_not_rooted">Устройство не имеет Root-прав.</string>
 
@@ -98,60 +99,68 @@
     <!-- Permission Warning Card -->
     <string name="warning_permission_missing_title">Разрешение отсутствует!</string>
     <string name="warning_permission_missing_desc">Для работы этого приложения требуется разрешение WRITE_SECURE_SETTINGS. Пожалуйста, предоставьте его одним из доступных способов.</string>
-    <string name="button_show_permission_help">Показать варианты предоставления</string>
-    <string name="warning_developer_options_disabled_config">Параметры разработчика отключены. Настройка отладки по USB невозможна.</string>
+    <string name="button_show_permission_help">Показать варианты</string>
+    <string name="warning_developer_options_disabled_config">Параметры разработчика отключены. Отладка по USB не может быть настроена.</string>
 
-    <string name="setting_enable_auto_revert">Включить автооткат после задержки</string>
-    <string name="setting_auto_revert_delay">Задержка отката (в секундах):</string>
-    <string name="toast_reverting_dns_to">Откат DNS на \n\"%1$s\" через %2$d сек…</string>
-    <string name="toast_reverting_usb_to">Откат отладки по USB на %1$s через %2$d сек…</string>
-    <string name="toast_revert_cancelled">Автооткат отменён.</string>
+    <string name="setting_require_unlock">Требовать разблокировку устройства</string>
+    <string name="setting_require_unlock_desc">Если включено, плитка предложит вам разблокировать устройство перед применением любых изменений.</string>
+
+    <string name="setting_also_hide_dev_options">Также переключать опции разработчика</string>
+    <string name="setting_also_hide_dev_options_desc">Если включено, переключение отладки по USB также будет включать/выключать параметры разработчика. Это позволяет плитке работать даже когда параметры разработчика сейчас выключены.</string>
+    <string name="setting_also_disable_wireless_debugging">Также переключать беспроводную отладку</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Если включено, беспроводная отладка будет переключаться вместе с отладкой по USB.</string>
+
+    <string name="setting_enable_auto_revert">Включить авто-возврат с задержкой</string>
+    <string name="setting_auto_revert_delay">Задержка возврата (секунды):</string>
+    <string name="toast_reverting_dns_to">Возврат DNS к \n\"%1$s\" через %2$d сек…</string>
+    <string name="toast_reverting_usb_to">Возврат USB отладки к %1$s через %2$d сек…</string>
+    <string name="toast_revert_cancelled">Авто-возврат отменен.</string>
     <string name="on_state">Вкл.</string>
     <string name="off_state">Выкл.</string>
     <string name="auto_state">Авто</string>
 
-    <string name="dns_select_hostnames_for_cycle">Выберите хосты для переключения в плитке:</string>
+    <string name="dns_select_hostnames_for_cycle">Выберите хосты для переключения плитки:</string>
     <string name="dns_add_custom_hostname_button">Добавить свой хост</string>
-    <string name="dns_edit_hostname_title">Изменить хост</string>
+    <string name="dns_edit_hostname_title">Изменить имя хоста</string>
     <string name="dns_add_hostname_title">Добавить хост</string>
     <string name="dns_hostname_name_label">Отображаемое имя</string>
-    <string name="dns_hostname_value_label">Хост (например, dns.example.com)</string>
+    <string name="dns_hostname_value_label">Имя хоста (например, dns.example.com)</string>
     <string name="dialog_save">Сохранить</string>
     <string name="dialog_cancel">Отмена</string>
     <string name="button_edit">Изменить</string>
     <string name="button_delete">Удалить</string>
     <string name="error_hostname_name_empty">Отображаемое имя не может быть пустым.</string>
-    <string name="error_hostname_value_empty">Хост не может быть пустым.</string>
+    <string name="error_hostname_value_empty">Имя хоста не может быть пустым.</string>
     <string name="confirm_delete_hostname_title">Удалить хост?</string>
-    <string name="confirm_delete_hostname_message">Вы уверены, что хотите удалить \'%1$s\'?</string>
+    <string name="confirm_delete_hostname_message">Вы уверены, что хотите удалить «%1$s»?</string>
 
     <!-- DNS Info Dialogs -->
-    <string name="dns_info_dialog_title">О %1$s</string>
+    <string name="dns_info_dialog_title">О провайдере %1$s</string>
     <string name="button_info_dns">Информация о %1$s</string>
-    <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one или 1.1.1.1) известен своей высокой скоростью и упором на конфиденциальность. Он не фильтрует контент и обещает не хранить логи данных. Идеален для тех, кто ценит приватность и производительность.</string>
-    <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) блокирует рекламу, трекеры и вредоносные домены на уровне DNS. Это делает работу в сети чище и безопаснее. Подходит пользователям, которые хотят избавиться от рекламы и защитить частную жизнь.</string>
-    <string name="dns_info_quad9">Quad9 (dns.quad9.net) фокусируется на безопасности, блокируя домены, связанные с вредоносным ПО, фишингом и ботнетами. Это усиливает защиту от онлайн-угроз. Рекомендуется тем, для кого безопасность в интернете является приоритетом.</string>
+    <string name="dns_info_cloudflare">Cloudflare DNS (1.1.1.1) известен своей высокой скоростью и упором на конфиденциальность. Он не фильтрует контент и обещает не записывать данные пользователей. Идеально подходит для тех, кто ценит приватность и производительность.</string>
+    <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) блокирует рекламу, трекеры и известные вредоносные домены прямо на уровне DNS. Это обеспечивает более чистый и безопасный просмотр страниц. Хорошо подходит для уменьшения количества рекламы.</string>
+    <string name="dns_info_quad9">Quad9 (dns.quad9.net) фокусируется на безопасности, блокируя домены, связанные с вредоносным ПО, фишингом и ботнетами. Это усиливает защиту от онлайн-угроз. Подходит для пользователей, для которых безопасность в приоритете.</string>
     <string name="recommended_for_you">(Рекомендуется вам)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Версия %1$s</string>
-    <string name="about_description">QuickTile Settings предоставляет удобные плитки быстрых настроек для переключения параметров прямо из панели уведомлений.</string>
+    <string name="about_description">QuickTile Settings предоставляет удобные плитки быстрых настроек для управления параметрами прямо из панели уведомлений.</string>
     <string name="about_features_title">Возможности</string>
-    <string name="about_feature_private_dns">• Плитка «Частный DNS» с поддержкой своих хостов</string>
-    <string name="about_feature_usb_debugging">• Плитка «Отладка по USB» для разработки</string>
-    <string name="about_feature_auto_revert">• Функция автоотката для временных изменений</string>
+    <string name="about_feature_private_dns">• Плитка Частный DNS с поддержкой кастомных имен хостов</string>
+    <string name="about_feature_usb_debugging">• Плитка отладки по USB для разработки</string>
+    <string name="about_feature_auto_revert">• Функция авто-возврата для временных изменений</string>
     <string name="about_feature_custom_dns">• Встроенные популярные DNS-провайдеры (Cloudflare, AdGuard, Quad9)</string>
     <string name="about_developer_title">Разработчик</string>
     <string name="about_developer_info">Разработано RBN-Apps\nOpen-source проект доступен на GitHub</string>
     <string name="about_button_permission_help">Справка по настройке разрешений</string>
 
     <!-- VPN Detection Settings -->
-    <string name="setting_vpn_detection_enabled">Автоматически отключать DNS при подключении к VPN</string>
+    <string name="setting_vpn_detection_enabled">Автоматически отключать DNS при VPN-подключениях</string>
     <string name="setting_vpn_detection_mode">Режим обнаружения VPN:</string>
-    <string name="vpn_detection_tile_only_title">Только через плитку</string>
-    <string name="vpn_detection_tile_only_description">Проверяет наличие VPN при открытии быстрых настроек. Это экономит заряд батареи, но VPN обнаруживается только при открытии шторки. Если вы обычно включаете или выключаете VPN через быстрые настройки, этого варианта будет достаточно.</string>
-    <string name="vpn_detection_background_title">Фоновая служба</string>
-    <string name="vpn_detection_background_description">Постоянно отслеживает статус VPN. Обеспечивает мгновенную реакцию, но расходует больше заряда батареи и требует постоянного уведомления для работы в фоне.</string>
+    <string name="vpn_detection_tile_only_title">Обнаружение только плиткой</string>
+    <string name="vpn_detection_tile_only_description">Проверяет наличие VPN при открытии быстрых настроек. Бережнее расходует заряд, но обнаруживает VPN только при открытии панели. Если вы обычно переключаете VPN через шторку, этого достаточно.</string>
+    <string name="vpn_detection_background_title">Обнаружение фоновой службой</string>
+    <string name="vpn_detection_background_description">Постоянно отслеживает статус VPN. Обеспечивает мгновенную реакцию, но потребляет больше энергии и показывает постоянное уведомление для работы в фоне.</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">Мониторинг VPN</string>
@@ -161,37 +170,81 @@
     <string name="vpn_monitoring_status_disconnected">VPN отключен — Частный DNS восстановлен</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_title">Уведомления требуют разрешения</string>
-    <string name="notification_permission_dialog_message">Для получения уведомлений о фоновом мониторинге VPN необходимо включить разрешение в настройках приложения.\n\nКак только вы предоставите разрешение, вы сможете включить уведомления здесь.</string>
+    <string name="notification_permission_dialog_title">Требуется разрешение на уведомления</string>
+    <string name="notification_permission_dialog_message">Чтобы получать уведомления для фонового мониторинга VPN, необходимо включить разрешение в настройках приложения.\n\nКак только вы предоставите разрешение, вы сможете включить уведомления здесь.</string>
     <string name="notification_permission_dialog_settings_button">Настройки</string>
     <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
 
     <!-- Network Type Detection Settings -->
-    <string name="setting_network_type_detection_enabled">Автопереключение DNS в зависимости от типа сети</string>
-    <string name="setting_network_type_detection_description">Автоматически изменять настройки частного DNS при переключении между Wi-Fi и мобильными данными</string>
+    <string name="setting_network_type_detection_enabled">Авто-переключение DNS по типу сети</string>
+    <string name="setting_network_type_detection_description">Автоматически менять настройки Частный DNS при переключении между WiFi и мобильными данными</string>
     <string name="setting_network_type_detection_mode">Режим обнаружения сети:</string>
-    <string name="network_type_detection_tile_only_title">Обнаружение только для плитки</string>
-    <string name="network_type_detection_tile_only_description">Проверяет тип сети при открытии быстрых настроек. Экономит заряд батареи, но обнаруживает изменения сети только когда панель настроек открыта.</string>
+    <string name="network_type_detection_tile_only_title">Обнаружение только плиткой</string>
+    <string name="network_type_detection_tile_only_description">Проверяет тип сети при открытии быстрых настроек. Экономит заряд, но обнаруживает смену сети только при открытии панели.</string>
     <string name="network_type_detection_background_title">Обнаружение фоновой службой</string>
-    <string name="network_type_detection_background_description">Постоянно отслеживает изменения типа сети. Мгновенно реагирует на смену сети, но потребляет больше заряда батареи и показывает постоянное уведомление.</string>
+    <string name="network_type_detection_background_description">Постоянно отслеживает смену типа сети. Мгновенная реакция при переключении сетей, но расходует больше заряда и требует уведомления.</string>
 
-    <string name="setting_dns_state_on_wifi">DNS через Wi-Fi:</string>
+    <string name="setting_dns_state_on_wifi">DNS через WiFi:</string>
     <string name="setting_dns_state_on_mobile">DNS через мобильные данные:</string>
     <string name="setting_select_hostname">Выберите имя хоста…</string>
 
     <string name="dns_mode_off_label">Выкл.</string>
     <string name="dns_mode_auto_label">Авто</string>
-    <string name="dns_mode_hostname_label">Указанное имя хоста</string>
+    <string name="dns_mode_hostname_label">Конкретный хост</string>
 
     <string name="network_type_info_title">Обнаружение типа сети</string>
-    <string name="network_type_info_message">Эта функция автоматически переключает настройки частного DNS в зависимости от того, подключены ли вы к Wi-Fi или мобильным данным.\n\nПриоритет VPN: когда активен VPN, его обнаружение имеет приоритет, и DNS будет переведен в режим «Выкл.» независимо от настроек типа сети.\n\nПример использования: если ваш домашний Wi-Fi роутер использует NextDNS, установите «DNS через Wi-Fi» в значение «Выкл.». Установите «DNS через мобильные данные» в значение «Авто» или укажите конкретное имя хоста для защиты в мобильных сетях.</string> 
+    <string name="network_type_info_message">Эта функция автоматически переключает настройки Частного DNS в зависимости от того, подключены ли вы к WiFi или мобильным данным.\n\nПриоритет VPN: Когда VPN активен, обнаружение VPN имеет приоритет, и DNS будет выключен независимо от настроек типа сети.\n\nПример использования: Если ваш домашний WiFi роутер уже использует NextDNS, установите «DNS через WiFi» в значение «Выкл.». Для мобильных данных установите «Авто» или конкретный хост для защиты в сотовых сетях.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Мониторинг типа сети</string>
     <string name="network_monitoring_channel_description">Отслеживает изменения типа сети для автоматической настройки частного DNS</string>
     <string name="network_monitoring_notification_title">Мониторинг сети активен</string>
-    <string name="network_type_wifi">Подключено к Wi-Fi</string>
+    <string name="network_type_wifi">Подключено к WiFi</string>
     <string name="network_type_mobile">Подключено к мобильным данным</string>
-    <string name="network_type_none">Нет подключения к сети</string>
+    <string name="network_type_none">Нет сетевого подключения</string>
     <string name="network_type_unknown">Неизвестный тип сети</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_dns_off_short">DNS выкл.</string>
+    <string name="shortcut_dns_off_long">Отключить Частный DNS</string>
+    <string name="shortcut_dns_auto_short">DNS авто</string>
+    <string name="shortcut_dns_auto_long">Включить Частный DNS (Авто)</string>
+    <string name="shortcut_dns_adguard_short">AdGuard DNS</string>
+    <string name="shortcut_dns_adguard_long">Включить AdGuard DNS</string>
+    <string name="shortcut_dns_cloudflare_short">Cloudflare DNS</string>
+    <string name="shortcut_dns_cloudflare_long">Включить Cloudflare DNS</string>
+    <string name="shortcut_dns_quad9_short">Quad9 DNS</string>
+    <string name="shortcut_dns_quad9_long">Включить Quad9 DNS</string>
+    <string name="shortcut_usb_on_short">USB отладка вкл.</string>
+    <string name="shortcut_usb_on_long">Включить отладку по USB</string>
+    <string name="shortcut_usb_off_short">USB отладка выкл.</string>
+    <string name="shortcut_usb_off_long">Отключить отладку по USB</string>
+    <string name="shortcut_dns_custom_long">Включить DNS: %1$s</string>
+    <string name="shortcut_toast_dns_off">Частный DNS отключен</string>
+    <string name="shortcut_toast_dns_auto">Частный DNS установлен в Авто</string>
+    <string name="shortcut_toast_dns_hostname">Частный DNS установлен на %1$s</string>
+    <string name="shortcut_toast_usb_on">Отладка по USB включена</string>
+    <string name="shortcut_toast_usb_off">Отладка по USB отключена</string>
+    <string name="shortcut_toast_permission_missing">Отсутствует разрешение. Откройте приложение, чтобы предоставить его.</string>
+    <string name="shortcut_toast_action_disabled">Действие ярлыка отключено. Сначала включите его в приложении.</string>
+    <string name="shortcut_toast_action_unavailable">Действие ярлыка больше недоступно. Проверьте конфигурацию приложения.</string>
+
+    <!-- Shortcut Settings -->
+    <string name="shortcut_settings_title">Действия ярлыков</string>
+    <string name="shortcut_settings_description">Выберите, какие действия будут доступны как ярлыки Android. Их можно использовать в лаунчерах, сценариях Samsung, Tasker или как закрепленные ярлыки на главном экране.\n\nAndroid ограничивает количество видимых динамических ярлыков для этого приложения до %1$d, поэтому одновременно здесь можно активировать только %1$d действий.\n\nВы можете пометить до %2$d активных действий как избранные, используя иконку звезды. Избранные публикуются с наивысшим приоритетом и с большей вероятностью появятся первыми в меню ярлыков. Отключенные действия нельзя добавить в избранное.\n\nПо умолчанию отключенные действия полностью заблокированы и больше не могут быть выполнены приложением. Включайте опцию ниже только если вы хотите, чтобы уже закрепленные ярлыки продолжали работать после того, как они будут отключены здесь.</string>
+    <string name="shortcut_settings_limit">Активные ярлыки: %1$d / %2$d</string>
+    <string name="shortcut_settings_limit_reached_title">Лимит ярлыков достигнут</string>
+    <string name="shortcut_settings_limit_reached">Лимит ярлыков достигнут. Сначала отключите другое действие.</string>
+    <string name="shortcut_settings_favorite_limit_reached_title">Лимит избранного достигнут</string>
+    <string name="shortcut_settings_favorite_limit_reached">Вы можете пометить не более 4 избранных ярлыков.</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled">Разрешить отключенные закрепленные ярлыки</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled_desc">Если включено, ярлыки, которые уже были закреплены или запущены извне, могут срабатывать даже после того, как вы отключите их здесь.</string>
+    <string name="shortcut_settings_allow_pinned_info_desc">Показать детали об отключенных закрепленных ярлыках</string>
+    <string name="shortcut_settings_allow_pinned_warning_title">Разрешить отключенные ярлыки?</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Включение этой опции ослабляет стандартное поведение безопасности. Действия отключенных ярлыков все равно могут быть выполнены, если они запускаются извне или из ярлыков, которые были закреплены ранее.\n\nЭто полезно в основном если вы хотите использовать больше действий, чем Android позволяет держать активными одновременно.</string>
+    <string name="shortcut_settings_allow_pinned_warning_confirm">Все равно включить</string>
+    <string name="shortcut_settings_mark_favorite_desc">Пометить %1$s как избранное</string>
+    <string name="shortcut_settings_remove_favorite_desc">Удалить %1$s из избранного</string>
+    <string name="shortcut_settings_open_desc">Открыть настройки ярлыков</string>
+    <string name="shortcut_settings_back_desc">Назад к настройкам плиток</string>
 </resources>
