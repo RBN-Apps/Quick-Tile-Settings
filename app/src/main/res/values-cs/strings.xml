@@ -25,7 +25,6 @@
     <string name="setting_title_private_dns">Dlaždice Privátní DNS</string>
     <string name="setting_title_usb_debugging">Dlaždice USB ladění</string>
     <string name="setting_desc_tile_cycles">Vyber stavy pro přepínání dlaždice:</string>
-    <string name="button_save_apply_settings">Použít nastavení</string>
     <string name="tab_title_dns">Privátní DNS</string>
     <string name="tab_title_usb">USB ladění</string>
 
@@ -36,7 +35,6 @@
     <string name="toast_no_states_enabled_dns">Nejsou povoleny žádné stavy DNS pro přepínání.</string>
     <string name="toast_no_states_enabled_usb">Nejsou povoleny žádné stavy USB pro přepínání.</string>
     <string name="toast_hostname_required">Pro zapnutí DNS je nutný hostname.</string>
-    <string name="toast_settings_saved_tiles_updated">Nastavení uloženo. Dlaždice se aktualizují při příštím otevření panelu rychlých nastavení.</string>
     <string name="warning_hostname_blank">Hostname nemůže být prázdný, pokud je zapnuto „DNS zapnuto“.</string>
     <string name="warning_at_least_one_usb_option">Musí být povolen alespoň jeden stav USB.</string>
     <string name="toast_command_copied">Příkaz zkopírován!</string>
@@ -107,7 +105,7 @@
     <string name="setting_require_unlock">Pro přepnutí vyžadovat odemčení zařízení</string>
     <string name="setting_require_unlock_desc">Pokud je tato možnost povolena, dlaždice vás před provedením jakýchkoli změn vyzve k odemčení zařízení.</string>
 
-    <string name="setting_also_hide_dev_options">Také přeonout Možnosti pro vývojáře</string>
+    <string name="setting_also_hide_dev_options">Také přepnout Možnosti pro vývojáře</string>
     <string name="setting_also_hide_dev_options_desc">Při zapnutí této volby bude přepnutí USB ladění zároveň zapínat nebo vypínat Možnosti pro vývojáře.</string>
     <string name="setting_also_disable_wireless_debugging">Také přepínat Bezdrátové ladění</string>
     <string name="setting_also_disable_wireless_debugging_desc">Pokud je zapnuto, Bezdrátové ladění se bude přepínat spolu s USB laděním.</string>

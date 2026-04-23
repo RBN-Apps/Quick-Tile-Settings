@@ -72,6 +72,7 @@ class MainActivity : ComponentActivity() {
         viewModel.checkSystemStates(this)
         viewModel.initializeVpnMonitoring()
         viewModel.initializeNetworkMonitoring()
+        viewModel.refreshShortcutConfiguration()
 
         setContent {
             QuickTileSettingsTheme {

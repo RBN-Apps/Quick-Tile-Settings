@@ -25,7 +25,6 @@
     <string name="setting_title_private_dns">Tile de DNS Privado</string>
     <string name="setting_title_usb_debugging">Tile de Depuração USB</string>
     <string name="setting_desc_tile_cycles">Selecione os estados para o ciclo do tile:</string>
-    <string name="button_save_apply_settings">Aplicar configurações</string>
     <string name="tab_title_dns">DNS Privado</string>
     <string name="tab_title_usb">Depuração USB</string>
 
@@ -36,7 +35,6 @@
     <string name="toast_no_states_enabled_dns">Nenhum estado de DNS ativado para alternância.</string>
     <string name="toast_no_states_enabled_usb">Nenhum estado de USB ativado para alternância.</string>
     <string name="toast_hostname_required">Hostname obrigatório para DNS Ativado.</string>
-    <string name="toast_settings_saved_tiles_updated">Configurações salvas. Os tiles serão atualizados quando você abrir novamente o painel de Configurações Rápidas.</string>
     <string name="warning_hostname_blank">O hostname não pode estar vazio se "DNS Ativado" estiver habilitado.</string>
     <string name="warning_at_least_one_usb_option">Pelo menos um estado de USB deve estar habilitado.</string>
     <string name="toast_command_copied">Comando copiado!</string>

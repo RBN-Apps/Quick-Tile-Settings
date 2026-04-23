@@ -26,7 +26,6 @@
     <string name="setting_title_private_dns">Özel DNS Kutucuğu</string>
     <string name="setting_title_usb_debugging">USB Hata Ayıklama Kutucuğu</string>
     <string name="setting_desc_tile_cycles">Kutucuk döngüsü için durumları seçin:</string>
-    <string name="button_save_apply_settings">Ayarları Uygula</string>
     <string name="tab_title_dns">Özel DNS</string>
     <string name="tab_title_usb">USB Hata Ayıklama</string>
 
@@ -37,7 +36,6 @@
     <string name="toast_no_states_enabled_dns">Döngü için etkinleştirilmiş DNS durumu yok.</string>
     <string name="toast_no_states_enabled_usb">Döngü için etkinleştirilmiş USB durumu yok.</string>
     <string name="toast_hostname_required">DNS Açık durumu için ana bilgisayar adı gereklidir.</string>
-    <string name="toast_settings_saved_tiles_updated">Ayarlar kaydedildi. Kutucuklar, Hızlı Ayarlar panelini bir sonraki açışınızda güncellenecektir.</string>
     <string name="warning_hostname_blank">"DNS Açık" etkinse ana bilgisayar adı boş bırakılamaz.</string>
     <string name="warning_at_least_one_usb_option">En az bir USB durumu etkinleştirilmelidir.</string>
     <string name="toast_command_copied">Komut kopyalandı!</string>
