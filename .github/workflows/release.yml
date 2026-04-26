@@ -129,7 +129,7 @@ jobs:
           mv app/build/outputs/apk/release/app-release-unsigned-signed.apk app/build/outputs/apk/release/quick-tile-settings-${{ env.VERSION_NAME }}.apk
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             app/build/outputs/apk/release/quick-tile-settings-${{ env.VERSION_NAME }}.apk
