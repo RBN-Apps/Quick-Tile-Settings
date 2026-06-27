@@ -200,7 +200,7 @@
     <string name="dns_mode_hostname_label">Specific Hostname</string>
 
     <string name="network_type_info_title">Network Type Detection</string>
-    <string name="network_type_info_message">This feature automatically switches Private DNS settings based on whether you\'re connected to WiFi or mobile data.\n\nVPN Priority: When a VPN is active, VPN detection takes priority and DNS will be set to Off regardless of network type settings.\n\nExample use case: If your home WiFi router uses NextDNS, set \"DNS on WiFi\" to Off. Set \"DNS on Mobile Data\" to Auto or a specific hostname for protection when on cellular networks.</string>
+    <string name="network_type_info_message">This feature automatically switches Private DNS settings based on whether you\'re connected to WiFi or mobile data. It also works while a VPN is active by detecting the underlying WiFi or mobile connection.\n\nVPN Priority: If VPN detection is enabled separately, it takes priority and DNS will be set to Off while the VPN is active.\n\nExample use case: If your home WiFi router uses NextDNS, set \"DNS on WiFi\" to Off. Set \"DNS on Mobile Data\" to Auto or a specific hostname for protection when on cellular networks.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Network Type Monitoring</string>

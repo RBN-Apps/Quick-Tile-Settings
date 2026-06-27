@@ -18,6 +18,9 @@ import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 
 object NetworkTypeDetectionUtils {
     private const val TAG = "NetworkTypeDetection"
+    private val trackedNetworkCapabilities = mutableMapOf<Network, NetworkCapabilities>()
+    private val trackedNetworkCapabilitiesLock = Any()
+    private var registeredNetworkCallbackCount = 0
 
     /**
      * Gets the current active network type
@@ -33,18 +36,78 @@ object NetworkTypeDetectionUtils {
                 val networkCapabilities =
                     connectivityManager.getNetworkCapabilities(activeNetwork)
 
-                if (networkCapabilities != null) {
-                    return when {
-                        networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> NETWORK_TYPE_WIFI
-                        networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NETWORK_TYPE_MOBILE
-                        else -> NETWORK_TYPE_NONE
-                    }
+                getNetworkTypeFromCapabilities(networkCapabilities).let { activeType ->
+                    if (activeType != NETWORK_TYPE_NONE) return activeType
                 }
             }
-            NETWORK_TYPE_NONE
+
+            getTrackedNetworkType()
         } catch (e: Exception) {
             Log.e(TAG, "Error checking network type", e)
             NETWORK_TYPE_NONE
+        }
+    }
+
+    internal fun getNetworkTypeFromCapabilities(networkCapabilities: NetworkCapabilities?): String {
+        return when {
+            networkCapabilities == null -> NETWORK_TYPE_NONE
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> NETWORK_TYPE_WIFI
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NETWORK_TYPE_MOBILE
+            else -> NETWORK_TYPE_NONE
+        }
+    }
+
+    internal fun getBestNetworkTypeFromCapabilities(
+        networkCapabilities: Collection<NetworkCapabilities>
+    ): String {
+        var hasMobile = false
+
+        for (capabilities in networkCapabilities) {
+            when (getNetworkTypeFromCapabilities(capabilities)) {
+                NETWORK_TYPE_WIFI -> return NETWORK_TYPE_WIFI
+                NETWORK_TYPE_MOBILE -> hasMobile = true
+            }
+        }
+
+        return if (hasMobile) NETWORK_TYPE_MOBILE else NETWORK_TYPE_NONE
+    }
+
+    private fun rememberNetworkCapabilities(
+        network: Network,
+        networkCapabilities: NetworkCapabilities
+    ) {
+        synchronized(trackedNetworkCapabilitiesLock) {
+            trackedNetworkCapabilities[network] = networkCapabilities
+        }
+    }
+
+    private fun forgetNetwork(network: Network) {
+        synchronized(trackedNetworkCapabilitiesLock) {
+            trackedNetworkCapabilities.remove(network)
+        }
+    }
+
+    private fun beginNetworkCallbackRegistration() {
+        synchronized(trackedNetworkCapabilitiesLock) {
+            if (registeredNetworkCallbackCount == 0) {
+                trackedNetworkCapabilities.clear()
+            }
+            registeredNetworkCallbackCount++
+        }
+    }
+
+    private fun endNetworkCallbackRegistration() {
+        synchronized(trackedNetworkCapabilitiesLock) {
+            registeredNetworkCallbackCount = (registeredNetworkCallbackCount - 1).coerceAtLeast(0)
+            if (registeredNetworkCallbackCount == 0) {
+                trackedNetworkCapabilities.clear()
+            }
+        }
+    }
+
+    private fun getTrackedNetworkType(): String {
+        return synchronized(trackedNetworkCapabilitiesLock) {
+            getBestNetworkTypeFromCapabilities(trackedNetworkCapabilities.values)
         }
     }
 
@@ -62,12 +125,6 @@ object NetworkTypeDetectionUtils {
         dnsMode: String,
         dnsHostname: String?
     ): Boolean {
-        // Don't apply if VPN is active (VPN takes priority)
-        if (VpnDetectionUtils.isVpnActive(context)) {
-            Log.d(TAG, "VPN is active, skipping network type DNS change")
-            return false
-        }
-
         return try {
             when (dnsMode) {
                 DNS_MODE_OFF -> {
@@ -141,17 +198,19 @@ object NetworkTypeDetectionUtils {
             private var lastNetworkType: String? = null
 
             override fun onAvailable(network: Network) {
-                checkNetworkType()
+                // Wait for onCapabilitiesChanged; minSdk 29 guarantees it follows availability.
             }
 
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities
             ) {
+                rememberNetworkCapabilities(network, networkCapabilities)
                 checkNetworkType()
             }
 
             override fun onLost(network: Network) {
+                forgetNetwork(network)
                 checkNetworkType()
             }
 
@@ -173,16 +232,21 @@ object NetworkTypeDetectionUtils {
         context: Context,
         callback: ConnectivityManager.NetworkCallback
     ) {
+        var registrationStarted = false
         try {
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            beginNetworkCallbackRegistration()
+            registrationStarted = true
             val request = NetworkRequest.Builder()
-                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
                 .build()
             connectivityManager.registerNetworkCallback(request, callback)
             Log.d(TAG, "Network type callback registered")
         } catch (e: Exception) {
+            if (registrationStarted) {
+                endNetworkCallbackRegistration()
+            }
             Log.e(TAG, "Error registering network type callback", e)
         }
     }
@@ -198,6 +262,7 @@ object NetworkTypeDetectionUtils {
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.unregisterNetworkCallback(callback)
+            endNetworkCallbackRegistration()
             Log.d(TAG, "Network type callback unregistered")
         } catch (e: Exception) {
             Log.e(TAG, "Error unregistering network type callback", e)

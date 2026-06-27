@@ -193,7 +193,7 @@
     <string name="dns_mode_hostname_label">Konkrétní hostname</string>
 
     <string name="network_type_info_title">Detekce typu sítě</string>
-    <string name="network_type_info_message">Tato funkce automaticky přepíná nastavení privátního DNS na základě toho, zda jste připojeni k Wi-Fi nebo mobilním datům.\n\nPriorita VPN: Pokud je VPN aktivní, má detekce VPN prioritu a DNS bude vypnuto bez ohledu na nastavení typu sítě.\n\nPříklad použití: Pokud váš domácí WiFi router používá NextDNS, nastavte „DNS na Wi-Fi“ na Vypnuto. Nastavte „DNS na mobilních datech“ na Automaticky nebo konkrétní název hostitele pro ochranu v mobilních sítích.</string>
+    <string name="network_type_info_message">Tato funkce automaticky přepíná nastavení privátního DNS na základě toho, zda jste připojeni k Wi-Fi nebo mobilním datům. Funguje také při aktivní VPN, protože rozpozná podkladové připojení Wi-Fi nebo mobilní data.\n\nPriorita VPN: Pokud je detekce VPN aktivována samostatně, má prioritu a DNS bude při aktivní VPN vypnuto.\n\nPříklad použití: Pokud váš domácí WiFi router používá NextDNS, nastavte „DNS na Wi-Fi“ na Vypnuto. Nastavte „DNS na mobilních datech“ na Automaticky nebo konkrétní název hostitele pro ochranu v mobilních sítích.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Sledování typu sítě</string>
