@@ -186,7 +186,7 @@
     <string name="dns_mode_auto_label">Auto</string>
     <string name="dns_mode_hostname_label">Nom d\'hôte spécifique</string>
     <string name="network_type_info_title">Détection du type de réseau</string>
-    <string name="network_type_info_message">Cette fonctionnalité bascule automatiquement les paramètres DNS privés selon que vous\'re connecté au WiFi ou aux données mobiles.\n\nPriorité VPN : Lorsqu\'un VPN est actif, la détection VPN a la priorité et le DNS sera défini sur Désactivé indépendamment des paramètres de type de réseau.\n\nExemple d\'utilisation : Si votre routeur WiFi domestique utilise NextDNS, définissez « DNS sur WiFi » sur Désactivé. Définissez « DNS sur données mobiles » sur Auto ou un nom d\'hôte spécifique pour une protection sur les réseaux cellulaires.</string>
+    <string name="network_type_info_message">Cette fonctionnalité bascule automatiquement les paramètres DNS privés selon que vous êtes connecté au WiFi ou aux données mobiles. Elle fonctionne aussi lorsqu\'un VPN est actif en détectant la connexion WiFi ou mobile sous-jacente.\n\nPriorité VPN : Si la détection VPN est activée séparément, elle a la priorité et le DNS sera défini sur Désactivé tant que le VPN est actif.\n\nExemple d\'utilisation : Si votre routeur WiFi domestique utilise NextDNS, définissez « DNS sur WiFi » sur Désactivé. Définissez « DNS sur données mobiles » sur Auto ou un nom d\'hôte spécifique pour une protection sur les réseaux cellulaires.</string>
 
     <!--  Network Monitoring Service  -->
     <string name="network_monitoring_channel_name">Surveillance du type de réseau</string>

@@ -193,7 +193,7 @@
     <string name="dns_mode_hostname_label">Bestimmter Hostname</string>
 
     <string name="network_type_info_title">Netzwerktyp-Erkennung</string>
-    <string name="network_type_info_message">Diese Funktion passt die Einstellungen für Privates DNS automatisch an, je nachdem, ob du mit WLAN oder mobilen Daten verbunden bist.\n\nVPN-Priorität: Wenn ein VPN aktiv ist, hat die VPN-Erkennung Vorrang und DNS wird unabhängig von den Netzwerkeinstellungen auf Aus gesetzt.\n\nBeispiel: Wenn dein heimischer WLAN-Router NextDNS verwendet, setze \"DNS im WLAN\" auf Aus. Setze \"DNS bei mobilen Daten\" auf Auto oder einen bestimmten Hostnamen, um unterwegs geschützt zu sein.</string>
+    <string name="network_type_info_message">Diese Funktion passt die Einstellungen für Privates DNS automatisch an, je nachdem, ob du mit WLAN oder mobilen Daten verbunden bist. Sie funktioniert auch bei aktivem VPN, indem sie die zugrunde liegende WLAN- oder Mobilfunkverbindung erkennt.\n\nVPN-Priorität: Wenn die VPN-Erkennung separat aktiviert ist, hat sie Vorrang und DNS wird bei aktivem VPN auf Aus gesetzt.\n\nBeispiel: Wenn dein heimischer WLAN-Router NextDNS verwendet, setze \"DNS im WLAN\" auf Aus. Setze \"DNS bei mobilen Daten\" auf Auto oder einen bestimmten Hostnamen, um unterwegs geschützt zu sein.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Netzwerktyp-Überwachung</string>

@@ -31,6 +31,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class NetworkMonitoringService : Service() {
 
@@ -106,10 +107,10 @@ class NetworkMonitoringService : Service() {
             while (isActive) {
                 try {
                     checkNetworkType()
-                    delay(CHECK_INTERVAL_MS)
+                    delay(CHECK_INTERVAL_MS.milliseconds)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error in periodic network type check", e)
-                    delay(CHECK_INTERVAL_MS)
+                    delay(CHECK_INTERVAL_MS.milliseconds)
                 }
             }
         }
@@ -151,9 +152,8 @@ class NetworkMonitoringService : Service() {
 
         Log.i(TAG, "Network type changed from $oldNetworkType to $newNetworkType")
 
-        // Don't apply DNS changes if VPN is active (VPN takes priority)
-        if (VpnDetectionUtils.isVpnActive(this)) {
-            Log.d(TAG, "VPN is active, skipping DNS change for network type")
+        if (prefsManager.isVpnDetectionEnabled() && VpnDetectionUtils.isVpnActive(this)) {
+            Log.d(TAG, "VPN is active and VPN detection is enabled, skipping DNS change")
             updateNotification()
             return
         }
