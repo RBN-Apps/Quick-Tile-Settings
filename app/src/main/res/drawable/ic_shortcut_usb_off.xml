@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/shortcut_bg_default"/>
+    <foreground>
+        <inset
+            android:drawable="@drawable/ic_usb_off"
+            android:inset="24dp"/>
+    </foreground>
+</adaptive-icon>

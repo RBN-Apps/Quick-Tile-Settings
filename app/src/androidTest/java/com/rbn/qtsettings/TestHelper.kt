@@ -68,21 +68,6 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.c
     waitForIdle()
 }
 
-fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.clickApplySettings(
-    context: Context
-) {
-    try {
-        onNodeWithText(context.getString(R.string.button_save_apply_settings))
-            .performScrollTo()
-            .performClick()
-    } catch (_: AssertionError) {
-        // Try without scrolling if element is already visible
-        onNodeWithText(context.getString(R.string.button_save_apply_settings))
-            .performClick()
-    }
-    waitForIdle()
-}
-
 /**
  * Safely perform scrollTo and assert, falling back to just assert if scrolling fails
  */
@@ -98,4 +83,26 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.s
         onNodeWithText(text)
             .assertIsDisplayed()
     }
+}
+
+fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToShortcutSettings(
+    context: Context
+) {
+    try {
+        onNodeWithContentDescription(context.getString(R.string.shortcut_settings_open_desc))
+            .performClick()
+    } catch (_: AssertionError) {
+        onNodeWithContentDescription(context.getString(R.string.shortcut_settings_open_desc))
+            .performScrollTo()
+            .performClick()
+    }
+    waitForIdle()
+}
+
+fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateBackFromShortcutSettings(
+    context: Context
+) {
+    onNodeWithContentDescription(context.getString(R.string.shortcut_settings_back_desc))
+        .performClick()
+    waitForIdle()
 }

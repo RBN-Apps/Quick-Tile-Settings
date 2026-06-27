@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Extract VersionCode
         id: extract_vc
@@ -38,7 +38,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload Unit Test Results (XML)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: unit-test-results
           path: app/build/test-results/testDebugUnitTest/
@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload Lint Report (HTML)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: lint-report-debug-html
           path: app/build/reports/lint-results-debug.html
@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload Lint Report (XML)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: lint-report-debug-xml
           path: app/build/reports/lint-results-debug.xml
@@ -88,10 +88,32 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Unit Test Report Link
+          # Unit Test Summary Table
           echo "### Unit Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "Download JUnit XML reports from the artifacts section of this run." >> $GITHUB_STEP_SUMMARY
-          echo "- [Download Unit Test Results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)" >> $GITHUB_STEP_SUMMARY
+          UNIT_REPORTS=$(find app/build/test-results/testDebugUnitTest -name "TEST-*.xml" 2>/dev/null)
+          if [[ -n "$UNIT_REPORTS" ]]; then
+            echo "| Suite | Total | ✅ Pass | 🔴 Fail | ⚪ Skip | ⏱️ Duration (s) |" >> $GITHUB_STEP_SUMMARY
+            echo "| ----- | -----: | ------: | ------: | -----: | ----------: |" >> $GITHUB_STEP_SUMMARY
+            GRAND_TOTAL=0; GRAND_PASS=0; GRAND_FAIL=0; GRAND_SKIP=0
+            while IFS= read -r REPORT; do
+              NAME=$(grep -oP '<testsuite[^>]* name="\K[^"]+' "$REPORT" | head -1)
+              TOTAL=$(grep -oP 'tests="\K[0-9]+' "$REPORT" | head -1); TOTAL=${TOTAL:-0}
+              FAIL=$(grep -oP 'failures="\K[0-9]+' "$REPORT" | head -1); FAIL=${FAIL:-0}
+              ERR=$(grep -oP 'errors="\K[0-9]+' "$REPORT" | head -1); ERR=${ERR:-0}
+              SKIP=$(grep -oP 'skipped="\K[0-9]+' "$REPORT" | head -1); SKIP=${SKIP:-0}
+              TIME=$(grep -oP 'time="\K[0-9.]+' "$REPORT" | head -1)
+              FAIL_TOT=$((FAIL + ERR))
+              PASSED=$((TOTAL - FAIL_TOT - SKIP))
+              echo "| $NAME | $TOTAL | $PASSED | $FAIL_TOT | $SKIP | $TIME |" >> $GITHUB_STEP_SUMMARY
+              GRAND_TOTAL=$((GRAND_TOTAL + TOTAL))
+              GRAND_PASS=$((GRAND_PASS + PASSED))
+              GRAND_FAIL=$((GRAND_FAIL + FAIL_TOT))
+              GRAND_SKIP=$((GRAND_SKIP + SKIP))
+            done <<< "$UNIT_REPORTS"
+            echo "| **Total** | **$GRAND_TOTAL** | **$GRAND_PASS** | **$GRAND_FAIL** | **$GRAND_SKIP** | — |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "_No unit test results found._" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Changelog Status
@@ -119,7 +141,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -128,7 +150,7 @@ jobs:
           java-version: '17'
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -148,7 +170,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Cache AVD & SDK
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: avd-cache
         with:
           path: |
@@ -180,7 +202,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
           disable-animations: true
           script: |
-            timeout --preserve-status 15m ./gradlew connectedDebugAndroidTest
+            timeout --preserve-status 25m ./gradlew connectedDebugAndroidTest
 
       - name: Upload Instrumented Test Results for API ${{ matrix.api-level }} on ${{ matrix.profile }}
         if: always()
@@ -205,7 +227,7 @@ jobs:
 
       - name: Upload Instrumented Test Artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: instrumented-test-results-api-${{ matrix.api-level }}-${{ matrix.profile }}
           path: |

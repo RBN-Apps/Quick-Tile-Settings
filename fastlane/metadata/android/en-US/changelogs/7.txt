@@ -1,0 +1,4 @@
+Version 1.2.0
+
+- New feature: Optional auto-switch for Private DNS based on network type (WiFi vs mobile data), with separate DNS behavior per network and a choice of Tile-only or Background service detection.
+- Added Turkish and Russian localizations.

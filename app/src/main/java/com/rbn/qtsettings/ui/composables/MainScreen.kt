@@ -4,18 +4,27 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,7 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -50,7 +59,6 @@ import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -59,10 +67,10 @@ fun MainScreen(
     onRequestShizukuPermission: () -> Unit
 ) {
     val context = LocalContext.current
-    val tilesUpdatedMessage = stringResource(R.string.toast_settings_saved_tiles_updated)
     val commandCopiedMessage = stringResource(R.string.toast_command_copied)
     val showPermissionGrantDialog = remember { mutableStateOf(false) }
     val showAboutDialog = remember { mutableStateOf(false) }
+    val showShortcutSettingsScreen = rememberSaveable { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
 
     val isDevOptionsEnabled by remember {
@@ -77,107 +85,117 @@ fun MainScreen(
         }
     }
 
+    val inShortcutSettings = showShortcutSettingsScreen.value
+    BackHandler(enabled = inShortcutSettings) {
+        showShortcutSettingsScreen.value = false
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
 
     val tabTitles = listOf(
         stringResource(R.string.tab_title_dns),
         stringResource(R.string.tab_title_usb)
     )
+    val initialTab by viewModel.initialTab.collectAsState()
     val pagerState = rememberPagerState(
-        initialPage = viewModel.initialTab.collectAsState().value,
+        initialPage = initialTab,
         pageCount = { tabTitles.size }
     )
 
     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
-                actions = {
-                    IconButton(onClick = {
-                        if (!hasWriteSecureSettings) {
-                            showPermissionGrantDialog.value = true
-                            viewModel.checkSystemStates(context)
-                        } else {
-                            showAboutDialog.value = true
+            if (inShortcutSettings) {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.shortcut_settings_title)) },
+                    navigationIcon = {
+                        IconButton(onClick = { showShortcutSettingsScreen.value = false }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.shortcut_settings_back_desc)
+                            )
                         }
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.HelpOutline,
-                            contentDescription = stringResource(R.string.help_button_desc)
-                        )
                     }
-                }
-            )
+                )
+            } else {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.app_name)) },
+                    actions = {
+                        IconButton(onClick = { showShortcutSettingsScreen.value = true }) {
+                            Icon(
+                                Icons.Filled.AppShortcut,
+                                contentDescription = stringResource(R.string.shortcut_settings_open_desc)
+                            )
+                        }
+                        IconButton(onClick = {
+                            if (!hasWriteSecureSettings) {
+                                showPermissionGrantDialog.value = true
+                                viewModel.checkSystemStates(context)
+                            } else {
+                                showAboutDialog.value = true
+                            }
+                        }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.HelpOutline,
+                                contentDescription = stringResource(R.string.help_button_desc)
+                            )
+                        }
+                    }
+                )
+            }
         },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        Column(
+        AnimatedContent(
+            targetState = inShortcutSettings,
+            transitionSpec = {
+                if (targetState) {
+                    (slideInHorizontally(
+                        animationSpec = tween(260),
+                        initialOffsetX = { fullWidth -> fullWidth }
+                    ) + fadeIn(animationSpec = tween(220))) togetherWith
+                            (slideOutHorizontally(
+                                animationSpec = tween(260),
+                                targetOffsetX = { fullWidth -> -(fullWidth / 4) }
+                            ) + fadeOut(animationSpec = tween(200)))
+                } else {
+                    (slideInHorizontally(
+                        animationSpec = tween(260),
+                        initialOffsetX = { fullWidth -> -(fullWidth / 4) }
+                    ) + fadeIn(animationSpec = tween(220))) togetherWith
+                            (slideOutHorizontally(
+                                animationSpec = tween(260),
+                                targetOffsetX = { fullWidth -> fullWidth }
+                            ) + fadeOut(animationSpec = tween(200)))
+                }
+            },
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .fillMaxSize()
-        ) {
-            if (!hasWriteSecureSettings) {
-                PermissionWarningCard(onGrantPermissionClick = {
-                    showPermissionGrantDialog.value = true
-                    viewModel.checkSystemStates(context)
-                })
-            }
-
-            SecondaryTabRow(selectedTabIndex = pagerState.currentPage) {
-                tabTitles.forEachIndexed { index, title ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                        text = { Text(title) }
-                    )
-                }
-            }
-
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.weight(1f)
-            ) { page ->
-                Column(modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)) {
-                    when (page) {
-                        0 -> DnsSettingsCard(viewModel = viewModel)
-                        1 -> UsbDebuggingSettingsCard(
-                            viewModel = viewModel,
-                            isDevOptionsEnabled = isDevOptionsEnabled
-                        )
-                    }
-                }
-            }
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(tilesUpdatedMessage)
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 16.dp)
-            ) {
-                Icon(
-                    Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(
-                        ButtonDefaults.IconSize
-                    )
+                .fillMaxSize(),
+            label = "screenTransition"
+        ) { isShortcutSettingsVisible ->
+            if (isShortcutSettingsVisible) {
+                ShortcutSettingsScreen(
+                    viewModel = viewModel,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize()
                 )
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(stringResource(R.string.button_save_apply_settings))
+            } else {
+                MainTilesContent(
+                    modifier = Modifier.fillMaxSize(),
+                    viewModel = viewModel,
+                    hasWriteSecureSettings = hasWriteSecureSettings,
+                    isDevOptionsEnabled = isDevOptionsEnabled,
+                    tabTitles = tabTitles,
+                    pagerState = pagerState,
+                    onShowPermissionDialog = {
+                        showPermissionGrantDialog.value = true
+                        viewModel.checkSystemStates(context)
+                    }
+                )
             }
         }
 
@@ -197,12 +215,7 @@ fun MainScreen(
                 onCopyToClipboard = { textToCopy ->
                     val clip = ClipData.newPlainText("ADB Command", textToCopy)
                     clipboardManager.setPrimaryClip(clip)
-                    Toast.makeText(
-                        context,
-                        commandCopiedMessage,
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    Toast.makeText(context, commandCopiedMessage, Toast.LENGTH_SHORT).show()
                 },
                 onGrantWithShizuku = { viewModel.grantWriteSecureSettingsViaShizuku(context) },
                 onGrantWithRoot = { viewModel.grantWriteSecureSettingsViaRoot(context) },
@@ -214,7 +227,6 @@ fun MainScreen(
         }
     }
 
-    // DNS Hostname Add/Edit Dialog
     val editingHostname by viewModel.editingHostname.collectAsState()
     if (viewModel.showHostnameEditDialog.collectAsState().value) {
         DnsHostnameEditDialog(
@@ -231,17 +243,16 @@ fun MainScreen(
         )
     }
 
-    // Confirm Delete Hostname Dialog
     val hostnamePendingDeletion by viewModel.hostnamePendingDeletion.collectAsState()
     hostnamePendingDeletion?.let { entry ->
         ConfirmDeleteDialog(
             hostnameEntry = entry,
-            onDismiss = { viewModel.setHostnamePendingDeletion(null) }) {
+            onDismiss = { viewModel.setHostnamePendingDeletion(null) }
+        ) {
             viewModel.deleteCustomDnsHostname(entry.id)
         }
     }
 
-    // About Dialog
     if (showAboutDialog.value) {
         AboutDialog(
             onDismissRequest = { showAboutDialog.value = false },
@@ -253,12 +264,59 @@ fun MainScreen(
         )
     }
 
-    // Notification Permission Settings Dialog
     val showNotificationSettingsDialog by viewModel.showNotificationSettingsDialog.collectAsState()
     if (showNotificationSettingsDialog) {
         NotificationSettingsDialog(
             onDismiss = { viewModel.clearNotificationSettingsDialog() }
         )
+    }
+}
+
+@Composable
+private fun MainTilesContent(
+    modifier: Modifier,
+    viewModel: MainViewModel,
+    hasWriteSecureSettings: Boolean,
+    isDevOptionsEnabled: Boolean,
+    tabTitles: List<String>,
+    pagerState: PagerState,
+    onShowPermissionDialog: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(modifier = modifier.padding(horizontal = 16.dp)) {
+        if (!hasWriteSecureSettings) {
+            PermissionWarningCard(onGrantPermissionClick = onShowPermissionDialog)
+        }
+
+        SecondaryTabRow(selectedTabIndex = pagerState.currentPage) {
+            tabTitles.forEachIndexed { index, title ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    text = { Text(title) }
+                )
+            }
+        }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f)
+        ) { page ->
+            Column(modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)) {
+                when (page) {
+                    0 -> DnsSettingsCard(viewModel = viewModel)
+                    1 -> UsbDebuggingSettingsCard(
+                        viewModel = viewModel,
+                        isDevOptionsEnabled = isDevOptionsEnabled
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -296,7 +354,6 @@ fun PermissionWarningCard(onGrantPermissionClick: () -> Unit) {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

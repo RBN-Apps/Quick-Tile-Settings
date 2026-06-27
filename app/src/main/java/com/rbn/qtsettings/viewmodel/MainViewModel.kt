@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
@@ -32,13 +33,30 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     val usbToggleEnable = prefsManager.usbToggleEnable
     val usbToggleDisable = prefsManager.usbToggleDisable
+    val usbAlsoHideDevOptions = prefsManager.usbAlsoHideDevOptions
+    val usbAlsoDisableWirelessDebugging = prefsManager.usbAlsoDisableWirelessDebugging
     val usbEnableAutoRevert = prefsManager.usbEnableAutoRevert
     val usbAutoRevertDelaySeconds = prefsManager.usbAutoRevertDelaySeconds
 
     val vpnDetectionEnabled = prefsManager.vpnDetectionEnabled
     val vpnDetectionMode = prefsManager.vpnDetectionMode
 
+    val networkTypeDetectionEnabled = prefsManager.networkTypeDetectionEnabled
+    val networkTypeDetectionMode = prefsManager.networkTypeDetectionMode
+    val dnsStateOnWifi = prefsManager.dnsStateOnWifi
+    val dnsHostnameOnWifi = prefsManager.dnsHostnameOnWifi
+    val dnsStateOnMobile = prefsManager.dnsStateOnMobile
+    val dnsHostnameOnMobile = prefsManager.dnsHostnameOnMobile
+
+    val dnsRequireUnlock = prefsManager.dnsRequireUnlock
+    val usbRequireUnlock = prefsManager.usbRequireUnlock
+
     val helpShown = prefsManager.helpShown
+
+    val shortcutMaxCount = prefsManager.shortcutMaxCount
+    val enabledShortcutIds = prefsManager.enabledShortcutIds
+    val favoriteShortcutIds = prefsManager.favoriteShortcutIds
+    val allowPinnedShortcutsWhenDisabled = prefsManager.allowPinnedShortcutsWhenDisabled
 
     private val _initialTab = MutableStateFlow(0)
     val initialTab = _initialTab.asStateFlow()
@@ -82,8 +100,15 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     fun setUsbToggleEnable(enabled: Boolean) = prefsManager.setUsbToggleEnable(enabled)
     fun setUsbToggleDisable(enabled: Boolean) = prefsManager.setUsbToggleDisable(enabled)
+    fun setUsbAlsoHideDevOptions(enabled: Boolean) = prefsManager.setUsbAlsoHideDevOptions(enabled)
+    fun setUsbAlsoDisableWirelessDebugging(enabled: Boolean) =
+        prefsManager.setUsbAlsoDisableWirelessDebugging(enabled)
+
     fun setUsbEnableAutoRevert(enabled: Boolean) = prefsManager.setUsbEnableAutoRevert(enabled)
     fun setUsbAutoRevertDelaySeconds(delay: Int) = prefsManager.setUsbAutoRevertDelaySeconds(delay)
+
+    fun setDnsRequireUnlock(enabled: Boolean) = prefsManager.setDnsRequireUnlock(enabled)
+    fun setUsbRequireUnlock(enabled: Boolean) = prefsManager.setUsbRequireUnlock(enabled)
 
     fun setVpnDetectionEnabled(enabled: Boolean) {
         prefsManager.setVpnDetectionEnabled(enabled)
@@ -110,6 +135,44 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         prefsManager.setVpnDetectionMode(mode)
         manageVpnMonitoringService()
     }
+
+    fun setNetworkTypeDetectionEnabled(enabled: Boolean) {
+        prefsManager.setNetworkTypeDetectionEnabled(enabled)
+        manageNetworkMonitoringService()
+    }
+
+    fun setNetworkTypeDetectionMode(mode: String) {
+        if (mode == BACKGROUND_DETECTION) {
+            val context = getCurrentContext()
+            if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val hasNotificationPermission =
+                    androidx.core.content.ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                if (!hasNotificationPermission) {
+                    handleMissingNotificationPermission()
+                    return
+                }
+            }
+        }
+
+        prefsManager.setNetworkTypeDetectionMode(mode)
+        manageNetworkMonitoringService()
+    }
+
+    fun setDnsStateOnWifi(state: String) = prefsManager.setDnsStateOnWifi(state)
+    fun setDnsHostnameOnWifi(hostname: String?) = prefsManager.setDnsHostnameOnWifi(hostname)
+    fun setDnsStateOnMobile(state: String) = prefsManager.setDnsStateOnMobile(state)
+    fun setDnsHostnameOnMobile(hostname: String?) = prefsManager.setDnsHostnameOnMobile(hostname)
+    fun setShortcutExposureEnabled(shortcutId: String, enabled: Boolean): Boolean =
+        prefsManager.setShortcutExposureEnabled(shortcutId, enabled)
+    fun setShortcutFavorite(shortcutId: String, favorite: Boolean): Boolean =
+        prefsManager.setShortcutFavorite(shortcutId, favorite)
+    fun setAllowPinnedShortcutsWhenDisabled(enabled: Boolean) =
+        prefsManager.setAllowPinnedShortcutsWhenDisabled(enabled)
+    fun refreshShortcutConfiguration() = prefsManager.refreshShortcutConfiguration()
 
     private fun handleMissingNotificationPermission() {
         val context = getCurrentContext()
@@ -334,6 +397,39 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     fun initializeVpnMonitoring() {
         manageVpnMonitoringService()
+    }
+
+    private fun manageNetworkMonitoringService() {
+        viewModelScope.launch {
+            val context = getCurrentContext() ?: return@launch
+
+            val enabled = prefsManager.isNetworkTypeDetectionEnabled()
+            val mode = prefsManager.getNetworkTypeDetectionMode()
+
+            if (enabled && mode == BACKGROUND_DETECTION) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasNotificationPermission =
+                        androidx.core.content.ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ) == PackageManager.PERMISSION_GRANTED
+
+                    if (!hasNotificationPermission) {
+                        _requestNotificationPermission.value =
+                            _requestNotificationPermission.value + 1
+                        return@launch
+                    }
+                }
+
+                NetworkMonitoringService.startService(context)
+            } else {
+                NetworkMonitoringService.stopService(context)
+            }
+        }
+    }
+
+    fun initializeNetworkMonitoring() {
+        manageNetworkMonitoringService()
     }
 }
 

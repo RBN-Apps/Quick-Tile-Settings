@@ -40,6 +40,10 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
         * Select which hostnames (along with Off/Auto) are included in the tile's cycle.
     * View information about the benefits of each predefined DNS provider directly in the app.
     * Optional: Automatically revert to the previous DNS state after a configurable delay.
+* **Smart DNS Automation:**
+    * Optionally auto-disable Private DNS when a VPN connection is active.
+    * Optionally auto-switch Private DNS based on network type (WiFi vs mobile data).
+    * Choose between tile-only detection or continuous background detection.
 * **USB Debugging Quick Tile:**
     * Toggle USB Debugging On or Off.
     * Configure whether to cycle between On/Off or only include specific states.
@@ -47,12 +51,17 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
 * **User-Friendly Configuration:**
     * In-app settings screen to customize tile behavior and auto-revert options.
     * Tabbed interface for easy navigation between Private DNS and USB Debugging settings.
+* **Shortcut Actions (App Shortcuts):**
+    * Choose which actions are exposed as Android app shortcuts.
+    * Use these actions from launchers and automation tools (e.g., Samsung Routines, Tasker).
+    * Disabled actions are blocked by default, with an optional setting to keep already pinned
+      shortcuts working.
 * **Multiple Permission Granting Options:**
     * Clear instructions and an in-app dialog for granting the required `WRITE_SECURE_SETTINGS`
       permission via ADB (Android Debug Bridge), Shizuku, or Root.
     * Convenient "Copy Command" buttons for ADB commands.
 * **Modern UI:** Built with Jetpack Compose, supporting dynamic color (Material You) on Android 12+.
-* **Localization:** Available in English, German and Turkish.
+* **Localization:** Available in English, German, Czech, Turkish, Russian, and Brazilian Portuguese.
 
 ## Screenshots
 
@@ -68,6 +77,8 @@ height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
 * Android 9 (Pie, API 29) or higher.
 * The `WRITE_SECURE_SETTINGS` permission. This **must** be granted using one of the methods
   described below as it's a protected permission not available to regular apps.
+* On Android 13+, enabling background monitoring modes may require `POST_NOTIFICATIONS`
+  permission for the persistent service notification.
 
 ## Setup and Usage
 
@@ -154,6 +165,10 @@ functional.**
         * Tap "Add Custom Hostname" to add your own DNS provider (you'll need a display name and the
           actual hostname).
         * Custom hostnames can be edited or deleted.
+    * **Automation Options (Optional):**
+        * Enable automatic DNS handling for VPN connections.
+        * Enable network type detection and configure separate DNS behavior for WiFi and mobile data.
+        * Choose tile-only detection (battery-friendly) or background detection (instant switching).
 5. **For USB Debugging:**
     * **Select Cycle States:** Check "USB Debug On" and/or "USB Debug Off" to include them in the
       cycle.
@@ -161,8 +176,12 @@ functional.**
     * Enable "Enable auto-revert after a delay".
     * Set the "Revert delay (seconds)". The setting will revert to its previous state after this
       many seconds.
-7. Tap the **"Apply Settings"** button (checkmark icon at the bottom). A snackbar will confirm that
-   settings are saved.
+7. Settings are saved automatically as you make changes in the app.
+8. **For Shortcut Actions (Optional):**
+    * Open the shortcut settings screen from the app (shortcut icon in the top bar).
+    * Enable the actions you want to expose as app shortcuts.
+    * Keep automation-required actions enabled so Tasker/Samsung Routines can discover them.
+    * If needed, you can allow already pinned shortcuts to keep working after an action is disabled.
 
 ### 3. Add Tiles to Your Quick Settings Panel
 
@@ -203,3 +222,13 @@ functional.**
 4. Build the project (e.g., `Build > Make Project` or `Run 'app'`).
    The APK will typically be found in `app/build/outputs/apk/debug/` or
    `app/build/outputs/apk/release/`.
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=RBN-Apps%2FQuick-Tile-Settings&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
+ </picture>
+</a>

@@ -26,7 +26,6 @@
     <string name="setting_title_private_dns">Privates DNS Tile</string>
     <string name="setting_title_usb_debugging">USB-Debugging Tile</string>
     <string name="setting_desc_tile_cycles">Wähle Zustände für den Tile-Zyklus aus:</string>
-    <string name="button_save_apply_settings">Einstellungen anwenden</string>
     <string name="tab_title_dns">Privates DNS</string>
     <string name="tab_title_usb">USB-Debugging</string>
 
@@ -37,7 +36,6 @@
     <string name="toast_no_states_enabled_dns">Keine DNS-Zustände zum Durchschalten aktiviert.</string>
     <string name="toast_no_states_enabled_usb">Keine USB-Zustände zum Durchschalten aktiviert.</string>
     <string name="toast_hostname_required">Hostname für DNS Ein erforderlich.</string>
-    <string name="toast_settings_saved_tiles_updated">Einstellungen gespeichert. Tiles werden beim nächsten Öffnen der QS-Leiste aktualisiert.</string>
     <string name="warning_hostname_blank">Hostname darf nicht leer sein, wenn "DNS Ein" aktiviert ist.</string>
     <string name="warning_at_least_one_usb_option">Mindestens ein USB-Status muss aktiviert sein.</string>
     <string name="toast_command_copied">Befehl kopiert!</string>
@@ -104,6 +102,14 @@
     <string name="button_show_permission_help">Optionen zum Erteilen anzeigen</string>
     <string name="warning_developer_options_disabled_config">Entwickleroptionen sind deaktiviert. USB-Debugging kann nicht konfiguriert werden.</string>
 
+    <string name="setting_require_unlock">Entsperrung zum Umschalten erforderlich</string>
+    <string name="setting_require_unlock_desc">Wenn aktiviert, fordert die Kachel dich auf, das Gerät zu entsperren, bevor Änderungen angewendet werden.</string>
+
+    <string name="setting_also_hide_dev_options">Auch Entwickleroptionen umschalten</string>
+    <string name="setting_also_hide_dev_options_desc">Wenn aktiviert, schaltet das Umschalten von USB-Debugging auch die Entwickleroptionen ein oder aus. Dadurch funktioniert die Kachel auch dann, wenn die Entwickleroptionen derzeit aus sind.</string>
+    <string name="setting_also_disable_wireless_debugging">Auch Wireless-Debugging umschalten</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Wenn aktiviert, wird Wireless-Debugging zusammen mit USB-Debugging ebenfalls umgeschaltet.</string>
+
     <string name="setting_enable_auto_revert">Automatisches Zurücksetzen nach Verzögerung aktivieren</string>
     <string name="setting_auto_revert_delay">Verzögerung (Sekunden):</string>
     <string name="toast_reverting_dns_to">DNS wird in %2$d Sek. auf \n\"%1$s\" zurückgesetzt…</string>
@@ -168,4 +174,77 @@
     <string name="notification_permission_dialog_message">Um Benachrichtigungen für die VPN-Hintergrundüberwachung zu erhalten, musst du die Berechtigung in den App-Einstellungen aktivieren.\n\nWenn du die Berechtigung erteilt hast, kannst du Benachrichtigungen hier aktivieren.</string>
     <string name="notification_permission_dialog_settings_button">Einstellungen</string>
     <string name="notification_permission_dialog_settings_description">Einstellungen öffnen</string>
+
+    <!-- Network Type Detection Settings -->
+    <string name="setting_network_type_detection_enabled">DNS je nach Netzwerktyp automatisch umschalten</string>
+    <string name="setting_network_type_detection_description">Ändert die Einstellungen für Privates DNS automatisch, wenn zwischen WLAN und mobilen Daten gewechselt wird.</string>
+    <string name="setting_network_type_detection_mode">Netzwerkerkennungsmodus:</string>
+    <string name="network_type_detection_tile_only_title">Nur-Kachel-Erkennung</string>
+    <string name="network_type_detection_tile_only_description">Prüft den Netzwerktyp beim Öffnen der Schnelleinstellungen. Spart Akku, erkennt Netzwerkänderungen jedoch nur, wenn die Schnelleinstellungen geöffnet werden.</string>
+    <string name="network_type_detection_background_title">Erkennung über Hintergrunddienst</string>
+    <string name="network_type_detection_background_description">Überwacht Änderungen des Netzwerktyps durchgehend. Reagiert sofort beim Netzwerkwechsel, verbraucht jedoch mehr Akku und zeigt eine dauerhafte Benachrichtigung.</string>
+
+    <string name="setting_dns_state_on_wifi">DNS im WLAN:</string>
+    <string name="setting_dns_state_on_mobile">DNS bei mobilen Daten:</string>
+    <string name="setting_select_hostname">Hostname auswählen…</string>
+
+    <string name="dns_mode_off_label">Aus</string>
+    <string name="dns_mode_auto_label">Auto</string>
+    <string name="dns_mode_hostname_label">Bestimmter Hostname</string>
+
+    <string name="network_type_info_title">Netzwerktyp-Erkennung</string>
+    <string name="network_type_info_message">Diese Funktion passt die Einstellungen für Privates DNS automatisch an, je nachdem, ob du mit WLAN oder mobilen Daten verbunden bist. Sie funktioniert auch bei aktivem VPN, indem sie die zugrunde liegende WLAN- oder Mobilfunkverbindung erkennt.\n\nVPN-Priorität: Wenn die VPN-Erkennung separat aktiviert ist, hat sie Vorrang und DNS wird bei aktivem VPN auf Aus gesetzt.\n\nBeispiel: Wenn dein heimischer WLAN-Router NextDNS verwendet, setze \"DNS im WLAN\" auf Aus. Setze \"DNS bei mobilen Daten\" auf Auto oder einen bestimmten Hostnamen, um unterwegs geschützt zu sein.</string>
+
+    <!-- Network Monitoring Service -->
+    <string name="network_monitoring_channel_name">Netzwerktyp-Überwachung</string>
+    <string name="network_monitoring_channel_description">Überwacht Änderungen des Netzwerktyps, um die Einstellungen für Privates DNS automatisch anzupassen</string>
+    <string name="network_monitoring_notification_title">Netzwerküberwachung aktiv</string>
+    <string name="network_type_wifi">Mit WLAN verbunden</string>
+    <string name="network_type_mobile">Mit mobilen Daten verbunden</string>
+    <string name="network_type_none">Keine Netzwerkverbindung</string>
+    <string name="network_type_unknown">Unbekannter Netzwerktyp</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_dns_off_short">DNS Aus</string>
+    <string name="shortcut_dns_off_long">Privates DNS deaktivieren</string>
+    <string name="shortcut_dns_auto_short">DNS Auto</string>
+    <string name="shortcut_dns_auto_long">Privates DNS aktivieren (Auto)</string>
+    <string name="shortcut_dns_adguard_short">AdGuard DNS</string>
+    <string name="shortcut_dns_adguard_long">AdGuard DNS aktivieren</string>
+    <string name="shortcut_dns_cloudflare_short">Cloudflare DNS</string>
+    <string name="shortcut_dns_cloudflare_long">Cloudflare DNS aktivieren</string>
+    <string name="shortcut_dns_quad9_short">Quad9 DNS</string>
+    <string name="shortcut_dns_quad9_long">Quad9 DNS aktivieren</string>
+    <string name="shortcut_usb_on_short">USB-Debug Ein</string>
+    <string name="shortcut_usb_on_long">USB-Debugging aktivieren</string>
+    <string name="shortcut_usb_off_short">USB-Debug Aus</string>
+    <string name="shortcut_usb_off_long">USB-Debugging deaktivieren</string>
+    <string name="shortcut_dns_custom_long">DNS aktivieren: %1$s</string>
+    <string name="shortcut_toast_dns_off">Privates DNS deaktiviert</string>
+    <string name="shortcut_toast_dns_auto">Privates DNS auf Auto gesetzt</string>
+    <string name="shortcut_toast_dns_hostname">Privates DNS auf %1$s gesetzt</string>
+    <string name="shortcut_toast_usb_on">USB-Debugging aktiviert</string>
+    <string name="shortcut_toast_usb_off">USB-Debugging deaktiviert</string>
+    <string name="shortcut_toast_permission_missing">Berechtigung fehlt. Öffne die App, um sie zu erteilen.</string>
+    <string name="shortcut_toast_action_disabled">Shortcut-Aktion ist deaktiviert. Aktiviere sie zuerst in der App.</string>
+    <string name="shortcut_toast_action_unavailable">Shortcut-Aktion ist nicht mehr verfügbar. Prüfe die App-Konfiguration.</string>
+
+    <!-- Shortcut Settings -->
+    <string name="shortcut_settings_title">Shortcut-Aktionen</string>
+    <string name="shortcut_settings_description">Wähle aus, welche Aktionen als Android-App-Shortcuts bereitgestellt werden. Sie können über Launcher, Samsung Routines, Tasker oder als angeheftete Homescreen-Verknüpfungen genutzt werden.\n\nAndroid begrenzt die Anzahl der im Launcher sichtbaren dynamischen Shortcuts für diese App-Aktivität auf %1$d, daher können hier gleichzeitig nur %1$d Aktionen aktiviert werden.\n\nDu kannst bis zu %2$d aktive Aktionen mit dem Stern als Favoriten markieren. Favoriten erhalten die höchste Priorität und werden eher zuerst in den Shortcut-Menüs des Launchers angezeigt. Deaktivierte Aktionen können nicht als Favorit markiert werden.\n\nStandardmäßig werden deaktivierte Aktionen vollständig blockiert und nicht mehr von der App ausgeführt. Aktiviere die Option unten nur, wenn bereits angeheftete Shortcuts nach dem Deaktivieren hier weiter funktionieren sollen.</string>
+    <string name="shortcut_settings_limit">Aktive Shortcuts: %1$d / %2$d</string>
+    <string name="shortcut_settings_limit_reached_title">Shortcut-Limit erreicht</string>
+    <string name="shortcut_settings_limit_reached">Shortcut-Limit erreicht. Deaktiviere zuerst eine andere Aktion.</string>
+    <string name="shortcut_settings_favorite_limit_reached_title">Favoritenlimit erreicht</string>
+    <string name="shortcut_settings_favorite_limit_reached">Du kannst maximal 4 Favoriten markieren.</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled">Deaktivierte angeheftete Shortcuts erlauben</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled_desc">Wenn aktiviert, können bereits angeheftete oder extern gestartete Shortcuts auch nach dem Deaktivieren hier weiterhin ausgeführt werden.</string>
+    <string name="shortcut_settings_allow_pinned_info_desc">Details zu deaktivierten angehefteten Shortcuts anzeigen</string>
+    <string name="shortcut_settings_allow_pinned_warning_title">Deaktivierte Shortcuts erlauben?</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Wenn du das aktivierst, wird das sichere Standardverhalten abgeschwächt. Deaktivierte Shortcut-Aktionen können dann möglicherweise weiterhin ausgeführt werden, wenn sie extern gestartet oder bereits vorher angeheftet wurden.\n\nSinnvoll ist das vor allem dann, wenn du mehr Aktionen nutzen willst, als Android gleichzeitig als aktive Shortcuts zulässt.</string>
+    <string name="shortcut_settings_allow_pinned_warning_confirm">Trotzdem aktivieren</string>
+    <string name="shortcut_settings_mark_favorite_desc">%1$s als Favorit markieren</string>
+    <string name="shortcut_settings_remove_favorite_desc">%1$s aus Favoriten entfernen</string>
+    <string name="shortcut_settings_open_desc">Shortcut-Einstellungen öffnen</string>
+    <string name="shortcut_settings_back_desc">Zurück zu Tile-Einstellungen</string>
 </resources>

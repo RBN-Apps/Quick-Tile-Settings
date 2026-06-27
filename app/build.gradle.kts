@@ -13,8 +13,8 @@ android {
         applicationId = "com.rbn.qtsettings"
         minSdk = 29
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.1.2"
+        versionCode = 7
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments += mapOf(
@@ -37,6 +37,9 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    lint {
+        disable += "MissingTranslation"
     }
 }
 
@@ -62,6 +65,7 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.test.runner)

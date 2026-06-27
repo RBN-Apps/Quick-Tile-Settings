@@ -1,0 +1,4 @@
+Version 1.2.0
+
+- Neues Feature: Optionale automatische Umschaltung von Privatem DNS je nach Netzwerktyp (WLAN vs. mobile Daten), mit getrennten DNS-Einstellungen pro Netzwerk und wahlweise Nur-Kachel- oder Hintergrunddienst-Erkennung.
+- Türkische und russische Lokalisierung hinzugefügt.
