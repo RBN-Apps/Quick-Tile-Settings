@@ -3,6 +3,7 @@ package com.rbn.qtsettings.services
 import android.content.SharedPreferences
 import android.database.ContentObserver
 import android.graphics.drawable.Icon
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.CountDownTimer
 import android.os.Handler
@@ -40,6 +41,7 @@ class PrivateDnsTileService : TileService() {
     private var isVpnConnected = false
     private var vpnMonitorTimer: CountDownTimer? = null
     private var currentNetworkType: String = NETWORK_TYPE_NONE
+    private var networkTypeCallback: ConnectivityManager.NetworkCallback? = null
     private var networkTypeMonitorTimer: CountDownTimer? = null
 
     private var dnsSettingsObserver: ContentObserver? = null
@@ -603,19 +605,27 @@ class PrivateDnsTileService : TileService() {
             return
         }
 
-        networkTypeMonitorTimer?.cancel()
-        networkTypeMonitorTimer =
-            object : CountDownTimer(Long.MAX_VALUE, 2000) { // Check every 2 seconds
-                override fun onTick(millisUntilFinished: Long) {
-                    val detectedNetworkType = NetworkTypeDetectionUtils.getCurrentNetworkType(
-                        this@PrivateDnsTileService
-                    )
+        stopNetworkTypeMonitoring()
+        val mainHandler = Handler(Looper.getMainLooper())
+        networkTypeCallback = NetworkTypeDetectionUtils.createNetworkTypeCallback(
+            context = this,
+            onNetworkTypeChanged = { detectedNetworkType ->
+                mainHandler.post {
+                    applyNetworkTypeIfChanged(detectedNetworkType)
+                }
+            }
+        )
 
-                    if (detectedNetworkType != currentNetworkType) {
-                        handleNetworkTypeChange(detectedNetworkType)
-                        currentNetworkType = detectedNetworkType
-                        updateTile()
-                    }
+        networkTypeCallback?.let { callback ->
+            NetworkTypeDetectionUtils.registerNetworkTypeCallback(this, callback)
+        }
+
+        networkTypeMonitorTimer =
+            object : CountDownTimer(Long.MAX_VALUE, 2000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    applyNetworkTypeIfChanged(
+                        NetworkTypeDetectionUtils.getCurrentNetworkType(this@PrivateDnsTileService)
+                    )
                 }
 
                 override fun onFinish() {
@@ -624,18 +634,32 @@ class PrivateDnsTileService : TileService() {
     }
 
     private fun stopNetworkTypeMonitoring() {
+        networkTypeCallback?.let { callback ->
+            NetworkTypeDetectionUtils.unregisterNetworkTypeCallback(this, callback)
+        }
+        networkTypeCallback = null
         networkTypeMonitorTimer?.cancel()
         networkTypeMonitorTimer = null
     }
 
+    private fun applyNetworkTypeIfChanged(detectedNetworkType: String) {
+        if (detectedNetworkType != currentNetworkType) {
+            handleNetworkTypeChange(detectedNetworkType)
+            currentNetworkType = detectedNetworkType
+            updateTile()
+        }
+    }
+
     private fun handleNetworkTypeChange(newNetworkType: String) {
-        // Don't apply DNS changes if VPN is active (VPN takes priority)
-        if (isVpnConnected) {
-            Log.d("PrivateDnsTile", "VPN is active, skipping network type DNS change")
+        Log.i("PrivateDnsTile", "Network type changed to: $newNetworkType")
+
+        if (prefsManager.isVpnDetectionEnabled() && VpnDetectionUtils.isVpnActive(this)) {
+            Log.d(
+                "PrivateDnsTile",
+                "VPN is active and VPN detection is enabled, skipping network type DNS change"
+            )
             return
         }
-
-        Log.i("PrivateDnsTile", "Network type changed to: $newNetworkType")
 
         when (newNetworkType) {
             NETWORK_TYPE_WIFI -> {
