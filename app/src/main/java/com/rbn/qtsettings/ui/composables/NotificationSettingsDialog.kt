@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +58,56 @@ fun NotificationSettingsDialog(
         dismissButton = {
             Button(onClick = onDismiss) {
                 Text(stringResource(R.string.dialog_cancel))
+            }
+        }
+    )
+}
+
+@Composable
+fun NotificationPermissionExplanationDialog(
+    onGrantPermission: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        title = { Text(stringResource(R.string.notification_permission_import_title)) },
+        text = { Text(stringResource(R.string.notification_permission_import_message)) },
+        confirmButton = {
+            Button(onClick = onGrantPermission) {
+                Text(stringResource(R.string.notification_permission_grant_button))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.notification_permission_use_tile_only_button))
+            }
+        }
+    )
+}
+
+@Composable
+fun NotificationPermissionFallbackDialog(
+    onGrantPermission: () -> Unit,
+    onUseTileOnly: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onUseTileOnly,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        title = { Text(stringResource(R.string.notification_permission_fallback_title)) },
+        text = { Text(stringResource(R.string.notification_permission_fallback_message)) },
+        confirmButton = {
+            Button(onClick = onGrantPermission) {
+                Text(stringResource(R.string.notification_permission_grant_button))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onUseTileOnly) {
+                Text(stringResource(R.string.notification_permission_use_tile_only_button))
             }
         }
     )

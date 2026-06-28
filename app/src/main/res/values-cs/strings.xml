@@ -25,6 +25,7 @@
     <string name="setting_title_private_dns">Dlaždice Privátní DNS</string>
     <string name="setting_title_usb_debugging">Dlaždice USB ladění</string>
     <string name="setting_desc_tile_cycles">Vyber stavy pro přepínání dlaždice:</string>
+    <string name="app_settings_title">Nastavení</string>
     <string name="tab_title_dns">Privátní DNS</string>
     <string name="tab_title_usb">USB ladění</string>
 
@@ -39,12 +40,17 @@
     <string name="warning_at_least_one_usb_option">Musí být povolen alespoň jeden stav USB.</string>
     <string name="toast_command_copied">Příkaz zkopírován!</string>
 
-    
+
     <!-- Permission Grant Dialog -->
     <string name="permission_grant_dialog_title">Vyžadováno oprávnění</string>
     <string name="permission_grant_dialog_intro">Pro změnu systémových nastavení, jako je Privátní DNS a USB ladění, potřebuje aplikace speciální oprávnění WRITE_SECURE_SETTINGS. Vyber níže způsob, jak jej udělit:</string>
     <string name="help_dialog_after_grant">Po udělení oprávnění restartujte aplikaci nebo znovu otevřete panel rychlého nastavení, aby dlaždice fungovaly.</string>
     <string name="help_button_desc">Nápověda / Udělit oprávnění</string>
+    <string name="app_menu_desc">Otevřít nabídku aplikace</string>
+    <string name="navigate_back_desc">Zpět</string>
+    <string name="menu_settings">Nastavení</string>
+    <string name="menu_permission_help">Nastavení oprávnění</string>
+    <string name="menu_about">O aplikaci</string>
     <string name="button_open_developer_options">Otevřít možnosti pro vývojáře</string>
     <string name="dialog_close">Zavřít</string>
 
@@ -154,6 +160,19 @@
     <string name="about_developer_info">Vyvinuto RBN-Apps\nOpen source projekt na GitHubu</string>
     <string name="about_button_permission_help">Nápověda k nastavení oprávnění</string>
 
+    <!-- App Settings -->
+    <string name="settings_backup_title">Záloha a obnovení</string>
+    <string name="settings_backup_description">Exportuje všechna nastavení dlaždic, DNS záznamy, automatizace a konfiguraci zkratek do souboru JSON. Obnovení nahradí aktuální nastavení aplikace vybranou zálohou.</string>
+    <string name="backup_export_button">Exportovat zálohu</string>
+    <string name="backup_restore_button">Obnovit zálohu</string>
+    <string name="backup_restore_confirm_title">Obnovit zálohu?</string>
+    <string name="backup_restore_confirm_message">Aktuální nastavení aplikace bude nahrazeno vybraným souborem zálohy.</string>
+    <string name="backup_restore_confirm_button">Obnovit</string>
+    <string name="backup_export_success">Záloha exportována.</string>
+    <string name="backup_export_error">Export zálohy selhal: %1$s</string>
+    <string name="backup_restore_success">Záloha obnovena.</string>
+    <string name="backup_restore_error">Obnovení zálohy selhalo: %1$s</string>
+
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">Automaticky vypnout DNS při připojení k VPN</string>
     <string name="setting_vpn_detection_mode">Režim detekce VPN:</string>
@@ -174,6 +193,13 @@
     <string name="notification_permission_dialog_message">Pro oznámení sledování VPN musíš povolit oprávnění v nastavení aplikace.</string>
     <string name="notification_permission_dialog_settings_button">Nastavení</string>
     <string name="notification_permission_dialog_settings_description">Otevřít nastavení</string>
+    <string name="notification_permission_tile_only_fallback">Oprávnění k oznámením bylo zamítnuto. Detekce na pozadí byla přepnuta na detekci pouze přes dlaždici, protože sledování na pozadí vyžaduje oznámení.</string>
+    <string name="notification_permission_import_title">Povolit oznámení pro detekci na pozadí?</string>
+    <string name="notification_permission_import_message">Importovaná záloha zapíná detekci změn VPN nebo typu sítě na pozadí. Android vyžaduje oprávnění k oznámením, aby aplikace mohla při sledování na pozadí zobrazovat trvalé oznámení.</string>
+    <string name="notification_permission_fallback_title">Je potřeba oprávnění k oznámením</string>
+    <string name="notification_permission_fallback_message">Detekce na pozadí nemůže fungovat bez oprávnění k oznámením, protože Android pro sledování na pozadí vyžaduje oznámení. Můžeš oprávnění udělit teď nebo místo toho použít detekci pouze přes dlaždici.</string>
+    <string name="notification_permission_grant_button">Udělit oprávnění</string>
+    <string name="notification_permission_use_tile_only_button">Použít detekci přes dlaždici</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Automaticky přepínat DNS podle typu sítě</string>

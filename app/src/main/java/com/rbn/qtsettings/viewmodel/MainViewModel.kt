@@ -2,8 +2,10 @@ package com.rbn.qtsettings.viewmodel
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -91,6 +93,17 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private val _showNotificationSettingsDialog = MutableStateFlow(false)
     val showNotificationSettingsDialog = _showNotificationSettingsDialog.asStateFlow()
 
+    private val _showNotificationPermissionExplanationDialog = MutableStateFlow(false)
+    val showNotificationPermissionExplanationDialog =
+        _showNotificationPermissionExplanationDialog.asStateFlow()
+
+    private val _showNotificationPermissionFallbackDialog = MutableStateFlow(false)
+    val showNotificationPermissionFallbackDialog =
+        _showNotificationPermissionFallbackDialog.asStateFlow()
+
+    private val _backupStatusMessage = MutableStateFlow<String?>(null)
+    val backupStatusMessage = _backupStatusMessage.asStateFlow()
+
 
     fun setDnsToggleOff(enabled: Boolean) = prefsManager.setDnsToggleOff(enabled)
     fun setDnsToggleAuto(enabled: Boolean) = prefsManager.setDnsToggleAuto(enabled)
@@ -120,7 +133,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
             val context = getCurrentContext()
             if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val hasNotificationPermission =
-                    androidx.core.content.ContextCompat.checkSelfPermission(
+                    ContextCompat.checkSelfPermission(
                         context,
                         android.Manifest.permission.POST_NOTIFICATIONS
                     ) == PackageManager.PERMISSION_GRANTED
@@ -146,7 +159,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
             val context = getCurrentContext()
             if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val hasNotificationPermission =
-                    androidx.core.content.ContextCompat.checkSelfPermission(
+                    ContextCompat.checkSelfPermission(
                         context,
                         android.Manifest.permission.POST_NOTIFICATIONS
                     ) == PackageManager.PERMISSION_GRANTED
@@ -174,10 +187,77 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         prefsManager.setAllowPinnedShortcutsWhenDisabled(enabled)
     fun refreshShortcutConfiguration() = prefsManager.refreshShortcutConfiguration()
 
+    fun exportBackup(context: Context, uri: Uri) {
+        val appContext = context.applicationContext
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                appContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    outputStream.writer(Charsets.UTF_8).use { writer ->
+                        writer.write(prefsManager.exportSettingsBackupJson())
+                    }
+                } ?: throw IllegalStateException("Could not open backup destination")
+
+                _backupStatusMessage.value = appContext.getString(R.string.backup_export_success)
+            } catch (e: Exception) {
+                Log.e("SettingsBackup", "Backup export failed", e)
+                _backupStatusMessage.value =
+                    appContext.getString(R.string.backup_export_error, e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun restoreBackup(context: Context, uri: Uri) {
+        val appContext = context.applicationContext
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val json = appContext.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+                } ?: throw IllegalStateException("Could not open backup file")
+
+                prefsManager.restoreSettingsBackupJson(json)
+                if (needsNotificationPermissionForBackgroundDetection(appContext)) {
+                    handleMissingNotificationPermission()
+                } else {
+                    manageVpnMonitoringService()
+                    manageNetworkMonitoringService()
+                }
+                _backupStatusMessage.value = appContext.getString(R.string.backup_restore_success)
+            } catch (e: Exception) {
+                Log.e("SettingsBackup", "Backup restore failed", e)
+                _backupStatusMessage.value =
+                    appContext.getString(R.string.backup_restore_error, e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    private fun needsNotificationPermissionForBackgroundDetection(context: Context): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                !hasNotificationPermission(context) &&
+                isAnyBackgroundDetectionEnabled()
+    }
+
+    private fun hasNotificationPermission(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun isAnyBackgroundDetectionEnabled(): Boolean {
+        return (prefsManager.isVpnDetectionEnabled() &&
+                prefsManager.getVpnDetectionMode() == BACKGROUND_DETECTION) ||
+                (prefsManager.isNetworkTypeDetectionEnabled() &&
+                        prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION)
+    }
+
+    fun clearBackupStatusMessage() {
+        _backupStatusMessage.value = null
+    }
+
     private fun handleMissingNotificationPermission() {
-        val context = getCurrentContext()
-        if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            _requestNotificationPermission.value = _requestNotificationPermission.value + 1
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            _showNotificationPermissionExplanationDialog.value = true
         }
     }
 
@@ -191,7 +271,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
             if (enabled && mode == BACKGROUND_DETECTION) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val hasNotificationPermission =
-                        androidx.core.content.ContextCompat.checkSelfPermission(
+                        ContextCompat.checkSelfPermission(
                             context,
                             android.Manifest.permission.POST_NOTIFICATIONS
                         ) == PackageManager.PERMISSION_GRANTED
@@ -379,19 +459,49 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         _showNotificationSettingsDialog.value = false
     }
 
+    fun requestNotificationPermissionFromExplanation() {
+        _showNotificationPermissionExplanationDialog.value = false
+        _showNotificationPermissionFallbackDialog.value = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            _requestNotificationPermission.value = _requestNotificationPermission.value + 1
+        }
+    }
+
+    fun useTileOnlyDetectionForNotificationFallback() {
+        _showNotificationPermissionExplanationDialog.value = false
+        _showNotificationPermissionFallbackDialog.value = false
+        fallbackBackgroundDetectionToTileOnly()
+    }
+
     fun onNotificationPermissionPermanentlyDenied() {
-        prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
-        _showNotificationSettingsDialog.value = true
+        _showNotificationPermissionFallbackDialog.value = true
     }
 
     fun onNotificationPermissionResult(granted: Boolean) {
         clearNotificationPermissionRequest()
         if (granted) {
+            _showNotificationPermissionFallbackDialog.value = false
             manageVpnMonitoringService()
+            manageNetworkMonitoringService()
         } else {
+            _showNotificationPermissionFallbackDialog.value = true
+        }
+    }
+
+    private fun fallbackBackgroundDetectionToTileOnly() {
+        if (
+            prefsManager.isVpnDetectionEnabled() &&
+            prefsManager.getVpnDetectionMode() == BACKGROUND_DETECTION
+        ) {
             prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
-            _permissionGrantStatus.value =
-                "Notification permission denied. Switched to tile-only VPN detection mode."
+            manageVpnMonitoringService()
+        }
+        if (
+            prefsManager.isNetworkTypeDetectionEnabled() &&
+            prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION
+        ) {
+            prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
+            manageNetworkMonitoringService()
         }
     }
 
@@ -409,7 +519,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
             if (enabled && mode == BACKGROUND_DETECTION) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val hasNotificationPermission =
-                        androidx.core.content.ContextCompat.checkSelfPermission(
+                        ContextCompat.checkSelfPermission(
                             context,
                             android.Manifest.permission.POST_NOTIFICATIONS
                         ) == PackageManager.PERMISSION_GRANTED

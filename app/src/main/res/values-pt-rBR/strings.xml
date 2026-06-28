@@ -25,6 +25,7 @@
     <string name="setting_title_private_dns">Tile de DNS Privado</string>
     <string name="setting_title_usb_debugging">Tile de Depuração USB</string>
     <string name="setting_desc_tile_cycles">Selecione os estados para o ciclo do tile:</string>
+    <string name="app_settings_title">Configurações</string>
     <string name="tab_title_dns">DNS Privado</string>
     <string name="tab_title_usb">Depuração USB</string>
 
@@ -44,6 +45,11 @@
     <string name="permission_grant_dialog_intro">Para alterar configurações do sistema como DNS Privado e Depuração USB, este app precisa da permissão especial WRITE_SECURE_SETTINGS. Escolha um método abaixo para concedê-la:</string>
     <string name="help_dialog_after_grant">Após conceder a permissão, reinicie o app ou abra novamente o painel de Configurações Rápidas para que os tiles funcionem.</string>
     <string name="help_button_desc">Ajuda / Conceder permissão</string>
+    <string name="app_menu_desc">Abrir menu do app</string>
+    <string name="navigate_back_desc">Voltar</string>
+    <string name="menu_settings">Configurações</string>
+    <string name="menu_permission_help">Configurar permissão</string>
+    <string name="menu_about">Sobre</string>
     <string name="button_open_developer_options">Abrir opções do desenvolvedor</string>
     <string name="dialog_close">Fechar</string>
 
@@ -93,7 +99,7 @@
     <string name="setting_require_unlock">Exigir desbloqueio do dispositivo para alternar</string>
     <string name="setting_require_unlock_desc">Quando ativado, o bloco solicitará que você desbloqueie o dispositivo antes de aplicar qualquer alteração.</string>
 
-    <string name="setting_also_hide_dev_options">Também ativar/desativar Opções do desenvolvedor</string> 
+    <string name="setting_also_hide_dev_options">Também ativar/desativar Opções do desenvolvedor</string>
     <string name="setting_also_hide_dev_options_desc">Quando ativado, ao ativar ou desativar a Depuração USB, as Opções do desenvolvedor também serão ativadas ou desativadas. Isso permite que o bloco funcione mesmo quando as Opções do desenvolvedor estiverem desativadas.</string>
     <string name="setting_also_disable_wireless_debugging">Também alternar Depuração sem fio</string>
     <string name="setting_also_disable_wireless_debugging_desc">Quando ativado, a Depuração sem fio também será alternada junto com a Depuração USB.</string>
@@ -119,6 +125,19 @@
     <string name="about_developer_title">Desenvolvedor</string>
     <string name="about_developer_info">Desenvolvido por RBN-Apps\nProjeto open source disponível no GitHub</string>
 
+    <!-- App Settings -->
+    <string name="settings_backup_title">Backup e restauração</string>
+    <string name="settings_backup_description">Exporte todas as configurações dos tiles, entradas DNS, preferências de automação e configuração de atalhos para um arquivo JSON. A restauração substitui as configurações atuais do app pelo backup selecionado.</string>
+    <string name="backup_export_button">Exportar backup</string>
+    <string name="backup_restore_button">Restaurar backup</string>
+    <string name="backup_restore_confirm_title">Restaurar backup?</string>
+    <string name="backup_restore_confirm_message">As configurações atuais do app serão substituídas pelo arquivo de backup selecionado.</string>
+    <string name="backup_restore_confirm_button">Restaurar</string>
+    <string name="backup_export_success">Backup exportado.</string>
+    <string name="backup_export_error">Falha ao exportar backup: %1$s</string>
+    <string name="backup_restore_success">Backup restaurado.</string>
+    <string name="backup_restore_error">Falha ao restaurar backup: %1$s</string>
+
     <!-- VPN Monitoring -->
     <string name="vpn_monitoring_channel_name">Monitoramento de VPN</string>
     <string name="vpn_monitoring_channel_description">Monitora conexões VPN para ajustar automaticamente o DNS Privado</string>
@@ -130,6 +149,13 @@
     <string name="network_monitoring_channel_name">Monitoramento de Tipo de Rede</string>
     <string name="network_monitoring_channel_description">Monitora mudanças no tipo de rede para ajustar automaticamente o DNS Privado</string>
     <string name="network_monitoring_notification_title">Monitoramento de rede ativo</string>
+    <string name="notification_permission_tile_only_fallback">A permissão de notificações foi negada. A detecção em segundo plano foi alterada para detecção apenas pelo tile, pois notificações são necessárias para o monitoramento em segundo plano.</string>
+    <string name="notification_permission_import_title">Permitir notificações para detecção em segundo plano?</string>
+    <string name="notification_permission_import_message">O backup importado ativa a detecção em segundo plano para mudanças de VPN ou tipo de rede. O Android exige permissão de notificações para que o app possa mostrar uma notificação persistente durante o monitoramento em segundo plano.</string>
+    <string name="notification_permission_fallback_title">Permissão de notificações necessária</string>
+    <string name="notification_permission_fallback_message">A detecção em segundo plano não pode funcionar sem permissão de notificações, pois o Android exige uma notificação para monitoramento em segundo plano. Você pode conceder a permissão agora ou usar a detecção apenas pelo tile.</string>
+    <string name="notification_permission_grant_button">Conceder permissão</string>
+    <string name="notification_permission_use_tile_only_button">Usar detecção apenas pelo tile</string>
     <string name="network_type_wifi">Conectado ao Wi-Fi</string>
     <string name="network_type_mobile">Conectado aos dados móveis</string>
     <string name="network_type_none">Sem conexão de rede</string>

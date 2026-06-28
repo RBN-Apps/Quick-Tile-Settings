@@ -26,6 +26,7 @@
     <string name="setting_title_private_dns">Özel DNS Kutucuğu</string>
     <string name="setting_title_usb_debugging">USB Hata Ayıklama Kutucuğu</string>
     <string name="setting_desc_tile_cycles">Kutucuk döngüsü için durumları seçin:</string>
+    <string name="app_settings_title">Ayarlar</string>
     <string name="tab_title_dns">Özel DNS</string>
     <string name="tab_title_usb">USB Hata Ayıklama</string>
 
@@ -45,6 +46,11 @@
     <string name="permission_grant_dialog_intro">Özel DNS ve USB Hata Ayıklama gibi sistem ayarlarını değiştirmek için bu uygulamanın özel WRITE_SECURE_SETTINGS iznine ihtiyacı var. Lütfen bu izni vermek için aşağıdaki yöntemlerden birini seçin:</string>
     <string name="help_dialog_after_grant">İzni verdikten sonra, kutucukların çalışması için uygulamayı yeniden başlatın veya Hızlı Ayarlar panelini tekrar açın.</string>
     <string name="help_button_desc">Yardım / İzin Ver</string>
+    <string name="app_menu_desc">Uygulama menüsünü aç</string>
+    <string name="navigate_back_desc">Geri</string>
+    <string name="menu_settings">Ayarlar</string>
+    <string name="menu_permission_help">İzin Kurulumu</string>
+    <string name="menu_about">Hakkında</string>
     <string name="button_open_developer_options">Geliştirici Seçeneklerini Aç</string>
     <string name="dialog_close">Kapat</string>
 
@@ -146,6 +152,19 @@
     <string name="about_developer_info">RBN-Apps tarafından geliştirildi\nGitHub\'da bulunan açık kaynaklı bir projedir</string>
     <string name="about_button_permission_help">İzin Kurulum Yardımı</string>
 
+    <!-- App Settings -->
+    <string name="settings_backup_title">Yedekleme ve Geri Yükleme</string>
+    <string name="settings_backup_description">Tüm kutucuk ayarlarını, DNS kayıtlarını, otomasyon tercihlerini ve kısayol yapılandırmasını bir JSON dosyasına aktarın. Geri yükleme, mevcut uygulama ayarlarını seçilen yedekle değiştirir.</string>
+    <string name="backup_export_button">Yedeği dışa aktar</string>
+    <string name="backup_restore_button">Yedeği geri yükle</string>
+    <string name="backup_restore_confirm_title">Yedek geri yüklensin mi?</string>
+    <string name="backup_restore_confirm_message">Mevcut uygulama ayarları seçilen yedek dosyasıyla değiştirilecek.</string>
+    <string name="backup_restore_confirm_button">Geri yükle</string>
+    <string name="backup_export_success">Yedek dışa aktarıldı.</string>
+    <string name="backup_export_error">Yedek dışa aktarılamadı: %1$s</string>
+    <string name="backup_restore_success">Yedek geri yüklendi.</string>
+    <string name="backup_restore_error">Yedek geri yüklenemedi: %1$s</string>
+
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">VPN bağlantılarında DNS\'i otomatik olarak devre dışı bırak</string>
     <string name="setting_vpn_detection_mode">VPN Algılama Modu:</string>
@@ -166,4 +185,11 @@
     <string name="notification_permission_dialog_message">Arka planda VPN izleme için bildirim almak üzere, uygulama ayarlarından bu izni etkinleştirmeniz gerekir.\n\nİzni verdikten sonra, bildirimleri buradan etkinleştirebilirsiniz.</string>
     <string name="notification_permission_dialog_settings_button">Ayarlar</string>
     <string name="notification_permission_dialog_settings_description">Ayarları aç</string>
+    <string name="notification_permission_tile_only_fallback">Bildirim izni reddedildi. Arka plan izleme için bildirim gerektiğinden arka plan algılama yalnızca kutucuk algılamasına geçirildi.</string>
+    <string name="notification_permission_import_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
+    <string name="notification_permission_import_message">İçe aktarılan yedek, VPN veya ağ türü değişiklikleri için arka plan algılamayı etkinleştiriyor. Android, arka planda izleme yapılırken uygulamanın kalıcı bir bildirim göstermesi için bildirim izni gerektirir.</string>
+    <string name="notification_permission_fallback_title">Bildirim izni gerekli</string>
+    <string name="notification_permission_fallback_message">Arka plan algılama, bildirim izni olmadan çalışamaz çünkü Android arka plan izleme için bildirim gerektirir. İzni şimdi verebilir veya bunun yerine yalnızca kutucuk algılamasını kullanabilirsiniz.</string>
+    <string name="notification_permission_grant_button">İzin ver</string>
+    <string name="notification_permission_use_tile_only_button">Yalnızca kutucuk algılamasını kullan</string>
 </resources>
