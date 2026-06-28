@@ -179,9 +179,7 @@ fun MainScreen(
             if (isShortcutSettingsVisible) {
                 ShortcutSettingsScreen(
                     viewModel = viewModel,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 )
             } else {
                 MainTilesContent(
@@ -284,9 +282,12 @@ private fun MainTilesContent(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = modifier) {
         if (!hasWriteSecureSettings) {
-            PermissionWarningCard(onGrantPermissionClick = onShowPermissionDialog)
+            PermissionWarningCard(
+                onGrantPermissionClick = onShowPermissionDialog,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
 
         SecondaryTabRow(selectedTabIndex = pagerState.currentPage) {
@@ -307,7 +308,7 @@ private fun MainTilesContent(
             state = pagerState,
             modifier = Modifier.weight(1f)
         ) { page ->
-            Column(modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp)) {
+            Column(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
                 when (page) {
                     0 -> DnsSettingsCard(viewModel = viewModel)
                     1 -> UsbDebuggingSettingsCard(
@@ -321,9 +322,12 @@ private fun MainTilesContent(
 }
 
 @Composable
-fun PermissionWarningCard(onGrantPermissionClick: () -> Unit) {
+fun PermissionWarningCard(
+    onGrantPermissionClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),

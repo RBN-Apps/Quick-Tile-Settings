@@ -86,9 +86,10 @@ fun ShortcutSettingsScreen(
 
     Column(
         modifier = modifier
-            .padding(top = 8.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -197,6 +198,9 @@ fun ShortcutSettingsScreen(
     if (showShortcutLimitReachedDialog.value) {
         AlertDialog(
             onDismissRequest = dismissShortcutLimitDialog,
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
             title = { Text(text = stringResource(R.string.shortcut_settings_limit_reached_title)) },
             text = { Text(text = stringResource(R.string.shortcut_settings_limit_reached)) },
             confirmButton = {
@@ -210,6 +214,9 @@ fun ShortcutSettingsScreen(
     if (showFavoriteLimitReachedDialog.value) {
         AlertDialog(
             onDismissRequest = dismissFavoriteLimitDialog,
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
             title = { Text(text = stringResource(R.string.shortcut_settings_favorite_limit_reached_title)) },
             text = { Text(text = stringResource(R.string.shortcut_settings_favorite_limit_reached)) },
             confirmButton = {
@@ -223,6 +230,9 @@ fun ShortcutSettingsScreen(
     if (showPinnedShortcutInfoDialog.value) {
         AlertDialog(
             onDismissRequest = { showPinnedShortcutInfoDialog.value = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
             title = { Text(text = stringResource(R.string.shortcut_settings_allow_pinned_when_disabled)) },
             text = { Text(text = stringResource(R.string.shortcut_settings_allow_pinned_when_disabled_desc)) },
             confirmButton = {
@@ -236,6 +246,9 @@ fun ShortcutSettingsScreen(
     if (showPinnedShortcutWarningDialog.value) {
         AlertDialog(
             onDismissRequest = { showPinnedShortcutWarningDialog.value = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
             title = { Text(text = stringResource(R.string.shortcut_settings_allow_pinned_warning_title)) },
             text = { Text(text = stringResource(R.string.shortcut_settings_allow_pinned_warning_message)) },
             confirmButton = {

@@ -64,7 +64,7 @@
     <string name="github_releases_link_text">Download latest release from GitHub</string>
     <string name="github_releases_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings/releases</string>
     <string name="github_repo_url" translatable="false">https://github.com/RBN-Apps/Quick-Tile-Settings</string>
-    <string name="fdroid_app_url" translatable="false">https://f-droid.org/de/packages/com.rbn.qtsettings/</string>
+    <string name="fdroid_app_url" translatable="false">https://f-droid.org/packages/com.rbn.qtsettings/</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->

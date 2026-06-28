@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,8 +46,10 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(contentColor = MaterialTheme.colorScheme.onSurface)
     ) {
+        val contentColor = LocalContentColor.current
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = stringResource(R.string.setting_title_usb_debugging),
@@ -156,8 +159,8 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                     Text(
                         text = stringResource(R.string.setting_enable_auto_revert),
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (isDevOptionsEnabled || alsoHideDevOptions) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.38f
+                        color = contentColor.copy(
+                            alpha = if (isDevOptionsEnabled || alsoHideDevOptions) 1f else 0.38f
                         )
                     )
                 }
@@ -171,8 +174,10 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                         text = stringResource(R.string.setting_auto_revert_delay),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.weight(1f),
-                        color = if (enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.38f
+                        color = contentColor.copy(
+                            alpha = if (
+                                enableAutoRevert && (isDevOptionsEnabled || alsoHideDevOptions)
+                            ) 1f else 0.38f
                         )
                     )
                     OutlinedTextField(

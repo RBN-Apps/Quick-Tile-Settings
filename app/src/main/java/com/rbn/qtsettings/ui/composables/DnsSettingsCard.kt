@@ -27,6 +27,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -80,8 +81,10 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(contentColor = MaterialTheme.colorScheme.onSurface)
     ) {
+        val contentColor = LocalContentColor.current
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = stringResource(R.string.setting_title_private_dns),
@@ -135,7 +138,10 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                     onClick = { viewModel.startAddingNewHostname() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
+                        .padding(top = 8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Icon(
                         Icons.Filled.Add,
@@ -447,10 +453,9 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         text = stringResource(R.string.setting_auto_revert_delay),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.weight(1f),
-                        color = if (enableAutoRevert)
-                            MaterialTheme.colorScheme.onSurface
-                        else
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        color = contentColor.copy(
+                            alpha = if (enableAutoRevert) 1f else 0.38f
+                        )
                     )
                     OutlinedTextField(
                         value = autoRevertDelay.toString(),
@@ -591,6 +596,9 @@ fun DnsHostnameEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         title = {
             Text(
                 if (entry == null) stringResource(R.string.dns_add_hostname_title) else stringResource(
@@ -659,6 +667,9 @@ fun ConfirmDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         title = { Text(stringResource(id = R.string.confirm_delete_hostname_title)) },
         text = {
             Text(
@@ -691,6 +702,9 @@ fun ConfirmDeleteDialog(
 fun DnsInfoDialog(entry: DnsHostnameEntry, onDismissRequest: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         title = { Text(stringResource(R.string.dns_info_dialog_title, entry.name)) },
         text = {
             entry.descriptionResId?.let {
@@ -718,7 +732,10 @@ fun DnsStateSelector(
     Column(modifier = modifier.fillMaxWidth()) {
         OutlinedButton(
             onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
         ) {
             Text(
                 text = when (dnsState) {
@@ -781,6 +798,9 @@ fun DnsStateSelector(
 fun NetworkTypeInfoDialog(onDismissRequest: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         title = { Text(stringResource(R.string.network_type_info_title)) },
         text = {
             Text(stringResource(R.string.network_type_info_message))

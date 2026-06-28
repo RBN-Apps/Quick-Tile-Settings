@@ -83,6 +83,9 @@ fun PermissionGrantDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         title = { Text(text = stringResource(R.string.permission_grant_dialog_title)) },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -136,7 +139,10 @@ fun PermissionGrantDialog(
                                                 } catch (_: Exception) {
                                                 }
                                             },
-                                            modifier = Modifier.weight(1f)
+                                            modifier = Modifier.weight(1f),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            )
                                         ) {
                                             Text(stringResource(R.string.button_open_shizuku_play_store_short))
                                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
@@ -153,7 +159,10 @@ fun PermissionGrantDialog(
                                                 } catch (_: Exception) {
                                                 }
                                             },
-                                            modifier = Modifier.weight(1f)
+                                            modifier = Modifier.weight(1f),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            )
                                         ) {
                                             Text(stringResource(R.string.button_open_shizuku_github_short))
                                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
@@ -215,7 +224,10 @@ fun PermissionGrantDialog(
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
                     onClick = onOpenDeveloperOptions,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Icon(
                         Icons.Default.DeveloperMode,
