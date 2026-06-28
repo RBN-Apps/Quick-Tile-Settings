@@ -52,6 +52,9 @@ fun AboutDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         icon = {
             Icon(
                 Icons.Default.Info,
@@ -73,9 +76,9 @@ fun AboutDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = stringResource(R.string.about_version, versionName!!),
+                    text = stringResource(R.string.about_version, versionName ?: "Unknown"),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
 
@@ -152,7 +155,10 @@ fun AboutDialog(
                             } catch (_: Exception) {
                             }
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
                         Text(
                             text = stringResource(R.string.about_button_github),
@@ -173,7 +179,10 @@ fun AboutDialog(
                             } catch (_: Exception) {
                             }
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
                         Text(
                             text = stringResource(R.string.about_button_fdroid),
@@ -192,7 +201,10 @@ fun AboutDialog(
 
                 OutlinedButton(
                     onClick = onOpenPermissionDialog,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Text(stringResource(R.string.about_button_permission_help))
                 }

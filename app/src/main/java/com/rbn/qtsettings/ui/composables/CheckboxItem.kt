@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ fun CheckboxItem(
     enabled: Boolean = true
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val contentColor = LocalContentColor.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -48,9 +50,7 @@ fun CheckboxItem(
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
-            color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
-                alpha = 0.38f
-            )
+            color = contentColor.copy(alpha = if (enabled) 1f else 0.38f)
         )
     }
 }

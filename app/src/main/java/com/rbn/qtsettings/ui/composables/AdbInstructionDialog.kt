@@ -47,6 +47,9 @@ fun AdbInstructionDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         title = { Text(text = stringResource(R.string.adb_instructions_title)) },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -146,7 +149,7 @@ fun AdbInstructionDialog(
                 Text(
                     text = annotatedString,
                     style = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = Modifier.padding(top = 6.dp)
                 )
