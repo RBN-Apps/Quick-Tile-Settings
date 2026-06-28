@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.rbn.qtsettings"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.rbn.qtsettings"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 7
         versionName = "1.2.0"
 
@@ -25,6 +25,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
