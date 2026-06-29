@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.rbn.qtsettings.utils.PermissionUtils
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,6 +33,11 @@ private const val TAG = "QuickTileSettingsTest"
 private const val TAG_NETWORK_TYPE_DETECTION_TILE_OPTION = "network_type_detection_tile_only_option"
 private const val TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION =
     "network_type_detection_background_option"
+private const val TAG_NETWORK_TYPE_DETECTION_TOGGLE = "network_type_detection_toggle"
+private const val TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL =
+    "network_type_detection_wifi_state_label"
+private const val TAG_NETWORK_TYPE_DETECTION_MOBILE_STATE_LABEL =
+    "network_type_detection_mobile_state_label"
 
 @RunWith(AndroidJUnit4::class)
 class QuickTileSettingsInstrumentedTest {
@@ -497,19 +503,36 @@ class QuickTileSettingsInstrumentedTest {
         // Scroll to Network Type Detection checkbox
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
 
+        val networkTypeInitiallyEnabled = composeTestRule.onAllNodesWithText(
+            context.getString(R.string.setting_dns_state_on_wifi)
+        ).fetchSemanticsNodes().isNotEmpty()
+
+        if (networkTypeInitiallyEnabled) {
+            composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+                .performScrollTo()
+                .performClick()
+            composeTestRule.waitForIdle()
+        }
+
         // Click to enable Network Type Detection
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_network_type_detection_enabled))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+            .performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
 
         // Verify WiFi DNS state selector appears when enabled
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_wifi))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL)
+            .performScrollTo()
+            .assertIsDisplayed()
 
         // Verify Mobile DNS state selector appears when enabled
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_mobile))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_MOBILE_STATE_LABEL)
+            .performScrollTo()
+            .assertIsDisplayed()
 
         // Click to disable Network Type Detection
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_network_type_detection_enabled))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+            .performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
 

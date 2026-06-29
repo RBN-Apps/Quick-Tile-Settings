@@ -28,6 +28,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 private const val NOTIFICATION_PERMISSION_TEST_TAG = "NotificationPermissionTest"
+private const val TAG_NETWORK_TYPE_DETECTION_TOGGLE = "network_type_detection_toggle"
 private const val TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION =
     "network_type_detection_background_option"
 
@@ -82,9 +83,9 @@ class NotificationPermissionInstrumentedTest {
         ).fetchSemanticsNodes().isNotEmpty()
 
         if (!networkTypeAlreadyEnabled) {
-            composeTestRule.onNodeWithText(
-                context.getString(R.string.setting_network_type_detection_enabled)
-            ).performClick()
+            composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+                .performScrollTo()
+                .performClick()
             composeTestRule.waitForIdle()
         }
     }
@@ -95,9 +96,9 @@ class NotificationPermissionInstrumentedTest {
         ).fetchSemanticsNodes().isNotEmpty()
 
         if (networkTypeEnabled) {
-            composeTestRule.onNodeWithText(
-                context.getString(R.string.setting_network_type_detection_enabled)
-            ).performClick()
+            composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+                .performScrollTo()
+                .performClick()
             composeTestRule.waitForIdle()
         }
     }
