@@ -194,12 +194,17 @@
     <string name="notification_permission_dialog_settings_button">Nastavení</string>
     <string name="notification_permission_dialog_settings_description">Otevřít nastavení</string>
     <string name="notification_permission_tile_only_fallback">Oprávnění k oznámením bylo zamítnuto. Detekce na pozadí byla přepnuta na detekci pouze přes dlaždici, protože sledování na pozadí vyžaduje oznámení.</string>
+    <string name="notification_permission_background_title">Povolit oznámení pro detekci na pozadí?</string>
+    <string name="notification_permission_background_message">Detekce na pozadí potřebuje oprávnění k oznámením, protože Android vyžaduje, aby aplikace při sledování na pozadí zobrazovala trvalé oznámení.</string>
     <string name="notification_permission_import_title">Povolit oznámení pro detekci na pozadí?</string>
     <string name="notification_permission_import_message">Importovaná záloha zapíná detekci změn VPN nebo typu sítě na pozadí. Android vyžaduje oprávnění k oznámením, aby aplikace mohla při sledování na pozadí zobrazovat trvalé oznámení.</string>
     <string name="notification_permission_fallback_title">Je potřeba oprávnění k oznámením</string>
     <string name="notification_permission_fallback_message">Detekce na pozadí nemůže fungovat bez oprávnění k oznámením, protože Android pro sledování na pozadí vyžaduje oznámení. Můžeš oprávnění udělit teď nebo místo toho použít detekci pouze přes dlaždici.</string>
     <string name="notification_permission_grant_button">Udělit oprávnění</string>
     <string name="notification_permission_use_tile_only_button">Použít detekci přes dlaždici</string>
+    <string name="notification_permission_settings_title">Je potřeba oprávnění k oznámením</string>
+    <string name="notification_permission_settings_message">Android už nezobrazuje žádost o oprávnění k oznámením. Otevři nastavení oznámení této aplikace a povol oznámení tam, nebo použij detekci pouze přes dlaždici.</string>
+    <string name="notification_permission_settings_button">Otevřít nastavení</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Automaticky přepínat DNS podle typu sítě</string>

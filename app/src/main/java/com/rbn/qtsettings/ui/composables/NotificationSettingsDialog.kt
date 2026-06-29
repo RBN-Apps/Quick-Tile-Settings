@@ -65,6 +65,7 @@ fun NotificationSettingsDialog(
 
 @Composable
 fun NotificationPermissionExplanationDialog(
+    fromBackup: Boolean,
     onGrantPermission: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -73,8 +74,28 @@ fun NotificationPermissionExplanationDialog(
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
-        title = { Text(stringResource(R.string.notification_permission_import_title)) },
-        text = { Text(stringResource(R.string.notification_permission_import_message)) },
+        title = {
+            Text(
+                stringResource(
+                    if (fromBackup) {
+                        R.string.notification_permission_import_title
+                    } else {
+                        R.string.notification_permission_background_title
+                    }
+                )
+            )
+        },
+        text = {
+            Text(
+                stringResource(
+                    if (fromBackup) {
+                        R.string.notification_permission_import_message
+                    } else {
+                        R.string.notification_permission_background_message
+                    }
+                )
+            )
+        },
         confirmButton = {
             Button(onClick = onGrantPermission) {
                 Text(stringResource(R.string.notification_permission_grant_button))
@@ -103,6 +124,47 @@ fun NotificationPermissionFallbackDialog(
         confirmButton = {
             Button(onClick = onGrantPermission) {
                 Text(stringResource(R.string.notification_permission_grant_button))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onUseTileOnly) {
+                Text(stringResource(R.string.notification_permission_use_tile_only_button))
+            }
+        }
+    )
+}
+
+@Composable
+fun NotificationPermissionSettingsDialog(
+    onOpenSettings: () -> Unit,
+    onUseTileOnly: () -> Unit
+) {
+    val context = LocalContext.current
+
+    AlertDialog(
+        onDismissRequest = onUseTileOnly,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        title = { Text(stringResource(R.string.notification_permission_settings_title)) },
+        text = { Text(stringResource(R.string.notification_permission_settings_message)) },
+        confirmButton = {
+            Button(onClick = {
+                onOpenSettings()
+                openNotificationSettings(context)
+            }) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.notification_permission_settings_button),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = stringResource(R.string.notification_permission_dialog_settings_description)
+                    )
+                }
             }
         },
         dismissButton = {

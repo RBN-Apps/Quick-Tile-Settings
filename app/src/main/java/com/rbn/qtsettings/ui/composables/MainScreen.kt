@@ -367,8 +367,11 @@ fun MainScreen(
 
     val showNotificationPermissionExplanationDialog by
         viewModel.showNotificationPermissionExplanationDialog.collectAsState()
+    val notificationPermissionExplanationFromBackup by
+        viewModel.notificationPermissionExplanationFromBackup.collectAsState()
     if (showNotificationPermissionExplanationDialog) {
         NotificationPermissionExplanationDialog(
+            fromBackup = notificationPermissionExplanationFromBackup,
             onGrantPermission = { viewModel.requestNotificationPermissionFromExplanation() },
             onDismiss = { viewModel.useTileOnlyDetectionForNotificationFallback() }
         )
@@ -379,6 +382,15 @@ fun MainScreen(
     if (showNotificationPermissionFallbackDialog) {
         NotificationPermissionFallbackDialog(
             onGrantPermission = { viewModel.requestNotificationPermissionFromExplanation() },
+            onUseTileOnly = { viewModel.useTileOnlyDetectionForNotificationFallback() }
+        )
+    }
+
+    val showNotificationPermissionSettingsDialog by
+        viewModel.showNotificationPermissionSettingsDialog.collectAsState()
+    if (showNotificationPermissionSettingsDialog) {
+        NotificationPermissionSettingsDialog(
+            onOpenSettings = { viewModel.openNotificationPermissionSettings() },
             onUseTileOnly = { viewModel.useTileOnlyDetectionForNotificationFallback() }
         )
     }

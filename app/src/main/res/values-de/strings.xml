@@ -194,12 +194,17 @@
     <string name="notification_permission_dialog_settings_button">Einstellungen</string>
     <string name="notification_permission_dialog_settings_description">Einstellungen öffnen</string>
     <string name="notification_permission_tile_only_fallback">Die Benachrichtigungsberechtigung wurde abgelehnt. Die Hintergrunderkennung wurde auf Tile-only-Erkennung umgestellt, da für die Hintergrundüberwachung Benachrichtigungen erforderlich sind.</string>
+    <string name="notification_permission_background_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
+    <string name="notification_permission_background_message">Die Hintergrunderkennung benötigt die Benachrichtigungsberechtigung, weil Android verlangt, dass die App während der Hintergrundüberwachung eine dauerhafte Benachrichtigung anzeigt.</string>
     <string name="notification_permission_import_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
     <string name="notification_permission_import_message">Das importierte Backup aktiviert die Hintergrunderkennung für VPN- oder Netzwerktyp-Änderungen. Android verlangt dafür die Benachrichtigungsberechtigung, damit die App während der Hintergrundüberwachung eine dauerhafte Benachrichtigung anzeigen kann.</string>
     <string name="notification_permission_fallback_title">Benachrichtigungsberechtigung benötigt</string>
     <string name="notification_permission_fallback_message">Die Hintergrunderkennung kann ohne Benachrichtigungsberechtigung nicht laufen, weil Android für die Hintergrundüberwachung eine Benachrichtigung verlangt. Du kannst die Berechtigung jetzt erteilen oder stattdessen die Tile-only-Erkennung verwenden.</string>
     <string name="notification_permission_grant_button">Berechtigung erteilen</string>
     <string name="notification_permission_use_tile_only_button">Tile-only-Erkennung verwenden</string>
+    <string name="notification_permission_settings_title">Benachrichtigungen benötigen Berechtigung</string>
+    <string name="notification_permission_settings_message">Android zeigt die Berechtigungsabfrage für Benachrichtigungen nicht mehr an. Öffne die Benachrichtigungseinstellungen dieser App und erlaube Benachrichtigungen dort, oder verwende stattdessen die Tile-only-Erkennung.</string>
+    <string name="notification_permission_settings_button">Einstellungen öffnen</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">DNS je nach Netzwerktyp automatisch umschalten</string>

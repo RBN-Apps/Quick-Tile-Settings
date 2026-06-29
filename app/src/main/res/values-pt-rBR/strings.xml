@@ -150,12 +150,17 @@
     <string name="network_monitoring_channel_description">Monitora mudanças no tipo de rede para ajustar automaticamente o DNS Privado</string>
     <string name="network_monitoring_notification_title">Monitoramento de rede ativo</string>
     <string name="notification_permission_tile_only_fallback">A permissão de notificações foi negada. A detecção em segundo plano foi alterada para detecção apenas pelo tile, pois notificações são necessárias para o monitoramento em segundo plano.</string>
+    <string name="notification_permission_background_title">Permitir notificações para detecção em segundo plano?</string>
+    <string name="notification_permission_background_message">A detecção em segundo plano precisa da permissão de notificações porque o Android exige que o app mostre uma notificação persistente durante o monitoramento em segundo plano.</string>
     <string name="notification_permission_import_title">Permitir notificações para detecção em segundo plano?</string>
     <string name="notification_permission_import_message">O backup importado ativa a detecção em segundo plano para mudanças de VPN ou tipo de rede. O Android exige permissão de notificações para que o app possa mostrar uma notificação persistente durante o monitoramento em segundo plano.</string>
     <string name="notification_permission_fallback_title">Permissão de notificações necessária</string>
     <string name="notification_permission_fallback_message">A detecção em segundo plano não pode funcionar sem permissão de notificações, pois o Android exige uma notificação para monitoramento em segundo plano. Você pode conceder a permissão agora ou usar a detecção apenas pelo tile.</string>
     <string name="notification_permission_grant_button">Conceder permissão</string>
     <string name="notification_permission_use_tile_only_button">Usar detecção apenas pelo tile</string>
+    <string name="notification_permission_settings_title">Permissão de notificações necessária</string>
+    <string name="notification_permission_settings_message">O Android não está mais exibindo a solicitação de permissão de notificações. Abra as configurações de notificação deste app e permita as notificações lá, ou use a detecção apenas pelo tile.</string>
+    <string name="notification_permission_settings_button">Abrir configurações</string>
     <string name="network_type_wifi">Conectado ao Wi-Fi</string>
     <string name="network_type_mobile">Conectado aos dados móveis</string>
     <string name="network_type_none">Sem conexão de rede</string>

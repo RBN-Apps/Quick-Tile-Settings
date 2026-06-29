@@ -101,8 +101,20 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val showNotificationPermissionFallbackDialog =
         _showNotificationPermissionFallbackDialog.asStateFlow()
 
+    private val _showNotificationPermissionSettingsDialog = MutableStateFlow(false)
+    val showNotificationPermissionSettingsDialog =
+        _showNotificationPermissionSettingsDialog.asStateFlow()
+
+    private val _notificationPermissionExplanationFromBackup = MutableStateFlow(false)
+    val notificationPermissionExplanationFromBackup =
+        _notificationPermissionExplanationFromBackup.asStateFlow()
+
     private val _backupStatusMessage = MutableStateFlow<String?>(null)
     val backupStatusMessage = _backupStatusMessage.asStateFlow()
+
+    private var pendingVpnDetectionMode: String? = null
+    private var pendingNetworkTypeDetectionMode: String? = null
+    private var awaitingNotificationSettingsResult = false
 
 
     fun setDnsToggleOff(enabled: Boolean) = prefsManager.setDnsToggleOff(enabled)
@@ -139,7 +151,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
                     ) == PackageManager.PERMISSION_GRANTED
 
                 if (!hasNotificationPermission) {
-                    handleMissingNotificationPermission()
+                    pendingVpnDetectionMode = mode
+                    handleMissingNotificationPermission(fromBackup = false)
                     return
                 }
             }
@@ -165,7 +178,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
                     ) == PackageManager.PERMISSION_GRANTED
 
                 if (!hasNotificationPermission) {
-                    handleMissingNotificationPermission()
+                    pendingNetworkTypeDetectionMode = mode
+                    handleMissingNotificationPermission(fromBackup = false)
                     return
                 }
             }
@@ -216,7 +230,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
                 prefsManager.restoreSettingsBackupJson(json)
                 if (needsNotificationPermissionForBackgroundDetection(appContext)) {
-                    handleMissingNotificationPermission()
+                    handleMissingNotificationPermission(fromBackup = true)
                 } else {
                     manageVpnMonitoringService()
                     manageNetworkMonitoringService()
@@ -255,8 +269,9 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         _backupStatusMessage.value = null
     }
 
-    private fun handleMissingNotificationPermission() {
+    private fun handleMissingNotificationPermission(fromBackup: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            _notificationPermissionExplanationFromBackup.value = fromBackup
             _showNotificationPermissionExplanationDialog.value = true
         }
     }
@@ -462,6 +477,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun requestNotificationPermissionFromExplanation() {
         _showNotificationPermissionExplanationDialog.value = false
         _showNotificationPermissionFallbackDialog.value = false
+        _showNotificationPermissionSettingsDialog.value = false
+        awaitingNotificationSettingsResult = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             _requestNotificationPermission.value = _requestNotificationPermission.value + 1
         }
@@ -470,22 +487,64 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun useTileOnlyDetectionForNotificationFallback() {
         _showNotificationPermissionExplanationDialog.value = false
         _showNotificationPermissionFallbackDialog.value = false
+        _showNotificationPermissionSettingsDialog.value = false
+        pendingVpnDetectionMode = null
+        pendingNetworkTypeDetectionMode = null
+        awaitingNotificationSettingsResult = false
         fallbackBackgroundDetectionToTileOnly()
     }
 
+    fun openNotificationPermissionSettings() {
+        clearNotificationPermissionRequest()
+        _showNotificationPermissionFallbackDialog.value = false
+        _showNotificationPermissionSettingsDialog.value = false
+        awaitingNotificationSettingsResult = true
+    }
+
     fun onNotificationPermissionPermanentlyDenied() {
-        _showNotificationPermissionFallbackDialog.value = true
+        clearNotificationPermissionRequest()
+        _showNotificationPermissionFallbackDialog.value = false
+        _showNotificationPermissionSettingsDialog.value = true
     }
 
     fun onNotificationPermissionResult(granted: Boolean) {
         clearNotificationPermissionRequest()
         if (granted) {
             _showNotificationPermissionFallbackDialog.value = false
+            _showNotificationPermissionSettingsDialog.value = false
+            awaitingNotificationSettingsResult = false
+            applyPendingNotificationPermissionChanges()
             manageVpnMonitoringService()
             manageNetworkMonitoringService()
         } else {
             _showNotificationPermissionFallbackDialog.value = true
         }
+    }
+
+    fun refreshNotificationPermissionAfterSettings(context: Context) {
+        if (!awaitingNotificationSettingsResult) return
+
+        if (hasNotificationPermission(context.applicationContext)) {
+            _showNotificationPermissionSettingsDialog.value = false
+            awaitingNotificationSettingsResult = false
+            applyPendingNotificationPermissionChanges()
+            manageVpnMonitoringService()
+            manageNetworkMonitoringService()
+        } else {
+            _showNotificationPermissionSettingsDialog.value = true
+        }
+    }
+
+    private fun applyPendingNotificationPermissionChanges() {
+        pendingVpnDetectionMode?.let { mode ->
+            prefsManager.setVpnDetectionMode(mode)
+        }
+        pendingVpnDetectionMode = null
+
+        pendingNetworkTypeDetectionMode?.let { mode ->
+            prefsManager.setNetworkTypeDetectionMode(mode)
+        }
+        pendingNetworkTypeDetectionMode = null
     }
 
     private fun fallbackBackgroundDetectionToTileOnly() {

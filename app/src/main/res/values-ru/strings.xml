@@ -194,12 +194,17 @@
     <string name="notification_permission_dialog_settings_button">Настройки</string>
     <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
     <string name="notification_permission_tile_only_fallback">Разрешение на уведомления отклонено. Фоновое обнаружение переключено на режим только плитки, потому что для фонового мониторинга требуются уведомления.</string>
+    <string name="notification_permission_background_title">Разрешить уведомления для фонового обнаружения?</string>
+    <string name="notification_permission_background_message">Для фонового обнаружения требуется разрешение на уведомления, потому что Android требует, чтобы приложение показывало постоянное уведомление во время фонового мониторинга.</string>
     <string name="notification_permission_import_title">Разрешить уведомления для фонового обнаружения?</string>
     <string name="notification_permission_import_message">Импортированная резервная копия включает фоновое обнаружение изменений VPN или типа сети. Android требует разрешение на уведомления, чтобы приложение могло показывать постоянное уведомление во время фонового мониторинга.</string>
     <string name="notification_permission_fallback_title">Требуется разрешение на уведомления</string>
     <string name="notification_permission_fallback_message">Фоновое обнаружение не может работать без разрешения на уведомления, потому что Android требует уведомление для фонового мониторинга. Вы можете предоставить разрешение сейчас или использовать обнаружение только через плитку.</string>
     <string name="notification_permission_grant_button">Предоставить разрешение</string>
     <string name="notification_permission_use_tile_only_button">Использовать режим только плитки</string>
+    <string name="notification_permission_settings_title">Требуется разрешение на уведомления</string>
+    <string name="notification_permission_settings_message">Android больше не показывает запрос разрешения на уведомления. Откройте настройки уведомлений этого приложения и разрешите уведомления там или используйте обнаружение только через плитку.</string>
+    <string name="notification_permission_settings_button">Открыть настройки</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Авто-переключение DNS по типу сети</string>

@@ -22,6 +22,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import java.time.Instant
@@ -476,7 +477,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun onNotificationPermissionPermanentlyDenied_whenCalled_thenShowsFallbackDialog() {
+    fun onNotificationPermissionPermanentlyDenied_whenCalled_thenShowsSettingsDialog() {
         prefsManager.setVpnDetectionEnabled(true)
         prefsManager.setVpnDetectionMode(BACKGROUND_DETECTION)
         prefsManager.setNetworkTypeDetectionEnabled(true)
@@ -486,7 +487,8 @@ class MainViewModelTest {
 
         assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
         assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertTrue(viewModel.showNotificationPermissionFallbackDialog.value)
+        assertFalse(viewModel.showNotificationPermissionFallbackDialog.value)
+        assertTrue(viewModel.showNotificationPermissionSettingsDialog.value)
     }
 
     @Test
@@ -502,17 +504,51 @@ class MainViewModelTest {
         assertEquals(TILE_ONLY_DETECTION, viewModel.vpnDetectionMode.value)
         assertEquals(TILE_ONLY_DETECTION, viewModel.networkTypeDetectionMode.value)
         assertFalse(viewModel.showNotificationPermissionFallbackDialog.value)
+        assertFalse(viewModel.showNotificationPermissionSettingsDialog.value)
     }
 
     @Test
-    fun onNotificationPermissionPermanentlyDenied_whenCalled_thenSwitchesToTileOnlyAndShowsDialog() {
+    fun onNotificationPermissionPermanentlyDenied_whenCalled_thenShowsSettingsDialogWithoutFallback() {
         prefsManager.setVpnDetectionEnabled(true)
         prefsManager.setVpnDetectionMode(BACKGROUND_DETECTION)
 
         viewModel.onNotificationPermissionPermanentlyDenied()
 
         assertEquals(BACKGROUND_DETECTION, prefsManager.getVpnDetectionMode())
-        assertTrue(viewModel.showNotificationPermissionFallbackDialog.value)
+        assertFalse(viewModel.showNotificationPermissionFallbackDialog.value)
+        assertTrue(viewModel.showNotificationPermissionSettingsDialog.value)
+    }
+
+    @Test
+    fun openNotificationPermissionSettings_whenCalled_thenDoesNotFallbackToTileOnly() {
+        prefsManager.setVpnDetectionEnabled(true)
+        prefsManager.setVpnDetectionMode(BACKGROUND_DETECTION)
+        prefsManager.setNetworkTypeDetectionEnabled(true)
+        prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        viewModel.onNotificationPermissionPermanentlyDenied()
+
+        viewModel.openNotificationPermissionSettings()
+
+        assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
+        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
+        assertFalse(viewModel.showNotificationPermissionSettingsDialog.value)
+    }
+
+    @Test
+    @Config(sdk = [33])
+    fun setVpnDetectionMode_whenNotificationPermissionMissing_thenShowsManualExplanationAndAppliesAfterGrant() {
+        prefsManager.setVpnDetectionEnabled(true)
+        prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
+
+        viewModel.setVpnDetectionMode(BACKGROUND_DETECTION)
+
+        assertEquals(TILE_ONLY_DETECTION, viewModel.vpnDetectionMode.value)
+        assertTrue(viewModel.showNotificationPermissionExplanationDialog.value)
+        assertFalse(viewModel.notificationPermissionExplanationFromBackup.value)
+
+        viewModel.onNotificationPermissionResult(granted = true)
+
+        assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
     }
 
     @Test

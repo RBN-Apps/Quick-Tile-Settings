@@ -190,12 +190,17 @@
     <string name="notification_permission_dialog_settings_button">Paramètres</string>
     <string name="notification_permission_dialog_settings_description">Ouvrir les paramètres</string>
     <string name="notification_permission_tile_only_fallback">La permission de notification a été refusée. La détection en arrière-plan est passée à la détection uniquement via la tuile, car les notifications sont requises pour la surveillance en arrière-plan.</string>
+    <string name="notification_permission_background_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
+    <string name="notification_permission_background_message">La détection en arrière-plan nécessite l\'autorisation de notification, car Android exige que l’application affiche une notification persistante pendant la surveillance en arrière-plan.</string>
     <string name="notification_permission_import_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
     <string name="notification_permission_import_message">La sauvegarde importée active la détection en arrière-plan des changements de VPN ou de type de réseau. Android exige la permission de notification pour que l’application puisse afficher une notification persistante pendant la surveillance en arrière-plan.</string>
     <string name="notification_permission_fallback_title">Permission de notification requise</string>
     <string name="notification_permission_fallback_message">La détection en arrière-plan ne peut pas fonctionner sans permission de notification, car Android exige une notification pour la surveillance en arrière-plan. Vous pouvez accorder la permission maintenant ou utiliser la détection uniquement via la tuile.</string>
     <string name="notification_permission_grant_button">Accorder la permission</string>
     <string name="notification_permission_use_tile_only_button">Utiliser la détection via la tuile</string>
+    <string name="notification_permission_settings_title">Autorisation de notification requise</string>
+    <string name="notification_permission_settings_message">Android n\'affiche plus la demande d\'autorisation de notification. Ouvrez les paramètres de notification de cette application et autorisez les notifications, ou utilisez la détection via la tuile.</string>
+    <string name="notification_permission_settings_button">Ouvrir les paramètres</string>
 
     <!--  Network Type Detection Settings  -->
     <string name="setting_network_type_detection_enabled">Basculer automatiquement le DNS selon le type de réseau</string>

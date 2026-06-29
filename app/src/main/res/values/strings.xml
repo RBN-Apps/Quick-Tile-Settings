@@ -201,12 +201,17 @@
     <string name="notification_permission_dialog_settings_button">Settings</string>
     <string name="notification_permission_dialog_settings_description">Open settings</string>
     <string name="notification_permission_tile_only_fallback">Notification permission was denied. Background detection was switched to tile-only detection because notifications are required for background monitoring.</string>
+    <string name="notification_permission_background_title">Allow notifications for background detection?</string>
+    <string name="notification_permission_background_message">Background detection needs notification permission because Android requires the app to show a persistent notification while monitoring in the background.</string>
     <string name="notification_permission_import_title">Allow notifications for background detection?</string>
     <string name="notification_permission_import_message">The imported backup enables background detection for VPN or network type changes. Android requires notification permission so the app can show a persistent notification while monitoring in the background.</string>
     <string name="notification_permission_fallback_title">Notification permission needed</string>
     <string name="notification_permission_fallback_message">Background detection cannot run without notification permission because Android requires a notification for background monitoring. You can grant the permission now or use tile-only detection instead.</string>
     <string name="notification_permission_grant_button">Grant permission</string>
     <string name="notification_permission_use_tile_only_button">Use tile-only detection</string>
+    <string name="notification_permission_settings_title">Notification permission needed</string>
+    <string name="notification_permission_settings_message">Android is no longer showing the notification permission prompt. Open this app\'s notification settings and allow notifications there, or use tile-only detection instead.</string>
+    <string name="notification_permission_settings_button">Open settings</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Auto-switch DNS based on network type</string>

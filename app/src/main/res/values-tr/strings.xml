@@ -186,10 +186,15 @@
     <string name="notification_permission_dialog_settings_button">Ayarlar</string>
     <string name="notification_permission_dialog_settings_description">Ayarları aç</string>
     <string name="notification_permission_tile_only_fallback">Bildirim izni reddedildi. Arka plan izleme için bildirim gerektiğinden arka plan algılama yalnızca kutucuk algılamasına geçirildi.</string>
+    <string name="notification_permission_background_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
+    <string name="notification_permission_background_message">Arka plan algılama, Android arka planda izleme sırasında uygulamanın kalıcı bir bildirim göstermesini zorunlu tuttuğu için bildirim izni gerektirir.</string>
     <string name="notification_permission_import_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
     <string name="notification_permission_import_message">İçe aktarılan yedek, VPN veya ağ türü değişiklikleri için arka plan algılamayı etkinleştiriyor. Android, arka planda izleme yapılırken uygulamanın kalıcı bir bildirim göstermesi için bildirim izni gerektirir.</string>
     <string name="notification_permission_fallback_title">Bildirim izni gerekli</string>
     <string name="notification_permission_fallback_message">Arka plan algılama, bildirim izni olmadan çalışamaz çünkü Android arka plan izleme için bildirim gerektirir. İzni şimdi verebilir veya bunun yerine yalnızca kutucuk algılamasını kullanabilirsiniz.</string>
     <string name="notification_permission_grant_button">İzin ver</string>
     <string name="notification_permission_use_tile_only_button">Yalnızca kutucuk algılamasını kullan</string>
+    <string name="notification_permission_settings_title">Bildirim izni gerekli</string>
+    <string name="notification_permission_settings_message">Android artık bildirim izni istemini göstermiyor. Bu uygulamanın bildirim ayarlarını açıp bildirimlere oradan izin verin veya yalnızca kutucuk algılamasını kullanın.</string>
+    <string name="notification_permission_settings_button">Ayarları aç</string>
 </resources>
