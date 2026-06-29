@@ -77,7 +77,7 @@ class ShortcutSettingsInstrumentedTest {
         composeTestRule.navigateToShortcutSettings(context)
 
         composeTestRule.onNodeWithContentDescription(
-            context.getString(R.string.shortcut_settings_back_desc)
+            context.getString(R.string.navigate_back_desc)
         ).assertIsDisplayed()
 
         composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_title))

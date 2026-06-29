@@ -63,8 +63,8 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.onNodeWithText(context.getString(R.string.app_name))
             .assertIsDisplayed()
 
-        // Verify help button is present
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.help_button_desc))
+        // Verify app menu is present; permission help is available from that menu.
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
             .assertIsDisplayed()
 
         // Verify both tabs are present
@@ -241,8 +241,8 @@ class QuickTileSettingsInstrumentedTest {
     fun uiElements_shouldBeAccessible() {
         // Verify accessibility of main UI elements
 
-        // Top bar help button should have content description
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.help_button_desc))
+        // Top bar menu should have content description
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
             .assertIsDisplayed()
 
         // Tab navigation should be accessible
