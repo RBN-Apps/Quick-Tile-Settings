@@ -25,6 +25,7 @@
     <string name="setting_title_private_dns">Private DNS Tile</string>
     <string name="setting_title_usb_debugging">USB Debugging Tile</string>
     <string name="setting_desc_tile_cycles">Select states for the tile cycle:</string>
+    <string name="app_settings_title">Settings</string>
     <string name="tab_title_dns">Private DNS</string>
     <string name="tab_title_usb">USB Debugging</string>
 
@@ -45,6 +46,11 @@
     <string name="permission_grant_dialog_intro">To change system settings like Private DNS and USB Debugging, this app needs the special WRITE_SECURE_SETTINGS permission. Please choose a method below to grant it:</string>
     <string name="help_dialog_after_grant">After granting the permission, restart the app or re-open the Quick Settings panel for the tiles to function.</string>
     <string name="help_button_desc">Help / Grant Permission</string>
+    <string name="app_menu_desc">Open app menu</string>
+    <string name="navigate_back_desc">Back</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_permission_help">Permission Setup</string>
+    <string name="menu_about">About</string>
     <string name="button_open_developer_options">Open Developer Options</string>
     <string name="dialog_close">Close</string>
 
@@ -161,6 +167,19 @@
     <string name="about_button_fdroid" translatable="false">F-Droid</string>
     <string name="about_button_permission_help">Permission Setup Help</string>
 
+    <!-- App Settings -->
+    <string name="settings_backup_title">Backup &amp; Restore</string>
+    <string name="settings_backup_description">Export all tile settings, DNS entries, automation preferences, and shortcut configuration to a JSON file. Restore replaces the current app settings with the selected backup.</string>
+    <string name="backup_export_button">Export backup</string>
+    <string name="backup_restore_button">Restore backup</string>
+    <string name="backup_restore_confirm_title">Restore backup?</string>
+    <string name="backup_restore_confirm_message">Current app settings will be replaced with the selected backup file.</string>
+    <string name="backup_restore_confirm_button">Restore</string>
+    <string name="backup_export_success">Backup exported.</string>
+    <string name="backup_export_error">Backup export failed: %1$s</string>
+    <string name="backup_restore_success">Backup restored.</string>
+    <string name="backup_restore_error">Backup restore failed: %1$s</string>
+
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">Automatically disable DNS on VPN connections</string>
     <string name="setting_vpn_detection_mode">VPN Detection Mode:</string>
@@ -181,6 +200,18 @@
     <string name="notification_permission_dialog_message">To receive notifications for background VPN monitoring, you must enable the permission in app settings.\n\nOnce you have granted the permission, you can enable notifications here.</string>
     <string name="notification_permission_dialog_settings_button">Settings</string>
     <string name="notification_permission_dialog_settings_description">Open settings</string>
+    <string name="notification_permission_tile_only_fallback">Notification permission was denied. Background detection was switched to tile-only detection because notifications are required for background monitoring.</string>
+    <string name="notification_permission_background_title">Allow notifications for background detection?</string>
+    <string name="notification_permission_background_message">Background detection needs notification permission because Android requires the app to show a persistent notification while monitoring in the background.</string>
+    <string name="notification_permission_import_title">Allow notifications for background detection?</string>
+    <string name="notification_permission_import_message">The imported backup enables background detection for VPN or network type changes. Android requires notification permission so the app can show a persistent notification while monitoring in the background.</string>
+    <string name="notification_permission_fallback_title">Notification permission needed</string>
+    <string name="notification_permission_fallback_message">Background detection cannot run without notification permission because Android requires a notification for background monitoring. You can grant the permission now or use tile-only detection instead.</string>
+    <string name="notification_permission_grant_button">Grant permission</string>
+    <string name="notification_permission_use_tile_only_button">Use tile-only detection</string>
+    <string name="notification_permission_settings_title">Notification permission needed</string>
+    <string name="notification_permission_settings_message">Android is no longer showing the notification permission prompt. Open this app\'s notification settings and allow notifications there, or use tile-only detection instead.</string>
+    <string name="notification_permission_settings_button">Open settings</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Auto-switch DNS based on network type</string>

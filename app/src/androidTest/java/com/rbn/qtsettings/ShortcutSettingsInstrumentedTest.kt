@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.ShortcutManager
 import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -77,7 +77,7 @@ class ShortcutSettingsInstrumentedTest {
         composeTestRule.navigateToShortcutSettings(context)
 
         composeTestRule.onNodeWithContentDescription(
-            context.getString(R.string.shortcut_settings_back_desc)
+            context.getString(R.string.navigate_back_desc)
         ).assertIsDisplayed()
 
         composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_title))

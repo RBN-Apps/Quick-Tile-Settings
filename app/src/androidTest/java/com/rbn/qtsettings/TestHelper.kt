@@ -63,7 +63,10 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.n
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.clickHelpButton(
     context: Context
 ) {
-    onNodeWithContentDescription(context.getString(R.string.help_button_desc))
+    onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
+        .performClick()
+    waitForIdle()
+    onNodeWithText(context.getString(R.string.menu_permission_help))
         .performClick()
     waitForIdle()
 }
@@ -102,7 +105,7 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.n
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateBackFromShortcutSettings(
     context: Context
 ) {
-    onNodeWithContentDescription(context.getString(R.string.shortcut_settings_back_desc))
+    onNodeWithContentDescription(context.getString(R.string.navigate_back_desc))
         .performClick()
     waitForIdle()
 }

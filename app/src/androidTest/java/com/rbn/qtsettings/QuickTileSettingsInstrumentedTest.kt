@@ -8,7 +8,7 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -32,6 +32,11 @@ private const val TAG = "QuickTileSettingsTest"
 private const val TAG_NETWORK_TYPE_DETECTION_TILE_OPTION = "network_type_detection_tile_only_option"
 private const val TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION =
     "network_type_detection_background_option"
+private const val TAG_NETWORK_TYPE_DETECTION_TOGGLE = "network_type_detection_toggle"
+private const val TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL =
+    "network_type_detection_wifi_state_label"
+private const val TAG_NETWORK_TYPE_DETECTION_MOBILE_STATE_LABEL =
+    "network_type_detection_mobile_state_label"
 
 @RunWith(AndroidJUnit4::class)
 class QuickTileSettingsInstrumentedTest {
@@ -63,8 +68,8 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.onNodeWithText(context.getString(R.string.app_name))
             .assertIsDisplayed()
 
-        // Verify help button is present
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.help_button_desc))
+        // Verify app menu is present; permission help is available from that menu.
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
             .assertIsDisplayed()
 
         // Verify both tabs are present
@@ -241,8 +246,8 @@ class QuickTileSettingsInstrumentedTest {
     fun uiElements_shouldBeAccessible() {
         // Verify accessibility of main UI elements
 
-        // Top bar help button should have content description
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.help_button_desc))
+        // Top bar menu should have content description
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
             .assertIsDisplayed()
 
         // Tab navigation should be accessible
@@ -497,19 +502,36 @@ class QuickTileSettingsInstrumentedTest {
         // Scroll to Network Type Detection checkbox
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
 
+        val networkTypeInitiallyEnabled = composeTestRule.onAllNodesWithText(
+            context.getString(R.string.setting_dns_state_on_wifi)
+        ).fetchSemanticsNodes().isNotEmpty()
+
+        if (networkTypeInitiallyEnabled) {
+            composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+                .performScrollTo()
+                .performClick()
+            composeTestRule.waitForIdle()
+        }
+
         // Click to enable Network Type Detection
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_network_type_detection_enabled))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+            .performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
 
         // Verify WiFi DNS state selector appears when enabled
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_wifi))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL)
+            .performScrollTo()
+            .assertIsDisplayed()
 
         // Verify Mobile DNS state selector appears when enabled
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_mobile))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_MOBILE_STATE_LABEL)
+            .performScrollTo()
+            .assertIsDisplayed()
 
         // Click to disable Network Type Detection
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_network_type_detection_enabled))
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+            .performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
 

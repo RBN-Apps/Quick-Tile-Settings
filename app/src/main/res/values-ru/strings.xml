@@ -25,6 +25,7 @@
     <string name="setting_title_private_dns">Плитка «Частный DNS»</string>
     <string name="setting_title_usb_debugging">Плитка «Отладка по USB»</string>
     <string name="setting_desc_tile_cycles">Выберите состояния для цикла плитки:</string>
+    <string name="app_settings_title">Настройки</string>
     <string name="tab_title_dns">Частный DNS</string>
     <string name="tab_title_usb">Отладка по USB</string>
 
@@ -45,6 +46,11 @@
     <string name="permission_grant_dialog_intro">Для изменения системных настроек, таких как Частный DNS и Отладка по USB, этому приложению требуется специальное разрешение WRITE_SECURE_SETTINGS. Пожалуйста, выберите метод ниже, чтобы предоставить его:</string>
     <string name="help_dialog_after_grant">После предоставления разрешения перезапустите приложение или заново откройте QuickTile Settings, чтобы плитки заработали.</string>
     <string name="help_button_desc">Помощь / Предоставить разрешение</string>
+    <string name="app_menu_desc">Открыть меню приложения</string>
+    <string name="navigate_back_desc">Назад</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_permission_help">Настройка разрешения</string>
+    <string name="menu_about">О приложении</string>
     <string name="button_open_developer_options">Открыть параметры разработчика</string>
     <string name="dialog_close">Закрыть</string>
 
@@ -154,6 +160,19 @@
     <string name="about_developer_info">Разработано RBN-Apps\nOpen-source проект доступен на GitHub</string>
     <string name="about_button_permission_help">Справка по настройке разрешений</string>
 
+    <!-- App Settings -->
+    <string name="settings_backup_title">Резервное копирование и восстановление</string>
+    <string name="settings_backup_description">Экспортируйте все настройки плиток, записи DNS, параметры автоматизации и конфигурацию ярлыков в JSON-файл. Восстановление заменит текущие настройки приложения выбранной резервной копией.</string>
+    <string name="backup_export_button">Экспортировать резервную копию</string>
+    <string name="backup_restore_button">Восстановить резервную копию</string>
+    <string name="backup_restore_confirm_title">Восстановить резервную копию?</string>
+    <string name="backup_restore_confirm_message">Текущие настройки приложения будут заменены выбранным файлом резервной копии.</string>
+    <string name="backup_restore_confirm_button">Восстановить</string>
+    <string name="backup_export_success">Резервная копия экспортирована.</string>
+    <string name="backup_export_error">Не удалось экспортировать резервную копию: %1$s</string>
+    <string name="backup_restore_success">Резервная копия восстановлена.</string>
+    <string name="backup_restore_error">Не удалось восстановить резервную копию: %1$s</string>
+
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">Автоматически отключать DNS при VPN-подключениях</string>
     <string name="setting_vpn_detection_mode">Режим обнаружения VPN:</string>
@@ -174,6 +193,18 @@
     <string name="notification_permission_dialog_message">Чтобы получать уведомления для фонового мониторинга VPN, необходимо включить разрешение в настройках приложения.\n\nКак только вы предоставите разрешение, вы сможете включить уведомления здесь.</string>
     <string name="notification_permission_dialog_settings_button">Настройки</string>
     <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
+    <string name="notification_permission_tile_only_fallback">Разрешение на уведомления отклонено. Фоновое обнаружение переключено на режим только плитки, потому что для фонового мониторинга требуются уведомления.</string>
+    <string name="notification_permission_background_title">Разрешить уведомления для фонового обнаружения?</string>
+    <string name="notification_permission_background_message">Для фонового обнаружения требуется разрешение на уведомления, потому что Android требует, чтобы приложение показывало постоянное уведомление во время фонового мониторинга.</string>
+    <string name="notification_permission_import_title">Разрешить уведомления для фонового обнаружения?</string>
+    <string name="notification_permission_import_message">Импортированная резервная копия включает фоновое обнаружение изменений VPN или типа сети. Android требует разрешение на уведомления, чтобы приложение могло показывать постоянное уведомление во время фонового мониторинга.</string>
+    <string name="notification_permission_fallback_title">Требуется разрешение на уведомления</string>
+    <string name="notification_permission_fallback_message">Фоновое обнаружение не может работать без разрешения на уведомления, потому что Android требует уведомление для фонового мониторинга. Вы можете предоставить разрешение сейчас или использовать обнаружение только через плитку.</string>
+    <string name="notification_permission_grant_button">Предоставить разрешение</string>
+    <string name="notification_permission_use_tile_only_button">Использовать режим только плитки</string>
+    <string name="notification_permission_settings_title">Требуется разрешение на уведомления</string>
+    <string name="notification_permission_settings_message">Android больше не показывает запрос разрешения на уведомления. Откройте настройки уведомлений этого приложения и разрешите уведомления там или используйте обнаружение только через плитку.</string>
+    <string name="notification_permission_settings_button">Открыть настройки</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Авто-переключение DNS по типу сети</string>
