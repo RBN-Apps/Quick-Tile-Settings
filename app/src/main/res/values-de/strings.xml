@@ -26,6 +26,7 @@
     <string name="setting_title_private_dns">Privates DNS Tile</string>
     <string name="setting_title_usb_debugging">USB-Debugging Tile</string>
     <string name="setting_desc_tile_cycles">Wähle Zustände für den Tile-Zyklus aus:</string>
+    <string name="app_settings_title">Einstellungen</string>
     <string name="tab_title_dns">Privates DNS</string>
     <string name="tab_title_usb">USB-Debugging</string>
 
@@ -45,6 +46,11 @@
     <string name="permission_grant_dialog_intro">Um Systemeinstellungen wie Privates DNS und USB-Debugging zu ändern, benötigt diese App die spezielle Berechtigung WRITE_SECURE_SETTINGS. Bitte wähle unten eine Methode, um sie zu erteilen:</string>
     <string name="help_dialog_after_grant">Nachdem die Berechtigung erteilt wurde, starte die App neu oder öffne die Schnelleinstellungsleiste erneut, damit die Kacheln funktionieren.</string>
     <string name="help_button_desc">Hilfe / Berechtigung erteilen</string>
+    <string name="app_menu_desc">App-Menü öffnen</string>
+    <string name="navigate_back_desc">Zurück</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="menu_permission_help">Berechtigung einrichten</string>
+    <string name="menu_about">Über</string>
     <string name="button_open_developer_options">Entwickleroptionen öffnen</string>
     <string name="dialog_close">Schließen</string>
 
@@ -154,6 +160,19 @@
     <string name="about_developer_info">Entwickelt von RBN-Apps\nOpen-Source-Projekt verfügbar auf GitHub</string>
     <string name="about_button_permission_help">Hilfe zur Berechtigung einrichten</string>
 
+    <!-- App Settings -->
+    <string name="settings_backup_title">Backup &amp; Wiederherstellung</string>
+    <string name="settings_backup_description">Exportiere alle Kachel-Einstellungen, DNS-Einträge, Automatisierungsoptionen und die Shortcut-Konfiguration in eine JSON-Datei. Beim Wiederherstellen werden die aktuellen App-Einstellungen durch das ausgewählte Backup ersetzt.</string>
+    <string name="backup_export_button">Backup exportieren</string>
+    <string name="backup_restore_button">Backup wiederherstellen</string>
+    <string name="backup_restore_confirm_title">Backup wiederherstellen?</string>
+    <string name="backup_restore_confirm_message">Die aktuellen App-Einstellungen werden durch die ausgewählte Backup-Datei ersetzt.</string>
+    <string name="backup_restore_confirm_button">Wiederherstellen</string>
+    <string name="backup_export_success">Backup exportiert.</string>
+    <string name="backup_export_error">Backup-Export fehlgeschlagen: %1$s</string>
+    <string name="backup_restore_success">Backup wiederhergestellt.</string>
+    <string name="backup_restore_error">Backup-Wiederherstellung fehlgeschlagen: %1$s</string>
+
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">DNS bei VPN-Verbindungen automatisch deaktivieren</string>
     <string name="setting_vpn_detection_mode">VPN-Erkennungsmodus:</string>
@@ -174,6 +193,18 @@
     <string name="notification_permission_dialog_message">Um Benachrichtigungen für die VPN-Hintergrundüberwachung zu erhalten, musst du die Berechtigung in den App-Einstellungen aktivieren.\n\nWenn du die Berechtigung erteilt hast, kannst du Benachrichtigungen hier aktivieren.</string>
     <string name="notification_permission_dialog_settings_button">Einstellungen</string>
     <string name="notification_permission_dialog_settings_description">Einstellungen öffnen</string>
+    <string name="notification_permission_tile_only_fallback">Die Benachrichtigungsberechtigung wurde abgelehnt. Die Hintergrunderkennung wurde auf Tile-only-Erkennung umgestellt, da für die Hintergrundüberwachung Benachrichtigungen erforderlich sind.</string>
+    <string name="notification_permission_background_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
+    <string name="notification_permission_background_message">Die Hintergrunderkennung benötigt die Benachrichtigungsberechtigung, weil Android verlangt, dass die App während der Hintergrundüberwachung eine dauerhafte Benachrichtigung anzeigt.</string>
+    <string name="notification_permission_import_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
+    <string name="notification_permission_import_message">Das importierte Backup aktiviert die Hintergrunderkennung für VPN- oder Netzwerktyp-Änderungen. Android verlangt dafür die Benachrichtigungsberechtigung, damit die App während der Hintergrundüberwachung eine dauerhafte Benachrichtigung anzeigen kann.</string>
+    <string name="notification_permission_fallback_title">Benachrichtigungsberechtigung benötigt</string>
+    <string name="notification_permission_fallback_message">Die Hintergrunderkennung kann ohne Benachrichtigungsberechtigung nicht laufen, weil Android für die Hintergrundüberwachung eine Benachrichtigung verlangt. Du kannst die Berechtigung jetzt erteilen oder stattdessen die Tile-only-Erkennung verwenden.</string>
+    <string name="notification_permission_grant_button">Berechtigung erteilen</string>
+    <string name="notification_permission_use_tile_only_button">Tile-only-Erkennung verwenden</string>
+    <string name="notification_permission_settings_title">Benachrichtigungen benötigen Berechtigung</string>
+    <string name="notification_permission_settings_message">Android zeigt die Berechtigungsabfrage für Benachrichtigungen nicht mehr an. Öffne die Benachrichtigungseinstellungen dieser App und erlaube Benachrichtigungen dort, oder verwende stattdessen die Tile-only-Erkennung.</string>
+    <string name="notification_permission_settings_button">Einstellungen öffnen</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">DNS je nach Netzwerktyp automatisch umschalten</string>

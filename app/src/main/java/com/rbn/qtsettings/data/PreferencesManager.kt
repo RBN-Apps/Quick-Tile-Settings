@@ -7,9 +7,13 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.utils.Constants
+import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
+import java.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +24,8 @@ class PreferencesManager private constructor(context: Context) {
     private val gson = Gson()
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("qt_settings_prefs", Context.MODE_PRIVATE)
+    private val validDnsModes = setOf(DNS_MODE_OFF, DNS_MODE_AUTO, DNS_MODE_ON)
+    private val validDetectionModes = setOf(TILE_ONLY_DETECTION, BACKGROUND_DETECTION)
 
     // DNS Settings
     private val _dnsToggleOff =
@@ -99,8 +105,8 @@ class PreferencesManager private constructor(context: Context) {
 
     private val _dnsStateOnWifi =
         MutableStateFlow(
-            sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, Constants.DNS_MODE_OFF)
-                ?: Constants.DNS_MODE_OFF
+            sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, DNS_MODE_OFF)
+                ?: DNS_MODE_OFF
         )
     val dnsStateOnWifi: StateFlow<String> = _dnsStateOnWifi.asStateFlow()
 
@@ -110,8 +116,8 @@ class PreferencesManager private constructor(context: Context) {
 
     private val _dnsStateOnMobile =
         MutableStateFlow(
-            sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, Constants.DNS_MODE_AUTO)
-                ?: Constants.DNS_MODE_AUTO
+            sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, DNS_MODE_AUTO)
+                ?: DNS_MODE_AUTO
         )
     val dnsStateOnMobile: StateFlow<String> = _dnsStateOnMobile.asStateFlow()
 
@@ -264,6 +270,269 @@ class PreferencesManager private constructor(context: Context) {
         _dnsHostnameOnMobile.value = hostname
     }
 
+    fun exportSettingsBackupJson(): String {
+        val exportedAtEpochMillis = System.currentTimeMillis()
+        return gson.toJson(
+            SettingsBackup(
+                exportedAtEpochMillis = exportedAtEpochMillis,
+                exportedAtIso8601 = Instant.ofEpochMilli(exportedAtEpochMillis).toString(),
+                dns = DnsSettingsBackup(
+                    toggleOff = _dnsToggleOff.value,
+                    toggleAuto = _dnsToggleAuto.value,
+                    hostnames = _dnsHostnames.value,
+                    enableAutoRevert = _dnsEnableAutoRevert.value,
+                    autoRevertDelaySeconds = _dnsAutoRevertDelaySeconds.value,
+                    requireUnlock = _dnsRequireUnlock.value,
+                    vpnDetectionEnabled = _vpnDetectionEnabled.value,
+                    vpnDetectionMode = _vpnDetectionMode.value,
+                    networkTypeDetectionEnabled = _networkTypeDetectionEnabled.value,
+                    networkTypeDetectionMode = _networkTypeDetectionMode.value,
+                    dnsStateOnWifi = _dnsStateOnWifi.value,
+                    dnsHostnameOnWifi = _dnsHostnameOnWifi.value,
+                    dnsStateOnMobile = _dnsStateOnMobile.value,
+                    dnsHostnameOnMobile = _dnsHostnameOnMobile.value
+                ),
+                usb = UsbSettingsBackup(
+                    toggleEnable = _usbToggleEnable.value,
+                    toggleDisable = _usbToggleDisable.value,
+                    alsoHideDevOptions = _usbAlsoHideDevOptions.value,
+                    alsoDisableWirelessDebugging = _usbAlsoDisableWirelessDebugging.value,
+                    enableAutoRevert = _usbEnableAutoRevert.value,
+                    autoRevertDelaySeconds = _usbAutoRevertDelaySeconds.value,
+                    requireUnlock = _usbRequireUnlock.value
+                ),
+                shortcuts = ShortcutSettingsBackup(
+                    enabledShortcutIds = _enabledShortcutIds.value,
+                    favoriteShortcutIds = _favoriteShortcutIds.value,
+                    allowPinnedShortcutsWhenDisabled = _allowPinnedShortcutsWhenDisabled.value
+                )
+            )
+        )
+    }
+
+    fun restoreSettingsBackupJson(json: String) {
+        val backup = try {
+            gson.fromJson(json, SettingsBackup::class.java)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Invalid backup file", e)
+        } ?: throw IllegalArgumentException("Invalid backup file")
+
+        if (backup.schemaVersion != SettingsBackup.CURRENT_SCHEMA_VERSION) {
+            throw IllegalArgumentException("Unsupported backup version: ${backup.schemaVersion}")
+        }
+
+        val validatedBackup = validateSettingsBackup(backup)
+        val dns = validatedBackup.dns
+        val usb = validatedBackup.usb
+        val shortcuts = validatedBackup.shortcuts
+        val restoredHostnames = dns.hostnames
+
+        sharedPreferences.edit {
+            putBoolean(KEY_DNS_TOGGLE_OFF, dns.toggleOff)
+            putBoolean(KEY_DNS_TOGGLE_AUTO, dns.toggleAuto)
+            putString(KEY_DNS_HOSTNAMES, gson.toJson(restoredHostnames))
+            putBoolean(KEY_DNS_ENABLE_AUTO_REVERT, dns.enableAutoRevert)
+            putInt(KEY_DNS_AUTO_REVERT_DELAY_SECONDS, dns.autoRevertDelaySeconds)
+            putBoolean(KEY_DNS_REQUIRE_UNLOCK, dns.requireUnlock)
+            putBoolean(KEY_VPN_DETECTION_ENABLED, dns.vpnDetectionEnabled)
+            putString(KEY_VPN_DETECTION_MODE, dns.vpnDetectionMode)
+            putBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, dns.networkTypeDetectionEnabled)
+            putString(KEY_NETWORK_TYPE_DETECTION_MODE, dns.networkTypeDetectionMode)
+            putString(KEY_DNS_STATE_ON_WIFI, dns.dnsStateOnWifi)
+            putString(KEY_DNS_HOSTNAME_ON_WIFI, dns.dnsHostnameOnWifi)
+            putString(KEY_DNS_STATE_ON_MOBILE, dns.dnsStateOnMobile)
+            putString(KEY_DNS_HOSTNAME_ON_MOBILE, dns.dnsHostnameOnMobile)
+
+            putBoolean(KEY_USB_TOGGLE_ENABLE, usb.toggleEnable)
+            putBoolean(KEY_USB_TOGGLE_DISABLE, usb.toggleDisable)
+            putBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, usb.alsoHideDevOptions)
+            putBoolean(
+                KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING,
+                usb.alsoDisableWirelessDebugging
+            )
+            putBoolean(KEY_USB_ENABLE_AUTO_REVERT, usb.enableAutoRevert)
+            putInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, usb.autoRevertDelaySeconds)
+            putBoolean(KEY_USB_REQUIRE_UNLOCK, usb.requireUnlock)
+
+            putBoolean(
+                KEY_ALLOW_PINNED_SHORTCUTS_WHEN_DISABLED,
+                shortcuts.allowPinnedShortcutsWhenDisabled
+            )
+        }
+
+        _dnsToggleOff.value = dns.toggleOff
+        _dnsToggleAuto.value = dns.toggleAuto
+        _dnsHostnames.value = restoredHostnames
+        _dnsEnableAutoRevert.value = dns.enableAutoRevert
+        _dnsAutoRevertDelaySeconds.value = dns.autoRevertDelaySeconds
+        _dnsRequireUnlock.value = dns.requireUnlock
+        _vpnDetectionEnabled.value = dns.vpnDetectionEnabled
+        _vpnDetectionMode.value = dns.vpnDetectionMode
+        _networkTypeDetectionEnabled.value = dns.networkTypeDetectionEnabled
+        _networkTypeDetectionMode.value = dns.networkTypeDetectionMode
+        _dnsStateOnWifi.value = dns.dnsStateOnWifi
+        _dnsHostnameOnWifi.value = dns.dnsHostnameOnWifi
+        _dnsStateOnMobile.value = dns.dnsStateOnMobile
+        _dnsHostnameOnMobile.value = dns.dnsHostnameOnMobile
+
+        _usbToggleEnable.value = usb.toggleEnable
+        _usbToggleDisable.value = usb.toggleDisable
+        _usbAlsoHideDevOptions.value = usb.alsoHideDevOptions
+        _usbAlsoDisableWirelessDebugging.value = usb.alsoDisableWirelessDebugging
+        _usbEnableAutoRevert.value = usb.enableAutoRevert
+        _usbAutoRevertDelaySeconds.value = usb.autoRevertDelaySeconds
+        _usbRequireUnlock.value = usb.requireUnlock
+
+        _enabledShortcutIds.value = ShortcutUtils.migrateLegacyShortcutIds(
+            shortcuts.enabledShortcutIds
+        )
+        _favoriteShortcutIds.value = ShortcutUtils.migrateLegacyShortcutIds(
+            shortcuts.favoriteShortcutIds
+        )
+        _allowPinnedShortcutsWhenDisabled.value = shortcuts.allowPinnedShortcutsWhenDisabled
+
+        synchronizeEnabledShortcutsWithAvailableShortcuts()
+        synchronizeFavoriteShortcutsWithAvailableShortcuts()
+        updateExposedShortcuts()
+    }
+
+    private data class ValidatedSettingsBackup(
+        val dns: DnsSettingsBackup,
+        val usb: UsbSettingsBackup,
+        val shortcuts: ShortcutSettingsBackup
+    )
+
+    private fun validateSettingsBackup(backup: SettingsBackup): ValidatedSettingsBackup {
+        val dns = backup.dns ?: throw IllegalArgumentException("Backup is missing DNS settings")
+        val usb = backup.usb ?: throw IllegalArgumentException("Backup is missing USB settings")
+        val shortcuts = backup.shortcuts
+            ?: throw IllegalArgumentException("Backup is missing shortcut settings")
+
+        val restoredHostnames = normalizeRestoredDnsHostnames(dns.hostnames)
+        val availableHostnames = restoredHostnames.map { it.hostname }.toSet()
+        val availableShortcutIds = ShortcutUtils.getAvailableShortcutIds(restoredHostnames)
+        val favoriteShortcutIds = normalizeRestoredFavoriteShortcutIds(
+            favoriteShortcutIds = shortcuts.favoriteShortcutIds,
+            enabledShortcutIds = shortcuts.enabledShortcutIds,
+            availableShortcutIds = availableShortcutIds,
+            restoredHostnames = restoredHostnames
+        )
+        val enabledShortcutIds = normalizeRestoredEnabledShortcutIds(
+            shortcutIds = shortcuts.enabledShortcutIds,
+            favoriteShortcutIds = favoriteShortcutIds,
+            availableShortcutIds = availableShortcutIds,
+            restoredHostnames = restoredHostnames
+        )
+        val wifiState = normalizeDnsState(dns.dnsStateOnWifi, DNS_MODE_OFF)
+        val mobileState = normalizeDnsState(dns.dnsStateOnMobile, DNS_MODE_AUTO)
+
+        return ValidatedSettingsBackup(
+            dns = dns.copy(
+                hostnames = restoredHostnames,
+                autoRevertDelaySeconds = normalizeDelaySeconds(dns.autoRevertDelaySeconds),
+                vpnDetectionMode = normalizeDetectionMode(dns.vpnDetectionMode),
+                networkTypeDetectionMode = normalizeDetectionMode(dns.networkTypeDetectionMode),
+                dnsStateOnWifi = wifiState,
+                dnsHostnameOnWifi = normalizeStateHostname(
+                    state = wifiState,
+                    hostname = dns.dnsHostnameOnWifi,
+                    availableHostnames = availableHostnames
+                ),
+                dnsStateOnMobile = mobileState,
+                dnsHostnameOnMobile = normalizeStateHostname(
+                    state = mobileState,
+                    hostname = dns.dnsHostnameOnMobile,
+                    availableHostnames = availableHostnames
+                )
+            ),
+            usb = usb.copy(
+                autoRevertDelaySeconds = normalizeDelaySeconds(usb.autoRevertDelaySeconds)
+            ),
+            shortcuts = ShortcutSettingsBackup(
+                enabledShortcutIds = enabledShortcutIds,
+                favoriteShortcutIds = favoriteShortcutIds.intersect(enabledShortcutIds),
+                allowPinnedShortcutsWhenDisabled = shortcuts.allowPinnedShortcutsWhenDisabled
+            )
+        )
+    }
+
+    private fun normalizeRestoredEnabledShortcutIds(
+        shortcutIds: Set<String>?,
+        favoriteShortcutIds: Set<String>,
+        availableShortcutIds: Set<String>,
+        restoredHostnames: List<DnsHostnameEntry>
+    ): Set<String> {
+        val migratedIds = normalizeShortcutIdSet(shortcutIds)
+        val preferredOrder = ShortcutUtils.getOrderedShortcutIds(
+            hostnames = restoredHostnames,
+            favoriteShortcutIds = favoriteShortcutIds
+        )
+        return preferredOrder
+            .filter { shortcutId ->
+                migratedIds.contains(shortcutId) && availableShortcutIds.contains(shortcutId)
+            }
+            .take(_shortcutMaxCount.value)
+            .toSet()
+    }
+
+    private fun normalizeRestoredFavoriteShortcutIds(
+        favoriteShortcutIds: Set<String>?,
+        enabledShortcutIds: Set<String>?,
+        availableShortcutIds: Set<String>,
+        restoredHostnames: List<DnsHostnameEntry>
+    ): Set<String> {
+        val migratedFavorites = normalizeShortcutIdSet(favoriteShortcutIds)
+        val migratedEnabled = normalizeShortcutIdSet(enabledShortcutIds)
+        return ShortcutUtils.getOrderedShortcutIds(restoredHostnames)
+            .filter { shortcutId ->
+                migratedFavorites.contains(shortcutId) &&
+                        migratedEnabled.contains(shortcutId) &&
+                        availableShortcutIds.contains(shortcutId)
+            }
+            .take(ShortcutUtils.MAX_FAVORITE_SHORTCUTS)
+            .toSet()
+    }
+
+    private fun normalizeShortcutIdSet(shortcutIds: Set<String>?): Set<String> {
+        @Suppress("SENSELESS_COMPARISON")
+        return ShortcutUtils.migrateLegacyShortcutIds(
+            shortcutIds.orEmpty()
+                .mapNotNull { shortcutId ->
+                    if (shortcutId == null || shortcutId.isBlank()) null else shortcutId
+                }
+                .toSet()
+        )
+    }
+
+    private fun normalizeDnsState(value: String?, defaultValue: String): String {
+        return value?.takeIf { validDnsModes.contains(it) } ?: defaultValue
+    }
+
+    private fun normalizeDetectionMode(value: String?): String {
+        return value?.takeIf { validDetectionModes.contains(it) } ?: TILE_ONLY_DETECTION
+    }
+
+    private fun normalizeDelaySeconds(value: Int): Int {
+        return value.coerceIn(MIN_AUTO_REVERT_DELAY_SECONDS, MAX_AUTO_REVERT_DELAY_SECONDS)
+    }
+
+    private fun normalizeStateHostname(
+        state: String,
+        hostname: String?,
+        availableHostnames: Set<String>
+    ): String? {
+        val normalizedHostname = hostname?.trim()?.lowercase()
+        return if (
+            state == DNS_MODE_ON &&
+            normalizedHostname != null &&
+            availableHostnames.contains(normalizedHostname)
+        ) {
+            normalizedHostname
+        } else {
+            null
+        }
+    }
+
     private fun sortDnsHostnames(hostnames: List<DnsHostnameEntry>): List<DnsHostnameEntry> {
         return hostnames.sortedWith(
             compareBy(
@@ -271,6 +540,56 @@ class PreferencesManager private constructor(context: Context) {
                 { it.name }
             )
         )
+    }
+
+    private fun normalizeRestoredDnsHostnames(
+        restoredHostnames: List<DnsHostnameEntry>?
+    ): List<DnsHostnameEntry> {
+        val restored = restoredHostnames.orEmpty()
+        val defaults = getDefaultDnsHostnames()
+        val restoredPredefined = restored.filter { it.isPredefined }
+        val customRestored = restored
+            .filter {
+                !it.isPredefined &&
+                        isPresentAfterGsonRestore(it.id) &&
+                        isPresentAfterGsonRestore(it.name) &&
+                        isValidDnsHostname(it.hostname)
+            }
+            .distinctBy { it.id }
+            .take(MAX_RESTORED_CUSTOM_HOSTNAMES)
+            .map {
+                it.copy(
+                    name = it.name.trim().take(MAX_HOSTNAME_DISPLAY_NAME_LENGTH),
+                    hostname = it.hostname.trim().lowercase()
+                )
+            }
+
+        val normalizedPredefined = defaults.map { defaultEntry ->
+            val restoredEntry = restoredPredefined.find { it.id == defaultEntry.id }
+            defaultEntry.copy(
+                isSelectedForCycle = restoredEntry?.isSelectedForCycle
+                    ?: defaultEntry.isSelectedForCycle
+            )
+        }
+
+        return sortDnsHostnames(normalizedPredefined + customRestored)
+    }
+
+    private fun isPresentAfterGsonRestore(value: String): Boolean {
+        @Suppress("SENSELESS_COMPARISON")
+        return value != null && value.isNotBlank()
+    }
+
+    private fun isValidDnsHostname(hostname: String?): Boolean {
+        val value = hostname?.trim() ?: return false
+        if (value.length !in 1..MAX_DNS_HOSTNAME_LENGTH) return false
+        if (value.startsWith(".") || value.endsWith(".")) return false
+        return value.split(".").all { label ->
+            label.length in 1..63 &&
+                    label.first().isLetterOrDigit() &&
+                    label.last().isLetterOrDigit() &&
+                    label.all { it.isLetterOrDigit() || it == '-' }
+        }
     }
 
     private fun loadDnsHostnames() {
@@ -637,15 +956,15 @@ class PreferencesManager private constructor(context: Context) {
             ?: TILE_ONLY_DETECTION
 
     fun getDnsStateOnWifi(): String =
-        sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, Constants.DNS_MODE_OFF)
-            ?: Constants.DNS_MODE_OFF
+        sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, DNS_MODE_OFF)
+            ?: DNS_MODE_OFF
 
     fun getDnsHostnameOnWifi(): String? =
         sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_WIFI, null)
 
     fun getDnsStateOnMobile(): String =
-        sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, Constants.DNS_MODE_AUTO)
-            ?: Constants.DNS_MODE_AUTO
+        sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, DNS_MODE_AUTO)
+            ?: DNS_MODE_AUTO
 
     fun getDnsHostnameOnMobile(): String? =
         sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_MOBILE, null)
@@ -684,6 +1003,11 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_FAVORITE_SHORTCUT_IDS = "favorite_shortcut_ids_v1"
         private const val KEY_ALLOW_PINNED_SHORTCUTS_WHEN_DISABLED =
             "allow_pinned_shortcuts_when_disabled_v1"
+        private const val MIN_AUTO_REVERT_DELAY_SECONDS = 1
+        private const val MAX_AUTO_REVERT_DELAY_SECONDS = 86_400
+        private const val MAX_DNS_HOSTNAME_LENGTH = 253
+        private const val MAX_HOSTNAME_DISPLAY_NAME_LENGTH = 80
+        private const val MAX_RESTORED_CUSTOM_HOSTNAMES = 250
 
         const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
         const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"

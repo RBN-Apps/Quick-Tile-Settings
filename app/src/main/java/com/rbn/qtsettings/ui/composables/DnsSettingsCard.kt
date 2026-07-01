@@ -265,6 +265,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .weight(1f)
+                            .testTag("network_type_detection_toggle")
                             .clickable(
                                 interactionSource = interactionSourceNetworkDetection,
                                 indication = null,
@@ -301,7 +302,9 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                     Text(
                         text = stringResource(R.string.setting_dns_state_on_wifi),
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                        modifier = Modifier
+                            .padding(start = 16.dp, bottom = 8.dp)
+                            .testTag("network_type_detection_wifi_state_label")
                     )
                     DnsStateSelector(
                         dnsState = dnsStateOnWifi,
@@ -324,7 +327,9 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                     Text(
                         text = stringResource(R.string.setting_dns_state_on_mobile),
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                        modifier = Modifier
+                            .padding(start = 16.dp, bottom = 8.dp)
+                            .testTag("network_type_detection_mobile_state_label")
                     )
                     DnsStateSelector(
                         dnsState = dnsStateOnMobile,

@@ -24,6 +24,7 @@
     <string name="setting_title_private_dns">Tuile DNS privé</string>
     <string name="setting_title_usb_debugging">Tuile Débogage USB</string>
     <string name="setting_desc_tile_cycles">Sélectionnez les modes pour le cycle de tuiles :</string>
+    <string name="app_settings_title">Paramètres</string>
     <string name="tab_title_dns">DNS privé</string>
     <string name="tab_title_usb">Débogage USB</string>
 
@@ -43,6 +44,11 @@
     <string name="permission_grant_dialog_intro">Pour modifier les paramètres système comme le DNS privé et le débogage USB, cette application nécessite la permission spéciale WRITE_SECURE_SETTINGS. Veuillez choisir une méthode ci-dessous pour l\'accorder :</string>
     <string name="help_dialog_after_grant">Après avoir accordé la permission spéciale, redémarrez l\'application ou rouvrez le panneau des paramètres rapides.</string>
     <string name="help_button_desc">Aide / Accorder la permission</string>
+    <string name="app_menu_desc">Ouvrir le menu de l\'application</string>
+    <string name="navigate_back_desc">Retour</string>
+    <string name="menu_settings">Paramètres</string>
+    <string name="menu_permission_help">Configuration des permissions</string>
+    <string name="menu_about">À propos</string>
     <string name="button_open_developer_options">Ouvrir les options développeur</string>
     <string name="dialog_close">Fermer</string>
 
@@ -150,6 +156,19 @@
     <string name="about_developer_info">Développé par RBN-Apps\nProjet open source disponible sur GitHub</string>
     <string name="about_button_permission_help">Aide à la configuration des permissions</string>
 
+    <!-- App Settings -->
+    <string name="settings_backup_title">Sauvegarde et restauration</string>
+    <string name="settings_backup_description">Exportez tous les paramètres des tuiles, les entrées DNS, les préférences d’automatisation et la configuration des raccourcis dans un fichier JSON. La restauration remplace les paramètres actuels de l’application par la sauvegarde sélectionnée.</string>
+    <string name="backup_export_button">Exporter la sauvegarde</string>
+    <string name="backup_restore_button">Restaurer une sauvegarde</string>
+    <string name="backup_restore_confirm_title">Restaurer la sauvegarde ?</string>
+    <string name="backup_restore_confirm_message">Les paramètres actuels de l’application seront remplacés par le fichier de sauvegarde sélectionné.</string>
+    <string name="backup_restore_confirm_button">Restaurer</string>
+    <string name="backup_export_success">Sauvegarde exportée.</string>
+    <string name="backup_export_error">Échec de l’export de la sauvegarde : %1$s</string>
+    <string name="backup_restore_success">Sauvegarde restaurée.</string>
+    <string name="backup_restore_error">Échec de la restauration de la sauvegarde : %1$s</string>
+
     <!--  VPN Detection Settings  -->
     <string name="setting_vpn_detection_enabled">Désactiver automatiquement le DNS sur les connexions VPN</string>
     <string name="setting_vpn_detection_mode">Mode de détection VPN :</string>
@@ -170,6 +189,18 @@
     <string name="notification_permission_dialog_message">Pour recevoir des notifications pour la surveillance VPN en arrière-plan, vous devez activer la permission dans les paramètres de l\'application.\n\nUne fois que vous avez accordé la permission, vous pouvez activer les notifications ici.</string>
     <string name="notification_permission_dialog_settings_button">Paramètres</string>
     <string name="notification_permission_dialog_settings_description">Ouvrir les paramètres</string>
+    <string name="notification_permission_tile_only_fallback">La permission de notification a été refusée. La détection en arrière-plan est passée à la détection uniquement via la tuile, car les notifications sont requises pour la surveillance en arrière-plan.</string>
+    <string name="notification_permission_background_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
+    <string name="notification_permission_background_message">La détection en arrière-plan nécessite l\'autorisation de notification, car Android exige que l’application affiche une notification persistante pendant la surveillance en arrière-plan.</string>
+    <string name="notification_permission_import_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
+    <string name="notification_permission_import_message">La sauvegarde importée active la détection en arrière-plan des changements de VPN ou de type de réseau. Android exige la permission de notification pour que l’application puisse afficher une notification persistante pendant la surveillance en arrière-plan.</string>
+    <string name="notification_permission_fallback_title">Permission de notification requise</string>
+    <string name="notification_permission_fallback_message">La détection en arrière-plan ne peut pas fonctionner sans permission de notification, car Android exige une notification pour la surveillance en arrière-plan. Vous pouvez accorder la permission maintenant ou utiliser la détection uniquement via la tuile.</string>
+    <string name="notification_permission_grant_button">Accorder la permission</string>
+    <string name="notification_permission_use_tile_only_button">Utiliser la détection via la tuile</string>
+    <string name="notification_permission_settings_title">Autorisation de notification requise</string>
+    <string name="notification_permission_settings_message">Android n\'affiche plus la demande d\'autorisation de notification. Ouvrez les paramètres de notification de cette application et autorisez les notifications, ou utilisez la détection via la tuile.</string>
+    <string name="notification_permission_settings_button">Ouvrir les paramètres</string>
 
     <!--  Network Type Detection Settings  -->
     <string name="setting_network_type_detection_enabled">Basculer automatiquement le DNS selon le type de réseau</string>

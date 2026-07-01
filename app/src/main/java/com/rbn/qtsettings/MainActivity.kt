@@ -124,6 +124,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.checkSystemStates(this)
+        viewModel.refreshNotificationPermissionAfterSettings(this)
     }
 
     override fun onDestroy() {

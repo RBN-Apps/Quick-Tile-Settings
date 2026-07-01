@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,12 +23,17 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.AppShortcut
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,6 +64,12 @@ import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
+private enum class MainScreenDestination {
+    TileSettings,
+    ShortcutSettings,
+    AppSettings
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -71,7 +81,8 @@ fun MainScreen(
     val commandCopiedMessage = stringResource(R.string.toast_command_copied)
     val showPermissionGrantDialog = remember { mutableStateOf(false) }
     val showAboutDialog = remember { mutableStateOf(false) }
-    val showShortcutSettingsScreen = rememberSaveable { mutableStateOf(false) }
+    val currentScreen = rememberSaveable { mutableStateOf(MainScreenDestination.TileSettings) }
+    val showOverflowMenu = remember { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
 
     val isDevOptionsEnabled by remember {
@@ -86,12 +97,20 @@ fun MainScreen(
         }
     }
 
-    val inShortcutSettings = showShortcutSettingsScreen.value
-    BackHandler(enabled = inShortcutSettings) {
-        showShortcutSettingsScreen.value = false
+    val inSubScreen = currentScreen.value != MainScreenDestination.TileSettings
+    BackHandler(enabled = inSubScreen) {
+        currentScreen.value = MainScreenDestination.TileSettings
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(Unit) {
+        viewModel.backupStatusMessage.collect { message ->
+            if (message != null) {
+                viewModel.clearBackupStatusMessage()
+                snackbarHostState.showSnackbar(message)
+            }
+        }
+    }
 
     val tabTitles = listOf(
         stringResource(R.string.tab_title_dns),
@@ -107,16 +126,34 @@ fun MainScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = MaterialTheme.colorScheme.surface,
+//        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            if (inShortcutSettings) {
+            if (inSubScreen) {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.shortcut_settings_title)) },
+                    title = {
+                        Text(
+                            when (currentScreen.value) {
+                                MainScreenDestination.ShortcutSettings ->
+                                    stringResource(R.string.shortcut_settings_title)
+
+                                MainScreenDestination.AppSettings ->
+                                    stringResource(R.string.app_settings_title)
+
+                                MainScreenDestination.TileSettings ->
+                                    stringResource(R.string.app_name)
+                            }
+                        )
+                    },
                     navigationIcon = {
-                        IconButton(onClick = { showShortcutSettingsScreen.value = false }) {
+                        IconButton(
+                            onClick = {
+                                currentScreen.value = MainScreenDestination.TileSettings
+                            }
+                        ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.shortcut_settings_back_desc)
+                                contentDescription = stringResource(R.string.navigate_back_desc)
                             )
                         }
                     }
@@ -125,23 +162,65 @@ fun MainScreen(
                 TopAppBar(
                     title = { Text(stringResource(R.string.app_name)) },
                     actions = {
-                        IconButton(onClick = { showShortcutSettingsScreen.value = true }) {
+                        IconButton(
+                            onClick = {
+                                currentScreen.value = MainScreenDestination.ShortcutSettings
+                            }
+                        ) {
                             Icon(
                                 Icons.Filled.AppShortcut,
                                 contentDescription = stringResource(R.string.shortcut_settings_open_desc)
                             )
                         }
-                        IconButton(onClick = {
-                            if (!hasWriteSecureSettings) {
-                                showPermissionGrantDialog.value = true
-                                viewModel.checkSystemStates(context)
-                            } else {
-                                showAboutDialog.value = true
-                            }
-                        }) {
+                        IconButton(onClick = { showOverflowMenu.value = true }) {
                             Icon(
-                                Icons.AutoMirrored.Filled.HelpOutline,
-                                contentDescription = stringResource(R.string.help_button_desc)
+                                Icons.Filled.MoreVert,
+                                contentDescription = stringResource(R.string.app_menu_desc)
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showOverflowMenu.value,
+                            onDismissRequest = { showOverflowMenu.value = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.menu_settings)) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Filled.Settings,
+                                        contentDescription = null
+                                    )
+                                },
+                                onClick = {
+                                    showOverflowMenu.value = false
+                                    currentScreen.value = MainScreenDestination.AppSettings
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.menu_permission_help)) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Filled.AdminPanelSettings,
+                                        contentDescription = null
+                                    )
+                                },
+                                onClick = {
+                                    showOverflowMenu.value = false
+                                    showPermissionGrantDialog.value = true
+                                    viewModel.checkSystemStates(context)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.menu_about)) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Filled.Info,
+                                        contentDescription = null
+                                    )
+                                },
+                                onClick = {
+                                    showOverflowMenu.value = false
+                                    showAboutDialog.value = true
+                                }
                             )
                         }
                     }
@@ -151,9 +230,9 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         AnimatedContent(
-            targetState = inShortcutSettings,
+            targetState = currentScreen.value,
             transitionSpec = {
-                if (targetState) {
+                if (targetState != MainScreenDestination.TileSettings) {
                     (slideInHorizontally(
                         animationSpec = tween(260),
                         initialOffsetX = { fullWidth -> fullWidth }
@@ -177,27 +256,40 @@ fun MainScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             label = "screenTransition"
-        ) { isShortcutSettingsVisible ->
-            if (isShortcutSettingsVisible) {
-                ShortcutSettingsScreen(
-                    viewModel = viewModel,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                )
-            } else {
-                MainTilesContent(
-                    modifier = Modifier.fillMaxSize(),
-                    viewModel = viewModel,
-                    hasWriteSecureSettings = hasWriteSecureSettings,
-                    isDevOptionsEnabled = isDevOptionsEnabled,
-                    tabTitles = tabTitles,
-                    pagerState = pagerState,
-                    onShowPermissionDialog = {
-                        showPermissionGrantDialog.value = true
-                        viewModel.checkSystemStates(context)
-                    }
-                )
+        ) { destination ->
+            when (destination) {
+                MainScreenDestination.ShortcutSettings -> {
+                    ShortcutSettingsScreen(
+                        viewModel = viewModel,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxSize()
+                    )
+                }
+
+                MainScreenDestination.AppSettings -> {
+                    AppSettingsScreen(
+                        viewModel = viewModel,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxSize()
+                    )
+                }
+
+                MainScreenDestination.TileSettings -> {
+                    MainTilesContent(
+                        modifier = Modifier.fillMaxSize(),
+                        viewModel = viewModel,
+                        hasWriteSecureSettings = hasWriteSecureSettings,
+                        isDevOptionsEnabled = isDevOptionsEnabled,
+                        tabTitles = tabTitles,
+                        pagerState = pagerState,
+                        onShowPermissionDialog = {
+                            showPermissionGrantDialog.value = true
+                            viewModel.checkSystemStates(context)
+                        }
+                    )
+                }
             }
         }
 
@@ -272,6 +364,36 @@ fun MainScreen(
             onDismiss = { viewModel.clearNotificationSettingsDialog() }
         )
     }
+
+    val showNotificationPermissionExplanationDialog by
+        viewModel.showNotificationPermissionExplanationDialog.collectAsState()
+    val notificationPermissionExplanationFromBackup by
+        viewModel.notificationPermissionExplanationFromBackup.collectAsState()
+    if (showNotificationPermissionExplanationDialog) {
+        NotificationPermissionExplanationDialog(
+            fromBackup = notificationPermissionExplanationFromBackup,
+            onGrantPermission = { viewModel.requestNotificationPermissionFromExplanation() },
+            onDismiss = { viewModel.useTileOnlyDetectionForNotificationFallback() }
+        )
+    }
+
+    val showNotificationPermissionFallbackDialog by
+        viewModel.showNotificationPermissionFallbackDialog.collectAsState()
+    if (showNotificationPermissionFallbackDialog) {
+        NotificationPermissionFallbackDialog(
+            onGrantPermission = { viewModel.requestNotificationPermissionFromExplanation() },
+            onUseTileOnly = { viewModel.useTileOnlyDetectionForNotificationFallback() }
+        )
+    }
+
+    val showNotificationPermissionSettingsDialog by
+        viewModel.showNotificationPermissionSettingsDialog.collectAsState()
+    if (showNotificationPermissionSettingsDialog) {
+        NotificationPermissionSettingsDialog(
+            onOpenSettings = { viewModel.openNotificationPermissionSettings() },
+            onUseTileOnly = { viewModel.useTileOnlyDetectionForNotificationFallback() }
+        )
+    }
 }
 
 @Composable
@@ -294,7 +416,10 @@ private fun MainTilesContent(
             )
         }
 
-        SecondaryTabRow(selectedTabIndex = pagerState.currentPage) {
+        SecondaryTabRow(
+            selectedTabIndex = pagerState.currentPage,
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
             tabTitles.forEachIndexed { index, title ->
                 Tab(
                     selected = pagerState.currentPage == index,
@@ -310,9 +435,7 @@ private fun MainTilesContent(
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.background)
+            modifier = Modifier.weight(1f)
         ) { page ->
             Column(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
                 when (page) {
