@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -126,8 +127,7 @@ fun MainScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-//        containerColor = MaterialTheme.colorScheme.surface,
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             if (inSubScreen) {
                 TopAppBar(
@@ -262,8 +262,9 @@ fun MainScreen(
                     ShortcutSettingsScreen(
                         viewModel = viewModel,
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
                             .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(horizontal = 16.dp)
                     )
                 }
 
@@ -435,7 +436,9 @@ private fun MainTilesContent(
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .background(MaterialTheme.colorScheme.background)
         ) { page ->
             Column(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
                 when (page) {
