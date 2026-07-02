@@ -1,0 +1,6 @@
+Version 1.3.0
+
+- New feature: Android app shortcuts for DNS and USB tile actions, usable from launchers and automation apps.
+- New feature: Export and restore app settings, custom DNS entries, tile options, and shortcuts as JSON.
+- Added unlock-required options for DNS/USB tile actions and new USB settings for developer options and wireless debugging.
+- Improved navigation, Material You styling, permission dialogs, VPN-aware network detection, and added Czech and Brazilian Portuguese.

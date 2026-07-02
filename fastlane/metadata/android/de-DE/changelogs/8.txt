@@ -1,0 +1,6 @@
+Version 1.3.0
+
+- Neues Feature: Android-App-Verknüpfungen für DNS- und USB-Aktionen, nutzbar mit Launchern und Automatisierung.
+- Neues Feature: App-Einstellungen, eigene DNS-Einträge, Kachel-Optionen und Shortcuts als JSON sichern und wiederherstellen.
+- Neue Option: Gerät muss für DNS/USB-Aktionen entsperrt sein; außerdem USB-Optionen für Entwickler- und kabelloses Debugging.
+- Verbesserte Navigation, Material You, Dialoge, VPN-Erkennung; Tschechisch und brasilianisches Portugiesisch ergänzt.
