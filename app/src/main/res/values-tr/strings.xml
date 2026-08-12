@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">QuickTile Ayarları</string>
 
@@ -41,7 +40,7 @@
     <string name="warning_at_least_one_usb_option">En az bir USB durumu etkinleştirilmelidir.</string>
     <string name="toast_command_copied">Komut kopyalandı!</string>
 
-
+    
     <!-- Permission Grant Dialog -->
     <string name="permission_grant_dialog_title">İzin Gerekli</string>
     <string name="permission_grant_dialog_intro">Özel DNS ve USB Hata Ayıklama gibi sistem ayarlarını değiştirmek için bu uygulamanın özel WRITE_SECURE_SETTINGS iznine ihtiyacı var. Lütfen bu izni vermek için aşağıdaki yöntemlerden birini seçin:</string>
