@@ -295,4 +295,12 @@
     <string name="shortcut_settings_mark_favorite_desc">Mark %1$s as favorite</string>
     <string name="shortcut_settings_remove_favorite_desc">Remove %1$s from favorites</string>
     <string name="shortcut_settings_open_desc">Open shortcut settings</string>
+    <string name="shortcut_settings_back_desc">Back to tile settings</string>
+
+    <!-- Quick Action Dialog -->
+    <string name="quick_action_title">Quick Actions</string>
+    <string name="quick_action_dns_title">Private DNS</string>
+    <string name="quick_action_usb_title">USB Debugging</string>
+    <string name="quick_action_no_actions">No actions are enabled for this tile.</string>
+    <string name="quick_action_open_app">Open app</string>
 </resources>
