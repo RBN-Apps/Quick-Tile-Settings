@@ -115,10 +115,6 @@ object VpnDetectionUtils {
         onVpnDisconnected: () -> Unit
     ): ConnectivityManager.NetworkCallback {
         return object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                // This will be called when any network becomes available
-            }
-
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities

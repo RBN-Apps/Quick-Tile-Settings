@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables
+package com.rbn.qtsettings.ui.composables.settings
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

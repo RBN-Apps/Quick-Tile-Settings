@@ -6,11 +6,8 @@ import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rbn.qtsettings.R
-import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
 import java.time.Instant
@@ -24,8 +21,6 @@ class PreferencesManager private constructor(context: Context) {
     private val gson = Gson()
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("qt_settings_prefs", Context.MODE_PRIVATE)
-    private val validDnsModes = setOf(DNS_MODE_OFF, DNS_MODE_AUTO, DNS_MODE_ON)
-    private val validDetectionModes = setOf(TILE_ONLY_DETECTION, BACKGROUND_DETECTION)
 
     // DNS Settings
     private val _dnsToggleOff =
@@ -37,6 +32,14 @@ class PreferencesManager private constructor(context: Context) {
     val dnsToggleAuto: StateFlow<Boolean> = _dnsToggleAuto.asStateFlow()
 
     private val hostnameEntryListType = object : TypeToken<List<DnsHostnameEntry>>() {}.type
+    private val _dnsListSortMode = MutableStateFlow(
+        DnsListSortMode.fromPersistedValue(
+            sharedPreferences.getString(KEY_DNS_LIST_SORT_MODE, null)
+        )
+    )
+    val dnsListSortMode: StateFlow<DnsListSortMode> = _dnsListSortMode.asStateFlow()
+
+    private var manualDnsHostnames: List<DnsHostnameEntry> = emptyList()
     private val _dnsHostnames = MutableStateFlow<List<DnsHostnameEntry>>(emptyList())
     val dnsHostnames: StateFlow<List<DnsHostnameEntry>> = _dnsHostnames.asStateFlow()
 
@@ -169,6 +172,15 @@ class PreferencesManager private constructor(context: Context) {
         _dnsToggleAuto.value = enabled
     }
 
+    fun setDnsListSortMode(mode: DnsListSortMode) {
+        if (_dnsListSortMode.value == mode) return
+
+        sharedPreferences.edit { putString(KEY_DNS_LIST_SORT_MODE, mode.persistedValue) }
+        _dnsListSortMode.value = mode
+        publishEffectiveDnsHostnames()
+        updateExposedShortcuts()
+    }
+
     fun setDnsEnableAutoRevert(enabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_DNS_ENABLE_AUTO_REVERT, enabled) }
         _dnsEnableAutoRevert.value = enabled
@@ -279,7 +291,8 @@ class PreferencesManager private constructor(context: Context) {
                 dns = DnsSettingsBackup(
                     toggleOff = _dnsToggleOff.value,
                     toggleAuto = _dnsToggleAuto.value,
-                    hostnames = _dnsHostnames.value,
+                    hostnames = manualDnsHostnames,
+                    sortMode = _dnsListSortMode.value.persistedValue,
                     enableAutoRevert = _dnsEnableAutoRevert.value,
                     autoRevertDelaySeconds = _dnsAutoRevertDelaySeconds.value,
                     requireUnlock = _dnsRequireUnlock.value,
@@ -321,16 +334,18 @@ class PreferencesManager private constructor(context: Context) {
             throw IllegalArgumentException("Unsupported backup version: ${backup.schemaVersion}")
         }
 
-        val validatedBackup = validateSettingsBackup(backup)
+        val validatedBackup = SettingsBackupValidator(_shortcutMaxCount.value).validate(backup)
         val dns = validatedBackup.dns
         val usb = validatedBackup.usb
         val shortcuts = validatedBackup.shortcuts
         val restoredHostnames = dns.hostnames
+        val restoredSortMode = DnsListSortMode.fromPersistedValue(dns.sortMode)
 
         sharedPreferences.edit {
             putBoolean(KEY_DNS_TOGGLE_OFF, dns.toggleOff)
             putBoolean(KEY_DNS_TOGGLE_AUTO, dns.toggleAuto)
             putString(KEY_DNS_HOSTNAMES, gson.toJson(restoredHostnames))
+            putString(KEY_DNS_LIST_SORT_MODE, restoredSortMode.persistedValue)
             putBoolean(KEY_DNS_ENABLE_AUTO_REVERT, dns.enableAutoRevert)
             putInt(KEY_DNS_AUTO_REVERT_DELAY_SECONDS, dns.autoRevertDelaySeconds)
             putBoolean(KEY_DNS_REQUIRE_UNLOCK, dns.requireUnlock)
@@ -362,7 +377,9 @@ class PreferencesManager private constructor(context: Context) {
 
         _dnsToggleOff.value = dns.toggleOff
         _dnsToggleAuto.value = dns.toggleAuto
-        _dnsHostnames.value = restoredHostnames
+        manualDnsHostnames = restoredHostnames
+        _dnsListSortMode.value = restoredSortMode
+        publishEffectiveDnsHostnames()
         _dnsEnableAutoRevert.value = dns.enableAutoRevert
         _dnsAutoRevertDelaySeconds.value = dns.autoRevertDelaySeconds
         _dnsRequireUnlock.value = dns.requireUnlock
@@ -396,200 +413,11 @@ class PreferencesManager private constructor(context: Context) {
         updateExposedShortcuts()
     }
 
-    private data class ValidatedSettingsBackup(
-        val dns: DnsSettingsBackup,
-        val usb: UsbSettingsBackup,
-        val shortcuts: ShortcutSettingsBackup
-    )
-
-    private fun validateSettingsBackup(backup: SettingsBackup): ValidatedSettingsBackup {
-        val dns = backup.dns ?: throw IllegalArgumentException("Backup is missing DNS settings")
-        val usb = backup.usb ?: throw IllegalArgumentException("Backup is missing USB settings")
-        val shortcuts = backup.shortcuts
-            ?: throw IllegalArgumentException("Backup is missing shortcut settings")
-
-        val restoredHostnames = normalizeRestoredDnsHostnames(dns.hostnames)
-        val availableHostnames = restoredHostnames.map { it.hostname }.toSet()
-        val availableShortcutIds = ShortcutUtils.getAvailableShortcutIds(restoredHostnames)
-        val favoriteShortcutIds = normalizeRestoredFavoriteShortcutIds(
-            favoriteShortcutIds = shortcuts.favoriteShortcutIds,
-            enabledShortcutIds = shortcuts.enabledShortcutIds,
-            availableShortcutIds = availableShortcutIds,
-            restoredHostnames = restoredHostnames
+    private fun publishEffectiveDnsHostnames() {
+        _dnsHostnames.value = DnsHostnamePolicy.sort(
+            hostnames = manualDnsHostnames,
+            mode = _dnsListSortMode.value
         )
-        val enabledShortcutIds = normalizeRestoredEnabledShortcutIds(
-            shortcutIds = shortcuts.enabledShortcutIds,
-            favoriteShortcutIds = favoriteShortcutIds,
-            availableShortcutIds = availableShortcutIds,
-            restoredHostnames = restoredHostnames
-        )
-        val wifiState = normalizeDnsState(dns.dnsStateOnWifi, DNS_MODE_OFF)
-        val mobileState = normalizeDnsState(dns.dnsStateOnMobile, DNS_MODE_AUTO)
-
-        return ValidatedSettingsBackup(
-            dns = dns.copy(
-                hostnames = restoredHostnames,
-                autoRevertDelaySeconds = normalizeDelaySeconds(dns.autoRevertDelaySeconds),
-                vpnDetectionMode = normalizeDetectionMode(dns.vpnDetectionMode),
-                networkTypeDetectionMode = normalizeDetectionMode(dns.networkTypeDetectionMode),
-                dnsStateOnWifi = wifiState,
-                dnsHostnameOnWifi = normalizeStateHostname(
-                    state = wifiState,
-                    hostname = dns.dnsHostnameOnWifi,
-                    availableHostnames = availableHostnames
-                ),
-                dnsStateOnMobile = mobileState,
-                dnsHostnameOnMobile = normalizeStateHostname(
-                    state = mobileState,
-                    hostname = dns.dnsHostnameOnMobile,
-                    availableHostnames = availableHostnames
-                )
-            ),
-            usb = usb.copy(
-                autoRevertDelaySeconds = normalizeDelaySeconds(usb.autoRevertDelaySeconds)
-            ),
-            shortcuts = ShortcutSettingsBackup(
-                enabledShortcutIds = enabledShortcutIds,
-                favoriteShortcutIds = favoriteShortcutIds.intersect(enabledShortcutIds),
-                allowPinnedShortcutsWhenDisabled = shortcuts.allowPinnedShortcutsWhenDisabled
-            )
-        )
-    }
-
-    private fun normalizeRestoredEnabledShortcutIds(
-        shortcutIds: Set<String>?,
-        favoriteShortcutIds: Set<String>,
-        availableShortcutIds: Set<String>,
-        restoredHostnames: List<DnsHostnameEntry>
-    ): Set<String> {
-        val migratedIds = normalizeShortcutIdSet(shortcutIds)
-        val preferredOrder = ShortcutUtils.getOrderedShortcutIds(
-            hostnames = restoredHostnames,
-            favoriteShortcutIds = favoriteShortcutIds
-        )
-        return preferredOrder
-            .filter { shortcutId ->
-                migratedIds.contains(shortcutId) && availableShortcutIds.contains(shortcutId)
-            }
-            .take(_shortcutMaxCount.value)
-            .toSet()
-    }
-
-    private fun normalizeRestoredFavoriteShortcutIds(
-        favoriteShortcutIds: Set<String>?,
-        enabledShortcutIds: Set<String>?,
-        availableShortcutIds: Set<String>,
-        restoredHostnames: List<DnsHostnameEntry>
-    ): Set<String> {
-        val migratedFavorites = normalizeShortcutIdSet(favoriteShortcutIds)
-        val migratedEnabled = normalizeShortcutIdSet(enabledShortcutIds)
-        return ShortcutUtils.getOrderedShortcutIds(restoredHostnames)
-            .filter { shortcutId ->
-                migratedFavorites.contains(shortcutId) &&
-                        migratedEnabled.contains(shortcutId) &&
-                        availableShortcutIds.contains(shortcutId)
-            }
-            .take(ShortcutUtils.MAX_FAVORITE_SHORTCUTS)
-            .toSet()
-    }
-
-    private fun normalizeShortcutIdSet(shortcutIds: Set<String>?): Set<String> {
-        @Suppress("SENSELESS_COMPARISON")
-        return ShortcutUtils.migrateLegacyShortcutIds(
-            shortcutIds.orEmpty()
-                .mapNotNull { shortcutId ->
-                    if (shortcutId == null || shortcutId.isBlank()) null else shortcutId
-                }
-                .toSet()
-        )
-    }
-
-    private fun normalizeDnsState(value: String?, defaultValue: String): String {
-        return value?.takeIf { validDnsModes.contains(it) } ?: defaultValue
-    }
-
-    private fun normalizeDetectionMode(value: String?): String {
-        return value?.takeIf { validDetectionModes.contains(it) } ?: TILE_ONLY_DETECTION
-    }
-
-    private fun normalizeDelaySeconds(value: Int): Int {
-        return value.coerceIn(MIN_AUTO_REVERT_DELAY_SECONDS, MAX_AUTO_REVERT_DELAY_SECONDS)
-    }
-
-    private fun normalizeStateHostname(
-        state: String,
-        hostname: String?,
-        availableHostnames: Set<String>
-    ): String? {
-        val normalizedHostname = hostname?.trim()?.lowercase()
-        return if (
-            state == DNS_MODE_ON &&
-            normalizedHostname != null &&
-            availableHostnames.contains(normalizedHostname)
-        ) {
-            normalizedHostname
-        } else {
-            null
-        }
-    }
-
-    private fun sortDnsHostnames(hostnames: List<DnsHostnameEntry>): List<DnsHostnameEntry> {
-        return hostnames.sortedWith(
-            compareBy(
-                { !it.isPredefined },
-                { it.name }
-            )
-        )
-    }
-
-    private fun normalizeRestoredDnsHostnames(
-        restoredHostnames: List<DnsHostnameEntry>?
-    ): List<DnsHostnameEntry> {
-        val restored = restoredHostnames.orEmpty()
-        val defaults = getDefaultDnsHostnames()
-        val restoredPredefined = restored.filter { it.isPredefined }
-        val customRestored = restored
-            .filter {
-                !it.isPredefined &&
-                        isPresentAfterGsonRestore(it.id) &&
-                        isPresentAfterGsonRestore(it.name) &&
-                        isValidDnsHostname(it.hostname)
-            }
-            .distinctBy { it.id }
-            .take(MAX_RESTORED_CUSTOM_HOSTNAMES)
-            .map {
-                it.copy(
-                    name = it.name.trim().take(MAX_HOSTNAME_DISPLAY_NAME_LENGTH),
-                    hostname = it.hostname.trim().lowercase()
-                )
-            }
-
-        val normalizedPredefined = defaults.map { defaultEntry ->
-            val restoredEntry = restoredPredefined.find { it.id == defaultEntry.id }
-            defaultEntry.copy(
-                isSelectedForCycle = restoredEntry?.isSelectedForCycle
-                    ?: defaultEntry.isSelectedForCycle
-            )
-        }
-
-        return sortDnsHostnames(normalizedPredefined + customRestored)
-    }
-
-    private fun isPresentAfterGsonRestore(value: String): Boolean {
-        @Suppress("SENSELESS_COMPARISON")
-        return value != null && value.isNotBlank()
-    }
-
-    private fun isValidDnsHostname(hostname: String?): Boolean {
-        val value = hostname?.trim() ?: return false
-        if (value.length !in 1..MAX_DNS_HOSTNAME_LENGTH) return false
-        if (value.startsWith(".") || value.endsWith(".")) return false
-        return value.split(".").all { label ->
-            label.length in 1..63 &&
-                    label.first().isLetterOrDigit() &&
-                    label.last().isLetterOrDigit() &&
-                    label.all { it.isLetterOrDigit() || it == '-' }
-        }
     }
 
     private fun loadDnsHostnames() {
@@ -603,39 +431,34 @@ class PreferencesManager private constructor(context: Context) {
             }
         } else null
 
-        if (storedHostnames.isNullOrEmpty()) {
-            _dnsHostnames.value = getDefaultDnsHostnames()
-            saveDnsHostnamesInternal()
-        } else {
-            val defaultPredefined = getDefaultDnsHostnames().filter { it.isPredefined }
-            val customStored = storedHostnames.filter { !it.isPredefined }
-            val finalPredefined = defaultPredefined.map { defaultEntry ->
-                val storedPredefined =
-                    storedHostnames.find { it.id == defaultEntry.id && it.isPredefined }
-                storedPredefined?.copy(
-                    name = defaultEntry.name,
-                    hostname = defaultEntry.hostname,
-                    descriptionResId = defaultEntry.descriptionResId
-                ) ?: defaultEntry
-            }
-
-            _dnsHostnames.value = sortDnsHostnames(finalPredefined + customStored)
-            saveDnsHostnamesInternal()
-        }
+        manualDnsHostnames = DnsHostnamePolicy.reconcile(
+            storedHostnames = storedHostnames,
+            normalizeCustomEntries = false
+        )
+        publishEffectiveDnsHostnames()
+        saveDnsHostnamesInternal()
+        saveDnsListSortModeInternal()
     }
 
 
     private fun saveDnsHostnamesInternal() {
-        val json = gson.toJson(_dnsHostnames.value)
+        val json = gson.toJson(manualDnsHostnames)
         sharedPreferences.edit { putString(KEY_DNS_HOSTNAMES, json) }
     }
 
+    private fun saveDnsListSortModeInternal() {
+        sharedPreferences.edit {
+            putString(KEY_DNS_LIST_SORT_MODE, _dnsListSortMode.value.persistedValue)
+        }
+    }
+
     fun updateDnsHostnameEntry(updatedEntry: DnsHostnameEntry) {
-        val currentList = _dnsHostnames.value.toMutableList()
+        val currentList = manualDnsHostnames.toMutableList()
         val index = currentList.indexOfFirst { it.id == updatedEntry.id }
         if (index != -1) {
             currentList[index] = updatedEntry
-            _dnsHostnames.value = sortDnsHostnames(currentList.toList())
+            manualDnsHostnames = currentList
+            publishEffectiveDnsHostnames()
             saveDnsHostnamesInternal()
             synchronizeEnabledShortcutsWithAvailableShortcuts()
             synchronizeFavoriteShortcutsWithAvailableShortcuts()
@@ -650,9 +473,10 @@ class PreferencesManager private constructor(context: Context) {
             isPredefined = false,
             isSelectedForCycle = true
         )
-        val newList = _dnsHostnames.value.toMutableList()
+        val newList = manualDnsHostnames.toMutableList()
         newList.add(newEntry)
-        _dnsHostnames.value = sortDnsHostnames(newList.toList())
+        manualDnsHostnames = newList
+        publishEffectiveDnsHostnames()
         saveDnsHostnamesInternal()
         synchronizeEnabledShortcutsWithAvailableShortcuts()
         synchronizeFavoriteShortcutsWithAvailableShortcuts()
@@ -660,13 +484,36 @@ class PreferencesManager private constructor(context: Context) {
     }
 
     fun deleteCustomDnsHostname(id: String) {
-        val currentList = _dnsHostnames.value.toMutableList()
-        currentList.removeAll { it.id == id && !it.isPredefined }
-        _dnsHostnames.value = sortDnsHostnames(currentList.toList())
+        val currentList = manualDnsHostnames.toMutableList()
+        val removed = currentList.removeAll { it.id == id && !it.isPredefined }
+        if (!removed) return
+
+        manualDnsHostnames = currentList
+        publishEffectiveDnsHostnames()
         saveDnsHostnamesInternal()
         synchronizeEnabledShortcutsWithAvailableShortcuts()
         synchronizeFavoriteShortcutsWithAvailableShortcuts()
         updateExposedShortcuts()
+    }
+
+    fun reorderDnsHostnames(orderedIds: List<String>): Boolean {
+        if (_dnsListSortMode.value != DnsListSortMode.MANUAL) return false
+        if (orderedIds.size != manualDnsHostnames.size) return false
+        if (orderedIds.toSet().size != orderedIds.size) return false
+
+        val entriesById = manualDnsHostnames.associateBy { it.id }
+        if (entriesById.size != manualDnsHostnames.size || orderedIds.toSet() != entriesById.keys) {
+            return false
+        }
+
+        val reordered = orderedIds.map { entryId -> entriesById.getValue(entryId) }
+        if (reordered == manualDnsHostnames) return true
+
+        manualDnsHostnames = reordered
+        publishEffectiveDnsHostnames()
+        saveDnsHostnamesInternal()
+        updateExposedShortcuts()
+        return true
     }
 
     fun setShortcutExposureEnabled(shortcutId: String, enabled: Boolean): Boolean {
@@ -849,53 +696,29 @@ class PreferencesManager private constructor(context: Context) {
         }
     }
 
-    private fun getDefaultDnsHostnames(): List<DnsHostnameEntry> {
-        return listOf(
-            DnsHostnameEntry(
-                id = "adguard_default",
-                name = "AdGuard DNS",
-                hostname = "dns.adguard.com",
-                isPredefined = true,
-                isSelectedForCycle = true,
-                descriptionResId = R.string.dns_info_adguard
-            ),
-            DnsHostnameEntry(
-                id = "cloudflare_default",
-                name = "Cloudflare (1.1.1.1)",
-                hostname = "one.one.one.one",
-                isPredefined = true,
-                isSelectedForCycle = true,
-                descriptionResId = R.string.dns_info_cloudflare
-            ),
-            DnsHostnameEntry(
-                id = "quad9_default",
-                name = "Quad9 Security",
-                hostname = "dns.quad9.net",
-                isPredefined = true,
-                isSelectedForCycle = true,
-                descriptionResId = R.string.dns_info_quad9
-            )
-        )
-    }
-
     fun isDnsToggleOffEnabled(): Boolean = sharedPreferences.getBoolean(KEY_DNS_TOGGLE_OFF, true)
     fun isDnsToggleAutoEnabled(): Boolean = sharedPreferences.getBoolean(KEY_DNS_TOGGLE_AUTO, true)
 
+    fun getDnsListSortModeBlocking(): DnsListSortMode =
+        DnsListSortMode.fromPersistedValue(
+            sharedPreferences.getString(KEY_DNS_LIST_SORT_MODE, null)
+        )
+
     fun getDnsHostnamesSelectedForCycle(): List<DnsHostnameEntry> {
-        val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
-        val hostnames = if (json != null) {
-            try {
-                gson.fromJson(json, hostnameEntryListType)
-            } catch (_: Exception) {
-                emptyList()
-            }
-        } else getDefaultDnsHostnames()
-        return hostnames.filter { it.isSelectedForCycle }
+        return getAllDnsHostnamesBlocking().filter { it.isSelectedForCycle }
     }
 
     fun getAllDnsHostnamesBlocking(): List<DnsHostnameEntry> {
+        val manualHostnames = readManualDnsHostnamesBlocking()
+        return DnsHostnamePolicy.sort(
+            hostnames = manualHostnames,
+            mode = getDnsListSortModeBlocking()
+        )
+    }
+
+    private fun readManualDnsHostnamesBlocking(): List<DnsHostnameEntry> {
         val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
-        return if (json != null) {
+        val storedHostnames: List<DnsHostnameEntry>? = if (json != null) {
             try {
                 gson.fromJson(json, hostnameEntryListType)
             } catch (e: Exception) {
@@ -904,11 +727,15 @@ class PreferencesManager private constructor(context: Context) {
                     "Error parsing stored DNS hostnames for blocking read",
                     e
                 )
-                getDefaultDnsHostnames()
+                null
             }
         } else {
-            getDefaultDnsHostnames()
+            null
         }
+        return DnsHostnamePolicy.reconcile(
+            storedHostnames = storedHostnames ?: manualDnsHostnames,
+            normalizeCustomEntries = false
+        )
     }
 
     fun isDnsAutoRevertEnabled(): Boolean =
@@ -975,6 +802,7 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_DNS_ENABLE_AUTO_REVERT = "dns_enable_auto_revert"
         private const val KEY_DNS_AUTO_REVERT_DELAY_SECONDS = "dns_auto_revert_delay_seconds"
         private const val KEY_DNS_HOSTNAMES = "dns_hostnames_list_v2"
+        private const val KEY_DNS_LIST_SORT_MODE = "dns_list_sort_mode_v1"
 
 
         private const val KEY_USB_TOGGLE_ENABLE = "usb_toggle_enable"
@@ -1003,12 +831,6 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_FAVORITE_SHORTCUT_IDS = "favorite_shortcut_ids_v1"
         private const val KEY_ALLOW_PINNED_SHORTCUTS_WHEN_DISABLED =
             "allow_pinned_shortcuts_when_disabled_v1"
-        private const val MIN_AUTO_REVERT_DELAY_SECONDS = 1
-        private const val MAX_AUTO_REVERT_DELAY_SECONDS = 86_400
-        private const val MAX_DNS_HOSTNAME_LENGTH = 253
-        private const val MAX_HOSTNAME_DISPLAY_NAME_LENGTH = 80
-        private const val MAX_RESTORED_CUSTOM_HOSTNAMES = 250
-
         const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
         const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
         const val KEY_USB_PREVIOUS_STATE_FOR_REVERT = "usb_previous_state_for_revert"

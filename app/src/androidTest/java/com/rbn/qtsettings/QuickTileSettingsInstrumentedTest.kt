@@ -6,27 +6,37 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performCustomAccessibilityActionWithLabel
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
 import androidx.core.content.ContextCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.rbn.qtsettings.data.DnsListSortMode
+import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.utils.PermissionUtils
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlin.math.abs
 
 private const val TAG = "QuickTileSettingsTest"
 private const val TAG_NETWORK_TYPE_DETECTION_TILE_OPTION = "network_type_detection_tile_only_option"
@@ -266,20 +276,21 @@ class QuickTileSettingsInstrumentedTest {
 
         // Test info buttons for predefined DNS providers
         val predefinedProviders = listOf(
-            "AdGuard DNS",
-            "Cloudflare (1.1.1.1)",
-            "Quad9 Security"
+            "AdGuard DNS" to "dns.adguard.com",
+            "Cloudflare (1.1.1.1)" to "one.one.one.one",
+            "Quad9 Security" to "dns.quad9.net"
         )
 
-        predefinedProviders.forEach { providerName ->
+        predefinedProviders.forEach { (providerName, providerHostname) ->
             Log.i(TAG, "Testing info button for: $providerName")
 
-            // Find and click the info button for this provider
+            // Open the compact row actions and select Info.
             try {
                 composeTestRule.onNodeWithContentDescription(
                     context.getString(
-                        R.string.button_info_dns,
-                        providerName
+                        R.string.dns_entry_actions,
+                        providerName,
+                        providerHostname
                     )
                 )
                     .performScrollTo()
@@ -287,12 +298,16 @@ class QuickTileSettingsInstrumentedTest {
             } catch (_: AssertionError) {
                 composeTestRule.onNodeWithContentDescription(
                     context.getString(
-                        R.string.button_info_dns,
-                        providerName
+                        R.string.dns_entry_actions,
+                        providerName,
+                        providerHostname
                     )
                 )
                     .performClick()
             }
+            composeTestRule.onNodeWithText(
+                context.getString(R.string.button_info_dns, providerName)
+            ).performClick()
             composeTestRule.waitForIdle()
 
             // Wait for info dialog to appear
@@ -325,14 +340,227 @@ class QuickTileSettingsInstrumentedTest {
     }
 
     @Test
+    fun dnsOffAndAutoRows_shouldOfferSetActiveAction() {
+        composeTestRule.navigateToDnsTab(context)
+
+        listOf(
+            context.getString(R.string.dns_state_off),
+            context.getString(R.string.dns_state_auto)
+        ).forEach { modeLabel ->
+            composeTestRule.onNodeWithContentDescription(
+                context.getString(R.string.dns_set_active_mode, modeLabel)
+            )
+                .performScrollTo()
+                .assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun usbOnAndOffRows_shouldOfferSetActiveAction() {
+        composeTestRule.navigateToUsbTab(context)
+
+        listOf(
+            context.getString(R.string.usb_state_on),
+            context.getString(R.string.usb_state_off)
+        ).forEach { stateLabel ->
+            composeTestRule.onNodeWithContentDescription(
+                context.getString(R.string.usb_set_active_mode, stateLabel)
+            )
+                .performScrollTo()
+                .assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun dnsSortingMenu_shouldExposeManualReorderingWithoutAddingRowActions() {
+        composeTestRule.navigateToDnsTab(context)
+
+        composeTestRule.onNodeWithTag("dns_sort_menu_button")
+            .performScrollTo()
+            .performClick()
+        composeTestRule.onNodeWithTag("dns_sort_manual").performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText(context.getString(R.string.dns_manual_reorder_hint))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(
+            context.getString(
+                R.string.dns_reorder_entry,
+                "AdGuard DNS",
+                "dns.adguard.com"
+            )
+        ).assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("dns_sort_menu_button").performClick()
+        composeTestRule.onNodeWithTag("dns_sort_alphabetical").performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText(context.getString(R.string.dns_manual_reorder_hint))
+            .assertDoesNotExist()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun manualDnsReorder_shouldAnimateDisplacedRowsAndRestoreItsConfiguredOrder() {
+        val preferencesManager = PreferencesManager.getInstance(context)
+        val originalSortMode = preferencesManager.dnsListSortMode.value
+
+        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
+        val originalManualOrder = preferencesManager.dnsHostnames.value.map { it.id }
+        val entriesById = preferencesManager.dnsHostnames.value.associateBy { it.id }
+        val adGuard = entriesById.getValue("adguard_default")
+        val cloudflare = entriesById.getValue("cloudflare_default")
+        val quad9 = entriesById.getValue("quad9_default")
+        val controlledIds = setOf(adGuard.id, cloudflare.id, quad9.id)
+        val controlledOrder =
+            listOf(adGuard.id, cloudflare.id, quad9.id) +
+                originalManualOrder.filterNot(controlledIds::contains)
+
+        try {
+            assertTrue(preferencesManager.reorderDnsHostnames(controlledOrder))
+
+            composeTestRule.navigateToDnsTab(context)
+            composeTestRule.waitForIdle()
+
+            val adGuardHandle = composeTestRule.onNodeWithContentDescription(
+                context.getString(R.string.dns_reorder_entry, adGuard.name, adGuard.hostname),
+                useUnmergedTree = true
+            )
+            val cloudflareHandle = composeTestRule.onNodeWithContentDescription(
+                context.getString(
+                    R.string.dns_reorder_entry,
+                    cloudflare.name,
+                    cloudflare.hostname
+                ),
+                useUnmergedTree = true
+            )
+            val quad9Handle = composeTestRule.onNodeWithContentDescription(
+                context.getString(R.string.dns_reorder_entry, quad9.name, quad9.hostname),
+                useUnmergedTree = true
+            )
+
+            adGuardHandle.performScrollTo()
+            composeTestRule.waitForIdle()
+
+            val adGuardStartY = adGuardHandle.fetchSemanticsNode().boundsInRoot.top
+            val cloudflareStartY = cloudflareHandle.fetchSemanticsNode().boundsInRoot.top
+            assertTrue("The controlled DNS order was not shown", adGuardStartY < cloudflareStartY)
+
+            composeTestRule.mainClock.autoAdvance = false
+            adGuardHandle.performCustomAccessibilityActionWithLabel(
+                context.getString(R.string.dns_move_down)
+            )
+
+            var sawIntermediatePosition = false
+            repeat(24) {
+                composeTestRule.mainClock.advanceTimeByFrame()
+                val currentCloudflareY = cloudflareHandle.fetchSemanticsNode().boundsInRoot.top
+                if (
+                    currentCloudflareY < cloudflareStartY - 0.5f &&
+                    currentCloudflareY > adGuardStartY + 0.5f
+                ) {
+                    sawIntermediatePosition = true
+                }
+            }
+
+            assertTrue(
+                "The displaced DNS row jumped instead of animating between positions",
+                sawIntermediatePosition
+            )
+
+            composeTestRule.mainClock.autoAdvance = true
+            composeTestRule.waitForIdle()
+
+            val adGuardEndY = adGuardHandle.fetchSemanticsNode().boundsInRoot.top
+            val cloudflareEndY = cloudflareHandle.fetchSemanticsNode().boundsInRoot.top
+            assertTrue("The DNS rows were not reordered", cloudflareEndY < adGuardEndY)
+            assertTrue(
+                "The displaced DNS row did not finish in the previous row slot",
+                abs(cloudflareEndY - adGuardStartY) < 2f
+            )
+
+            val dragDistance = (cloudflareEndY - adGuardEndY) * 0.75f
+            assertTrue("The DNS rows did not have a usable drag distance", dragDistance < 0f)
+
+            adGuardHandle.performTouchInput {
+                val start = center
+                val holdDuration = viewConfiguration.longPressTimeoutMillis + 100L
+                down(start)
+
+                var heldFor = 0L
+                while (heldFor < holdDuration) {
+                    val eventDelay = minOf(eventPeriodMillis, holdDuration - heldFor)
+                    move(eventDelay)
+                    heldFor += eventDelay
+                }
+
+                assertEquals(
+                    "Long-pressing the DNS row without moving must not reorder it",
+                    listOf(cloudflare.id, adGuard.id, quad9.id),
+                    preferencesManager.dnsHostnames.value.take(3).map { it.id }
+                )
+
+                repeat(10) { step ->
+                    val progress = (step + 1) / 10f
+                    updatePointerTo(
+                        pointerId = 0,
+                        position = start + Offset(0f, dragDistance * progress)
+                    )
+                    move(20L)
+                }
+                up()
+            }
+            composeTestRule.waitForIdle()
+
+            assertEquals(
+                listOf(adGuard.id, cloudflare.id, quad9.id),
+                preferencesManager.dnsHostnames.value.take(3).map { it.id }
+            )
+            val adGuardAfterDragY = adGuardHandle.fetchSemanticsNode().boundsInRoot.top
+            val cloudflareAfterDragY = cloudflareHandle.fetchSemanticsNode().boundsInRoot.top
+            assertTrue(
+                "The pointer drag did not place the DNS row above its neighbor",
+                adGuardAfterDragY < cloudflareAfterDragY
+            )
+
+            quad9Handle.performCustomAccessibilityActionWithLabel(
+                context.getString(R.string.dns_move_up)
+            )
+            composeTestRule.waitForIdle()
+            assertEquals(
+                listOf(adGuard.id, quad9.id, cloudflare.id),
+                preferencesManager.dnsHostnames.value.take(3).map { it.id }
+            )
+
+            preferencesManager.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
+            composeTestRule.waitForIdle()
+            preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
+            composeTestRule.waitForIdle()
+
+            assertEquals(
+                "Switching back to manual sorting did not restore the configured order",
+                listOf(adGuard.id, quad9.id, cloudflare.id),
+                preferencesManager.dnsHostnames.value.take(3).map { it.id }
+            )
+        } finally {
+            composeTestRule.mainClock.autoAdvance = true
+            preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
+            preferencesManager.reorderDnsHostnames(originalManualOrder)
+            preferencesManager.setDnsListSortMode(originalSortMode)
+            composeTestRule.waitForIdle()
+        }
+    }
+
+    @Test
     fun customDnsHostname_shouldSupportFullCRUD() {
         // Navigate to DNS tab
         composeTestRule.navigateToDnsTab(context)
 
-        val customHostname = "Test Custom DNS"
-        val customValue = "dns.example.com"
-        val editedHostname = "Edited Custom DNS"
-        val editedValue = "dns-edited.example.com"
+        val testRunId = System.nanoTime().toString()
+        val customHostname = "Test Custom DNS $testRunId"
+        val customValue = "dns-$testRunId.example.com"
+        val editedHostname = "Edited Custom DNS $testRunId"
+        val editedValue = "dns-edited-$testRunId.example.com"
 
         // CREATE: Add custom hostname
         Log.i(TAG, "Testing CREATE: Adding custom DNS hostname")
@@ -349,9 +577,9 @@ class QuickTileSettingsInstrumentedTest {
 
         // Fill in hostname form fields
         composeTestRule.onAllNodes(hasSetTextAction())[0]
-            .performTextInput(customHostname)
+            .performTextInput("  $customHostname  ")
         composeTestRule.onAllNodes(hasSetTextAction())[1]
-            .performTextInput(customValue)
+            .performTextInput("  $customValue  ")
 
         // Save the hostname
         composeTestRule.onNodeWithText(context.getString(R.string.dialog_save))
@@ -362,9 +590,21 @@ class QuickTileSettingsInstrumentedTest {
         Log.i(TAG, "Testing READ: Verifying custom hostname '$customHostname' appears in list")
         composeTestRule.safeScrollToAndAssert(customHostname)
         composeTestRule.safeScrollToAndAssert(customValue)
+        composeTestRule.onNode(
+            hasText(customHostname) and
+                hasText(context.getString(R.string.dns_custom_entry_badge))
+        ).assertIsDisplayed()
+        composeTestRule.safeScrollToAndAssert("AdGuard DNS")
+        composeTestRule.onNode(
+            hasText("AdGuard DNS") and
+                hasText(context.getString(R.string.dns_custom_entry_badge))
+        ).assertDoesNotExist()
 
         // UPDATE: Edit the custom hostname
         Log.i(TAG, "Testing UPDATE: Editing custom hostname to '$editedHostname'")
+        composeTestRule.onNodeWithContentDescription(
+            context.getString(R.string.dns_entry_actions, customHostname, customValue)
+        ).performClick()
         composeTestRule.onNodeWithTag("dns_edit_button_${customValue}_${customHostname}")
             .performClick()
         composeTestRule.waitForIdle()
@@ -377,11 +617,11 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.onAllNodes(hasSetTextAction())[0]
             .performTextClearance()
         composeTestRule.onAllNodes(hasSetTextAction())[0]
-            .performTextInput(editedHostname)
+            .performTextInput("  $editedHostname  ")
         composeTestRule.onAllNodes(hasSetTextAction())[1]
             .performTextClearance()
         composeTestRule.onAllNodes(hasSetTextAction())[1]
-            .performTextInput(editedValue)
+            .performTextInput("  $editedValue  ")
 
         // Save the changes
         composeTestRule.onNodeWithText(context.getString(R.string.dialog_save))
@@ -395,6 +635,9 @@ class QuickTileSettingsInstrumentedTest {
 
         // DELETE: Remove the custom hostname
         Log.i(TAG, "Testing DELETE: Deleting custom hostname '$editedHostname'")
+        composeTestRule.onNodeWithContentDescription(
+            context.getString(R.string.dns_entry_actions, editedHostname, editedValue)
+        ).performClick()
         composeTestRule.onNodeWithTag("dns_delete_button_${editedValue}_${editedHostname}")
             .performClick()
         composeTestRule.waitForIdle()
@@ -768,8 +1011,12 @@ class QuickTileSettingsInstrumentedTest {
 
         // Clean up: delete the test hostname
         try {
-            composeTestRule.onNodeWithTag("dns_delete_button_${testValue}_${testHostname}")
+            composeTestRule.onNodeWithContentDescription(
+                context.getString(R.string.dns_entry_actions, testHostname, testValue)
+            )
                 .performScrollTo()
+                .performClick()
+            composeTestRule.onNodeWithTag("dns_delete_button_${testValue}_${testHostname}")
                 .performClick()
             composeTestRule.waitForIdle()
 

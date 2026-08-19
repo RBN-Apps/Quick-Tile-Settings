@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.content.edit
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.utils.AutoRevertCoordinator
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
@@ -282,33 +283,19 @@ class PrivateDnsTileService : TileService() {
 
         savePreviousState(currentMode, currentHost)
 
-        val nextStates = mutableListOf<Pair<String, String?>>()
-        if (prefsManager.isDnsToggleOffEnabled()) nextStates.add(Pair(DNS_MODE_OFF, null))
-        if (prefsManager.isDnsToggleAutoEnabled()) nextStates.add(
-            Pair(
-                DNS_MODE_AUTO,
-                null
-            )
+        val nextState = DnsCyclePolicy.nextState(
+            currentMode = currentMode,
+            currentHostname = currentHost,
+            includeOff = prefsManager.isDnsToggleOffEnabled(),
+            includeAuto = prefsManager.isDnsToggleAutoEnabled(),
+            hostnames = prefsManager.getDnsHostnamesSelectedForCycle()
         )
-        val hostnamesToCycle = prefsManager.getDnsHostnamesSelectedForCycle()
-        hostnamesToCycle.forEach { entry ->
-            nextStates.add(Pair(DNS_MODE_ON, entry.hostname))
-        }
-
-        if (nextStates.isEmpty()) {
+        if (nextState == null) {
             Toast.makeText(this, R.string.toast_no_states_enabled_dns, Toast.LENGTH_SHORT).show()
             clearPreviousState()
             return
         }
-
-        val currentIndex =
-            if (currentMode == DNS_MODE_ON) {
-                nextStates.indexOfFirst { it.first == DNS_MODE_ON && it.second == currentHost }
-            } else {
-                nextStates.indexOfFirst { it.first == currentMode }
-            }
-        val nextIndex = (currentIndex + 1) % nextStates.size
-        val (nextMode, nextHostToSet) = nextStates[nextIndex]
+        val (nextMode, nextHostToSet) = nextState
 
         try {
             Settings.Global.putString(contentResolver, PRIVATE_DNS_MODE, nextMode)
@@ -373,8 +360,15 @@ class PrivateDnsTileService : TileService() {
 
     private fun startRevertTimer(delaySeconds: Int) {
         revertTimer?.cancel()
+        val autoRevertGeneration = AutoRevertCoordinator.dnsGeneration(this)
         revertTimer = object : CountDownTimer(delaySeconds * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                if (AutoRevertCoordinator.dnsGeneration(this@PrivateDnsTileService) !=
+                    autoRevertGeneration
+                ) {
+                    cancelRevertTimerWithMessage(null)
+                    return
+                }
                 qsTile?.let { tile ->
                     getPreviousState()?.let { (prevMode, prevHost) ->
                         val readablePrevMode = getReadableDnsMode(prevMode, prevHost)
@@ -389,6 +383,14 @@ class PrivateDnsTileService : TileService() {
             }
 
             override fun onFinish() {
+                if (AutoRevertCoordinator.dnsGeneration(this@PrivateDnsTileService) !=
+                    autoRevertGeneration
+                ) {
+                    clearPreviousState()
+                    revertTimer = null
+                    updateTile()
+                    return
+                }
                 getPreviousState()?.let { (prevMode, prevHost) ->
                     try {
                         Settings.Global.putString(

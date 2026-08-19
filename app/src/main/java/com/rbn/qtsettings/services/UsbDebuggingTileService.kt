@@ -1,6 +1,5 @@
 package com.rbn.qtsettings.services
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.Icon
 import android.os.CountDownTimer
@@ -12,6 +11,7 @@ import android.widget.Toast
 import androidx.core.content.edit
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.utils.AutoRevertCoordinator
 import com.rbn.qtsettings.utils.Constants
 import com.rbn.qtsettings.utils.PermissionUtils
 
@@ -20,7 +20,7 @@ class UsbDebuggingTileService : TileService() {
     private lateinit var prefsManager: PreferencesManager
     private var revertTimer: CountDownTimer? = null
     private val servicePrefs: SharedPreferences by lazy {
-        applicationContext.getSharedPreferences("usb_tile_service_state", Context.MODE_PRIVATE)
+        applicationContext.getSharedPreferences("usb_tile_service_state", MODE_PRIVATE)
     }
 
     override fun onCreate() {
@@ -229,8 +229,15 @@ class UsbDebuggingTileService : TileService() {
 
     private fun startRevertTimer(delaySeconds: Int) {
         revertTimer?.cancel()
+        val autoRevertGeneration = AutoRevertCoordinator.usbGeneration(this)
         revertTimer = object : CountDownTimer(delaySeconds * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                if (AutoRevertCoordinator.usbGeneration(this@UsbDebuggingTileService) !=
+                    autoRevertGeneration
+                ) {
+                    cancelRevertTimerWithMessage(null)
+                    return
+                }
                 qsTile?.let { tile ->
                     getPreviousState()?.let { prevUsbState ->
                         val readablePrevState =
@@ -246,6 +253,14 @@ class UsbDebuggingTileService : TileService() {
             }
 
             override fun onFinish() {
+                if (AutoRevertCoordinator.usbGeneration(this@UsbDebuggingTileService) !=
+                    autoRevertGeneration
+                ) {
+                    clearPreviousState()
+                    revertTimer = null
+                    updateTile()
+                    return
+                }
                 getPreviousState()?.let { prevUsbState ->
                     try {
                         val alsoHideDevOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled()

@@ -14,7 +14,6 @@
     <string name="dns_state_auto">DNS Otomatik</string>
     <string name="dns_state_on_with_host">DNS Açık (Ana Bilgisayar Adı)</string>
     <string name="dns_state_unknown">DNS Durumu Bilinmiyor</string>
-    <string name="dns_hostname_label">DNS Ana Bilgisayar Adı</string>
 
     <!-- USB Debugging States -->
     <string name="usb_state_on">USB Hata Ayıklama Açık</string>
@@ -45,7 +44,6 @@
     <string name="permission_grant_dialog_title">İzin Gerekli</string>
     <string name="permission_grant_dialog_intro">Özel DNS ve USB Hata Ayıklama gibi sistem ayarlarını değiştirmek için bu uygulamanın özel WRITE_SECURE_SETTINGS iznine ihtiyacı var. Lütfen bu izni vermek için aşağıdaki yöntemlerden birini seçin:</string>
     <string name="help_dialog_after_grant">İzni verdikten sonra, kutucukların çalışması için uygulamayı yeniden başlatın veya Hızlı Ayarlar panelini tekrar açın.</string>
-    <string name="help_button_desc">Yardım / İzin Ver</string>
     <string name="app_menu_desc">Uygulama menüsünü aç</string>
     <string name="navigate_back_desc">Geri</string>
     <string name="menu_settings">Ayarlar</string>
@@ -131,6 +129,7 @@
     <string name="auto_state">Otomatik</string>
 
     <string name="dns_select_hostnames_for_cycle">Kutucuk döngüsüne dahil edilecek ana bilgisayar adlarını seçin:</string>
+    <string name="dns_custom_entry_badge">Özel DNS</string>
     <string name="dns_add_custom_hostname_button">Özel Ana Bilgisayar Adı Ekle</string>
     <string name="dns_edit_hostname_title">Ana Bilgisayar Adını Düzenle</string>
     <string name="dns_add_hostname_title">Ana Bilgisayar Adı Ekle</string>
@@ -200,7 +199,6 @@
     <string name="notification_permission_dialog_message">Arka planda VPN izleme için bildirim almak üzere, uygulama ayarlarından bu izni etkinleştirmeniz gerekir.\n\nİzni verdikten sonra, bildirimleri buradan etkinleştirebilirsiniz.</string>
     <string name="notification_permission_dialog_settings_button">Ayarlar</string>
     <string name="notification_permission_dialog_settings_description">Ayarları aç</string>
-    <string name="notification_permission_tile_only_fallback">Bildirim izni reddedildi. Arka plan izleme için bildirim gerektiğinden arka plan algılama yalnızca kutucuk algılamasına geçirildi.</string>
     <string name="notification_permission_background_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
     <string name="notification_permission_background_message">Arka plan algılama, Android arka planda izleme sırasında uygulamanın kalıcı bir bildirim göstermesini zorunlu tuttuğu için bildirim izni gerektirir.</string>
     <string name="notification_permission_import_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
@@ -228,7 +226,6 @@
 
     <string name="dns_mode_off_label">Kapalı</string>
     <string name="dns_mode_auto_label">Otomatik</string>
-    <string name="dns_mode_hostname_label">Belirli Ana Bilgisayar Adı</string>
 
     <string name="network_type_info_title">Ağ Türü Algılama</string>
     <string name="network_type_info_message">Bu özellik, WiFi\'ye mi yoksa mobil veriye mi bağlı olduğunuza göre Özel DNS ayarlarını otomatik olarak değiştirir. Ayrıca, VPN etkinken altta kullanılan WiFi veya mobil bağlantıyı algılayarak da çalışır.\n\nVPN Önceliği: VPN algılama ayrı olarak etkinleştirilmişse, öncelik ona verilir ve VPN etkinken DNS Kapalı olarak ayarlanır.\n\nÖrnek kullanım: Ev WiFi yönlendiriciniz NextDNS kullanıyorsa, "WiFi\'de DNS" seçeneğini Kapalı olarak ayarlayın. Hücresel ağlardayken koruma için "Mobil Veride DNS" seçeneğini Otomatik veya belirli bir ana bilgisayar adına ayarlayın.</string>
@@ -284,5 +281,4 @@
     <string name="shortcut_settings_mark_favorite_desc">%1$s\'i favori olarak işaretle</string>
     <string name="shortcut_settings_remove_favorite_desc">%1$s\'i favorilerden kaldır</string>
     <string name="shortcut_settings_open_desc">Kısayol ayarlarını aç</string>
-    <string name="shortcut_settings_back_desc">Kutucuk ayarlarına geri dön</string>
 </resources>

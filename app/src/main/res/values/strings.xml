@@ -14,7 +14,6 @@
     <string name="dns_state_auto">DNS Auto</string>
     <string name="dns_state_on_with_host">DNS On (Hostname)</string>
     <string name="dns_state_unknown">DNS Status Unknown</string>
-    <string name="dns_hostname_label">DNS Hostname</string>
 
     <!-- USB Debugging States -->
     <string name="usb_state_on">USB Debug On</string>
@@ -45,7 +44,6 @@
     <string name="permission_grant_dialog_title">Permission Required</string>
     <string name="permission_grant_dialog_intro">To change system settings like Private DNS and USB Debugging, this app needs the special WRITE_SECURE_SETTINGS permission. Please choose a method below to grant it:</string>
     <string name="help_dialog_after_grant">After granting the permission, restart the app or re-open the Quick Settings panel for the tiles to function.</string>
-    <string name="help_button_desc">Help / Grant Permission</string>
     <string name="app_menu_desc">Open app menu</string>
     <string name="navigate_back_desc">Back</string>
     <string name="menu_settings">Settings</string>
@@ -120,6 +118,8 @@
     <string name="setting_also_hide_dev_options_desc">When enabled, toggling USB Debugging will also enable/disable Developer Options. This allows the tile to work even when Developer Options are currently off.</string>
     <string name="setting_also_disable_wireless_debugging">Also toggle Wireless Debugging</string>
     <string name="setting_also_disable_wireless_debugging_desc">When enabled, Wireless Debugging will also be toggled alongside USB Debugging.</string>
+    <string name="usb_set_active_mode">Set %1$s as active USB debugging state</string>
+    <string name="usb_active">Active USB debugging state</string>
 
     <string name="setting_enable_auto_revert">Enable auto-revert after a delay</string>
     <string name="setting_auto_revert_delay">Revert delay (seconds):</string>
@@ -131,6 +131,18 @@
     <string name="auto_state">Auto</string>
 
     <string name="dns_select_hostnames_for_cycle">Select hostnames to include in tile cycle:</string>
+    <string name="dns_sort_content_description">Choose DNS list sorting</string>
+    <string name="dns_sort_manual">Manual</string>
+    <string name="dns_sort_alphabetical">Alphabetical (A–Z)</string>
+    <string name="dns_manual_reorder_hint">Hold and drag the handle to change the DNS order.</string>
+    <string name="dns_move_up">Move up</string>
+    <string name="dns_move_down">Move down</string>
+    <string name="dns_reorder_entry">Reorder %1$s (%2$s)</string>
+    <string name="dns_entry_actions">Actions for %1$s (%2$s)</string>
+    <string name="dns_set_active_mode">Set %1$s as active DNS</string>
+    <string name="dns_set_active">Set as active DNS</string>
+    <string name="dns_active">Active DNS</string>
+    <string name="dns_custom_entry_badge">Custom</string>
     <string name="dns_add_custom_hostname_button">Add Custom Hostname</string>
     <string name="dns_edit_hostname_title">Edit Hostname</string>
     <string name="dns_add_hostname_title">Add Hostname</string>
@@ -142,6 +154,7 @@
     <string name="button_delete">Delete</string>
     <string name="error_hostname_name_empty">Display name cannot be empty.</string>
     <string name="error_hostname_value_empty">Hostname cannot be empty.</string>
+    <string name="error_hostname_value_invalid">Enter a valid DNS hostname.</string>
     <string name="confirm_delete_hostname_title">Delete Hostname?</string>
     <string name="confirm_delete_hostname_message">Are you sure you want to delete \'%1$s\'?</string>
 
@@ -200,7 +213,6 @@
     <string name="notification_permission_dialog_message">To receive notifications for background VPN monitoring, you must enable the permission in app settings.\n\nOnce you have granted the permission, you can enable notifications here.</string>
     <string name="notification_permission_dialog_settings_button">Settings</string>
     <string name="notification_permission_dialog_settings_description">Open settings</string>
-    <string name="notification_permission_tile_only_fallback">Notification permission was denied. Background detection was switched to tile-only detection because notifications are required for background monitoring.</string>
     <string name="notification_permission_background_title">Allow notifications for background detection?</string>
     <string name="notification_permission_background_message">Background detection needs notification permission because Android requires the app to show a persistent notification while monitoring in the background.</string>
     <string name="notification_permission_import_title">Allow notifications for background detection?</string>
@@ -228,7 +240,6 @@
 
     <string name="dns_mode_off_label">Off</string>
     <string name="dns_mode_auto_label">Auto</string>
-    <string name="dns_mode_hostname_label">Specific Hostname</string>
 
     <string name="network_type_info_title">Network Type Detection</string>
     <string name="network_type_info_message">This feature automatically switches Private DNS settings based on whether you\'re connected to WiFi or mobile data. It also works while a VPN is active by detecting the underlying WiFi or mobile connection.\n\nVPN Priority: If VPN detection is enabled separately, it takes priority and DNS will be set to Off while the VPN is active.\n\nExample use case: If your home WiFi router uses NextDNS, set \"DNS on WiFi\" to Off. Set \"DNS on Mobile Data\" to Auto or a specific hostname for protection when on cellular networks.</string>
@@ -284,5 +295,4 @@
     <string name="shortcut_settings_mark_favorite_desc">Mark %1$s as favorite</string>
     <string name="shortcut_settings_remove_favorite_desc">Remove %1$s from favorites</string>
     <string name="shortcut_settings_open_desc">Open shortcut settings</string>
-    <string name="shortcut_settings_back_desc">Back to tile settings</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables
+package com.rbn.qtsettings.ui.composables.settings
 
 import android.content.Context
 import android.content.Intent

@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables
+package com.rbn.qtsettings.ui.composables.shared
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

@@ -197,10 +197,6 @@ object NetworkTypeDetectionUtils {
         return object : ConnectivityManager.NetworkCallback() {
             private var lastNetworkType: String? = null
 
-            override fun onAvailable(network: Network) {
-                // Wait for onCapabilitiesChanged; minSdk 29 guarantees it follows availability.
-            }
-
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities

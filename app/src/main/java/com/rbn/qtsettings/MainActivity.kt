@@ -4,8 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.ContentObserver
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -18,8 +21,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.rbn.qtsettings.data.PreferencesManager
-import com.rbn.qtsettings.ui.composables.MainScreen
+import com.rbn.qtsettings.ui.composables.main.MainScreen
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.utils.Constants
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel
 import com.rbn.qtsettings.viewmodel.ViewModelFactory
@@ -50,6 +54,13 @@ class MainActivity : ComponentActivity() {
             }
         } else {
             viewModel.onNotificationPermissionResult(isGranted)
+        }
+    }
+
+    private var observingQuickActionSettings = false
+    private val quickActionSettingsObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {
+            viewModel.refreshSystemQuickActionStates(applicationContext)
         }
     }
 
@@ -125,6 +136,34 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         viewModel.checkSystemStates(this)
         viewModel.refreshNotificationPermissionAfterSettings(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (!observingQuickActionSettings) {
+            listOf(
+                Constants.PRIVATE_DNS_MODE,
+                Constants.PRIVATE_DNS_SPECIFIER,
+                Constants.ADB_ENABLED,
+                Constants.DEVELOPMENT_SETTINGS_ENABLED
+            ).forEach { settingName ->
+                contentResolver.registerContentObserver(
+                    Settings.Global.getUriFor(settingName),
+                    false,
+                    quickActionSettingsObserver
+                )
+            }
+            observingQuickActionSettings = true
+        }
+        viewModel.refreshSystemQuickActionStates(applicationContext)
+    }
+
+    override fun onStop() {
+        if (observingQuickActionSettings) {
+            contentResolver.unregisterContentObserver(quickActionSettingsObserver)
+            observingQuickActionSettings = false
+        }
+        super.onStop()
     }
 
     override fun onDestroy() {

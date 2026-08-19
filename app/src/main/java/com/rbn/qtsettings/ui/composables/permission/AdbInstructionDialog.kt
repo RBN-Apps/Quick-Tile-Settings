@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables
+package com.rbn.qtsettings.ui.composables.permission
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

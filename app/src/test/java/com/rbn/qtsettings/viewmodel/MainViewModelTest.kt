@@ -1,15 +1,23 @@
 package com.rbn.qtsettings.viewmodel
 
+import android.Manifest
+import android.app.Application
 import android.content.Context
 import android.content.pm.ShortcutManager
+import android.provider.Settings
 import com.google.gson.Gson
+import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.SettingsBackup
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
+import com.rbn.qtsettings.utils.Constants.ADB_ENABLED
+import com.rbn.qtsettings.utils.Constants.DEVELOPMENT_SETTINGS_ENABLED
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
+import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
+import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
 import org.junit.After
@@ -25,9 +33,11 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 import java.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
 class MainViewModelTest {
 
     private lateinit var context: Context
@@ -87,6 +97,64 @@ class MainViewModelTest {
         viewModel.setHostnamePendingDeletion(entry)
 
         assertEquals(entry, viewModel.hostnamePendingDeletion.value)
+    }
+
+    @Test
+    fun refreshSystemQuickActionStates_whenGlobalSettingsChange_updatesDnsAndUsbSnapshots() {
+        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
+        Settings.Global.putString(
+            context.contentResolver,
+            PRIVATE_DNS_SPECIFIER,
+            "dns.example.com"
+        )
+        Settings.Global.putInt(context.contentResolver, DEVELOPMENT_SETTINGS_ENABLED, 1)
+        Settings.Global.putInt(context.contentResolver, ADB_ENABLED, 1)
+
+        viewModel.refreshSystemQuickActionStates(context)
+
+        assertEquals("dns.example.com", viewModel.activeDnsHostname.value)
+        assertTrue(viewModel.developerOptionsEnabled.value)
+        assertTrue(viewModel.usbDebuggingEnabled.value)
+
+        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_OFF)
+        Settings.Global.putInt(context.contentResolver, ADB_ENABLED, 0)
+        viewModel.refreshSystemQuickActionStates(context)
+
+        assertNull(viewModel.activeDnsHostname.value)
+        assertEquals(DNS_MODE_OFF, viewModel.activeDnsMode.value)
+        assertFalse(viewModel.usbDebuggingEnabled.value)
+    }
+
+    @Test
+    fun setDnsMode_whenInvokedForOffAndAuto_updatesSystemStateAndStatusMessage() {
+        shadowOf(context as Application)
+            .grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
+        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
+        Settings.Global.putString(
+            context.contentResolver,
+            PRIVATE_DNS_SPECIFIER,
+            "dns.example.com"
+        )
+
+        viewModel.setDnsMode(context, DNS_MODE_AUTO)
+
+        assertEquals(DNS_MODE_AUTO, viewModel.activeDnsMode.value)
+        assertNull(viewModel.activeDnsHostname.value)
+        assertEquals(
+            context.getString(R.string.shortcut_toast_dns_auto),
+            viewModel.quickActionStatusMessage.value
+        )
+
+        viewModel.setDnsMode(context, DNS_MODE_OFF)
+
+        assertEquals(DNS_MODE_OFF, viewModel.activeDnsMode.value)
+        assertEquals(
+            context.getString(R.string.shortcut_toast_dns_off),
+            viewModel.quickActionStatusMessage.value
+        )
+
+        viewModel.clearQuickActionStatusMessage()
+        assertNull(viewModel.quickActionStatusMessage.value)
     }
 
     @Test
@@ -322,6 +390,13 @@ class MainViewModelTest {
                     "hostname": "null-id.example.com",
                     "isPredefined": false,
                     "isSelectedForCycle": true
+                  },
+                  {
+                    "id": "null_hostname",
+                    "name": "Null Hostname",
+                    "hostname": null,
+                    "isPredefined": false,
+                    "isSelectedForCycle": true
                   }
                 ],
                 "enableAutoRevert": false,
@@ -357,6 +432,7 @@ class MainViewModelTest {
 
         assertNull(prefsManager.dnsHostnames.value.firstOrNull { it.id == "null_name" })
         assertNull(prefsManager.dnsHostnames.value.firstOrNull { it.name == "Null ID" })
+        assertNull(prefsManager.dnsHostnames.value.firstOrNull { it.id == "null_hostname" })
         assertEquals(setOf(ShortcutUtils.SHORTCUT_ID_DNS_OFF), viewModel.enabledShortcutIds.value)
         assertEquals(setOf(ShortcutUtils.SHORTCUT_ID_DNS_OFF), viewModel.favoriteShortcutIds.value)
     }

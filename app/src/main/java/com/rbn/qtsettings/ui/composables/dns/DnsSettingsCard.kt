@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables
+package com.rbn.qtsettings.ui.composables.dns
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,10 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,7 +30,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,14 +38,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
+import com.rbn.qtsettings.data.DnsListSortMode
+import com.rbn.qtsettings.ui.composables.shared.CheckboxItem
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
@@ -59,9 +59,13 @@ import com.rbn.qtsettings.viewmodel.MainViewModel
 
 @Composable
 fun DnsSettingsCard(viewModel: MainViewModel) {
+    val context = LocalContext.current
     val dnsToggleOff by viewModel.dnsToggleOff.collectAsState()
     val dnsToggleAuto by viewModel.dnsToggleAuto.collectAsState()
     val dnsHostnames by viewModel.dnsHostnames.collectAsState()
+    val dnsListSortMode by viewModel.dnsListSortMode.collectAsState()
+    val activeDnsHostname by viewModel.activeDnsHostname.collectAsState()
+    val activeDnsMode by viewModel.activeDnsMode.collectAsState()
     val enableAutoRevert by viewModel.dnsEnableAutoRevert.collectAsState()
     val autoRevertDelay by viewModel.dnsAutoRevertDelaySeconds.collectAsState()
     val dnsRequireUnlock by viewModel.dnsRequireUnlock.collectAsState()
@@ -75,6 +79,8 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
     val dnsHostnameOnMobile by viewModel.dnsHostnameOnMobile.collectAsState()
     val showDnsInfoDialogFor = remember { mutableStateOf<DnsHostnameEntry?>(null) }
     val showNetworkTypeInfoDialog = remember { mutableStateOf(false) }
+    val dnsScrollState = rememberScrollState()
+    var dnsScrollViewport by remember { mutableStateOf<Rect?>(null) }
 
 
     Card(
@@ -100,39 +106,54 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
             Column(
                 modifier = Modifier
                     .weight(1f, fill = false)
-                    .verticalScroll(rememberScrollState())
+                    .onGloballyPositioned { coordinates ->
+                        dnsScrollViewport = coordinates.boundsInWindow()
+                    }
+                    .verticalScroll(dnsScrollState)
             ) {
-                CheckboxItem(
+                DnsModeRow(
                     checked = dnsToggleOff,
                     onCheckedChange = { viewModel.setDnsToggleOff(it) },
-                    label = stringResource(R.string.dns_state_off)
+                    label = stringResource(R.string.dns_state_off),
+                    isActive = activeDnsMode == DNS_MODE_OFF,
+                    onSetActiveClicked = { viewModel.setDnsMode(context, DNS_MODE_OFF) }
                 )
-                CheckboxItem(
+                DnsModeRow(
                     checked = dnsToggleAuto,
                     onCheckedChange = { viewModel.setDnsToggleAuto(it) },
-                    label = stringResource(R.string.dns_state_auto)
+                    label = stringResource(R.string.dns_state_auto),
+                    isActive = activeDnsMode == DNS_MODE_AUTO,
+                    onSetActiveClicked = { viewModel.setDnsMode(context, DNS_MODE_AUTO) }
                 )
 
-                Text(
-                    text = stringResource(R.string.dns_select_hostnames_for_cycle),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                DnsListHeader(
+                    sortMode = dnsListSortMode,
+                    onSortModeSelected = viewModel::setDnsListSortMode,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
                 )
 
-                dnsHostnames.forEach { entry ->
-                    DnsHostnameRow(
-                        entry = entry,
-                        onSelectionChanged = { isSelected ->
-                            viewModel.updateDnsHostnameEntrySelection(
-                                entry.id,
-                                isSelected
-                            )
-                        },
-                        onEditClicked = { viewModel.startEditingHostname(entry) },
-                        onDeleteClicked = { viewModel.setHostnamePendingDeletion(entry) },
-                        onInfoClicked = { showDnsInfoDialogFor.value = entry }
+                if (dnsListSortMode == DnsListSortMode.MANUAL) {
+                    Text(
+                        text = stringResource(R.string.dns_manual_reorder_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
+
+                DnsHostnameList(
+                    entries = dnsHostnames,
+                    sortMode = dnsListSortMode,
+                    activeDnsHostname = activeDnsHostname,
+                    scrollState = dnsScrollState,
+                    scrollViewport = dnsScrollViewport,
+                    onSelectionChanged = viewModel::updateDnsHostnameEntrySelection,
+                    onOrderCommitted = viewModel::reorderDnsHostnames,
+                    onSetActive = { entry -> viewModel.setActiveDns(context, entry) },
+                    onEdit = viewModel::startEditingHostname,
+                    onDelete = viewModel::setHostnamePendingDeletion,
+                    onInfo = { entry -> showDnsInfoDialogFor.value = entry }
+                )
 
                 OutlinedButton(
                     onClick = { viewModel.startAddingNewHostname() },
@@ -509,311 +530,4 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
             onDismissRequest = { showNetworkTypeInfoDialog.value = false }
         )
     }
-}
-
-
-@Composable
-fun DnsHostnameRow(
-    entry: DnsHostnameEntry,
-    onSelectionChanged: (Boolean) -> Unit,
-    onEditClicked: () -> Unit,
-    onDeleteClicked: () -> Unit,
-    onInfoClicked: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp)
-            .clickable { onSelectionChanged(!entry.isSelectedForCycle) }
-    ) {
-        Checkbox(
-            checked = entry.isSelectedForCycle,
-            onCheckedChange = onSelectionChanged
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = entry.name,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (entry.isPredefined) FontWeight.SemiBold else FontWeight.Normal
-            )
-            Text(
-                text = entry.hostname,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        if (entry.isPredefined) {
-            Spacer(Modifier.size(48.dp))
-            if (entry.descriptionResId != null) {
-                IconButton(onClick = onInfoClicked) {
-                    Icon(
-                        Icons.Outlined.Info,
-                        contentDescription = stringResource(R.string.button_info_dns, entry.name)
-                    )
-                }
-            } else {
-                Spacer(Modifier.size(48.dp))
-            }
-        } else {
-            IconButton(
-                onClick = onEditClicked,
-                modifier = Modifier.testTag("dns_edit_button_${entry.hostname}_${entry.name}")
-            ) {
-                Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.button_edit))
-            }
-            IconButton(
-                onClick = onDeleteClicked,
-                modifier = Modifier.testTag("dns_delete_button_${entry.hostname}_${entry.name}")
-            ) {
-                Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = stringResource(R.string.button_delete),
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DnsHostnameEditDialog(
-    entry: DnsHostnameEntry?,
-    onDismiss: () -> Unit,
-    onSave: (id: String?, name: String, hostname: String) -> Unit,
-    viewModel: MainViewModel
-) {
-    var name by remember(entry) { mutableStateOf(entry?.name ?: "") }
-    var hostname by remember(entry) { mutableStateOf(entry?.hostname ?: "") }
-    var nameError by remember { mutableStateOf<String?>(null) }
-    var hostnameError by remember { mutableStateOf<String?>(null) }
-    val context = LocalContext.current.applicationContext
-
-    fun validate(): Boolean {
-        nameError =
-            if (name.isBlank()) context.getString(R.string.error_hostname_name_empty) else null
-        hostnameError =
-            if (hostname.isBlank()) context.getString(R.string.error_hostname_value_empty) else null
-        return nameError == null && hostnameError == null
-    }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurface,
-        title = {
-            Text(
-                if (entry == null) stringResource(R.string.dns_add_hostname_title) else stringResource(
-                    R.string.dns_edit_hostname_title
-                )
-            )
-        },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it; nameError = null },
-                    label = { Text(stringResource(R.string.dns_hostname_name_label)) },
-                    isError = nameError != null,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                if (nameError != null) {
-                    Text(
-                        nameError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = hostname,
-                    onValueChange = { hostname = it; hostnameError = null },
-                    label = { Text(stringResource(R.string.dns_hostname_value_label)) },
-                    isError = hostnameError != null,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                if (hostnameError != null) {
-                    Text(
-                        hostnameError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                if (validate()) {
-                    onSave(entry?.id, name, hostname)
-                    onDismiss()
-                }
-            }) {
-                Text(stringResource(R.string.dialog_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
-            }
-        }
-    )
-}
-
-@Composable
-fun ConfirmDeleteDialog(
-    hostnameEntry: DnsHostnameEntry,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurface,
-        title = { Text(stringResource(id = R.string.confirm_delete_hostname_title)) },
-        text = {
-            Text(
-                stringResource(
-                    id = R.string.confirm_delete_hostname_message,
-                    hostnameEntry.name
-                )
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirm()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text(stringResource(R.string.button_delete))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
-            }
-        }
-    )
-}
-
-@Composable
-fun DnsInfoDialog(entry: DnsHostnameEntry, onDismissRequest: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurface,
-        title = { Text(stringResource(R.string.dns_info_dialog_title, entry.name)) },
-        text = {
-            entry.descriptionResId?.let {
-                Text(stringResource(it))
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(R.string.dialog_close))
-            }
-        }
-    )
-}
-
-@Composable
-fun DnsStateSelector(
-    dnsState: String,
-    dnsHostname: String?,
-    dnsHostnames: List<DnsHostnameEntry>,
-    onDnsStateChange: (String, String?) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        OutlinedButton(
-            onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.onSurface
-            )
-        ) {
-            Text(
-                text = when (dnsState) {
-                    DNS_MODE_OFF -> stringResource(R.string.dns_mode_off_label)
-                    DNS_MODE_AUTO -> stringResource(R.string.dns_mode_auto_label)
-                    DNS_MODE_ON -> {
-                        val entry = dnsHostnames.find { it.hostname == dnsHostname }
-                        entry?.name ?: dnsHostname
-                        ?: stringResource(R.string.setting_select_hostname)
-                    }
-
-                    else -> stringResource(R.string.dns_mode_auto_label)
-                },
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        androidx.compose.material3.DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            androidx.compose.material3.DropdownMenuItem(
-                text = { Text(stringResource(R.string.dns_mode_off_label)) },
-                onClick = {
-                    onDnsStateChange(DNS_MODE_OFF, null)
-                    expanded = false
-                }
-            )
-            androidx.compose.material3.DropdownMenuItem(
-                text = { Text(stringResource(R.string.dns_mode_auto_label)) },
-                onClick = {
-                    onDnsStateChange(DNS_MODE_AUTO, null)
-                    expanded = false
-                }
-            )
-            HorizontalDivider()
-            dnsHostnames.forEach { entry ->
-                androidx.compose.material3.DropdownMenuItem(
-                    text = {
-                        Column {
-                            Text(entry.name)
-                            Text(
-                                text = entry.hostname,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    onClick = {
-                        onDnsStateChange(DNS_MODE_ON, entry.hostname)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun NetworkTypeInfoDialog(onDismissRequest: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurface,
-        title = { Text(stringResource(R.string.network_type_info_title)) },
-        text = {
-            Text(stringResource(R.string.network_type_info_message))
-        },
-        confirmButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(R.string.dialog_close))
-            }
-        }
-    )
 }
