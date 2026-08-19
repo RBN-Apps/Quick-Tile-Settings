@@ -1,0 +1,6 @@
+Version 1.4.0
+
+- Neue Schnellaktionen: Langes Drücken auf die DNS- oder USB-Kachel öffnet direkte Einstellungen.
+- DNS-Einträge lassen sich alphabetisch oder manuell sortieren und direkt aus der App heraus aktivieren.
+- Aktive Hintergrundüberwachung startet nach einem Geräteneustart automatisch neu.
+- Übersetzungen wurden angepasst und Abhängigkeiten aktualisiert.

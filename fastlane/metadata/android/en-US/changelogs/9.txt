@@ -1,0 +1,6 @@
+Version 1.4.0
+
+- New quick actions: Long-press the DNS or USB tile to change settings directly.
+- DNS entries can now be sorted alphabetically or manually and activated directly from the app.
+- Active background monitoring restarts automatically after rebooting the device.
+- Translations were adjusted and dependencies updated.
