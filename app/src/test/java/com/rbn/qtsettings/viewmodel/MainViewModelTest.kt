@@ -37,7 +37,6 @@ import org.robolectric.Shadows.shadowOf
 import java.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [35])
 class MainViewModelTest {
 
     private lateinit var context: Context

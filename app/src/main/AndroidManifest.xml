@@ -44,7 +44,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- For opening app from tile's long press / settings -->
+        </activity>
+
+        <activity
+            android:name=".QuickActionDialogActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:taskAffinity=""
+            android:theme="@style/Theme.QuickTileSettings.QuickActionsPopup">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
