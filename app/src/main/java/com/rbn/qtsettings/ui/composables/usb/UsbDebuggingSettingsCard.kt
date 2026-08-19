@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables
+package com.rbn.qtsettings.ui.composables.usb
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,14 +8,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -26,14 +32,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.ui.composables.shared.CheckboxItem
 import com.rbn.qtsettings.viewmodel.MainViewModel
 
 @Composable
 fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Boolean) {
+    val context = LocalContext.current
     val usbToggleEnable by viewModel.usbToggleEnable.collectAsState()
     val usbToggleDisable by viewModel.usbToggleDisable.collectAsState()
     val alsoHideDevOptions by viewModel.usbAlsoHideDevOptions.collectAsState()
@@ -41,6 +51,10 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
     val enableAutoRevert by viewModel.usbEnableAutoRevert.collectAsState()
     val autoRevertDelay by viewModel.usbAutoRevertDelaySeconds.collectAsState()
     val usbRequireUnlock by viewModel.usbRequireUnlock.collectAsState()
+    val usbDebuggingEnabled by viewModel.usbDebuggingEnabled.collectAsState()
+    val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
+    val canSetActiveUsbState =
+        hasWriteSecureSettings && (isDevOptionsEnabled || alsoHideDevOptions)
 
     Card(
         modifier = Modifier
@@ -77,17 +91,27 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                     )
                 }
 
-                CheckboxItem(
+                UsbModeRow(
                     checked = usbToggleEnable,
                     onCheckedChange = { viewModel.setUsbToggleEnable(it) },
                     label = stringResource(R.string.usb_state_on),
-                    enabled = isDevOptionsEnabled || alsoHideDevOptions
+                    configurationEnabled = isDevOptionsEnabled || alsoHideDevOptions,
+                    isActive = usbDebuggingEnabled,
+                    setActiveEnabled = canSetActiveUsbState,
+                    onSetActiveClicked = {
+                        viewModel.setUsbDebuggingEnabled(context, true)
+                    }
                 )
-                CheckboxItem(
+                UsbModeRow(
                     checked = usbToggleDisable,
                     onCheckedChange = { viewModel.setUsbToggleDisable(it) },
                     label = stringResource(R.string.usb_state_off),
-                    enabled = isDevOptionsEnabled || alsoHideDevOptions
+                    configurationEnabled = isDevOptionsEnabled || alsoHideDevOptions,
+                    isActive = !usbDebuggingEnabled,
+                    setActiveEnabled = canSetActiveUsbState,
+                    onSetActiveClicked = {
+                        viewModel.setUsbDebuggingEnabled(context, false)
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 if (!usbToggleDisable && !usbToggleEnable && (isDevOptionsEnabled || alsoHideDevOptions)) {
@@ -211,6 +235,62 @@ fun UsbDebuggingSettingsCard(viewModel: MainViewModel, isDevOptionsEnabled: Bool
                     modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun UsbModeRow(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    label: String,
+    configurationEnabled: Boolean,
+    isActive: Boolean,
+    setActiveEnabled: Boolean,
+    onSetActiveClicked: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = configurationEnabled) { onCheckedChange(!checked) }
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = configurationEnabled
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+            if (isActive) {
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = stringResource(R.string.usb_active),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+
+        IconButton(
+            onClick = onSetActiveClicked,
+            enabled = setActiveEnabled && !isActive
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.CheckCircle,
+                contentDescription = stringResource(R.string.usb_set_active_mode, label)
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables
+package com.rbn.qtsettings.ui.composables.main
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -60,8 +60,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.ui.composables.dns.ConfirmDeleteDialog
+import com.rbn.qtsettings.ui.composables.dns.DnsHostnameEditDialog
+import com.rbn.qtsettings.ui.composables.dns.DnsSettingsCard
+import com.rbn.qtsettings.ui.composables.permission.PermissionGrantDialog
+import com.rbn.qtsettings.ui.composables.settings.AboutDialog
+import com.rbn.qtsettings.ui.composables.settings.AppSettingsScreen
+import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionExplanationDialog
+import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionFallbackDialog
+import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionSettingsDialog
+import com.rbn.qtsettings.ui.composables.settings.NotificationSettingsDialog
+import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutSettingsScreen
+import com.rbn.qtsettings.ui.composables.usb.UsbDebuggingSettingsCard
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
-import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -86,9 +97,7 @@ fun MainScreen(
     val showOverflowMenu = remember { mutableStateOf(false) }
     val hasWriteSecureSettings by viewModel.hasWriteSecureSettings.collectAsState()
 
-    val isDevOptionsEnabled by remember {
-        mutableStateOf(PermissionUtils.isDeveloperOptionsEnabled(context))
-    }
+    val isDevOptionsEnabled by viewModel.developerOptionsEnabled.collectAsState()
 
     val helpShown by viewModel.helpShown.collectAsState()
     LaunchedEffect(hasWriteSecureSettings, helpShown) {
@@ -108,6 +117,14 @@ fun MainScreen(
         viewModel.backupStatusMessage.collect { message ->
             if (message != null) {
                 viewModel.clearBackupStatusMessage()
+                snackbarHostState.showSnackbar(message)
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.quickActionStatusMessage.collect { message ->
+            if (message != null) {
+                viewModel.clearQuickActionStatusMessage()
                 snackbarHostState.showSnackbar(message)
             }
         }
@@ -333,8 +350,7 @@ fun MainScreen(
                 } else {
                     viewModel.editCustomDnsHostname(id, name, hostVal)
                 }
-            },
-            viewModel = viewModel
+            }
         )
     }
 

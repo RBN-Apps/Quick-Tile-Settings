@@ -20,6 +20,7 @@ data class DnsSettingsBackup(
     val toggleOff: Boolean = true,
     val toggleAuto: Boolean = true,
     val hostnames: List<DnsHostnameEntry> = emptyList(),
+    val sortMode: String = DnsListSortMode.ALPHABETICAL.persistedValue,
     val enableAutoRevert: Boolean = false,
     val autoRevertDelaySeconds: Int = 5,
     val requireUnlock: Boolean = false,

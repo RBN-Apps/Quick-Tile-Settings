@@ -19,7 +19,6 @@ import com.rbn.qtsettings.utils.Constants.ACTION_DNS_QUAD9
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_OFF
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_ON
 import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
-import java.util.Locale
 
 object ShortcutUtils {
     private const val TAG = "ShortcutUtils"
@@ -97,8 +96,6 @@ object ShortcutUtils {
     )
 
     private val builtInShortcutIds = builtInShortcutDefinitions.map { it.id }.toSet()
-    private val shortcutIdByAction = builtInShortcutDefinitions.associate { it.action to it.id }
-
     private val predefinedDnsShortcutIdMap = mapOf(
         "adguard_default" to SHORTCUT_ID_DNS_ADGUARD,
         "cloudflare_default" to SHORTCUT_ID_DNS_CLOUDFLARE,
@@ -110,13 +107,6 @@ object ShortcutUtils {
             return predefinedDnsShortcutIdMap[entry.id] ?: createCustomDnsShortcutId(entry.id)
         }
         return createCustomDnsShortcutId(entry.id)
-    }
-
-    fun getShortcutIdForAction(action: String?): String? = shortcutIdByAction[action]
-
-    fun getCustomEntryIdFromShortcutId(shortcutId: String): String? {
-        return shortcutId.removePrefix(CUSTOM_DNS_SHORTCUT_PREFIX)
-            .takeIf { shortcutId.startsWith(CUSTOM_DNS_SHORTCUT_PREFIX) && it.isNotBlank() }
     }
 
     fun getAvailableShortcutIds(hostnames: List<DnsHostnameEntry>): Set<String> {
@@ -133,22 +123,22 @@ object ShortcutUtils {
         hostnames: List<DnsHostnameEntry>,
         favoriteShortcutIds: Set<String> = emptySet()
     ): List<String> {
-        val baseOrderedIds = mutableListOf(
-            SHORTCUT_ID_DNS_OFF,
-            SHORTCUT_ID_DNS_AUTO,
+        val predefinedDnsIds = listOf(
             SHORTCUT_ID_DNS_ADGUARD,
             SHORTCUT_ID_DNS_CLOUDFLARE,
-            SHORTCUT_ID_DNS_QUAD9,
-            SHORTCUT_ID_USB_ON,
-            SHORTCUT_ID_USB_OFF
+            SHORTCUT_ID_DNS_QUAD9
         )
-
-        val customIds = hostnames
-            .filter { !it.isPredefined }
-            .sortedBy { it.name.lowercase(Locale.ROOT) }
-            .map { getShortcutIdForDnsEntry(it) }
-        baseOrderedIds.addAll(customIds)
-        val canonicalOrder = baseOrderedIds.distinct()
+        val orderedDnsIds = hostnames.map { getShortcutIdForDnsEntry(it) }
+        val missingPredefinedDnsIds = predefinedDnsIds.filterNot(orderedDnsIds::contains)
+        val canonicalOrder = (
+            listOf(
+                SHORTCUT_ID_DNS_OFF,
+                SHORTCUT_ID_DNS_AUTO
+            ) + orderedDnsIds + missingPredefinedDnsIds + listOf(
+                SHORTCUT_ID_USB_ON,
+                SHORTCUT_ID_USB_OFF
+            )
+        ).distinct()
         if (favoriteShortcutIds.isEmpty()) {
             return canonicalOrder
         }
@@ -181,7 +171,6 @@ object ShortcutUtils {
         val customShortcutsById = dnsHostnames
             .filter { !it.isPredefined }
             .filter { effectiveEnabledIds.contains(getShortcutIdForDnsEntry(it)) }
-            .sortedBy { it.name.lowercase(Locale.ROOT) }
             .associateBy { getShortcutIdForDnsEntry(it) }
 
         val orderedEnabledShortcutIds = getOrderedShortcutIds(

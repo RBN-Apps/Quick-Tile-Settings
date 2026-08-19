@@ -42,6 +42,11 @@ android {
     lint {
         disable += "MissingTranslation"
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {

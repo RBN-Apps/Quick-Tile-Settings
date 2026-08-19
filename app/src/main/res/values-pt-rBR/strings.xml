@@ -14,7 +14,6 @@
     <string name="dns_state_auto">DNS Automático</string>
     <string name="dns_state_on_with_host">DNS Ativado (Hostname)</string>
     <string name="dns_state_unknown">Status do DNS desconhecido</string>
-    <string name="dns_hostname_label">Hostname do DNS</string>
 
     <!-- USB Debugging States -->
     <string name="usb_state_on">Depuração USB Ativada</string>
@@ -44,7 +43,6 @@
     <string name="permission_grant_dialog_title">Permissão necessária</string>
     <string name="permission_grant_dialog_intro">Para alterar configurações do sistema como DNS Privado e Depuração USB, este app precisa da permissão especial WRITE_SECURE_SETTINGS. Escolha um método abaixo para concedê-la:</string>
     <string name="help_dialog_after_grant">Após conceder a permissão, reinicie o app ou abra novamente o painel de Configurações Rápidas para que os tiles funcionem.</string>
-    <string name="help_button_desc">Ajuda / Conceder permissão</string>
     <string name="app_menu_desc">Abrir menu do app</string>
     <string name="navigate_back_desc">Voltar</string>
     <string name="menu_settings">Configurações</string>
@@ -113,6 +111,7 @@
     <string name="on_state">Ligado</string>
     <string name="off_state">Desligado</string>
     <string name="auto_state">Automático</string>
+    <string name="dns_custom_entry_badge">DNS próprio</string>
 
     <!-- About Dialog -->
     <string name="about_version">Versão %1$s</string>
@@ -149,7 +148,6 @@
     <string name="network_monitoring_channel_name">Monitoramento de Tipo de Rede</string>
     <string name="network_monitoring_channel_description">Monitora mudanças no tipo de rede para ajustar automaticamente o DNS Privado</string>
     <string name="network_monitoring_notification_title">Monitoramento de rede ativo</string>
-    <string name="notification_permission_tile_only_fallback">A permissão de notificações foi negada. A detecção em segundo plano foi alterada para detecção apenas pelo tile, pois notificações são necessárias para o monitoramento em segundo plano.</string>
     <string name="notification_permission_background_title">Permitir notificações para detecção em segundo plano?</string>
     <string name="notification_permission_background_message">A detecção em segundo plano precisa da permissão de notificações porque o Android exige que o app mostre uma notificação persistente durante o monitoramento em segundo plano.</string>
     <string name="notification_permission_import_title">Permitir notificações para detecção em segundo plano?</string>

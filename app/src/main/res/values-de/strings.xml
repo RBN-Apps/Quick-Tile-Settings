@@ -15,7 +15,6 @@
     <string name="dns_state_auto">DNS Auto</string>
     <string name="dns_state_on_with_host">DNS Ein (Hostname)</string>
     <string name="dns_state_unknown">DNS-Status unbekannt</string>
-    <string name="dns_hostname_label">DNS-Hostname</string>
 
     <!-- USB Debugging States -->
     <string name="usb_state_on">USB-Debug Ein</string>
@@ -45,7 +44,6 @@
     <string name="permission_grant_dialog_title">Berechtigung erforderlich</string>
     <string name="permission_grant_dialog_intro">Um Systemeinstellungen wie Privates DNS und USB-Debugging zu ändern, benötigt diese App die spezielle Berechtigung WRITE_SECURE_SETTINGS. Bitte wähle unten eine Methode, um sie zu erteilen:</string>
     <string name="help_dialog_after_grant">Nachdem die Berechtigung erteilt wurde, starte die App neu oder öffne die Schnelleinstellungsleiste erneut, damit die Kacheln funktionieren.</string>
-    <string name="help_button_desc">Hilfe / Berechtigung erteilen</string>
     <string name="app_menu_desc">App-Menü öffnen</string>
     <string name="navigate_back_desc">Zurück</string>
     <string name="menu_settings">Einstellungen</string>
@@ -115,6 +113,8 @@
     <string name="setting_also_hide_dev_options_desc">Wenn aktiviert, schaltet das Umschalten von USB-Debugging auch die Entwickleroptionen ein oder aus. Dadurch funktioniert die Kachel auch dann, wenn die Entwickleroptionen derzeit aus sind.</string>
     <string name="setting_also_disable_wireless_debugging">Auch Wireless-Debugging umschalten</string>
     <string name="setting_also_disable_wireless_debugging_desc">Wenn aktiviert, wird Wireless-Debugging zusammen mit USB-Debugging ebenfalls umgeschaltet.</string>
+    <string name="usb_set_active_mode">%1$s als aktiven USB-Debugging-Zustand festlegen</string>
+    <string name="usb_active">Aktiver USB-Debugging-Zustand</string>
 
     <string name="setting_enable_auto_revert">Automatisches Zurücksetzen nach Verzögerung aktivieren</string>
     <string name="setting_auto_revert_delay">Verzögerung (Sekunden):</string>
@@ -126,6 +126,18 @@
     <string name="auto_state">Auto</string>
 
     <string name="dns_select_hostnames_for_cycle">Hostnamen für den Kachel-Zyklus auswählen:</string>
+    <string name="dns_sort_content_description">Sortierung der DNS-Liste auswählen</string>
+    <string name="dns_sort_manual">Manuell</string>
+    <string name="dns_sort_alphabetical">Alphabetisch (A–Z)</string>
+    <string name="dns_manual_reorder_hint">Ziehe die Einträge am Griff in die gewünschte DNS-Reihenfolge.</string>
+    <string name="dns_move_up">Nach oben verschieben</string>
+    <string name="dns_move_down">Nach unten verschieben</string>
+    <string name="dns_reorder_entry">%1$s (%2$s) neu anordnen</string>
+    <string name="dns_entry_actions">Aktionen für %1$s (%2$s)</string>
+    <string name="dns_set_active_mode">%1$s als aktives DNS festlegen</string>
+    <string name="dns_set_active">Als aktives DNS festlegen</string>
+    <string name="dns_active">Aktives DNS</string>
+    <string name="dns_custom_entry_badge">Eigener DNS</string>
     <string name="dns_add_custom_hostname_button">Eigenen Hostnamen hinzufügen</string>
     <string name="dns_edit_hostname_title">Hostname bearbeiten</string>
     <string name="dns_add_hostname_title">Hostname hinzufügen</string>
@@ -137,6 +149,7 @@
     <string name="button_delete">Löschen</string>
     <string name="error_hostname_name_empty">Anzeigename darf nicht leer sein.</string>
     <string name="error_hostname_value_empty">Hostname darf nicht leer sein.</string>
+    <string name="error_hostname_value_invalid">Gib einen gültigen DNS-Hostnamen ein.</string>
     <string name="confirm_delete_hostname_title">Hostname löschen?</string>
     <string name="confirm_delete_hostname_message">Möchtest du \"%1$s\" wirklich löschen?</string>
 
@@ -193,7 +206,6 @@
     <string name="notification_permission_dialog_message">Um Benachrichtigungen für die VPN-Hintergrundüberwachung zu erhalten, musst du die Berechtigung in den App-Einstellungen aktivieren.\n\nWenn du die Berechtigung erteilt hast, kannst du Benachrichtigungen hier aktivieren.</string>
     <string name="notification_permission_dialog_settings_button">Einstellungen</string>
     <string name="notification_permission_dialog_settings_description">Einstellungen öffnen</string>
-    <string name="notification_permission_tile_only_fallback">Die Benachrichtigungsberechtigung wurde abgelehnt. Die Hintergrunderkennung wurde auf Tile-only-Erkennung umgestellt, da für die Hintergrundüberwachung Benachrichtigungen erforderlich sind.</string>
     <string name="notification_permission_background_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
     <string name="notification_permission_background_message">Die Hintergrunderkennung benötigt die Benachrichtigungsberechtigung, weil Android verlangt, dass die App während der Hintergrundüberwachung eine dauerhafte Benachrichtigung anzeigt.</string>
     <string name="notification_permission_import_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
@@ -221,7 +233,6 @@
 
     <string name="dns_mode_off_label">Aus</string>
     <string name="dns_mode_auto_label">Auto</string>
-    <string name="dns_mode_hostname_label">Bestimmter Hostname</string>
 
     <string name="network_type_info_title">Netzwerktyp-Erkennung</string>
     <string name="network_type_info_message">Diese Funktion passt die Einstellungen für Privates DNS automatisch an, je nachdem, ob du mit WLAN oder mobilen Daten verbunden bist. Sie funktioniert auch bei aktivem VPN, indem sie die zugrunde liegende WLAN- oder Mobilfunkverbindung erkennt.\n\nVPN-Priorität: Wenn die VPN-Erkennung separat aktiviert ist, hat sie Vorrang und DNS wird bei aktivem VPN auf Aus gesetzt.\n\nBeispiel: Wenn dein heimischer WLAN-Router NextDNS verwendet, setze \"DNS im WLAN\" auf Aus. Setze \"DNS bei mobilen Daten\" auf Auto oder einen bestimmten Hostnamen, um unterwegs geschützt zu sein.</string>
@@ -277,5 +288,4 @@
     <string name="shortcut_settings_mark_favorite_desc">%1$s als Favorit markieren</string>
     <string name="shortcut_settings_remove_favorite_desc">%1$s aus Favoriten entfernen</string>
     <string name="shortcut_settings_open_desc">Shortcut-Einstellungen öffnen</string>
-    <string name="shortcut_settings_back_desc">Zurück zu Tile-Einstellungen</string>
 </resources>

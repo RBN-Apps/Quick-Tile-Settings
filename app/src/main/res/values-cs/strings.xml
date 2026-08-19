@@ -14,7 +14,6 @@
     <string name="dns_state_auto">DNS automaticky</string>
     <string name="dns_state_on_with_host">DNS zapnuto (hostname)</string>
     <string name="dns_state_unknown">Neznámý stav DNS</string>
-    <string name="dns_hostname_label">DNS hostname</string>
 
     <!-- USB Debugging States -->
     <string name="usb_state_on">USB ladění zapnuto</string>
@@ -45,7 +44,6 @@
     <string name="permission_grant_dialog_title">Vyžadováno oprávnění</string>
     <string name="permission_grant_dialog_intro">Pro změnu systémových nastavení, jako je Privátní DNS a USB ladění, potřebuje aplikace speciální oprávnění WRITE_SECURE_SETTINGS. Vyber níže způsob, jak jej udělit:</string>
     <string name="help_dialog_after_grant">Po udělení oprávnění restartujte aplikaci nebo znovu otevřete panel rychlého nastavení, aby dlaždice fungovaly.</string>
-    <string name="help_button_desc">Nápověda / Udělit oprávnění</string>
     <string name="app_menu_desc">Otevřít nabídku aplikace</string>
     <string name="navigate_back_desc">Zpět</string>
     <string name="menu_settings">Nastavení</string>
@@ -126,6 +124,7 @@
     <string name="auto_state">Automaticky</string>
 
     <string name="dns_select_hostnames_for_cycle">Vyber hostname pro přepínání:</string>
+    <string name="dns_custom_entry_badge">Vlastní DNS</string>
     <string name="dns_add_custom_hostname_button">Přidat vlastní hostname</string>
     <string name="dns_edit_hostname_title">Upravit hostname</string>
     <string name="dns_add_hostname_title">Přidat hostname</string>
@@ -193,7 +192,6 @@
     <string name="notification_permission_dialog_message">Pro oznámení sledování VPN musíš povolit oprávnění v nastavení aplikace.</string>
     <string name="notification_permission_dialog_settings_button">Nastavení</string>
     <string name="notification_permission_dialog_settings_description">Otevřít nastavení</string>
-    <string name="notification_permission_tile_only_fallback">Oprávnění k oznámením bylo zamítnuto. Detekce na pozadí byla přepnuta na detekci pouze přes dlaždici, protože sledování na pozadí vyžaduje oznámení.</string>
     <string name="notification_permission_background_title">Povolit oznámení pro detekci na pozadí?</string>
     <string name="notification_permission_background_message">Detekce na pozadí potřebuje oprávnění k oznámením, protože Android vyžaduje, aby aplikace při sledování na pozadí zobrazovala trvalé oznámení.</string>
     <string name="notification_permission_import_title">Povolit oznámení pro detekci na pozadí?</string>
@@ -221,7 +219,6 @@
 
     <string name="dns_mode_off_label">Vypnuto</string>
     <string name="dns_mode_auto_label">Automaticky</string>
-    <string name="dns_mode_hostname_label">Konkrétní hostname</string>
 
     <string name="network_type_info_title">Detekce typu sítě</string>
     <string name="network_type_info_message">Tato funkce automaticky přepíná nastavení privátního DNS na základě toho, zda jste připojeni k Wi-Fi nebo mobilním datům. Funguje také při aktivní VPN, protože rozpozná podkladové připojení Wi-Fi nebo mobilní data.\n\nPriorita VPN: Pokud je detekce VPN aktivována samostatně, má prioritu a DNS bude při aktivní VPN vypnuto.\n\nPříklad použití: Pokud váš domácí WiFi router používá NextDNS, nastavte „DNS na Wi-Fi“ na Vypnuto. Nastavte „DNS na mobilních datech“ na Automaticky nebo konkrétní název hostitele pro ochranu v mobilních sítích.</string>

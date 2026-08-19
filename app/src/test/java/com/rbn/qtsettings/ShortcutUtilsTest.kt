@@ -77,35 +77,6 @@ class ShortcutUtilsTest {
         assertEquals("dns_custom_$uuid", ShortcutUtils.getShortcutIdForDnsEntry(entry))
     }
 
-    @Test
-    fun getShortcutIdForAction_builtInAction_returnsMatchingShortcutId() {
-        assertEquals(
-            ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
-            ShortcutUtils.getShortcutIdForAction("com.rbn.qtsettings.action.DNS_AUTO")
-        )
-    }
-
-    @Test
-    fun getShortcutIdForAction_unknownAction_returnsNull() {
-        assertEquals(null, ShortcutUtils.getShortcutIdForAction("unknown"))
-    }
-
-    @Test
-    fun getCustomEntryIdFromShortcutId_customShortcut_returnsEntryId() {
-        assertEquals(
-            "abc-123",
-            ShortcutUtils.getCustomEntryIdFromShortcutId("dns_custom_abc-123")
-        )
-    }
-
-    @Test
-    fun getCustomEntryIdFromShortcutId_builtInShortcut_returnsNull() {
-        assertEquals(
-            null,
-            ShortcutUtils.getCustomEntryIdFromShortcutId(ShortcutUtils.SHORTCUT_ID_DNS_AUTO)
-        )
-    }
-
     // === migrateLegacyShortcutIds ===
 
     @Test
@@ -262,7 +233,7 @@ class ShortcutUtilsTest {
     }
 
     @Test
-    fun getOrderedShortcutIds_withCustomHostname_customEntryAppendedAfterBuiltIns() {
+    fun getOrderedShortcutIds_withCustomHostname_customEntryUsesEffectiveDnsOrder() {
         val custom = DnsHostnameEntry(
             id = "abc",
             name = "My DNS",
@@ -271,18 +242,20 @@ class ShortcutUtilsTest {
         )
         val result = ShortcutUtils.getOrderedShortcutIds(listOf(custom))
 
-        val usbOffIndex = result.indexOf(ShortcutUtils.SHORTCUT_ID_USB_OFF)
+        val dnsAutoIndex = result.indexOf(ShortcutUtils.SHORTCUT_ID_DNS_AUTO)
         val customIndex = result.indexOf("dns_custom_abc")
+        val adGuardIndex = result.indexOf(ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD)
 
         assertTrue(
-            "Custom entry must appear after all built-in shortcuts",
-            usbOffIndex < customIndex
+            "Custom entry must follow the fixed DNS modes",
+            dnsAutoIndex < customIndex
         )
+        assertTrue("Custom entry must preserve its effective DNS position", customIndex < adGuardIndex)
         assertEquals("Total entries: 7 built-in + 1 custom", 8, result.size)
     }
 
     @Test
-    fun getOrderedShortcutIds_multipleCustomHostnames_sortedCaseInsensitively() {
+    fun getOrderedShortcutIds_multipleCustomHostnames_preservesEffectiveInputOrder() {
         val customs = listOf(
             DnsHostnameEntry(
                 id = "z",
@@ -304,12 +277,41 @@ class ShortcutUtilsTest {
             )
         )
         val result = ShortcutUtils.getOrderedShortcutIds(customs)
-        val customPart = result.drop(7) // skip the 7 built-ins
+        val customPart = result.filter { it.startsWith("dns_custom_") }
 
         assertEquals(
-            "Custom entries must be sorted by name case-insensitively",
-            listOf("dns_custom_a", "dns_custom_m", "dns_custom_z"),
+            "Custom entries must preserve the selected effective DNS order",
+            listOf("dns_custom_z", "dns_custom_a", "dns_custom_m"),
             customPart
+        )
+    }
+
+    @Test
+    fun getOrderedShortcutIds_mixedDnsEntries_preservesPredefinedAndCustomInputOrder() {
+        val entries = listOf(
+            DnsHostnameEntry("custom", "Custom", "custom.example.com", false),
+            DnsHostnameEntry("quad9_default", "Quad9", "dns.quad9.net", true),
+            DnsHostnameEntry("adguard_default", "AdGuard", "dns.adguard.com", true),
+            DnsHostnameEntry(
+                "cloudflare_default",
+                "Cloudflare",
+                "one.one.one.one",
+                true
+            )
+        )
+
+        val orderedDnsEntries = ShortcutUtils.getOrderedShortcutIds(entries)
+            .drop(2)
+            .take(4)
+
+        assertEquals(
+            listOf(
+                "dns_custom_custom",
+                ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
+                ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
+                ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE
+            ),
+            orderedDnsEntries
         )
     }
 
@@ -361,8 +363,8 @@ class ShortcutUtilsTest {
         assertEquals(
             listOf(
                 ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
-                ShortcutUtils.SHORTCUT_ID_USB_OFF,
-                "dns_custom_custom-z"
+                "dns_custom_custom-z",
+                ShortcutUtils.SHORTCUT_ID_USB_OFF
             ),
             result.take(3)
         )

@@ -11,12 +11,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
+import com.rbn.qtsettings.data.DnsListSortMode
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
-import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.utils.SystemQuickActionResult
+import com.rbn.qtsettings.utils.SystemQuickActions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +32,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val dnsToggleOff = prefsManager.dnsToggleOff
     val dnsToggleAuto = prefsManager.dnsToggleAuto
     val dnsHostnames = prefsManager.dnsHostnames
+    val dnsListSortMode = prefsManager.dnsListSortMode
     val dnsEnableAutoRevert = prefsManager.dnsEnableAutoRevert
     val dnsAutoRevertDelaySeconds = prefsManager.dnsAutoRevertDelaySeconds
 
@@ -75,6 +79,18 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private val _hasWriteSecureSettings = MutableStateFlow(false)
     val hasWriteSecureSettings = _hasWriteSecureSettings.asStateFlow()
 
+    private val _activeDnsHostname = MutableStateFlow<String?>(null)
+    val activeDnsHostname = _activeDnsHostname.asStateFlow()
+
+    private val _activeDnsMode = MutableStateFlow<String?>(null)
+    val activeDnsMode = _activeDnsMode.asStateFlow()
+
+    private val _usbDebuggingEnabled = MutableStateFlow(false)
+    val usbDebuggingEnabled = _usbDebuggingEnabled.asStateFlow()
+
+    private val _developerOptionsEnabled = MutableStateFlow(false)
+    val developerOptionsEnabled = _developerOptionsEnabled.asStateFlow()
+
     private val _isShizukuAvailable = MutableStateFlow(false)
     val isShizukuAvailable = _isShizukuAvailable.asStateFlow()
 
@@ -87,38 +103,34 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private val _permissionGrantStatus = MutableStateFlow<String?>(null)
     val permissionGrantStatus = _permissionGrantStatus.asStateFlow()
 
-    private val _requestNotificationPermission = MutableStateFlow(0)
-    val requestNotificationPermission = _requestNotificationPermission.asStateFlow()
-
-    private val _showNotificationSettingsDialog = MutableStateFlow(false)
-    val showNotificationSettingsDialog = _showNotificationSettingsDialog.asStateFlow()
-
-    private val _showNotificationPermissionExplanationDialog = MutableStateFlow(false)
+    private val notificationPermissionCoordinator = NotificationPermissionCoordinator(
+        preferences = prefsManager,
+        manageVpnMonitoring = ::manageVpnMonitoringService,
+        manageNetworkMonitoring = ::manageNetworkMonitoringService
+    )
+    val requestNotificationPermission = notificationPermissionCoordinator.requestPermission
+    val showNotificationSettingsDialog = notificationPermissionCoordinator.showSettingsDialog
     val showNotificationPermissionExplanationDialog =
-        _showNotificationPermissionExplanationDialog.asStateFlow()
-
-    private val _showNotificationPermissionFallbackDialog = MutableStateFlow(false)
+        notificationPermissionCoordinator.showExplanationDialog
     val showNotificationPermissionFallbackDialog =
-        _showNotificationPermissionFallbackDialog.asStateFlow()
-
-    private val _showNotificationPermissionSettingsDialog = MutableStateFlow(false)
+        notificationPermissionCoordinator.showFallbackDialog
     val showNotificationPermissionSettingsDialog =
-        _showNotificationPermissionSettingsDialog.asStateFlow()
-
-    private val _notificationPermissionExplanationFromBackup = MutableStateFlow(false)
+        notificationPermissionCoordinator.showPermissionSettingsDialog
     val notificationPermissionExplanationFromBackup =
-        _notificationPermissionExplanationFromBackup.asStateFlow()
+        notificationPermissionCoordinator.explanationFromBackup
 
     private val _backupStatusMessage = MutableStateFlow<String?>(null)
     val backupStatusMessage = _backupStatusMessage.asStateFlow()
 
-    private var pendingVpnDetectionMode: String? = null
-    private var pendingNetworkTypeDetectionMode: String? = null
-    private var awaitingNotificationSettingsResult = false
-
+    private val _quickActionStatusMessage = MutableStateFlow<String?>(null)
+    val quickActionStatusMessage = _quickActionStatusMessage.asStateFlow()
 
     fun setDnsToggleOff(enabled: Boolean) = prefsManager.setDnsToggleOff(enabled)
     fun setDnsToggleAuto(enabled: Boolean) = prefsManager.setDnsToggleAuto(enabled)
+    fun setDnsListSortMode(mode: DnsListSortMode) = prefsManager.setDnsListSortMode(mode)
+    fun reorderDnsHostnames(orderedIds: List<String>): Boolean =
+        prefsManager.reorderDnsHostnames(orderedIds)
+
     fun setDnsEnableAutoRevert(enabled: Boolean) = prefsManager.setDnsEnableAutoRevert(enabled)
     fun setDnsAutoRevertDelaySeconds(delay: Int) = prefsManager.setDnsAutoRevertDelaySeconds(delay)
 
@@ -141,25 +153,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     }
 
     fun setVpnDetectionMode(mode: String) {
-        if (mode == BACKGROUND_DETECTION) {
-            val context = getCurrentContext()
-            if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val hasNotificationPermission =
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        android.Manifest.permission.POST_NOTIFICATIONS
-                    ) == PackageManager.PERMISSION_GRANTED
-
-                if (!hasNotificationPermission) {
-                    pendingVpnDetectionMode = mode
-                    handleMissingNotificationPermission(fromBackup = false)
-                    return
-                }
-            }
-        }
-
-        prefsManager.setVpnDetectionMode(mode)
-        manageVpnMonitoringService()
+        notificationPermissionCoordinator.setVpnDetectionMode(mode, getCurrentContext())
     }
 
     fun setNetworkTypeDetectionEnabled(enabled: Boolean) {
@@ -168,25 +162,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     }
 
     fun setNetworkTypeDetectionMode(mode: String) {
-        if (mode == BACKGROUND_DETECTION) {
-            val context = getCurrentContext()
-            if (context != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val hasNotificationPermission =
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        android.Manifest.permission.POST_NOTIFICATIONS
-                    ) == PackageManager.PERMISSION_GRANTED
-
-                if (!hasNotificationPermission) {
-                    pendingNetworkTypeDetectionMode = mode
-                    handleMissingNotificationPermission(fromBackup = false)
-                    return
-                }
-            }
-        }
-
-        prefsManager.setNetworkTypeDetectionMode(mode)
-        manageNetworkMonitoringService()
+        notificationPermissionCoordinator.setNetworkTypeDetectionMode(mode, getCurrentContext())
     }
 
     fun setDnsStateOnWifi(state: String) = prefsManager.setDnsStateOnWifi(state)
@@ -229,8 +205,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
                 } ?: throw IllegalStateException("Could not open backup file")
 
                 prefsManager.restoreSettingsBackupJson(json)
-                if (needsNotificationPermissionForBackgroundDetection(appContext)) {
-                    handleMissingNotificationPermission(fromBackup = true)
+                if (notificationPermissionCoordinator.needsPermissionForBackgroundDetection(appContext)) {
+                    notificationPermissionCoordinator.showMissingPermission(fromBackup = true)
                 } else {
                     manageVpnMonitoringService()
                     manageNetworkMonitoringService()
@@ -244,36 +220,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         }
     }
 
-    private fun needsNotificationPermissionForBackgroundDetection(context: Context): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                !hasNotificationPermission(context) &&
-                isAnyBackgroundDetectionEnabled()
-    }
-
-    private fun hasNotificationPermission(context: Context): Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                ContextCompat.checkSelfPermission(
-                    context,
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun isAnyBackgroundDetectionEnabled(): Boolean {
-        return (prefsManager.isVpnDetectionEnabled() &&
-                prefsManager.getVpnDetectionMode() == BACKGROUND_DETECTION) ||
-                (prefsManager.isNetworkTypeDetectionEnabled() &&
-                        prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION)
-    }
-
     fun clearBackupStatusMessage() {
         _backupStatusMessage.value = null
-    }
-
-    private fun handleMissingNotificationPermission(fromBackup: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            _notificationPermissionExplanationFromBackup.value = fromBackup
-            _showNotificationPermissionExplanationDialog.value = true
-        }
     }
 
     private fun manageVpnMonitoringService() {
@@ -292,8 +240,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
                         ) == PackageManager.PERMISSION_GRANTED
 
                     if (!hasNotificationPermission) {
-                        _requestNotificationPermission.value =
-                            _requestNotificationPermission.value + 1
+                        notificationPermissionCoordinator.requestPermissionForServiceStart()
                         return@launch
                     }
                 }
@@ -362,6 +309,86 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         _hostnamePendingDeletion.value = entry
     }
 
+    fun setActiveDns(context: Context, entry: DnsHostnameEntry) {
+        val appContext = context.applicationContext
+        val result = SystemQuickActions.setActiveDns(appContext, entry.hostname)
+        _quickActionStatusMessage.value = when (result) {
+            SystemQuickActionResult.SUCCESS ->
+                appContext.getString(R.string.shortcut_toast_dns_hostname, entry.name)
+
+            SystemQuickActionResult.PERMISSION_MISSING ->
+                appContext.getString(R.string.toast_permission_not_granted_adb)
+
+            SystemQuickActionResult.INVALID_DNS_HOSTNAME ->
+                appContext.getString(R.string.error_hostname_value_invalid)
+
+            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED,
+            SystemQuickActionResult.FAILED ->
+                appContext.getString(R.string.toast_error_saving_settings)
+        }
+        refreshSystemQuickActionStates(appContext)
+    }
+
+    fun setDnsMode(context: Context, mode: String) {
+        val appContext = context.applicationContext
+        val result = SystemQuickActions.setDnsMode(appContext, mode)
+        _quickActionStatusMessage.value = when (result) {
+            SystemQuickActionResult.SUCCESS -> appContext.getString(
+                if (mode == DNS_MODE_OFF) {
+                    R.string.shortcut_toast_dns_off
+                } else {
+                    R.string.shortcut_toast_dns_auto
+                }
+            )
+
+            SystemQuickActionResult.PERMISSION_MISSING ->
+                appContext.getString(R.string.toast_permission_not_granted_adb)
+
+            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED,
+            SystemQuickActionResult.INVALID_DNS_HOSTNAME,
+            SystemQuickActionResult.FAILED ->
+                appContext.getString(R.string.toast_error_saving_settings)
+        }
+        refreshSystemQuickActionStates(appContext)
+    }
+
+    fun setUsbDebuggingEnabled(context: Context, enabled: Boolean) {
+        val appContext = context.applicationContext
+        val result = SystemQuickActions.setUsbDebuggingEnabled(
+            context = appContext,
+            enabled = enabled,
+            toggleDeveloperOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled(),
+            toggleWirelessDebugging = prefsManager.isUsbAlsoDisableWirelessDebuggingEnabled()
+        )
+        _quickActionStatusMessage.value = when (result) {
+            SystemQuickActionResult.SUCCESS -> appContext.getString(
+                if (enabled) R.string.shortcut_toast_usb_on else R.string.shortcut_toast_usb_off
+            )
+
+            SystemQuickActionResult.PERMISSION_MISSING ->
+                appContext.getString(R.string.toast_permission_not_granted_adb)
+
+            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED ->
+                appContext.getString(R.string.toast_developer_options_disabled)
+
+            SystemQuickActionResult.INVALID_DNS_HOSTNAME,
+            SystemQuickActionResult.FAILED ->
+                appContext.getString(R.string.toast_error_saving_settings)
+        }
+        refreshSystemQuickActionStates(appContext)
+    }
+
+    fun clearQuickActionStatusMessage() {
+        _quickActionStatusMessage.value = null
+    }
+
+    fun refreshSystemQuickActionStates(context: Context) {
+        _activeDnsHostname.value = SystemQuickActions.getActiveDnsHostname(context)
+        _activeDnsMode.value = SystemQuickActions.getActiveDnsMode(context)
+        _usbDebuggingEnabled.value = SystemQuickActions.isUsbDebuggingEnabled(context)
+        _developerOptionsEnabled.value = PermissionUtils.isDeveloperOptionsEnabled(context)
+    }
+
     fun checkSystemStates(context: Context) {
         _hasWriteSecureSettings.value = PermissionUtils.hasWriteSecureSettingsPermission(context)
         _isShizukuAvailable.value = PermissionUtils.isShizukuAvailableAndReady()
@@ -372,6 +399,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
             _appHasShizukuPermission.value = false
         }
         _isDeviceRooted.value = PermissionUtils.isDeviceRooted()
+        refreshSystemQuickActionStates(context.applicationContext)
     }
 
     fun grantWriteSecureSettingsViaShizuku(context: Context) {
@@ -466,102 +494,32 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         _permissionGrantStatus.value = null
     }
 
-    fun clearNotificationPermissionRequest() {
-        _requestNotificationPermission.value = 0
-    }
-
     fun clearNotificationSettingsDialog() {
-        _showNotificationSettingsDialog.value = false
+        notificationPermissionCoordinator.clearSettingsDialog()
     }
 
     fun requestNotificationPermissionFromExplanation() {
-        _showNotificationPermissionExplanationDialog.value = false
-        _showNotificationPermissionFallbackDialog.value = false
-        _showNotificationPermissionSettingsDialog.value = false
-        awaitingNotificationSettingsResult = false
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            _requestNotificationPermission.value = _requestNotificationPermission.value + 1
-        }
+        notificationPermissionCoordinator.requestPermissionFromExplanation()
     }
 
     fun useTileOnlyDetectionForNotificationFallback() {
-        _showNotificationPermissionExplanationDialog.value = false
-        _showNotificationPermissionFallbackDialog.value = false
-        _showNotificationPermissionSettingsDialog.value = false
-        pendingVpnDetectionMode = null
-        pendingNetworkTypeDetectionMode = null
-        awaitingNotificationSettingsResult = false
-        fallbackBackgroundDetectionToTileOnly()
+        notificationPermissionCoordinator.useTileOnlyFallback()
     }
 
     fun openNotificationPermissionSettings() {
-        clearNotificationPermissionRequest()
-        _showNotificationPermissionFallbackDialog.value = false
-        _showNotificationPermissionSettingsDialog.value = false
-        awaitingNotificationSettingsResult = true
+        notificationPermissionCoordinator.openPermissionSettings()
     }
 
     fun onNotificationPermissionPermanentlyDenied() {
-        clearNotificationPermissionRequest()
-        _showNotificationPermissionFallbackDialog.value = false
-        _showNotificationPermissionSettingsDialog.value = true
+        notificationPermissionCoordinator.onPermissionPermanentlyDenied()
     }
 
     fun onNotificationPermissionResult(granted: Boolean) {
-        clearNotificationPermissionRequest()
-        if (granted) {
-            _showNotificationPermissionFallbackDialog.value = false
-            _showNotificationPermissionSettingsDialog.value = false
-            awaitingNotificationSettingsResult = false
-            applyPendingNotificationPermissionChanges()
-            manageVpnMonitoringService()
-            manageNetworkMonitoringService()
-        } else {
-            _showNotificationPermissionFallbackDialog.value = true
-        }
+        notificationPermissionCoordinator.onPermissionResult(granted)
     }
 
     fun refreshNotificationPermissionAfterSettings(context: Context) {
-        if (!awaitingNotificationSettingsResult) return
-
-        if (hasNotificationPermission(context.applicationContext)) {
-            _showNotificationPermissionSettingsDialog.value = false
-            awaitingNotificationSettingsResult = false
-            applyPendingNotificationPermissionChanges()
-            manageVpnMonitoringService()
-            manageNetworkMonitoringService()
-        } else {
-            _showNotificationPermissionSettingsDialog.value = true
-        }
-    }
-
-    private fun applyPendingNotificationPermissionChanges() {
-        pendingVpnDetectionMode?.let { mode ->
-            prefsManager.setVpnDetectionMode(mode)
-        }
-        pendingVpnDetectionMode = null
-
-        pendingNetworkTypeDetectionMode?.let { mode ->
-            prefsManager.setNetworkTypeDetectionMode(mode)
-        }
-        pendingNetworkTypeDetectionMode = null
-    }
-
-    private fun fallbackBackgroundDetectionToTileOnly() {
-        if (
-            prefsManager.isVpnDetectionEnabled() &&
-            prefsManager.getVpnDetectionMode() == BACKGROUND_DETECTION
-        ) {
-            prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
-            manageVpnMonitoringService()
-        }
-        if (
-            prefsManager.isNetworkTypeDetectionEnabled() &&
-            prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION
-        ) {
-            prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
-            manageNetworkMonitoringService()
-        }
+        notificationPermissionCoordinator.refreshPermissionAfterSettings(context)
     }
 
     fun initializeVpnMonitoring() {
@@ -584,8 +542,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
                         ) == PackageManager.PERMISSION_GRANTED
 
                     if (!hasNotificationPermission) {
-                        _requestNotificationPermission.value =
-                            _requestNotificationPermission.value + 1
+                        notificationPermissionCoordinator.requestPermissionForServiceStart()
                         return@launch
                     }
                 }
