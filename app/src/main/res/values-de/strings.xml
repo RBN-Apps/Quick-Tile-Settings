@@ -288,8 +288,6 @@
     <string name="shortcut_settings_mark_favorite_desc">%1$s als Favorit markieren</string>
     <string name="shortcut_settings_remove_favorite_desc">%1$s aus Favoriten entfernen</string>
     <string name="shortcut_settings_open_desc">Shortcut-Einstellungen öffnen</string>
-    <string name="shortcut_settings_back_desc">Zurück zu Tile-Einstellungen</string>
-
     <!-- Quick Action Dialog -->
     <string name="quick_action_title">Schnellaktionen</string>
     <string name="quick_action_dns_title">Privates DNS</string>

@@ -1,7 +1,10 @@
 package com.rbn.qtsettings
 
+import android.Manifest
+import android.app.Application
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
@@ -12,8 +15,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class QuickActionResolverTest {
@@ -68,6 +73,25 @@ class QuickActionResolverTest {
         val tileType = QuickActionResolver.resolveTileType(null, "unknown")
 
         assertEquals(TileType.ALL, tileType)
+    }
+
+    @Test
+    fun quickActionDialog_withoutPermission_opensAppForTileConfiguration() {
+        val application = context as Application
+        shadowOf(application).denyPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
+        val tileServiceName = PrivateDnsTileService::class.java.name
+        val launchIntent = Intent(application, QuickActionDialogActivity::class.java).apply {
+            putExtra(Intent.EXTRA_COMPONENT_NAME, tileServiceName)
+        }
+
+        val activity = Robolectric.buildActivity(QuickActionDialogActivity::class.java, launchIntent)
+            .create()
+            .get()
+        val openedIntent = shadowOf(activity).nextStartedActivity
+
+        assertEquals(ComponentName(application, MainActivity::class.java), openedIntent.component)
+        assertEquals(tileServiceName, openedIntent.getStringExtra(Intent.EXTRA_COMPONENT_NAME))
+        assertTrue(activity.isFinishing)
     }
 
     @Test

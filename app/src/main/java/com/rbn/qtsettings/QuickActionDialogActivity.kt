@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -38,13 +37,10 @@ import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.utils.SystemQuickActionResult
 import com.rbn.qtsettings.utils.SystemQuickActions
-import com.rbn.qtsettings.utils.VpnDetectionUtils
 
 class QuickActionDialogActivity : ComponentActivity() {
 
@@ -57,7 +53,7 @@ class QuickActionDialogActivity : ComponentActivity() {
         if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
             Toast.makeText(this, R.string.toast_permission_not_granted_adb, Toast.LENGTH_LONG)
                 .show()
-            finish()
+            openApp(resolveTileType())
             return
         }
 
@@ -149,49 +145,27 @@ class QuickActionDialogActivity : ComponentActivity() {
         try {
             when (val kind = action.kind) {
                 QuickActionKind.DnsOff -> {
-                    if (VpnDetectionUtils.setPrivateDnsOff(this)) {
-                        Toast.makeText(this, R.string.shortcut_toast_dns_off, Toast.LENGTH_SHORT)
-                            .show()
-                        requestTileRefresh(PrivateDnsTileService::class.java)
-                    } else {
-                        Toast.makeText(this, R.string.toast_error_saving_settings, Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    handleDnsActionResult(
+                        result = SystemQuickActions.setDnsMode(this, DNS_MODE_OFF),
+                        successMessage = getString(R.string.shortcut_toast_dns_off)
+                    )
                 }
 
                 QuickActionKind.DnsAuto -> {
-                    if (VpnDetectionUtils.restorePrivateDns(this, DNS_MODE_AUTO)) {
-                        Toast.makeText(this, R.string.shortcut_toast_dns_auto, Toast.LENGTH_SHORT)
-                            .show()
-                        requestTileRefresh(PrivateDnsTileService::class.java)
-                    } else {
-                        Toast.makeText(this, R.string.toast_error_saving_settings, Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    handleDnsActionResult(
+                        result = SystemQuickActions.setDnsMode(this, DNS_MODE_AUTO),
+                        successMessage = getString(R.string.shortcut_toast_dns_auto)
+                    )
                 }
 
                 is QuickActionKind.DnsHostname -> {
-                    val modeSaved = Settings.Global.putString(
-                        contentResolver,
-                        PRIVATE_DNS_MODE,
-                        DNS_MODE_ON
+                    handleDnsActionResult(
+                        result = SystemQuickActions.setActiveDns(this, kind.entry.hostname),
+                        successMessage = getString(
+                            R.string.shortcut_toast_dns_hostname,
+                            kind.entry.name
+                        )
                     )
-                    val hostnameSaved = Settings.Global.putString(
-                        contentResolver,
-                        PRIVATE_DNS_SPECIFIER,
-                        kind.entry.hostname
-                    )
-                    if (modeSaved && hostnameSaved) {
-                        Toast.makeText(
-                            this,
-                            getString(R.string.shortcut_toast_dns_hostname, kind.entry.name),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        requestTileRefresh(PrivateDnsTileService::class.java)
-                    } else {
-                        Toast.makeText(this, R.string.toast_error_saving_settings, Toast.LENGTH_SHORT)
-                            .show()
-                    }
                 }
 
                 is QuickActionKind.UsbDebugging -> {
@@ -244,6 +218,34 @@ class QuickActionDialogActivity : ComponentActivity() {
             Toast.makeText(this, R.string.toast_error_saving_settings, Toast.LENGTH_SHORT).show()
         } finally {
             finish()
+        }
+    }
+
+    private fun handleDnsActionResult(
+        result: SystemQuickActionResult,
+        successMessage: String
+    ) {
+        when (result) {
+            SystemQuickActionResult.SUCCESS -> {
+                Toast.makeText(this, successMessage, Toast.LENGTH_SHORT).show()
+                requestTileRefresh(PrivateDnsTileService::class.java)
+            }
+
+            SystemQuickActionResult.PERMISSION_MISSING ->
+                Toast.makeText(
+                    this,
+                    R.string.toast_permission_not_granted_adb,
+                    Toast.LENGTH_LONG
+                ).show()
+
+            SystemQuickActionResult.INVALID_DNS_HOSTNAME,
+            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED,
+            SystemQuickActionResult.FAILED ->
+                Toast.makeText(
+                    this,
+                    R.string.toast_error_saving_settings,
+                    Toast.LENGTH_SHORT
+                ).show()
         }
     }
 
