@@ -231,4 +231,53 @@
     <string name="network_type_mobile">Připojeno k mobilním datům</string>
     <string name="network_type_none">Bez připojení k síti</string>
     <string name="network_type_unknown">Neznámý typ sítě</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_dns_off_short">Vypnout DNS</string>
+    <string name="shortcut_dns_off_long">Zakáže soukromou DNS</string>
+    <string name="shortcut_dns_auto_short">DNS Auto</string>
+    <string name="shortcut_dns_auto_long">Povolí soukromou DNS (Auto)</string>
+    <string name="shortcut_dns_adguard_short">AdGuard DNS</string>
+    <string name="shortcut_dns_adguard_long">Povolí AdGuard DNS</string>
+    <string name="shortcut_dns_cloudflare_short">Cloudflare DNS</string>
+    <string name="shortcut_dns_cloudflare_long">Povolí Cloudflare DNS</string>
+    <string name="shortcut_dns_quad9_short">Quad9 DNS</string>
+    <string name="shortcut_dns_quad9_long">Povolí Quad9 DNS</string>
+    <string name="shortcut_usb_on_short">Zapne USB debugování</string>
+    <string name="shortcut_usb_on_long">Povolí USB Debugging</string>
+    <string name="shortcut_usb_off_short">Vypne USB debugování</string>
+    <string name="shortcut_usb_off_long">Zakáže USB debugování</string>
+    <string name="shortcut_dns_custom_long">Povolí DNS: %1$s</string>
+    <string name="shortcut_toast_dns_off">Zakáže soukromou DNS</string>
+    <string name="shortcut_toast_dns_auto">Soukromou DNS nastaví na Auto</string>
+    <string name="shortcut_toast_dns_hostname">Soukromou DNS nastaví na %1$s</string>
+    <string name="shortcut_toast_usb_on">USB debugování povoleno</string>
+    <string name="shortcut_toast_usb_off">USB debugování zakázáno</string>
+    <string name="shortcut_toast_permission_missing">Chybí oprávnění. Spusťte aplikaci a udělte jí oprávnění.</string>
+    <string name="shortcut_toast_action_disabled">Akce zkratky je deaktivována. Nejprve ji v aplikaci povolte.</string>
+    <string name="shortcut_toast_action_unavailable">Akce zkratky již není k dispozici. Zkontrolujte nastavení aplikace.</string>
+
+    <!-- Shortcut Settings -->
+    <string name="shortcut_settings_title">Zkratky akcí</string>
+    <string name="shortcut_settings_description">Vyberte, které akce se mají zobrazovat jako zkratky v aplikaci pro Android. Lze je používat z launcherů, v aplikaci Samsung Routines, v Taskeru nebo jako připnuté zkratky na domovské obrazovce.\n\nSystém Android omezuje počet dynamických zkratek viditelných v launcheru pro tuto aktivitu aplikace na %1$d, takže zde lze současně aktivovat pouze %1$d akcí.\n\nPomocí ikony hvězdičky můžete označit až %2$d aktivních akcí jako oblíbené. Oblíbené položky se zobrazují s nejvyšší prioritou a je větší pravděpodobnost, že se objeví jako první v nabídkách zkratek spouštěče. Zakázané akce nelze označit jako oblíbené.\n\nVe výchozím nastavení jsou zakázané akce zcela blokovány a aplikace je již nemůže provádět. Tuto možnost níže povolte pouze v případě, že chcete, aby již připnuté zkratky fungovaly i poté, co je zde zakážete.</string>
+    <string name="shortcut_settings_limit">Aktivní zkratky: %1$d / %2$d</string>
+    <string name="shortcut_settings_limit_reached_title">Limit zkratek dosažen</string>
+    <string name="shortcut_settings_limit_reached">Limit zkratek dosažen. Nejdív některou odeberte.</string>
+    <string name="shortcut_settings_favorite_limit_reached_title">Limit oblibených dosažen</string>
+    <string name="shortcut_settings_favorite_limit_reached">Můžeš označit až 4 oblíbené zkratky.</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled">Povolit zakázané připnuté zkratky</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled_desc">Pokud je tato funkce zapnutá, zkratky, které již byly připnuty nebo spuštěny externě, mohou běžet i poté, co je zde vypnete.</string>
+    <string name="shortcut_settings_allow_pinned_info_desc">Zobrazit detaily o zákazaných připnutých zkratkách</string>
+    <string name="shortcut_settings_allow_pinned_warning_title">Povolit zakázané zkratky?</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Povolení této funkce oslabuje výchozí bezpečnostní chování. Zakázané akce zkratek mohou být i nadále spouštěny, pokud jsou spuštěny externě nebo ze zkratek, které již byly dříve připnuty.\n\nTo je užitečné zejména v případě, že chcete i nadále používat více akcí, než kolik Android povoluje jako současně aktivní zkratky.</string>
+    <string name="shortcut_settings_allow_pinned_warning_confirm">I tak povolit</string>
+    <string name="shortcut_settings_mark_favorite_desc">Označit %1$s jako oblíbené</string>
+    <string name="shortcut_settings_remove_favorite_desc">Odstranit %1$s z oblíbených</string>
+    <string name="shortcut_settings_open_desc">Otevřít nastavení zkratek</string>
+    <!-- Quick Action Dialog -->
+    <string name="quick_action_title">Rychlé akce</string>
+    <string name="quick_action_dns_title">Soukromá DNS</string>
+    <string name="quick_action_usb_title">USB debugování</string>
+    <string name="quick_action_no_actions">Nejsou povolené žádné akce pro tuto dlaždici.</string>
+    <string name="quick_action_open_app">Otevřít aplikaci</string>
 </resources>
