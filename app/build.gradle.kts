@@ -31,6 +31,17 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("minifiedTest") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            proguardFiles("minified-test-target-proguard-rules.pro")
+        }
+    }
+    testBuildType = if (providers.gradleProperty("minifiedTests").isPresent) {
+        "minifiedTest"
+    } else {
+        "debug"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
