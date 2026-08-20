@@ -1,0 +1,4 @@
+Version 1.4.1
+
+- Fix: Backups aus früheren App-Versionen können jetzt wiederhergestellt werden.
+- Tschechische Übersetzungen für App-Verknüpfungen wurden ergänzt.
