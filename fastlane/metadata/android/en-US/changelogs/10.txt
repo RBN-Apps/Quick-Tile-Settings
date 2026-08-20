@@ -1,0 +1,4 @@
+Version 1.4.1
+
+- Fix: Backups created by earlier app versions can now be restored again.
+- Added Czech translations for app shortcuts.
