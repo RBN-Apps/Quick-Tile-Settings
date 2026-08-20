@@ -325,10 +325,10 @@ class PreferencesManager private constructor(context: Context) {
 
     fun restoreSettingsBackupJson(json: String) {
         val backup = try {
-            gson.fromJson(json, SettingsBackup::class.java)
+            SettingsBackupJsonParser(gson).parse(json)
         } catch (e: Exception) {
             throw IllegalArgumentException("Invalid backup file", e)
-        } ?: throw IllegalArgumentException("Invalid backup file")
+        }
 
         if (backup.schemaVersion != SettingsBackup.CURRENT_SCHEMA_VERSION) {
             throw IllegalArgumentException("Unsupported backup version: ${backup.schemaVersion}")
