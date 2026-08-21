@@ -13,8 +13,8 @@ android {
         applicationId = "com.rbn.qtsettings"
         minSdk = 29
         targetSdk = 37
-        versionCode = 10
-        versionName = "1.4.1"
+        versionCode = 11
+        versionName = "1.4.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments += mapOf(

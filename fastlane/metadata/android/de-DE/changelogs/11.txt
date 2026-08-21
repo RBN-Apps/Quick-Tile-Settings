@@ -1,0 +1,5 @@
+Version 1.4.2
+
+- Fix: DNS-Einträge aus älteren App-Versionen bleiben nach einem Update erhalten.
+- Fix: Backups aus früheren App-Versionen können jetzt wiederhergestellt werden.
+- Tschechische Übersetzungen für App-Verknüpfungen wurden ergänzt.
