@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
@@ -421,15 +422,10 @@ class PreferencesManager private constructor(context: Context) {
     }
 
     private fun loadDnsHostnames() {
-        val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
-        val storedHostnames = if (json != null) {
-            try {
-                gson.fromJson<List<DnsHostnameEntry>>(json, hostnameEntryListType)
-            } catch (e: Exception) {
-                Log.e("PreferencesManager", "Error parsing stored DNS hostnames", e)
-                null
-            }
-        } else null
+        val storedHostnames = parseStoredDnsHostnames(
+            json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null),
+            errorMessage = "Error parsing stored DNS hostnames"
+        )
 
         manualDnsHostnames = DnsHostnamePolicy.reconcile(
             storedHostnames = storedHostnames,
@@ -440,6 +436,32 @@ class PreferencesManager private constructor(context: Context) {
         saveDnsListSortModeInternal()
     }
 
+
+    /**
+     * Reads the persisted DNS hostname list, upgrading entries that were written by a minified
+     * release before [DnsHostnameEntry] had stable Gson field names. Without that upgrade the
+     * obfuscated keys match no field, Gson hands back all-null entries and
+     * [DnsHostnamePolicy.reconcile] drops every custom hostname the user added.
+     */
+    private fun parseStoredDnsHostnames(
+        json: String?,
+        errorMessage: String
+    ): List<DnsHostnameEntry>? {
+        if (json == null) return null
+
+        return try {
+            val parsed = JsonParser.parseString(json)
+            if (!parsed.isJsonArray) return null
+
+            gson.fromJson(
+                LegacyMinifiedDnsHostnameJson.normalizeArray(parsed.asJsonArray),
+                hostnameEntryListType
+            )
+        } catch (e: Exception) {
+            Log.e("PreferencesManager", errorMessage, e)
+            null
+        }
+    }
 
     private fun saveDnsHostnamesInternal() {
         val json = gson.toJson(manualDnsHostnames)
@@ -717,21 +739,10 @@ class PreferencesManager private constructor(context: Context) {
     }
 
     private fun readManualDnsHostnamesBlocking(): List<DnsHostnameEntry> {
-        val json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null)
-        val storedHostnames: List<DnsHostnameEntry>? = if (json != null) {
-            try {
-                gson.fromJson(json, hostnameEntryListType)
-            } catch (e: Exception) {
-                Log.e(
-                    "PreferencesManager",
-                    "Error parsing stored DNS hostnames for blocking read",
-                    e
-                )
-                null
-            }
-        } else {
-            null
-        }
+        val storedHostnames = parseStoredDnsHostnames(
+            json = sharedPreferences.getString(KEY_DNS_HOSTNAMES, null),
+            errorMessage = "Error parsing stored DNS hostnames for blocking read"
+        )
         return DnsHostnamePolicy.reconcile(
             storedHostnames = storedHostnames ?: manualDnsHostnames,
             normalizeCustomEntries = false
