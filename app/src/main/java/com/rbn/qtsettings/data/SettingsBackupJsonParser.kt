@@ -95,19 +95,11 @@ internal class SettingsBackupJsonParser(
             }
         }
 
-    private fun migrateHostnames(source: JsonArray): JsonArray = JsonArray().apply {
+    private fun migrateHostnames(source: JsonArray): JsonArray {
         source.forEach { element ->
             require(element.isJsonObject) { "Invalid legacy DNS hostname entry" }
-            add(JsonObject().apply {
-                val hostname = element.asJsonObject
-                copy(hostname, "a", "id")
-                copy(hostname, "b", "name")
-                copy(hostname, "c", "hostname")
-                copy(hostname, "d", "isPredefined")
-                copy(hostname, "e", "isSelectedForCycle")
-                copy(hostname, "f", "descriptionResId")
-            })
         }
+        return LegacyMinifiedDnsHostnameJson.normalizeArray(source)
     }
 
     private fun migrateUsb(source: JsonObject): JsonObject = JsonObject().apply {
