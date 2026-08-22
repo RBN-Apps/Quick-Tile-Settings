@@ -113,17 +113,30 @@
     <string name="setting_also_hide_dev_options_desc">Při zapnutí této volby bude přepnutí USB ladění zároveň zapínat nebo vypínat Možnosti pro vývojáře.</string>
     <string name="setting_also_disable_wireless_debugging">Také přepínat Bezdrátové ladění</string>
     <string name="setting_also_disable_wireless_debugging_desc">Pokud je zapnuto, Bezdrátové ladění se bude přepínat spolu s USB laděním.</string>
-
+    <string name="usb_set_active_mode">Nastavit %1$s jako aktivní USB debugovací stav</string>
+    <string name="usb_active">Aktivní USB debugovací stav</string>
+    
     <string name="setting_enable_auto_revert">Povolit automatické obnovení po prodlevě</string>
     <string name="setting_auto_revert_delay">Prodleva obnovení (sekundy):</string>
     <string name="toast_reverting_dns_to">Obnovení DNS na \n\"%1$s\" za %2$d s…</string>
     <string name="toast_reverting_usb_to">Obnovení USB ladění na %1$s za %2$d s…</string>
     <string name="toast_revert_cancelled">Automatické obnovení zrušeno.</string>
-    <string name="on_state">Zapnuto</string>
+    <string name="on_state">Zapnuto</string>    
     <string name="off_state">Vypnuto</string>
     <string name="auto_state">Automaticky</string>
 
     <string name="dns_select_hostnames_for_cycle">Vyber hostname pro přepínání:</string>
+    <string name="dns_sort_content_description">Zvolit třídění DNS seznamu</string>
+    <string name="dns_sort_manual">Manual</string>
+    <string name="dns_sort_alphabetical">Abecední (A–Z)</string>
+    <string name="dns_manual_reorder_hint">Ťukni a podrž ikonu vedle pro přemístění pořadí DNS.</string>
+    <string name="dns_move_up">Nahoru</string>
+    <string name="dns_move_down">Dolů</string>
+    <string name="dns_reorder_entry">Přemístit %1$s (%2$s)</string>
+    <string name="dns_entry_actions">Akce pro %1$s (%2$s)</string>
+    <string name="dns_set_active_mode">Nastavit %1$s jako aktivní DNS</string>
+    <string name="dns_set_active">Nastavit jako aktivní DNS</string>
+    <string name="dns_active">Aktivní DNS</string>
     <string name="dns_custom_entry_badge">Vlastní DNS</string>
     <string name="dns_add_custom_hostname_button">Přidat vlastní hostname</string>
     <string name="dns_edit_hostname_title">Upravit hostname</string>
@@ -136,6 +149,7 @@
     <string name="button_delete">Smazat</string>
     <string name="error_hostname_name_empty">Zobrazovaný název nemůže být prázdný.</string>
     <string name="error_hostname_value_empty">Hostname nemůže být prázdný.</string>
+    <string name="error_hostname_value_invalid">Vyplňte platný DNS hostname.</string>
     <string name="confirm_delete_hostname_title">Smazat hostname?</string>
     <string name="confirm_delete_hostname_message">Opravdu chceš smazat \'%1$s\'?</string>
 
