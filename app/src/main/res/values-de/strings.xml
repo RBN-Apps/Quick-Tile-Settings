@@ -202,25 +202,22 @@
     <string name="vpn_monitoring_status_disconnected">VPN getrennt - Private DNS wiederhergestellt</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_title">Benachrichtigungen benötigen Berechtigung</string>
-    <string name="notification_permission_dialog_message">Um Benachrichtigungen für die VPN-Hintergrundüberwachung zu erhalten, musst du die Berechtigung in den App-Einstellungen aktivieren.\n\nWenn du die Berechtigung erteilt hast, kannst du Benachrichtigungen hier aktivieren.</string>
-    <string name="notification_permission_dialog_settings_button">Einstellungen</string>
     <string name="notification_permission_dialog_settings_description">Einstellungen öffnen</string>
     <string name="notification_permission_background_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
-    <string name="notification_permission_background_message">Die Hintergrunderkennung benötigt die Benachrichtigungsberechtigung, weil Android verlangt, dass die App während der Hintergrundüberwachung eine dauerhafte Benachrichtigung anzeigt.</string>
+    <string name="notification_permission_background_message">Die Hintergrunderkennung funktioniert bereits ohne Benachrichtigungsberechtigung. Erlaube sie, wenn der laufende Überwachungsstatus im Benachrichtigungsbereich sichtbar bleiben soll; andernfalls zeigt Android den Dienst nur im Bereich „Aktive Apps“ an.</string>
     <string name="notification_permission_import_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
-    <string name="notification_permission_import_message">Das importierte Backup aktiviert die Hintergrunderkennung für VPN- oder Netzwerktyp-Änderungen. Android verlangt dafür die Benachrichtigungsberechtigung, damit die App während der Hintergrundüberwachung eine dauerhafte Benachrichtigung anzeigen kann.</string>
-    <string name="notification_permission_fallback_title">Benachrichtigungsberechtigung benötigt</string>
-    <string name="notification_permission_fallback_message">Die Hintergrunderkennung kann ohne Benachrichtigungsberechtigung nicht laufen, weil Android für die Hintergrundüberwachung eine Benachrichtigung verlangt. Du kannst die Berechtigung jetzt erteilen oder stattdessen die Tile-only-Erkennung verwenden.</string>
+    <string name="notification_permission_import_message">Das importierte Backup aktiviert die Hintergrunderkennung für VPN- oder Netzwerkänderungen. Sie funktioniert bereits ohne Benachrichtigungsberechtigung. Erlaube Benachrichtigungen nur, wenn der laufende Status im Benachrichtigungsbereich sichtbar bleiben soll.</string>
+    <string name="notification_permission_fallback_title">Benachrichtigungszugriff nicht erteilt</string>
+    <string name="notification_permission_fallback_message">Die Hintergrunderkennung läuft weiter. Ihr Status erscheint nicht im Benachrichtigungsbereich, Android zeigt den Dienst aber weiterhin unter „Aktive Apps“ an. Du kannst es erneut versuchen oder ohne Benachrichtigungen fortfahren.</string>
     <string name="notification_permission_grant_button">Berechtigung erteilen</string>
-    <string name="notification_permission_use_tile_only_button">Tile-only-Erkennung verwenden</string>
-    <string name="notification_permission_settings_title">Benachrichtigungen benötigen Berechtigung</string>
-    <string name="notification_permission_settings_message">Android zeigt die Berechtigungsabfrage für Benachrichtigungen nicht mehr an. Öffne die Benachrichtigungseinstellungen dieser App und erlaube Benachrichtigungen dort, oder verwende stattdessen die Tile-only-Erkennung.</string>
+    <string name="notification_permission_continue_button">Ohne Benachrichtigungen fortfahren</string>
+    <string name="notification_permission_settings_title">Benachrichtigungszugriff ist deaktiviert</string>
+    <string name="notification_permission_settings_message">Die Hintergrunderkennung läuft ohne Status im Benachrichtigungsbereich weiter. Öffne die Benachrichtigungseinstellungen dieser App und erlaube Benachrichtigungen, um ihn dort anzuzeigen.</string>
     <string name="notification_permission_settings_button">Einstellungen öffnen</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">DNS je nach Netzwerktyp automatisch umschalten</string>
-    <string name="setting_network_type_detection_description">Ändert die Einstellungen für Privates DNS automatisch, wenn zwischen WLAN und mobilen Daten gewechselt wird.</string>
+    <string name="setting_network_type_detection_description">Ändert Privates DNS automatisch beim Wechsel zwischen WLAN und mobilen Daten. Aktiviere dies auch, um Regeln für einzelne WLAN-Netzwerke oder Access Points einzurichten.</string>
     <string name="setting_network_type_detection_mode">Netzwerkerkennungsmodus:</string>
     <string name="network_type_detection_tile_only_title">Nur-Kachel-Erkennung</string>
     <string name="network_type_detection_tile_only_description">Prüft den Netzwerktyp beim Öffnen der Schnelleinstellungen. Spart Akku, erkennt Netzwerkänderungen jedoch nur, wenn die Schnelleinstellungen geöffnet werden.</string>
@@ -228,8 +225,52 @@
     <string name="network_type_detection_background_description">Überwacht Änderungen des Netzwerktyps durchgehend. Reagiert sofort beim Netzwerkwechsel, verbraucht jedoch mehr Akku und zeigt eine dauerhafte Benachrichtigung.</string>
 
     <string name="setting_dns_state_on_wifi">DNS im WLAN:</string>
+    <string name="setting_dns_state_on_wifi_other_networks">WLAN-DNS für alle anderen Netzwerke:</string>
     <string name="setting_dns_state_on_mobile">DNS bei mobilen Daten:</string>
     <string name="setting_select_hostname">Hostname auswählen…</string>
+
+    <!-- WLAN-Netzwerkregeln -->
+    <string name="setting_wifi_network_rules_title">WLAN-Netzwerkregeln</string>
+    <string name="setting_wifi_network_rules_description">Überschreibt die standardmäßige WLAN-DNS-Einstellung für bestimmte Netzwerke oder Access Points (SSID/BSSID). Zum Anwenden werden die Berechtigung der App zur Steuerung von Privatem DNS und die Hintergrunderkennung benötigt. Benachrichtigungszugriff ist optional und macht nur den Überwachungsstatus im Benachrichtigungsbereich sichtbar.</string>
+    <string name="wifi_rules_enabled">Regeln pro Netzwerk verwenden</string>
+    <string name="wifi_rules_enabled_description">Passende Regeln überschreiben die WLAN-DNS-Einstellung für alle anderen erkannten Netzwerke.</string>
+    <string name="wifi_ssid_permission_title">Genauer Standort erforderlich</string>
+    <string name="wifi_ssid_permission_description">Android stuft WLAN-Namen (SSIDs), Access-Point-Kennungen (BSSIDs) und WLAN-Ergebnisse aus der Umgebung als standortsensitive Informationen ein. Zum Lesen ist die Berechtigung „Genauer Standort“ erforderlich. Diese Funktion liest keine Standortkoordinaten.</string>
+    <string name="wifi_ssid_permission_docs_link">Android-Dokumentation zu standortsensitiven WLAN-Informationen</string>
+    <string name="wifi_ssid_permission_grant">Zugriff ermöglichen</string>
+    <string name="wifi_location_services_title">Standortdienste einschalten</string>
+    <string name="wifi_location_services_description">Die Berechtigung ist erteilt, Android gibt die verbundene SSID/BSSID und letzte WLAN-Ergebnisse aber nur bei eingeschalteten Standortdiensten frei.</string>
+    <string name="wifi_location_services_open">Standorteinstellungen öffnen</string>
+    <string name="wifi_ssid_manual_entry_notice">Du kannst eine Regel jetzt manuell eintragen, der automatische Abgleich benötigt diesen Zugriff aber weiterhin. Solange das aktuelle Netzwerk unbekannt ist, bleibt Privates DNS unverändert.</string>
+    <string name="wifi_ssid_permission_denied">Zum Erkennen von WLAN-Netzwerken ist die Berechtigung für den genauen Standort erforderlich. Bis zur Freigabe bleibt Privates DNS unverändert.</string>
+    <string name="wifi_location_services_disabled">Aktiviere die Android-Standortdienste, damit der Name des verbundenen WLANs erkannt werden kann. Solange die Netzwerkidentität nicht verfügbar ist, bleibt Privates DNS unverändert.</string>
+    <string name="wifi_rules_require_background_detection">WLAN-Netzwerkregeln benötigen die Hintergrunddiensterkennung. Deaktiviere die Regeln, bevor du die reine Schnelleinstellungserkennung auswählst.</string>
+    <string name="wifi_rules_enabled_background_detection">Die Hintergrunddiensterkennung wurde aktiviert, weil Regeln pro Netzwerk sie benötigen.</string>
+    <string name="wifi_ssid_label">Netzwerkname (SSID)</string>
+    <string name="wifi_rules_title">Netzwerkregeln</string>
+    <string name="wifi_rules_empty">Keine Netzwerkregeln hinzugefügt.</string>
+    <string name="wifi_rule_add_current">Aktuell verbundenes Netzwerk verwenden</string>
+    <string name="wifi_rule_choose_network">Netzwerk aus Umgebung oder Verlauf wählen</string>
+    <string name="wifi_rule_add_manual">SSID oder BSSID manuell eingeben</string>
+    <string name="wifi_network_picker_title">WLAN-Netzwerk auswählen</string>
+    <string name="wifi_network_current_title">Aktuell verbunden</string>
+    <string name="wifi_network_nearby_title">Netzwerke in der Nähe</string>
+    <string name="wifi_network_history_title">Zuletzt erkannte Netzwerke</string>
+    <string name="wifi_network_scanning">Letzte von Android verfügbare WLAN-Ergebnisse werden geladen…</string>
+    <string name="wifi_network_none_found">Keine letzten WLAN-Ergebnisse verfügbar. Die App startet keinen neuen Scan; Android kann zwischengespeicherte Ergebnisse liefern.</string>
+    <string name="wifi_network_refresh">Ergebnisse neu laden</string>
+    <string name="wifi_hidden_network">Verstecktes Netzwerk</string>
+    <string name="wifi_rule_add_title">Netzwerkregel hinzufügen</string>
+    <string name="wifi_rule_edit_title">Netzwerkregel bearbeiten</string>
+    <string name="wifi_bssid_label">MAC des Access Points (BSSID, optional)</string>
+    <string name="wifi_bssid_hint">Leer lassen, um alle Access Points mit dieser SSID abzugleichen.</string>
+    <string name="wifi_rule_action_label">Aktion für dieses Netzwerk</string>
+    <string name="wifi_rule_action_default">Standardmäßige WLAN-DNS-Einstellung verwenden</string>
+    <string name="wifi_rule_invalid_or_duplicate">Gib eine gültige SSID oder BSSID ein und stelle sicher, dass dieselbe Regel nicht bereits existiert.</string>
+    <string name="wifi_rule_delete_title">Netzwerkregel löschen?</string>
+    <string name="wifi_rule_delete_message">Regel für „%1$s“ entfernen?</string>
+    <string name="wifi_rule_edit_description">Regel für %1$s bearbeiten</string>
+    <string name="wifi_rule_delete_description">Regel für %1$s löschen</string>
 
     <string name="dns_mode_off_label">Aus</string>
     <string name="dns_mode_auto_label">Auto</string>
@@ -270,6 +311,7 @@
     <string name="shortcut_toast_permission_missing">Berechtigung fehlt. Öffne die App, um sie zu erteilen.</string>
     <string name="shortcut_toast_action_disabled">Shortcut-Aktion ist deaktiviert. Aktiviere sie zuerst in der App.</string>
     <string name="shortcut_toast_action_unavailable">Shortcut-Aktion ist nicht mehr verfügbar. Prüfe die App-Konfiguration.</string>
+    <string name="shortcut_toast_action_failed">Die Shortcut-Aktion konnte nicht ausgeführt werden.</string>
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Shortcut-Aktionen</string>
@@ -294,4 +336,10 @@
     <string name="quick_action_usb_title">USB-Debugging</string>
     <string name="quick_action_no_actions">Für dieses Quick-Tile sind keine Aktionen aktiviert.</string>
     <string name="quick_action_open_app">App öffnen</string>
+    <string name="wifi_permission_open_settings">App-Einstellungen öffnen</string>
+    <string name="wifi_permission_blocked_description">Android zeigt den Standort-Berechtigungsdialog nicht mehr an. Öffne die App-Einstellungen, wähle Berechtigungen → Standort und erlaube den Zugriff auf den genauen Standort.</string>
+    <string name="wifi_boot_title">Nach einem Neustart automatisch fortsetzen</string>
+    <string name="wifi_boot_description">Damit WLAN-Regeln nach dem Neustart und Entsperren deines Telefons wieder greifen, öffne App-Einstellungen → Berechtigungen → Standort und wähle „Immer zulassen“ mit aktiviertem genauen Standort. So kann die App WLAN-Netzwerke im Hintergrund erkennen; Standortkoordinaten werden nicht gelesen. Das ist optional: Ohne diese Freigabe musst du die App nach jedem Neustart einmal öffnen.</string>
+    <string name="wifi_boot_ready">WLAN-Regeln werden nach dem Neustart und Entsperren automatisch fortgesetzt.</string>
+    <string name="wifi_rule_use_detected_bssid">Erkannte BSSID übernehmen: %1$s</string>
 </resources>

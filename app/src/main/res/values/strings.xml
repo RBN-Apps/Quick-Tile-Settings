@@ -209,25 +209,22 @@
     <string name="vpn_monitoring_status_disconnected">VPN disconnected - Private DNS restored</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_title">Notifications Require Permission</string>
-    <string name="notification_permission_dialog_message">To receive notifications for background VPN monitoring, you must enable the permission in app settings.\n\nOnce you have granted the permission, you can enable notifications here.</string>
-    <string name="notification_permission_dialog_settings_button">Settings</string>
     <string name="notification_permission_dialog_settings_description">Open settings</string>
     <string name="notification_permission_background_title">Allow notifications for background detection?</string>
-    <string name="notification_permission_background_message">Background detection needs notification permission because Android requires the app to show a persistent notification while monitoring in the background.</string>
+    <string name="notification_permission_background_message">Background detection already works without notification permission. Allow it if you want the ongoing monitoring status to remain visible in the notification drawer; otherwise Android shows the service only in its active apps area.</string>
     <string name="notification_permission_import_title">Allow notifications for background detection?</string>
-    <string name="notification_permission_import_message">The imported backup enables background detection for VPN or network type changes. Android requires notification permission so the app can show a persistent notification while monitoring in the background.</string>
-    <string name="notification_permission_fallback_title">Notification permission needed</string>
-    <string name="notification_permission_fallback_message">Background detection cannot run without notification permission because Android requires a notification for background monitoring. You can grant the permission now or use tile-only detection instead.</string>
+    <string name="notification_permission_import_message">The imported backup enables background detection for VPN or network changes. It already works without notification permission. Allow notifications only if you want the ongoing monitoring status to remain visible in the notification drawer.</string>
+    <string name="notification_permission_fallback_title">Notification access not granted</string>
+    <string name="notification_permission_fallback_message">Background detection will continue. Its status will not appear in the notification drawer, but Android still shows the service in its active apps area. You can retry or continue without notifications.</string>
     <string name="notification_permission_grant_button">Grant permission</string>
-    <string name="notification_permission_use_tile_only_button">Use tile-only detection</string>
-    <string name="notification_permission_settings_title">Notification permission needed</string>
-    <string name="notification_permission_settings_message">Android is no longer showing the notification permission prompt. Open this app\'s notification settings and allow notifications there, or use tile-only detection instead.</string>
+    <string name="notification_permission_continue_button">Continue without notifications</string>
+    <string name="notification_permission_settings_title">Notification access is disabled</string>
+    <string name="notification_permission_settings_message">Background detection will continue without a notification-drawer status. To show it there, open this app\'s notification settings and allow notifications.</string>
     <string name="notification_permission_settings_button">Open settings</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Auto-switch DNS based on network type</string>
-    <string name="setting_network_type_detection_description">Automatically change Private DNS settings when switching between WiFi and mobile data</string>
+    <string name="setting_network_type_detection_description">Automatically change Private DNS when switching between Wi-Fi and mobile data. Enable this to also configure rules for individual Wi-Fi networks or access points.</string>
     <string name="setting_network_type_detection_mode">Network Detection Mode:</string>
     <string name="network_type_detection_tile_only_title">Tile-Only Detection</string>
     <string name="network_type_detection_tile_only_description">Checks network type when opening Quick Settings. Battery-friendly, but only detects network changes when Quick Settings are opened.</string>
@@ -235,8 +232,53 @@
     <string name="network_type_detection_background_description">Continuously monitors network type changes. Instant response when switching networks, but uses more battery and shows a persistent notification.</string>
 
     <string name="setting_dns_state_on_wifi">DNS on WiFi:</string>
+    <string name="setting_dns_state_on_wifi_other_networks">Wi-Fi DNS for all other networks:</string>
     <string name="setting_dns_state_on_mobile">DNS on Mobile Data:</string>
     <string name="setting_select_hostname">Select hostname…</string>
+
+    <!-- WiFi Network Rules -->
+    <string name="setting_wifi_network_rules_title">Wi-Fi network rules</string>
+    <string name="setting_wifi_network_rules_description">Override the default Wi-Fi DNS setting for specific networks or access points (SSID/BSSID). Applying changes requires the app\'s Private DNS control permission and background detection. Notification access is optional and only makes the monitoring status visible in the notification drawer.</string>
+    <string name="wifi_rules_enabled">Use per-network rules</string>
+    <string name="wifi_rules_enabled_description">Matching rules override the Wi-Fi DNS setting for all other identified networks.</string>
+    <string name="wifi_ssid_permission_title">Precise location required</string>
+    <string name="wifi_ssid_permission_description">Android treats Wi-Fi names (SSIDs), access-point identifiers (BSSIDs), and nearby Wi-Fi results as location-sensitive information. Precise location permission is required to read them. This feature does not read location coordinates.</string>
+    <string name="wifi_ssid_permission_docs_link">Android documentation for location-sensitive Wi-Fi information</string>
+    <string name="wifi_ssid_permission_docs_url" translatable="false">https://developer.android.com/develop/connectivity/wifi/wifi-scan#permissions</string>
+    <string name="wifi_ssid_permission_grant">Allow access</string>
+    <string name="wifi_location_services_title">Turn on location services</string>
+    <string name="wifi_location_services_description">The permission is granted, but Android also requires location services to be on before it reveals the connected SSID/BSSID and recent Wi-Fi results.</string>
+    <string name="wifi_location_services_open">Open location settings</string>
+    <string name="wifi_ssid_manual_entry_notice">You can enter a rule manually now, but automatic matching still needs this access. Private DNS remains unchanged while the current network identity is unavailable.</string>
+    <string name="wifi_ssid_permission_denied">Precise location permission is required to identify Wi-Fi networks. Private DNS remains unchanged until access is granted.</string>
+    <string name="wifi_location_services_disabled">Turn on Android location services so the connected Wi-Fi name can be identified. Private DNS remains unchanged while the network identity is unavailable.</string>
+    <string name="wifi_rules_require_background_detection">Wi-Fi network rules require background service detection. Disable the rules before selecting tile-only detection.</string>
+    <string name="wifi_rules_enabled_background_detection">Background service detection was enabled because per-network rules require it.</string>
+    <string name="wifi_ssid_label">Network name (SSID)</string>
+    <string name="wifi_rules_title">Network rules</string>
+    <string name="wifi_rules_empty">No network rules added.</string>
+    <string name="wifi_rule_add_current">Use currently connected network</string>
+    <string name="wifi_rule_choose_network">Choose nearby or recent network</string>
+    <string name="wifi_rule_add_manual">Enter SSID or BSSID manually</string>
+    <string name="wifi_network_picker_title">Choose Wi-Fi network</string>
+    <string name="wifi_network_current_title">Currently connected</string>
+    <string name="wifi_network_nearby_title">Nearby networks</string>
+    <string name="wifi_network_history_title">Recently seen networks</string>
+    <string name="wifi_network_scanning">Loading Android\'s latest available Wi-Fi results…</string>
+    <string name="wifi_network_none_found">No recent Wi-Fi results are available. This app does not start a new scan; Android may provide cached results.</string>
+    <string name="wifi_network_refresh">Reload results</string>
+    <string name="wifi_hidden_network">Hidden network</string>
+    <string name="wifi_rule_add_title">Add network rule</string>
+    <string name="wifi_rule_edit_title">Edit network rule</string>
+    <string name="wifi_bssid_label">Access point MAC (BSSID, optional)</string>
+    <string name="wifi_bssid_hint">Leave blank to match every access point with this SSID.</string>
+    <string name="wifi_rule_action_label">Action for this network</string>
+    <string name="wifi_rule_action_default">Use the default Wi-Fi DNS setting</string>
+    <string name="wifi_rule_invalid_or_duplicate">Enter a valid SSID or BSSID and make sure the same rule does not already exist.</string>
+    <string name="wifi_rule_delete_title">Delete network rule?</string>
+    <string name="wifi_rule_delete_message">Remove the rule for “%1$s”?</string>
+    <string name="wifi_rule_edit_description">Edit rule for %1$s</string>
+    <string name="wifi_rule_delete_description">Delete rule for %1$s</string>
 
     <string name="dns_mode_off_label">Off</string>
     <string name="dns_mode_auto_label">Auto</string>
@@ -277,6 +319,7 @@
     <string name="shortcut_toast_permission_missing">Permission missing. Open the app to grant it.</string>
     <string name="shortcut_toast_action_disabled">Shortcut action is disabled. Enable it in the app first.</string>
     <string name="shortcut_toast_action_unavailable">Shortcut action is no longer available. Check the app configuration.</string>
+    <string name="shortcut_toast_action_failed">Could not apply the shortcut action.</string>
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Shortcut Actions</string>
@@ -301,4 +344,10 @@
     <string name="quick_action_usb_title">USB Debugging</string>
     <string name="quick_action_no_actions">No actions are enabled for this tile.</string>
     <string name="quick_action_open_app">Open app</string>
+    <string name="wifi_permission_open_settings">Open app settings</string>
+    <string name="wifi_permission_blocked_description">Android no longer shows the location permission dialog. Open app settings, choose Permissions → Location, and allow precise location access.</string>
+    <string name="wifi_boot_title">Continue automatically after a restart</string>
+    <string name="wifi_boot_description">To apply Wi-Fi rules after restarting and unlocking your phone, open app settings → Permissions → Location and select “Allow all the time”, with precise location enabled. This allows the app to identify Wi-Fi networks in the background; no location coordinates are read. This is optional: without it, open the app once after each restart.</string>
+    <string name="wifi_boot_ready">Wi-Fi rules resume automatically after restarting and unlocking your phone.</string>
+    <string name="wifi_rule_use_detected_bssid">Use detected BSSID: %1$s</string>
 </resources>

@@ -49,8 +49,12 @@ class ShortcutActionActivity : ComponentActivity() {
         when (action) {
             ACTION_DNS_OFF -> {
                 if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_OFF)) return
-                VpnDetectionUtils.setPrivateDnsOff(this)
-                Toast.makeText(this, R.string.shortcut_toast_dns_off, Toast.LENGTH_SHORT).show()
+                val message = if (VpnDetectionUtils.setPrivateDnsOff(this)) {
+                    R.string.shortcut_toast_dns_off
+                } else {
+                    R.string.shortcut_toast_action_failed
+                }
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             }
 
             ACTION_DNS_AUTO -> {

@@ -11,6 +11,7 @@ import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 import java.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,6 @@ class PreferencesManager private constructor(context: Context) {
     private val gson = Gson()
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("qt_settings_prefs", Context.MODE_PRIVATE)
-
     // DNS Settings
     private val _dnsToggleOff =
         MutableStateFlow(sharedPreferences.getBoolean(KEY_DNS_TOGGLE_OFF, true))
@@ -33,6 +33,8 @@ class PreferencesManager private constructor(context: Context) {
     val dnsToggleAuto: StateFlow<Boolean> = _dnsToggleAuto.asStateFlow()
 
     private val hostnameEntryListType = object : TypeToken<List<DnsHostnameEntry>>() {}.type
+    private val wifiDnsRuleListType = object : TypeToken<List<WifiDnsRule>>() {}.type
+    private val knownWifiNetworkListType = object : TypeToken<List<KnownWifiNetwork>>() {}.type
     private val _dnsListSortMode = MutableStateFlow(
         DnsListSortMode.fromPersistedValue(
             sharedPreferences.getString(KEY_DNS_LIST_SORT_MODE, null)
@@ -117,6 +119,17 @@ class PreferencesManager private constructor(context: Context) {
     private val _dnsHostnameOnWifi =
         MutableStateFlow(sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_WIFI, null))
     val dnsHostnameOnWifi: StateFlow<String?> = _dnsHostnameOnWifi.asStateFlow()
+
+    private val _wifiNetworkRulesEnabled = MutableStateFlow(
+        sharedPreferences.getBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, false)
+    )
+    val wifiNetworkRulesEnabled: StateFlow<Boolean> = _wifiNetworkRulesEnabled.asStateFlow()
+
+    private val _wifiNetworkRules = MutableStateFlow(loadWifiNetworkRules())
+    val wifiNetworkRules: StateFlow<List<WifiDnsRule>> = _wifiNetworkRules.asStateFlow()
+
+    private val _knownWifiNetworks = MutableStateFlow(loadKnownWifiNetworks())
+    val knownWifiNetworks: StateFlow<List<KnownWifiNetwork>> = _knownWifiNetworks.asStateFlow()
 
     private val _dnsStateOnMobile =
         MutableStateFlow(
@@ -273,6 +286,88 @@ class PreferencesManager private constructor(context: Context) {
         _dnsHostnameOnWifi.value = hostname
     }
 
+    fun setWifiNetworkRulesEnabled(enabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, enabled) }
+        _wifiNetworkRulesEnabled.value = enabled
+    }
+
+    fun addWifiNetworkRule(rule: WifiDnsRule): Boolean {
+        val normalizedRule = WifiNetworkRuleUtils.normalizeRule(rule) ?: return false
+        if (_wifiNetworkRules.value.any { WifiNetworkRuleUtils.hasSameMatcher(it, normalizedRule) }) {
+            return false
+        }
+        saveWifiNetworkRules(_wifiNetworkRules.value + normalizedRule)
+        return true
+    }
+
+    fun updateWifiNetworkRule(rule: WifiDnsRule): Boolean {
+        val normalizedRule = WifiNetworkRuleUtils.normalizeRule(rule) ?: return false
+        val existingRules = _wifiNetworkRules.value
+        if (existingRules.none { it.id == normalizedRule.id } ||
+            existingRules.any {
+                it.id != normalizedRule.id &&
+                        WifiNetworkRuleUtils.hasSameMatcher(it, normalizedRule)
+            }
+        ) {
+            return false
+        }
+        saveWifiNetworkRules(
+            existingRules.map { if (it.id == normalizedRule.id) normalizedRule else it }
+        )
+        return true
+    }
+
+    fun deleteWifiNetworkRule(ruleId: String) {
+        saveWifiNetworkRules(_wifiNetworkRules.value.filterNot { it.id == ruleId })
+    }
+
+    fun recordKnownWifiNetwork(
+        identity: WifiNetworkIdentity,
+        seenAtEpochMillis: Long = System.currentTimeMillis()
+    ) {
+        val normalized = WifiNetworkRuleUtils.normalizeIdentity(identity) ?: return
+        val updatedEntry = KnownWifiNetwork(
+            ssid = normalized.ssid,
+            bssid = normalized.bssid,
+            lastSeenEpochMillis = seenAtEpochMillis
+        )
+        val updated = buildList {
+            add(updatedEntry)
+            addAll(
+                _knownWifiNetworks.value.filterNot {
+                    it.ssid == updatedEntry.ssid && it.bssid == updatedEntry.bssid
+                }
+            )
+        }.sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
+            .take(MAX_KNOWN_WIFI_NETWORKS)
+        saveKnownWifiNetworks(updated)
+    }
+
+    private fun saveWifiNetworkRules(rules: List<WifiDnsRule>) {
+        val normalizedRules = rules.mapNotNull(WifiNetworkRuleUtils::normalizeRule)
+            .distinctBy { "${it.ssid.orEmpty()}|${it.bssid.orEmpty()}" }
+            .distinctBy(WifiDnsRule::id)
+            .take(MAX_WIFI_NETWORK_RULES)
+        sharedPreferences.edit {
+            putString(KEY_WIFI_NETWORK_RULES, gson.toJson(normalizedRules))
+        }
+        _wifiNetworkRules.value = normalizedRules
+    }
+
+    private fun saveKnownWifiNetworks(networks: List<KnownWifiNetwork>) {
+        val normalizedNetworks = networks.mapNotNull { network ->
+            WifiNetworkRuleUtils.normalizeIdentity(network.identity)?.let { identity ->
+                network.copy(ssid = identity.ssid, bssid = identity.bssid)
+            }
+        }.distinctBy { "${it.ssid.orEmpty()}|${it.bssid.orEmpty()}" }
+            .sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
+            .take(MAX_KNOWN_WIFI_NETWORKS)
+        sharedPreferences.edit {
+            putString(KEY_KNOWN_WIFI_NETWORKS, gson.toJson(normalizedNetworks))
+        }
+        _knownWifiNetworks.value = normalizedNetworks
+    }
+
     fun setDnsStateOnMobile(state: String) {
         sharedPreferences.edit { putString(KEY_DNS_STATE_ON_MOBILE, state) }
         _dnsStateOnMobile.value = state
@@ -303,6 +398,9 @@ class PreferencesManager private constructor(context: Context) {
                     networkTypeDetectionMode = _networkTypeDetectionMode.value,
                     dnsStateOnWifi = _dnsStateOnWifi.value,
                     dnsHostnameOnWifi = _dnsHostnameOnWifi.value,
+                    wifiNetworkRulesEnabled = _wifiNetworkRulesEnabled.value,
+                    wifiNetworkRules = _wifiNetworkRules.value,
+                    knownWifiNetworks = _knownWifiNetworks.value,
                     dnsStateOnMobile = _dnsStateOnMobile.value,
                     dnsHostnameOnMobile = _dnsHostnameOnMobile.value
                 ),
@@ -356,6 +454,9 @@ class PreferencesManager private constructor(context: Context) {
             putString(KEY_NETWORK_TYPE_DETECTION_MODE, dns.networkTypeDetectionMode)
             putString(KEY_DNS_STATE_ON_WIFI, dns.dnsStateOnWifi)
             putString(KEY_DNS_HOSTNAME_ON_WIFI, dns.dnsHostnameOnWifi)
+            putBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, dns.wifiNetworkRulesEnabled)
+            putString(KEY_WIFI_NETWORK_RULES, gson.toJson(dns.wifiNetworkRules))
+            putString(KEY_KNOWN_WIFI_NETWORKS, gson.toJson(dns.knownWifiNetworks))
             putString(KEY_DNS_STATE_ON_MOBILE, dns.dnsStateOnMobile)
             putString(KEY_DNS_HOSTNAME_ON_MOBILE, dns.dnsHostnameOnMobile)
 
@@ -390,6 +491,9 @@ class PreferencesManager private constructor(context: Context) {
         _networkTypeDetectionMode.value = dns.networkTypeDetectionMode
         _dnsStateOnWifi.value = dns.dnsStateOnWifi
         _dnsHostnameOnWifi.value = dns.dnsHostnameOnWifi
+        _wifiNetworkRulesEnabled.value = dns.wifiNetworkRulesEnabled
+        _wifiNetworkRules.value = dns.wifiNetworkRules
+        _knownWifiNetworks.value = dns.knownWifiNetworks
         _dnsStateOnMobile.value = dns.dnsStateOnMobile
         _dnsHostnameOnMobile.value = dns.dnsHostnameOnMobile
 
@@ -419,6 +523,35 @@ class PreferencesManager private constructor(context: Context) {
             hostnames = manualDnsHostnames,
             mode = _dnsListSortMode.value
         )
+    }
+
+    private fun loadWifiNetworkRules(): List<WifiDnsRule> {
+        return try {
+            gson.fromJson<List<WifiDnsRule>>(
+                sharedPreferences.getString(KEY_WIFI_NETWORK_RULES, null),
+                wifiDnsRuleListType
+            ).orEmpty().mapNotNull(WifiNetworkRuleUtils::normalizeRule)
+        } catch (e: Exception) {
+            Log.e("PreferencesManager", "Error loading Wi-Fi DNS rules", e)
+            emptyList()
+        }
+    }
+
+    private fun loadKnownWifiNetworks(): List<KnownWifiNetwork> {
+        return try {
+            gson.fromJson<List<KnownWifiNetwork>>(
+                sharedPreferences.getString(KEY_KNOWN_WIFI_NETWORKS, null),
+                knownWifiNetworkListType
+            ).orEmpty().mapNotNull { network ->
+                WifiNetworkRuleUtils.normalizeIdentity(network.identity)?.let { identity ->
+                    network.copy(ssid = identity.ssid, bssid = identity.bssid)
+                }
+            }.sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
+                .take(MAX_KNOWN_WIFI_NETWORKS)
+        } catch (e: Exception) {
+            Log.e("PreferencesManager", "Error loading known Wi-Fi networks", e)
+            emptyList()
+        }
     }
 
     private fun loadDnsHostnames() {
@@ -800,6 +933,13 @@ class PreferencesManager private constructor(context: Context) {
     fun getDnsHostnameOnWifi(): String? =
         sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_WIFI, null)
 
+    fun areWifiNetworkRulesEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, false)
+
+    fun getWifiNetworkRules(): List<WifiDnsRule> = _wifiNetworkRules.value
+
+    fun getKnownWifiNetworks(): List<KnownWifiNetwork> = _knownWifiNetworks.value
+
     fun getDnsStateOnMobile(): String =
         sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, DNS_MODE_AUTO)
             ?: DNS_MODE_AUTO
@@ -836,6 +976,9 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_NETWORK_TYPE_DETECTION_MODE = "network_type_detection_mode"
         private const val KEY_DNS_STATE_ON_WIFI = "dns_state_on_wifi"
         private const val KEY_DNS_HOSTNAME_ON_WIFI = "dns_hostname_on_wifi"
+        private const val KEY_WIFI_NETWORK_RULES_ENABLED = "wifi_network_rules_enabled_v1"
+        private const val KEY_WIFI_NETWORK_RULES = "wifi_network_dns_rules_v1"
+        private const val KEY_KNOWN_WIFI_NETWORKS = "known_wifi_networks_v1"
         private const val KEY_DNS_STATE_ON_MOBILE = "dns_state_on_mobile"
         private const val KEY_DNS_HOSTNAME_ON_MOBILE = "dns_hostname_on_mobile"
         private const val KEY_ENABLED_SHORTCUT_IDS = "enabled_shortcut_ids_v1"
@@ -849,6 +992,9 @@ class PreferencesManager private constructor(context: Context) {
             "dev_options_previous_state_for_revert"
         const val KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT =
             "wireless_debugging_previous_state_for_revert"
+
+        private const val MAX_WIFI_NETWORK_RULES = 250
+        private const val MAX_KNOWN_WIFI_NETWORKS = 100
 
 
         @Volatile

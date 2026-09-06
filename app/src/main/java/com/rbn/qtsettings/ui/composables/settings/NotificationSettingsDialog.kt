@@ -24,53 +24,13 @@ import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
 
 @Composable
-fun NotificationSettingsDialog(
-    onDismiss: () -> Unit
-) {
-    val context = LocalContext.current
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurface,
-        title = { Text(stringResource(R.string.notification_permission_dialog_title)) },
-        text = { Text(stringResource(R.string.notification_permission_dialog_message)) },
-        confirmButton = {
-            Button(onClick = {
-                onDismiss()
-                openNotificationSettings(context)
-            }) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        stringResource(R.string.notification_permission_dialog_settings_button),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Icon(
-                        Icons.AutoMirrored.Filled.OpenInNew,
-                        contentDescription = stringResource(R.string.notification_permission_dialog_settings_description)
-                    )
-                }
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
-            }
-        }
-    )
-}
-
-@Composable
 fun NotificationPermissionExplanationDialog(
     fromBackup: Boolean,
     onGrantPermission: () -> Unit,
-    onDismiss: () -> Unit
+    onContinueWithoutNotifications: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onContinueWithoutNotifications,
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
@@ -102,8 +62,8 @@ fun NotificationPermissionExplanationDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.notification_permission_use_tile_only_button))
+            TextButton(onClick = onContinueWithoutNotifications) {
+                Text(stringResource(R.string.notification_permission_continue_button))
             }
         }
     )
@@ -112,10 +72,10 @@ fun NotificationPermissionExplanationDialog(
 @Composable
 fun NotificationPermissionFallbackDialog(
     onGrantPermission: () -> Unit,
-    onUseTileOnly: () -> Unit
+    onContinueWithoutNotifications: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = onUseTileOnly,
+        onDismissRequest = onContinueWithoutNotifications,
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
@@ -127,8 +87,8 @@ fun NotificationPermissionFallbackDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onUseTileOnly) {
-                Text(stringResource(R.string.notification_permission_use_tile_only_button))
+            TextButton(onClick = onContinueWithoutNotifications) {
+                Text(stringResource(R.string.notification_permission_continue_button))
             }
         }
     )
@@ -137,12 +97,12 @@ fun NotificationPermissionFallbackDialog(
 @Composable
 fun NotificationPermissionSettingsDialog(
     onOpenSettings: () -> Unit,
-    onUseTileOnly: () -> Unit
+    onContinueWithoutNotifications: () -> Unit
 ) {
     val context = LocalContext.current
 
     AlertDialog(
-        onDismissRequest = onUseTileOnly,
+        onDismissRequest = onContinueWithoutNotifications,
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
@@ -168,8 +128,8 @@ fun NotificationPermissionSettingsDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onUseTileOnly) {
-                Text(stringResource(R.string.notification_permission_use_tile_only_button))
+            TextButton(onClick = onContinueWithoutNotifications) {
+                Text(stringResource(R.string.notification_permission_continue_button))
             }
         }
     )

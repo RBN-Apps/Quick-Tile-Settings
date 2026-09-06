@@ -51,6 +51,12 @@ data class DnsSettingsBackup(
     val dnsStateOnWifi: String = "off",
     @field:SerializedName("dnsHostnameOnWifi")
     val dnsHostnameOnWifi: String? = null,
+    @field:SerializedName("wifiNetworkRulesEnabled")
+    val wifiNetworkRulesEnabled: Boolean = false,
+    @field:SerializedName("wifiNetworkRules")
+    val wifiNetworkRules: List<WifiDnsRule> = emptyList(),
+    @field:SerializedName("knownWifiNetworks")
+    val knownWifiNetworks: List<KnownWifiNetwork> = emptyList(),
     @field:SerializedName("dnsStateOnMobile")
     val dnsStateOnMobile: String = "opportunistic",
     @field:SerializedName("dnsHostnameOnMobile")

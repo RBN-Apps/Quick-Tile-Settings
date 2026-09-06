@@ -70,7 +70,7 @@ class NotificationPermissionInstrumentedTest {
         ).assertIsDisplayed()
 
         composeTestRule.onNodeWithText(
-            context.getString(R.string.notification_permission_use_tile_only_button)
+            context.getString(R.string.notification_permission_continue_button)
         ).performClick()
         composeTestRule.waitForIdle()
 

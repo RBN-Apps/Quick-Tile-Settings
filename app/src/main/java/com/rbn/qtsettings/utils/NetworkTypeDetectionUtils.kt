@@ -1,12 +1,19 @@
 package com.rbn.qtsettings.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.annotation.RequiresApi
+import com.rbn.qtsettings.data.DetectedNetworkState
+import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
@@ -26,26 +33,57 @@ object NetworkTypeDetectionUtils {
      * Gets the current active network type
      * @return NETWORK_TYPE_WIFI, NETWORK_TYPE_MOBILE, or NETWORK_TYPE_NONE
      */
-    fun getCurrentNetworkType(context: Context): String {
+    fun getCurrentNetworkType(
+        context: Context,
+        preferTrackedWifi: Boolean = false
+    ): String {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         return try {
+            // A Wi-Fi network that Private DNS prevents from validating may not be Android's
+            // default network yet. Prefer a connected Wi-Fi transport observed by the callback so
+            // its SSID rule can turn DNS off and allow validation to complete.
             val activeNetwork = connectivityManager.activeNetwork
-            if (activeNetwork != null) {
-                val networkCapabilities =
-                    connectivityManager.getNetworkCapabilities(activeNetwork)
-
-                getNetworkTypeFromCapabilities(networkCapabilities).let { activeType ->
-                    if (activeType != NETWORK_TYPE_NONE) return activeType
-                }
+            val activeCapabilities = activeNetwork?.let {
+                connectivityManager.getNetworkCapabilities(it)
             }
-
-            getTrackedNetworkType()
+            resolveCurrentNetworkType(
+                activeCapabilities = activeCapabilities,
+                trackedCapabilities = synchronized(trackedNetworkCapabilitiesLock) {
+                    trackedNetworkCapabilities.values.toList()
+                },
+                preferTrackedWifi = preferTrackedWifi
+            )
         } catch (e: Exception) {
             Log.e(TAG, "Error checking network type", e)
             NETWORK_TYPE_NONE
         }
+    }
+
+    /**
+     * Returns the physical network type together with the connected Wi-Fi SSID when Android allows
+     * access to it. On Android 12+ the SSID normally comes from capabilities delivered to a
+     * location-aware [ConnectivityManager.NetworkCallback], which are retained in this object.
+     */
+    fun getCurrentNetworkState(
+        context: Context,
+        includeWifiSsid: Boolean = true
+    ): DetectedNetworkState {
+        val networkType = getCurrentNetworkType(
+            context = context,
+            preferTrackedWifi = includeWifiSsid
+        )
+        val wifiIdentity = if (includeWifiSsid && networkType == NETWORK_TYPE_WIFI) {
+            getCurrentWifiIdentity(context)
+        } else {
+            null
+        }
+        return DetectedNetworkState(
+            networkType = networkType,
+            wifiSsid = wifiIdentity?.ssid,
+            wifiBssid = wifiIdentity?.bssid
+        )
     }
 
     internal fun getNetworkTypeFromCapabilities(networkCapabilities: NetworkCapabilities?): String {
@@ -70,6 +108,18 @@ object NetworkTypeDetectionUtils {
         }
 
         return if (hasMobile) NETWORK_TYPE_MOBILE else NETWORK_TYPE_NONE
+    }
+
+    internal fun resolveCurrentNetworkType(
+        activeCapabilities: NetworkCapabilities?,
+        trackedCapabilities: Collection<NetworkCapabilities>,
+        preferTrackedWifi: Boolean
+    ): String {
+        val trackedType = getBestNetworkTypeFromCapabilities(trackedCapabilities)
+        if (preferTrackedWifi && trackedType == NETWORK_TYPE_WIFI) return NETWORK_TYPE_WIFI
+
+        val activeType = getNetworkTypeFromCapabilities(activeCapabilities)
+        return if (activeType != NETWORK_TYPE_NONE) activeType else trackedType
     }
 
     private fun rememberNetworkCapabilities(
@@ -105,9 +155,85 @@ object NetworkTypeDetectionUtils {
         }
     }
 
-    private fun getTrackedNetworkType(): String {
+    @SuppressLint("MissingPermission")
+    private fun getCurrentWifiIdentity(context: Context): WifiNetworkIdentity? {
+        if (!PermissionUtils.canAccessWifiSsid(context)) {
+            return null
+        }
+
+        // Android 10/11 do not attach WifiInfo to NetworkCapabilities yet.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            return getLegacyWifiIdentity(context)
+        }
+
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val activeNetwork = try {
+            connectivityManager.activeNetwork
+        } catch (e: Exception) {
+            Log.w(TAG, "Unable to identify the active network", e)
+            null
+        }
+        val trackedActiveSsid = synchronized(trackedNetworkCapabilitiesLock) {
+            activeNetwork
+                ?.let(trackedNetworkCapabilities::get)
+                ?.let(::getWifiIdentityFromCapabilities)
+        }
+        if (trackedActiveSsid != null) return trackedActiveSsid
+
+        val activeSsid = try {
+            activeNetwork
+                ?.let(connectivityManager::getNetworkCapabilities)
+                ?.let(::getWifiIdentityFromCapabilities)
+        } catch (e: Exception) {
+            Log.w(TAG, "Unable to inspect active Wi-Fi capabilities", e)
+            null
+        }
+        if (activeSsid != null) return activeSsid
+
         return synchronized(trackedNetworkCapabilitiesLock) {
-            getBestNetworkTypeFromCapabilities(trackedNetworkCapabilities.values)
+            trackedNetworkCapabilities.values
+                .asSequence()
+                .filter {
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
+                        it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                }
+                .mapNotNull(::getWifiIdentityFromCapabilities)
+                .firstOrNull()
+        }
+    }
+
+    private fun getWifiIdentityFromCapabilities(
+        capabilities: NetworkCapabilities
+    ): WifiNetworkIdentity? {
+        if (!capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) return null
+        val wifiInfo = capabilities.transportInfo as? WifiInfo ?: return null
+        return getWifiIdentity(wifiInfo)
+    }
+
+    @SuppressLint("MissingPermission")
+    @Suppress("DEPRECATION")
+    private fun getLegacyWifiIdentity(context: Context): WifiNetworkIdentity? = try {
+        val wifiManager = context.applicationContext
+            .getSystemService(Context.WIFI_SERVICE) as WifiManager
+        getWifiIdentity(wifiManager.connectionInfo)
+    } catch (e: Exception) {
+        Log.w(TAG, "Unable to read the connected Wi-Fi identity", e)
+        null
+    }
+
+    private fun getWifiIdentity(wifiInfo: WifiInfo): WifiNetworkIdentity? {
+        return try {
+            WifiNetworkRuleUtils.normalizeIdentity(
+                WifiNetworkIdentity(
+                    ssid = WifiNetworkRuleUtils.normalizeDetectedSsid(wifiInfo.ssid),
+                    bssid = wifiInfo.bssid
+                )
+            )
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Wi-Fi identity is unavailable without location access")
+            null
         }
     }
 
@@ -126,23 +252,25 @@ object NetworkTypeDetectionUtils {
         dnsHostname: String?
     ): Boolean {
         return try {
-            when (dnsMode) {
+            val saved = when (dnsMode) {
                 DNS_MODE_OFF -> {
-                    Settings.Global.putString(
+                    val result = Settings.Global.putString(
                         context.contentResolver,
                         PRIVATE_DNS_MODE,
                         DNS_MODE_OFF
                     )
                     Log.i(TAG, "Set Private DNS to OFF for network type: $networkType")
+                    result
                 }
 
                 DNS_MODE_AUTO -> {
-                    Settings.Global.putString(
+                    val result = Settings.Global.putString(
                         context.contentResolver,
                         PRIVATE_DNS_MODE,
                         DNS_MODE_AUTO
                     )
                     Log.i(TAG, "Set Private DNS to AUTO for network type: $networkType")
+                    result
                 }
 
                 DNS_MODE_ON -> {
@@ -154,20 +282,21 @@ object NetworkTypeDetectionUtils {
                             DNS_MODE_AUTO
                         )
                     } else {
-                        Settings.Global.putString(
-                            context.contentResolver,
-                            PRIVATE_DNS_MODE,
-                            DNS_MODE_ON
-                        )
-                        Settings.Global.putString(
+                        val hostnameSaved = Settings.Global.putString(
                             context.contentResolver,
                             PRIVATE_DNS_SPECIFIER,
                             dnsHostname
+                        )
+                        val modeSaved = Settings.Global.putString(
+                            context.contentResolver,
+                            PRIVATE_DNS_MODE,
+                            DNS_MODE_ON
                         )
                         Log.i(
                             TAG,
                             "Set Private DNS to hostname '$dnsHostname' for network type: $networkType"
                         )
+                        hostnameSaved && modeSaved
                     }
                 }
 
@@ -180,43 +309,81 @@ object NetworkTypeDetectionUtils {
                     )
                 }
             }
-            true
+            if (!saved) {
+                Log.e(TAG, "Android rejected the Private DNS update for network type: $networkType")
+            }
+            saved
         } catch (e: Exception) {
             Log.e(TAG, "Error setting Private DNS for network type: $networkType", e)
             false
         }
     }
 
-    /**
-     * Creates a network callback for monitoring network type changes
-     */
-    fun createNetworkTypeCallback(
+    /** Creates a callback that also reacts to Wi-Fi-to-Wi-Fi SSID changes. */
+    fun createNetworkStateCallback(
         context: Context,
-        onNetworkTypeChanged: (String) -> Unit
+        includeWifiSsid: Boolean = true,
+        onNetworkStateChanged: (DetectedNetworkState) -> Unit
     ): ConnectivityManager.NetworkCallback {
-        return object : ConnectivityManager.NetworkCallback() {
-            private var lastNetworkType: String? = null
+        val callbackEvents = NetworkStateCallbackEvents(
+            context = context,
+            includeWifiSsid = includeWifiSsid,
+            onNetworkStateChanged = onNetworkStateChanged
+        )
+        return if (includeWifiSsid && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            createLocationAwareCallback(callbackEvents)
+        } else {
+            object : ConnectivityManager.NetworkCallback() {
+                override fun onCapabilitiesChanged(
+                    network: Network,
+                    networkCapabilities: NetworkCapabilities
+                ) = callbackEvents.onCapabilitiesChanged(network, networkCapabilities)
 
+                override fun onLost(network: Network) = callbackEvents.onLost(network)
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun createLocationAwareCallback(
+        callbackEvents: NetworkStateCallbackEvents
+    ): ConnectivityManager.NetworkCallback {
+        return object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities
-            ) {
-                rememberNetworkCapabilities(network, networkCapabilities)
-                checkNetworkType()
-            }
+            ) = callbackEvents.onCapabilitiesChanged(network, networkCapabilities)
 
-            override fun onLost(network: Network) {
-                forgetNetwork(network)
-                checkNetworkType()
-            }
+            override fun onLost(network: Network) = callbackEvents.onLost(network)
+        }
+    }
 
-            private fun checkNetworkType() {
-                val currentType = getCurrentNetworkType(context)
-                if (currentType != lastNetworkType) {
-                    lastNetworkType = currentType
-                    Log.d(TAG, "Network type changed to: $currentType")
-                    onNetworkTypeChanged(currentType)
-                }
+    private class NetworkStateCallbackEvents(
+        private val context: Context,
+        private val includeWifiSsid: Boolean,
+        private val onNetworkStateChanged: (DetectedNetworkState) -> Unit
+    ) {
+        private var lastNetworkState: DetectedNetworkState? = null
+
+        fun onCapabilitiesChanged(
+            network: Network,
+            networkCapabilities: NetworkCapabilities
+        ) {
+            rememberNetworkCapabilities(network, networkCapabilities)
+            publishIfChanged()
+        }
+
+        fun onLost(network: Network) {
+            forgetNetwork(network)
+            publishIfChanged()
+        }
+
+        private fun publishIfChanged() {
+            val currentState = getCurrentNetworkState(context, includeWifiSsid)
+            if (currentState != lastNetworkState) {
+                lastNetworkState = currentState
+                Log.d(TAG, "Network state changed to type=${currentState.networkType}")
+                onNetworkStateChanged(currentState)
             }
         }
     }

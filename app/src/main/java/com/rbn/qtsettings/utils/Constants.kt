@@ -15,6 +15,9 @@ object Constants {
     const val TILE_ONLY_DETECTION = "tile_only"
     const val BACKGROUND_DETECTION = "background"
 
+    // Per-network DNS actions
+    const val WIFI_DNS_ACTION_DEFAULT = "default"
+
     // Network type constants
     const val NETWORK_TYPE_WIFI = "wifi"
     const val NETWORK_TYPE_MOBILE = "mobile"

@@ -184,25 +184,22 @@
     <string name="vpn_monitoring_status_disconnected">VPN déconnecté - DNS privé restauré</string>
 
     <!--  Notification Permission Dialog  -->
-    <string name="notification_permission_dialog_title">Les notifications nécessitent une permission</string>
-    <string name="notification_permission_dialog_message">Pour recevoir des notifications pour la surveillance VPN en arrière-plan, vous devez activer la permission dans les paramètres de l\'application.\n\nUne fois que vous avez accordé la permission, vous pouvez activer les notifications ici.</string>
-    <string name="notification_permission_dialog_settings_button">Paramètres</string>
     <string name="notification_permission_dialog_settings_description">Ouvrir les paramètres</string>
     <string name="notification_permission_background_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
-    <string name="notification_permission_background_message">La détection en arrière-plan nécessite l\'autorisation de notification, car Android exige que l’application affiche une notification persistante pendant la surveillance en arrière-plan.</string>
+    <string name="notification_permission_background_message">La détection en arrière-plan fonctionne déjà sans autorisation de notification. Autorisez-la pour afficher l’état permanent dans le volet des notifications ; sinon Android affiche le service uniquement parmi les applications actives.</string>
     <string name="notification_permission_import_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
-    <string name="notification_permission_import_message">La sauvegarde importée active la détection en arrière-plan des changements de VPN ou de type de réseau. Android exige la permission de notification pour que l’application puisse afficher une notification persistante pendant la surveillance en arrière-plan.</string>
-    <string name="notification_permission_fallback_title">Permission de notification requise</string>
-    <string name="notification_permission_fallback_message">La détection en arrière-plan ne peut pas fonctionner sans permission de notification, car Android exige une notification pour la surveillance en arrière-plan. Vous pouvez accorder la permission maintenant ou utiliser la détection uniquement via la tuile.</string>
+    <string name="notification_permission_import_message">La sauvegarde importée active la détection en arrière-plan des changements de VPN ou de réseau. Elle fonctionne sans autorisation de notification ; autorisez-la uniquement pour afficher l’état permanent dans le volet des notifications.</string>
+    <string name="notification_permission_fallback_title">Accès aux notifications non accordé</string>
+    <string name="notification_permission_fallback_message">La détection en arrière-plan continue. Son état ne s’affiche pas dans le volet des notifications, mais Android indique toujours le service parmi les applications actives.</string>
     <string name="notification_permission_grant_button">Accorder la permission</string>
-    <string name="notification_permission_use_tile_only_button">Utiliser la détection via la tuile</string>
-    <string name="notification_permission_settings_title">Autorisation de notification requise</string>
-    <string name="notification_permission_settings_message">Android n\'affiche plus la demande d\'autorisation de notification. Ouvrez les paramètres de notification de cette application et autorisez les notifications, ou utilisez la détection via la tuile.</string>
+    <string name="notification_permission_continue_button">Continuer sans notifications</string>
+    <string name="notification_permission_settings_title">Accès aux notifications désactivé</string>
+    <string name="notification_permission_settings_message">La détection en arrière-plan continue sans état dans le volet des notifications. Pour l’y afficher, autorisez les notifications dans les paramètres de l’application.</string>
     <string name="notification_permission_settings_button">Ouvrir les paramètres</string>
 
     <!--  Network Type Detection Settings  -->
     <string name="setting_network_type_detection_enabled">Basculer automatiquement le DNS selon le type de réseau</string>
-    <string name="setting_network_type_detection_description">Modifier automatiquement les paramètres DNS privés lors du passage entre WiFi et données mobiles</string>
+    <string name="setting_network_type_detection_description">Modifie automatiquement le DNS privé lors du passage entre le Wi-Fi et les données mobiles. Activez cette option pour configurer aussi des règles par réseau Wi-Fi ou point d’accès.</string>
     <string name="setting_network_type_detection_mode">Mode de détection réseau :</string>
     <string name="network_type_detection_tile_only_title">Détection via tuile uniquement</string>
     <string name="network_type_detection_tile_only_description">Vérifie le type de réseau lors de l\'ouverture des paramètres rapides. Économe en batterie, mais détecte uniquement les changements de réseau lorsque les paramètres rapides sont ouverts.</string>
@@ -249,6 +246,7 @@
     <string name="shortcut_toast_permission_missing">Permission manquante. Ouvrez l\'application pour l\'accorder.</string>
     <string name="shortcut_toast_action_disabled">Action de raccourci désactivée. Activez-la d\'abord dans l\'application.</string>
     <string name="shortcut_toast_action_unavailable">L\'action de raccourci n\'est plus disponible. Vérifiez la configuration de l\'application.</string>
+    <string name="shortcut_toast_action_failed">Impossible d’appliquer l’action du raccourci.</string>
 
     <!--  Shortcut Settings  -->
     <string name="shortcut_settings_title">Actions de raccourci</string>
@@ -267,4 +265,53 @@
     <string name="shortcut_settings_mark_favorite_desc">Marquer %1$s comme favori</string>
     <string name="shortcut_settings_remove_favorite_desc">Retirer %1$s des favoris</string>
     <string name="shortcut_settings_open_desc">Ouvrir les paramètres de raccourcis</string>
+    <!-- Règles DNS par réseau Wi-Fi -->
+    <string name="setting_dns_state_on_wifi_other_networks">DNS Wi-Fi pour tous les autres réseaux :</string>
+    <string name="setting_wifi_network_rules_title">Règles des réseaux Wi-Fi</string>
+    <string name="setting_wifi_network_rules_description">Remplace le réglage DNS Wi-Fi par défaut pour certains réseaux ou points d’accès (SSID/BSSID). L’application des changements nécessite l’autorisation de contrôler le DNS privé et la détection en arrière-plan. Les notifications sont facultatives et n’affichent que l’état du suivi.</string>
+    <string name="wifi_rules_enabled">Utiliser des règles par réseau</string>
+    <string name="wifi_rules_enabled_description">Les règles correspondantes remplacent le réglage DNS Wi-Fi de tous les autres réseaux identifiés.</string>
+    <string name="wifi_ssid_permission_title">Localisation précise requise</string>
+    <string name="wifi_ssid_permission_description">Android considère les noms Wi-Fi (SSID), les identifiants de points d’accès (BSSID) et les résultats Wi-Fi à proximité comme des informations liées à la localisation. L’autorisation de localisation précise est nécessaire pour les lire. Cette fonction ne lit aucune coordonnée.</string>
+    <string name="wifi_ssid_permission_docs_link">Documentation Android sur les autorisations SSID</string>
+    <string name="wifi_ssid_permission_grant">Autoriser l’accès</string>
+    <string name="wifi_location_services_title">Activer les services de localisation</string>
+    <string name="wifi_location_services_description">L’autorisation est accordée, mais Android ne révèle le SSID/BSSID connecté et les derniers résultats Wi-Fi que si les services de localisation sont activés.</string>
+    <string name="wifi_location_services_open">Ouvrir les paramètres de localisation</string>
+    <string name="wifi_ssid_manual_entry_notice">Vous pouvez saisir une règle manuellement, mais la correspondance automatique nécessite toujours cet accès. Le DNS privé reste inchangé tant que le réseau actuel est inconnu.</string>
+    <string name="wifi_ssid_permission_denied">L’autorisation de localisation précise est nécessaire pour identifier les réseaux Wi-Fi. Le DNS privé reste inchangé tant que l’accès n’est pas accordé.</string>
+    <string name="wifi_location_services_disabled">Activez les services de localisation Android pour identifier le réseau Wi-Fi connecté. Le DNS privé reste inchangé tant que l’identité du réseau est indisponible.</string>
+    <string name="wifi_rules_require_background_detection">Les règles des réseaux Wi-Fi nécessitent la détection par service en arrière-plan. Désactivez les règles avant de sélectionner la détection par tuile uniquement.</string>
+    <string name="wifi_rules_enabled_background_detection">La détection par service en arrière-plan a été activée car les règles par réseau en ont besoin.</string>
+    <string name="wifi_ssid_label">Nom du réseau (SSID)</string>
+    <string name="wifi_rules_title">Règles réseau</string>
+    <string name="wifi_rules_empty">Aucune règle réseau ajoutée.</string>
+    <string name="wifi_rule_add_current">Utiliser le réseau actuellement connecté</string>
+    <string name="wifi_rule_choose_network">Choisir un réseau à proximité ou récent</string>
+    <string name="wifi_rule_add_manual">Saisir manuellement un SSID ou BSSID</string>
+    <string name="wifi_network_picker_title">Choisir un réseau Wi-Fi</string>
+    <string name="wifi_network_current_title">Actuellement connecté</string>
+    <string name="wifi_network_nearby_title">Réseaux à proximité</string>
+    <string name="wifi_network_history_title">Réseaux vus récemment</string>
+    <string name="wifi_network_scanning">Chargement des derniers résultats Wi-Fi disponibles d’Android…</string>
+    <string name="wifi_network_none_found">Aucun résultat Wi-Fi récent n’est disponible. L’application ne lance pas de nouvelle analyse ; Android peut fournir des résultats en cache.</string>
+    <string name="wifi_network_refresh">Recharger les résultats</string>
+    <string name="wifi_hidden_network">Réseau masqué</string>
+    <string name="wifi_rule_add_title">Ajouter une règle réseau</string>
+    <string name="wifi_rule_edit_title">Modifier la règle réseau</string>
+    <string name="wifi_bssid_label">Adresse MAC du point d’accès (BSSID, facultatif)</string>
+    <string name="wifi_bssid_hint">Laissez vide pour faire correspondre tous les points d’accès portant ce SSID.</string>
+    <string name="wifi_rule_action_label">Action pour ce réseau</string>
+    <string name="wifi_rule_action_default">Utiliser le réglage DNS Wi-Fi par défaut</string>
+    <string name="wifi_rule_invalid_or_duplicate">Saisissez un SSID ou BSSID valide et vérifiez que la même règle n’existe pas déjà.</string>
+    <string name="wifi_rule_delete_title">Supprimer la règle réseau ?</string>
+    <string name="wifi_rule_delete_message">Supprimer la règle pour « %1$s » ?</string>
+    <string name="wifi_rule_edit_description">Modifier la règle pour %1$s</string>
+    <string name="wifi_rule_delete_description">Supprimer la règle pour %1$s</string>
+    <string name="wifi_permission_open_settings">Ouvrir les paramètres de l’application</string>
+    <string name="wifi_permission_blocked_description">Android n’affiche plus la demande d’autorisation de localisation. Ouvrez les paramètres de l’application, puis Autorisations → Position, et autorisez la position précise.</string>
+    <string name="wifi_boot_title">Reprendre automatiquement après un redémarrage</string>
+    <string name="wifi_boot_description">Pour appliquer les règles Wi-Fi après le redémarrage et le déverrouillage du téléphone, ouvrez les paramètres de l’application → Autorisations → Position et choisissez « Toujours autoriser », avec la position précise activée. Cela permet d’identifier les réseaux Wi-Fi en arrière-plan ; aucune coordonnée n’est lue. C’est facultatif : sinon, ouvrez l’application après chaque redémarrage.</string>
+    <string name="wifi_boot_ready">Les règles Wi-Fi reprennent automatiquement après le redémarrage et le déverrouillage du téléphone.</string>
+    <string name="wifi_rule_use_detected_bssid">Utiliser le BSSID détecté : %1$s</string>
 </resources>

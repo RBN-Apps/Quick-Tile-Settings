@@ -1,0 +1,8 @@
+package com.rbn.qtsettings.data
+
+enum class WifiIdentityAccessState {
+    AVAILABLE,
+    PRECISE_LOCATION_PERMISSION_REQUIRED,
+    PRECISE_LOCATION_PERMISSION_BLOCKED,
+    LOCATION_SERVICES_DISABLED
+}

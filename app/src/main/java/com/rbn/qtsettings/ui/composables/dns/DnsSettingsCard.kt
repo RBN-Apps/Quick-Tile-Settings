@@ -1,5 +1,8 @@
 package com.rbn.qtsettings.ui.composables.dns
 
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -47,6 +50,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.ui.composables.WifiNetworkRulesSection
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.DnsListSortMode
 import com.rbn.qtsettings.ui.composables.shared.CheckboxItem
@@ -75,6 +80,14 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
     val networkTypeDetectionMode by viewModel.networkTypeDetectionMode.collectAsState()
     val dnsStateOnWifi by viewModel.dnsStateOnWifi.collectAsState()
     val dnsHostnameOnWifi by viewModel.dnsHostnameOnWifi.collectAsState()
+    val wifiNetworkRulesEnabled by viewModel.wifiNetworkRulesEnabled.collectAsState()
+    val wifiNetworkRules by viewModel.wifiNetworkRules.collectAsState()
+    val knownWifiNetworks by viewModel.knownWifiNetworks.collectAsState()
+    val currentWifiNetwork by viewModel.currentWifiNetwork.collectAsState()
+    val scannedWifiNetworks by viewModel.scannedWifiNetworks.collectAsState()
+    val isWifiResultsLoading by viewModel.isWifiResultsLoading.collectAsState()
+    val wifiIdentityAccessState by viewModel.wifiIdentityAccessState.collectAsState()
+    val hasBackgroundLocationPermission by viewModel.hasBackgroundLocationPermission.collectAsState()
     val dnsStateOnMobile by viewModel.dnsStateOnMobile.collectAsState()
     val dnsHostnameOnMobile by viewModel.dnsHostnameOnMobile.collectAsState()
     val showDnsInfoDialogFor = remember { mutableStateOf<DnsHostnameEntry?>(null) }
@@ -311,17 +324,23 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                     }
                 }
 
-                if (networkTypeDetectionEnabled) {
-                    Text(
-                        text = stringResource(R.string.setting_network_type_detection_description),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 40.dp, top = 4.dp, bottom = 12.dp)
-                    )
+                Text(
+                    text = stringResource(R.string.setting_network_type_detection_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 40.dp, top = 4.dp, bottom = 12.dp)
+                )
 
+                if (networkTypeDetectionEnabled) {
                     // WiFi DNS State
                     Text(
-                        text = stringResource(R.string.setting_dns_state_on_wifi),
+                        text = stringResource(
+                            if (wifiNetworkRulesEnabled) {
+                                R.string.setting_dns_state_on_wifi_other_networks
+                            } else {
+                                R.string.setting_dns_state_on_wifi
+                            }
+                        ),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
                             .padding(start = 16.dp, bottom = 8.dp)
@@ -339,6 +358,29 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                                 viewModel.setDnsHostnameOnWifi(null)
                             }
                         },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    WifiNetworkRulesSection(
+                        enabled = wifiNetworkRulesEnabled,
+                        rules = wifiNetworkRules,
+                        dnsHostnames = dnsHostnames,
+                        currentNetwork = currentWifiNetwork,
+                        scannedNetworks = scannedWifiNetworks,
+                        knownNetworks = knownWifiNetworks,
+                        isLoadingNetworks = isWifiResultsLoading,
+                        wifiIdentityAccessState = wifiIdentityAccessState,
+                        onEnabledChange = viewModel::setWifiNetworkRulesEnabled,
+                        onAddRule = viewModel::addWifiNetworkRule,
+                        onUpdateRule = viewModel::updateWifiNetworkRule,
+                        onDeleteRule = viewModel::deleteWifiNetworkRule,
+                        onRefreshNetworks = viewModel::refreshWifiNetworks,
+                        onRequestPermission = viewModel::launchWifiSsidPermissionRequest,
+                        onOpenLocationSettings = { openLocationSettings(context) },
+                        hasBackgroundLocationPermission = hasBackgroundLocationPermission,
+                        onOpenAppPermissionSettings = { PermissionUtils.openAppPermissionSettings(context) },
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
@@ -370,6 +412,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // Detection Mode Selection
+                    val tileOnlyDetectionAvailable = !wifiNetworkRulesEnabled
                     Text(
                         text = stringResource(R.string.setting_network_type_detection_mode),
                         style = MaterialTheme.typography.bodyLarge,
@@ -383,6 +426,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                             .testTag("network_type_detection_tile_only_option")
                             .selectable(
                                 selected = networkTypeDetectionMode == TILE_ONLY_DETECTION,
+                                enabled = tileOnlyDetectionAvailable,
                                 onClick = {
                                     viewModel.setNetworkTypeDetectionMode(
                                         TILE_ONLY_DETECTION
@@ -393,6 +437,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                     ) {
                         RadioButton(
                             selected = networkTypeDetectionMode == TILE_ONLY_DETECTION,
+                            enabled = tileOnlyDetectionAvailable,
                             onClick = { viewModel.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -406,6 +451,15 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                            if (!tileOnlyDetectionAvailable) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.wifi_rules_require_background_detection
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
                         }
                     }
 
@@ -530,4 +584,10 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
             onDismissRequest = { showNetworkTypeInfoDialog.value = false }
         )
     }
+}
+
+private fun openLocationSettings(context: Context) {
+    val locationSettings = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+    runCatching { context.startActivity(locationSettings) }
+        .onFailure { context.startActivity(Intent(Settings.ACTION_SETTINGS)) }
 }

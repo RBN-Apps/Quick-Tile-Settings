@@ -3,9 +3,7 @@ package com.rbn.qtsettings.viewmodel
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,11 +11,19 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.DnsListSortMode
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.data.WifiDnsRule
+import com.rbn.qtsettings.data.WifiIdentityAccessState
+import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
+import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
+import com.rbn.qtsettings.utils.WifiNetworkDiscovery
+import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
+import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
 import com.rbn.qtsettings.utils.SystemQuickActionResult
 import com.rbn.qtsettings.utils.SystemQuickActions
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +57,9 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val networkTypeDetectionMode = prefsManager.networkTypeDetectionMode
     val dnsStateOnWifi = prefsManager.dnsStateOnWifi
     val dnsHostnameOnWifi = prefsManager.dnsHostnameOnWifi
+    val wifiNetworkRulesEnabled = prefsManager.wifiNetworkRulesEnabled
+    val wifiNetworkRules = prefsManager.wifiNetworkRules
+    val knownWifiNetworks = prefsManager.knownWifiNetworks
     val dnsStateOnMobile = prefsManager.dnsStateOnMobile
     val dnsHostnameOnMobile = prefsManager.dnsHostnameOnMobile
 
@@ -103,13 +112,34 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private val _permissionGrantStatus = MutableStateFlow<String?>(null)
     val permissionGrantStatus = _permissionGrantStatus.asStateFlow()
 
+    private val _requestWifiSsidPermission = MutableStateFlow(0)
+    val requestWifiSsidPermission = _requestWifiSsidPermission.asStateFlow()
+
+    private val _wifiIdentityAccessState = MutableStateFlow(
+        WifiIdentityAccessState.PRECISE_LOCATION_PERMISSION_REQUIRED
+    )
+    val wifiIdentityAccessState = _wifiIdentityAccessState.asStateFlow()
+
+    private val _hasBackgroundLocationPermission = MutableStateFlow(false)
+    val hasBackgroundLocationPermission = _hasBackgroundLocationPermission.asStateFlow()
+
+    private val _currentWifiNetwork = MutableStateFlow<WifiNetworkIdentity?>(null)
+    val currentWifiNetwork = _currentWifiNetwork.asStateFlow()
+
+    private val _scannedWifiNetworks = MutableStateFlow<List<WifiNetworkIdentity>>(emptyList())
+    val scannedWifiNetworks = _scannedWifiNetworks.asStateFlow()
+
+    private val _isWifiResultsLoading = MutableStateFlow(false)
+    val isWifiResultsLoading = _isWifiResultsLoading.asStateFlow()
+
     private val notificationPermissionCoordinator = NotificationPermissionCoordinator(
         preferences = prefsManager,
         manageVpnMonitoring = ::manageVpnMonitoringService,
-        manageNetworkMonitoring = ::manageNetworkMonitoringService
+        manageNetworkMonitoring = ::manageNetworkMonitoringService,
+        notifyWifiRulesRequireBackgroundDetection =
+            ::notifyWifiRulesRequireBackgroundDetection
     )
     val requestNotificationPermission = notificationPermissionCoordinator.requestPermission
-    val showNotificationSettingsDialog = notificationPermissionCoordinator.showSettingsDialog
     val showNotificationPermissionExplanationDialog =
         notificationPermissionCoordinator.showExplanationDialog
     val showNotificationPermissionFallbackDialog =
@@ -125,12 +155,14 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private val _quickActionStatusMessage = MutableStateFlow<String?>(null)
     val quickActionStatusMessage = _quickActionStatusMessage.asStateFlow()
 
+    private val _networkDetectionStatusMessage = MutableStateFlow<String?>(null)
+    val networkDetectionStatusMessage = _networkDetectionStatusMessage.asStateFlow()
+
     fun setDnsToggleOff(enabled: Boolean) = prefsManager.setDnsToggleOff(enabled)
     fun setDnsToggleAuto(enabled: Boolean) = prefsManager.setDnsToggleAuto(enabled)
     fun setDnsListSortMode(mode: DnsListSortMode) = prefsManager.setDnsListSortMode(mode)
     fun reorderDnsHostnames(orderedIds: List<String>): Boolean =
         prefsManager.reorderDnsHostnames(orderedIds)
-
     fun setDnsEnableAutoRevert(enabled: Boolean) = prefsManager.setDnsEnableAutoRevert(enabled)
     fun setDnsAutoRevertDelaySeconds(delay: Int) = prefsManager.setDnsAutoRevertDelaySeconds(delay)
 
@@ -157,18 +189,152 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     }
 
     fun setNetworkTypeDetectionEnabled(enabled: Boolean) {
-        prefsManager.setNetworkTypeDetectionEnabled(enabled)
-        manageNetworkMonitoringService()
+        notificationPermissionCoordinator.setNetworkTypeDetectionEnabled(
+            enabled = enabled,
+            wifiNetworkRulesEnabled = wifiNetworkRulesEnabled(),
+            context = getCurrentContext()
+        )
     }
 
     fun setNetworkTypeDetectionMode(mode: String) {
+        if (mode == TILE_ONLY_DETECTION && wifiNetworkRulesEnabled()) {
+            getCurrentContext()?.let { context ->
+                _permissionGrantStatus.value =
+                    context.getString(R.string.wifi_rules_require_background_detection)
+            }
+            return
+        }
+
         notificationPermissionCoordinator.setNetworkTypeDetectionMode(mode, getCurrentContext())
     }
 
-    fun setDnsStateOnWifi(state: String) = prefsManager.setDnsStateOnWifi(state)
-    fun setDnsHostnameOnWifi(hostname: String?) = prefsManager.setDnsHostnameOnWifi(hostname)
-    fun setDnsStateOnMobile(state: String) = prefsManager.setDnsStateOnMobile(state)
-    fun setDnsHostnameOnMobile(hostname: String?) = prefsManager.setDnsHostnameOnMobile(hostname)
+    fun setDnsStateOnWifi(state: String) {
+        prefsManager.setDnsStateOnWifi(state)
+        reevaluateNetworkAutomation()
+    }
+
+    fun setDnsHostnameOnWifi(hostname: String?) {
+        prefsManager.setDnsHostnameOnWifi(hostname)
+        reevaluateNetworkAutomation()
+    }
+
+    fun setWifiNetworkRulesEnabled(enabled: Boolean) {
+        notificationPermissionCoordinator.setWifiNetworkRulesEnabled(enabled, getCurrentContext())
+    }
+
+    fun addWifiNetworkRule(
+        ssid: String?,
+        bssid: String?,
+        actionMode: String,
+        dnsHostname: String?
+    ): Boolean {
+        val added = prefsManager.addWifiNetworkRule(
+            WifiDnsRule(
+                ssid = ssid,
+                bssid = bssid,
+                actionMode = actionMode,
+                dnsHostname = dnsHostname
+            )
+        )
+        if (added) reevaluateNetworkAutomation()
+        return added
+    }
+
+    fun updateWifiNetworkRule(
+        id: String,
+        ssid: String?,
+        bssid: String?,
+        actionMode: String,
+        dnsHostname: String?
+    ): Boolean {
+        val updated = prefsManager.updateWifiNetworkRule(
+            WifiDnsRule(
+                id = id,
+                ssid = ssid,
+                bssid = bssid,
+                actionMode = actionMode,
+                dnsHostname = dnsHostname
+            )
+        )
+        if (updated) reevaluateNetworkAutomation()
+        return updated
+    }
+
+    fun deleteWifiNetworkRule(ruleId: String) {
+        prefsManager.deleteWifiNetworkRule(ruleId)
+        reevaluateNetworkAutomation()
+    }
+
+    fun refreshWifiNetworks() {
+        if (_isWifiResultsLoading.value) return
+        val context = getCurrentContext() ?: return
+        if (!PermissionUtils.canAccessWifiSsid(context)) {
+            launchWifiSsidPermissionRequest()
+            return
+        }
+
+        viewModelScope.launch {
+            _isWifiResultsLoading.value = true
+            try {
+                refreshCurrentWifiNetwork(context)
+                _scannedWifiNetworks.value = WifiNetworkDiscovery.loadLatestResults(context)
+            } finally {
+                _isWifiResultsLoading.value = false
+            }
+        }
+    }
+
+    fun launchWifiSsidPermissionRequest() {
+        val context = getCurrentContext()
+        if (context != null && PermissionUtils.hasPreciseLocationPermission(context)) {
+            _wifiIdentityAccessState.value = PermissionUtils.getWifiIdentityAccessState(context)
+            if (_wifiIdentityAccessState.value == WifiIdentityAccessState.AVAILABLE) {
+                reevaluateNetworkAutomation()
+                refreshWifiNetworks()
+            } else {
+                _permissionGrantStatus.value =
+                    context.getString(R.string.wifi_location_services_disabled)
+            }
+            return
+        }
+        _requestWifiSsidPermission.value = _requestWifiSsidPermission.value + 1
+    }
+
+    fun onWifiSsidPermissionResult(granted: Boolean) {
+        _requestWifiSsidPermission.value = 0
+        val context = getCurrentContext()
+        _wifiIdentityAccessState.value = if (context != null) {
+            PermissionUtils.getWifiIdentityAccessState(context)
+        } else {
+            WifiIdentityAccessState.PRECISE_LOCATION_PERMISSION_REQUIRED
+        }
+        if (_wifiIdentityAccessState.value == WifiIdentityAccessState.AVAILABLE) {
+            reevaluateNetworkAutomation()
+            refreshWifiNetworks()
+        } else if (context != null) {
+            _permissionGrantStatus.value = context.getString(
+                if (granted && PermissionUtils.hasPreciseLocationPermission(context)) {
+                    R.string.wifi_location_services_disabled
+                } else {
+                    R.string.wifi_ssid_permission_denied
+                }
+            )
+        }
+    }
+
+    fun clearWifiSsidPermissionRequest() {
+        _requestWifiSsidPermission.value = 0
+    }
+
+    fun setDnsStateOnMobile(state: String) {
+        prefsManager.setDnsStateOnMobile(state)
+        reevaluateNetworkAutomation()
+    }
+
+    fun setDnsHostnameOnMobile(hostname: String?) {
+        prefsManager.setDnsHostnameOnMobile(hostname)
+        reevaluateNetworkAutomation()
+    }
     fun setShortcutExposureEnabled(shortcutId: String, enabled: Boolean): Boolean =
         prefsManager.setShortcutExposureEnabled(shortcutId, enabled)
     fun setShortcutFavorite(shortcutId: String, favorite: Boolean): Boolean =
@@ -205,11 +371,14 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
                 } ?: throw IllegalStateException("Could not open backup file")
 
                 prefsManager.restoreSettingsBackupJson(json)
-                if (notificationPermissionCoordinator.needsPermissionForBackgroundDetection(appContext)) {
+                enforceBackgroundDetectionForWifiRules()
+                manageVpnMonitoringService()
+                manageNetworkMonitoringService(restartService = true)
+                if (notificationPermissionCoordinator.shouldOfferPermissionForBackgroundStatus(
+                        appContext
+                    )
+                ) {
                     notificationPermissionCoordinator.showMissingPermission(fromBackup = true)
-                } else {
-                    manageVpnMonitoringService()
-                    manageNetworkMonitoringService()
                 }
                 _backupStatusMessage.value = appContext.getString(R.string.backup_restore_success)
             } catch (e: Exception) {
@@ -230,21 +399,10 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
             val enabled = prefsManager.isVpnDetectionEnabled()
             val mode = prefsManager.getVpnDetectionMode()
+            val hasWriteSecureSettings =
+                PermissionUtils.hasWriteSecureSettingsPermission(context)
 
-            if (enabled && mode == BACKGROUND_DETECTION) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    val hasNotificationPermission =
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.POST_NOTIFICATIONS
-                        ) == PackageManager.PERMISSION_GRANTED
-
-                    if (!hasNotificationPermission) {
-                        notificationPermissionCoordinator.requestPermissionForServiceStart()
-                        return@launch
-                    }
-                }
-
+            if (enabled && mode == BACKGROUND_DETECTION && hasWriteSecureSettings) {
                 VpnMonitoringService.startService(context)
             } else {
                 VpnMonitoringService.stopService(context)
@@ -315,13 +473,10 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         _quickActionStatusMessage.value = when (result) {
             SystemQuickActionResult.SUCCESS ->
                 appContext.getString(R.string.shortcut_toast_dns_hostname, entry.name)
-
             SystemQuickActionResult.PERMISSION_MISSING ->
                 appContext.getString(R.string.toast_permission_not_granted_adb)
-
             SystemQuickActionResult.INVALID_DNS_HOSTNAME ->
                 appContext.getString(R.string.error_hostname_value_invalid)
-
             SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED,
             SystemQuickActionResult.FAILED ->
                 appContext.getString(R.string.toast_error_saving_settings)
@@ -340,10 +495,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
                     R.string.shortcut_toast_dns_auto
                 }
             )
-
             SystemQuickActionResult.PERMISSION_MISSING ->
                 appContext.getString(R.string.toast_permission_not_granted_adb)
-
             SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED,
             SystemQuickActionResult.INVALID_DNS_HOSTNAME,
             SystemQuickActionResult.FAILED ->
@@ -364,13 +517,10 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
             SystemQuickActionResult.SUCCESS -> appContext.getString(
                 if (enabled) R.string.shortcut_toast_usb_on else R.string.shortcut_toast_usb_off
             )
-
             SystemQuickActionResult.PERMISSION_MISSING ->
                 appContext.getString(R.string.toast_permission_not_granted_adb)
-
             SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED ->
                 appContext.getString(R.string.toast_developer_options_disabled)
-
             SystemQuickActionResult.INVALID_DNS_HOSTNAME,
             SystemQuickActionResult.FAILED ->
                 appContext.getString(R.string.toast_error_saving_settings)
@@ -391,6 +541,14 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     fun checkSystemStates(context: Context) {
         _hasWriteSecureSettings.value = PermissionUtils.hasWriteSecureSettingsPermission(context)
+        _wifiIdentityAccessState.value = PermissionUtils.getWifiIdentityAccessState(context)
+        _hasBackgroundLocationPermission.value =
+            PermissionUtils.hasBackgroundLocationPermission(context)
+        if (_wifiIdentityAccessState.value == WifiIdentityAccessState.AVAILABLE) {
+            refreshCurrentWifiNetwork(context.applicationContext)
+        } else {
+            _currentWifiNetwork.value = null
+        }
         _isShizukuAvailable.value = PermissionUtils.isShizukuAvailableAndReady()
         if (_isShizukuAvailable.value) {
             _appHasShizukuPermission.value =
@@ -494,16 +652,20 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         _permissionGrantStatus.value = null
     }
 
-    fun clearNotificationSettingsDialog() {
-        notificationPermissionCoordinator.clearSettingsDialog()
+    fun clearNetworkDetectionStatusMessage() {
+        _networkDetectionStatusMessage.value = null
+    }
+
+    fun clearNotificationPermissionRequest() {
+        notificationPermissionCoordinator.clearPermissionRequest()
     }
 
     fun requestNotificationPermissionFromExplanation() {
         notificationPermissionCoordinator.requestPermissionFromExplanation()
     }
 
-    fun useTileOnlyDetectionForNotificationFallback() {
-        notificationPermissionCoordinator.useTileOnlyFallback()
+    fun continueWithoutNotificationPermission() {
+        notificationPermissionCoordinator.continueWithoutNotifications()
     }
 
     fun openNotificationPermissionSettings() {
@@ -526,36 +688,71 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         manageVpnMonitoringService()
     }
 
-    private fun manageNetworkMonitoringService() {
+    private fun manageNetworkMonitoringService(
+        restartService: Boolean = false,
+        reapplyPolicy: Boolean = true
+    ) {
         viewModelScope.launch {
             val context = getCurrentContext() ?: return@launch
 
             val enabled = prefsManager.isNetworkTypeDetectionEnabled()
             val mode = prefsManager.getNetworkTypeDetectionMode()
+            val hasWriteSecureSettings =
+                PermissionUtils.hasWriteSecureSettingsPermission(context)
 
-            if (enabled && mode == BACKGROUND_DETECTION) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    val hasNotificationPermission =
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.POST_NOTIFICATIONS
-                        ) == PackageManager.PERMISSION_GRANTED
-
-                    if (!hasNotificationPermission) {
-                        notificationPermissionCoordinator.requestPermissionForServiceStart()
-                        return@launch
-                    }
+            if (enabled && mode == BACKGROUND_DETECTION && hasWriteSecureSettings) {
+                if (restartService) {
+                    NetworkMonitoringService.stopService(context)
                 }
-
-                NetworkMonitoringService.startService(context)
+                NetworkMonitoringService.startService(context, reapplyPolicy)
             } else {
                 NetworkMonitoringService.stopService(context)
             }
         }
     }
 
+    private fun reevaluateNetworkAutomation(restartService: Boolean = false) {
+        if (prefsManager.isNetworkTypeDetectionEnabled() &&
+            prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION
+        ) {
+            manageNetworkMonitoringService(restartService)
+        }
+    }
+
+    private fun wifiNetworkRulesEnabled(): Boolean =
+        prefsManager.areWifiNetworkRulesEnabled()
+
+    private fun enforceBackgroundDetectionForWifiRules() {
+        if (wifiNetworkRulesEnabled()) {
+            prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        }
+    }
+
+    private fun notifyWifiRulesRequireBackgroundDetection() {
+        getCurrentContext()?.let { context ->
+            _networkDetectionStatusMessage.value =
+                context.getString(R.string.wifi_rules_enabled_background_detection)
+        }
+    }
+
     fun initializeNetworkMonitoring() {
-        manageNetworkMonitoringService()
+        manageNetworkMonitoringService(reapplyPolicy = false)
+    }
+
+    private fun refreshCurrentWifiNetwork(context: Context) {
+        val state = NetworkTypeDetectionUtils.getCurrentNetworkState(
+            context = context,
+            includeWifiSsid = true
+        )
+        val identity = if (state.networkType == NETWORK_TYPE_WIFI) {
+            WifiNetworkRuleUtils.normalizeIdentity(
+                WifiNetworkIdentity(ssid = state.wifiSsid, bssid = state.wifiBssid)
+            )
+        } else {
+            null
+        }
+        _currentWifiNetwork.value = identity
+        identity?.let(prefsManager::recordKnownWifiNetwork)
     }
 }
 

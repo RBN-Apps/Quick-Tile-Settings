@@ -202,25 +202,22 @@
     <string name="vpn_monitoring_status_disconnected">VPN odpojena – DNS obnoveno</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_title">Oznámení vyžadují oprávnění</string>
-    <string name="notification_permission_dialog_message">Pro oznámení sledování VPN musíš povolit oprávnění v nastavení aplikace.</string>
-    <string name="notification_permission_dialog_settings_button">Nastavení</string>
     <string name="notification_permission_dialog_settings_description">Otevřít nastavení</string>
     <string name="notification_permission_background_title">Povolit oznámení pro detekci na pozadí?</string>
-    <string name="notification_permission_background_message">Detekce na pozadí potřebuje oprávnění k oznámením, protože Android vyžaduje, aby aplikace při sledování na pozadí zobrazovala trvalé oznámení.</string>
+    <string name="notification_permission_background_message">Detekce na pozadí funguje i bez oprávnění k oznámením. Povolte je, pokud chcete průběžný stav sledování zobrazovat v oznamovací oblasti; jinak Android zobrazí službu pouze mezi aktivními aplikacemi.</string>
     <string name="notification_permission_import_title">Povolit oznámení pro detekci na pozadí?</string>
-    <string name="notification_permission_import_message">Importovaná záloha zapíná detekci změn VPN nebo typu sítě na pozadí. Android vyžaduje oprávnění k oznámením, aby aplikace mohla při sledování na pozadí zobrazovat trvalé oznámení.</string>
-    <string name="notification_permission_fallback_title">Je potřeba oprávnění k oznámením</string>
-    <string name="notification_permission_fallback_message">Detekce na pozadí nemůže fungovat bez oprávnění k oznámením, protože Android pro sledování na pozadí vyžaduje oznámení. Můžeš oprávnění udělit teď nebo místo toho použít detekci pouze přes dlaždici.</string>
+    <string name="notification_permission_import_message">Importovaná záloha zapíná detekci změn VPN nebo sítě na pozadí. Funguje i bez oprávnění k oznámením; povolte je pouze pro zobrazení průběžného stavu v oznamovací oblasti.</string>
+    <string name="notification_permission_fallback_title">Přístup k oznámením nebyl udělen</string>
+    <string name="notification_permission_fallback_message">Detekce na pozadí bude pokračovat. Stav se nezobrazí v oznamovací oblasti, ale Android službu stále ukáže mezi aktivními aplikacemi.</string>
     <string name="notification_permission_grant_button">Udělit oprávnění</string>
-    <string name="notification_permission_use_tile_only_button">Použít detekci přes dlaždici</string>
-    <string name="notification_permission_settings_title">Je potřeba oprávnění k oznámením</string>
-    <string name="notification_permission_settings_message">Android už nezobrazuje žádost o oprávnění k oznámením. Otevři nastavení oznámení této aplikace a povol oznámení tam, nebo použij detekci pouze přes dlaždici.</string>
+    <string name="notification_permission_continue_button">Pokračovat bez oznámení</string>
+    <string name="notification_permission_settings_title">Přístup k oznámením je vypnutý</string>
+    <string name="notification_permission_settings_message">Detekce na pozadí bude pokračovat bez stavu v oznamovací oblasti. Chcete-li jej zobrazit, povolte oznámení v nastavení aplikace.</string>
     <string name="notification_permission_settings_button">Otevřít nastavení</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Automaticky přepínat DNS podle typu sítě</string>
-    <string name="setting_network_type_detection_description">Mění DNS při přechodu mezi Wi-Fi a mobilními daty</string>
+    <string name="setting_network_type_detection_description">Automaticky mění soukromé DNS při přechodu mezi Wi-Fi a mobilními daty. Zapněte tuto možnost také pro nastavení pravidel jednotlivých sítí Wi-Fi nebo přístupových bodů.</string>
     <string name="setting_network_type_detection_mode">Režim detekce sítě:</string>
     <string name="network_type_detection_tile_only_title">Pouze při otevření dlaždic</string>
     <string name="network_type_detection_tile_only_description">Kontroluje typ sítě při otevření rychlého nastavení. Šetří baterii, ale detekuje změny sítě pouze při otevření rychlého nastavení.</string>
@@ -270,6 +267,7 @@
     <string name="shortcut_toast_permission_missing">Chybí oprávnění. Spusťte aplikaci a udělte jí oprávnění.</string>
     <string name="shortcut_toast_action_disabled">Akce zkratky je deaktivována. Nejprve ji v aplikaci povolte.</string>
     <string name="shortcut_toast_action_unavailable">Akce zkratky již není k dispozici. Zkontrolujte nastavení aplikace.</string>
+    <string name="shortcut_toast_action_failed">Akci zkratky se nepodařilo provést.</string>
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Zkratky akcí</string>
@@ -294,4 +292,53 @@
     <string name="quick_action_usb_title">USB debugování</string>
     <string name="quick_action_no_actions">Nejsou povolené žádné akce pro tuto dlaždici.</string>
     <string name="quick_action_open_app">Otevřít aplikaci</string>
+    <!-- Pravidla DNS pro sítě Wi-Fi -->
+    <string name="setting_dns_state_on_wifi_other_networks">DNS přes Wi-Fi pro všechny ostatní sítě:</string>
+    <string name="setting_wifi_network_rules_title">Pravidla sítí Wi-Fi</string>
+    <string name="setting_wifi_network_rules_description">Přepíše výchozí nastavení DNS přes Wi-Fi pro konkrétní sítě nebo přístupové body (SSID/BSSID). Změny vyžadují oprávnění aplikace ovládat soukromé DNS a detekci na pozadí. Oznámení jsou volitelná a pouze zobrazují stav sledování.</string>
+    <string name="wifi_rules_enabled">Používat pravidla pro jednotlivé sítě</string>
+    <string name="wifi_rules_enabled_description">Odpovídající pravidla přepíší nastavení DNS přes Wi-Fi pro všechny ostatní rozpoznané sítě.</string>
+    <string name="wifi_ssid_permission_title">Je vyžadována přesná poloha</string>
+    <string name="wifi_ssid_permission_description">Android považuje názvy Wi-Fi (SSID), identifikátory přístupových bodů (BSSID) a výsledky okolních sítí za údaje související s polohou. K jejich čtení je nutné oprávnění k přesné poloze. Funkce nečte souřadnice polohy.</string>
+    <string name="wifi_ssid_permission_docs_link">Dokumentace Androidu k oprávnění pro SSID</string>
+    <string name="wifi_ssid_permission_grant">Povolit přístup</string>
+    <string name="wifi_location_services_title">Zapnout služby určování polohy</string>
+    <string name="wifi_location_services_description">Oprávnění je uděleno, ale Android zobrazí připojené SSID/BSSID a poslední výsledky Wi-Fi jen při zapnutých službách určování polohy.</string>
+    <string name="wifi_location_services_open">Otevřít nastavení polohy</string>
+    <string name="wifi_ssid_manual_entry_notice">Pravidlo můžete zadat ručně, automatické přiřazení však tento přístup stále potřebuje. Dokud není aktuální síť známá, soukromé DNS se nezmění.</string>
+    <string name="wifi_ssid_permission_denied">K rozpoznání sítí Wi-Fi je nutné oprávnění k přesné poloze. Dokud nebude přístup povolen, soukromá DNS se nezmění.</string>
+    <string name="wifi_location_services_disabled">Zapněte služby určování polohy Androidu, aby bylo možné zjistit název připojené sítě Wi-Fi. Dokud není identita sítě dostupná, soukromá DNS se nezmění.</string>
+    <string name="wifi_rules_require_background_detection">Pravidla sítí Wi-Fi vyžadují detekci službou na pozadí. Před výběrem detekce pouze pomocí dlaždice pravidla vypněte.</string>
+    <string name="wifi_rules_enabled_background_detection">Detekce službou na pozadí byla zapnuta, protože ji pravidla pro jednotlivé sítě vyžadují.</string>
+    <string name="wifi_ssid_label">Název sítě (SSID)</string>
+    <string name="wifi_rules_title">Pravidla sítě</string>
+    <string name="wifi_rules_empty">Nebyla přidána žádná pravidla sítě.</string>
+    <string name="wifi_rule_add_current">Použít právě připojenou síť</string>
+    <string name="wifi_rule_choose_network">Vybrat blízkou nebo nedávnou síť</string>
+    <string name="wifi_rule_add_manual">Zadat SSID nebo BSSID ručně</string>
+    <string name="wifi_network_picker_title">Vybrat síť Wi-Fi</string>
+    <string name="wifi_network_current_title">Aktuálně připojeno</string>
+    <string name="wifi_network_nearby_title">Sítě v okolí</string>
+    <string name="wifi_network_history_title">Nedávno rozpoznané sítě</string>
+    <string name="wifi_network_scanning">Načítají se poslední dostupné výsledky Wi-Fi systému Android…</string>
+    <string name="wifi_network_none_found">Nejsou dostupné žádné nedávné výsledky Wi-Fi. Aplikace nespouští nový sken; Android může poskytnout výsledky z mezipaměti.</string>
+    <string name="wifi_network_refresh">Znovu načíst výsledky</string>
+    <string name="wifi_hidden_network">Skrytá síť</string>
+    <string name="wifi_rule_add_title">Přidat pravidlo sítě</string>
+    <string name="wifi_rule_edit_title">Upravit pravidlo sítě</string>
+    <string name="wifi_bssid_label">MAC adresa přístupového bodu (BSSID, volitelné)</string>
+    <string name="wifi_bssid_hint">Ponechte prázdné, aby pravidlo odpovídalo všem přístupovým bodům s tímto SSID.</string>
+    <string name="wifi_rule_action_label">Akce pro tuto síť</string>
+    <string name="wifi_rule_action_default">Použít výchozí nastavení DNS pro Wi-Fi</string>
+    <string name="wifi_rule_invalid_or_duplicate">Zadejte platné SSID nebo BSSID a ověřte, že stejné pravidlo ještě neexistuje.</string>
+    <string name="wifi_rule_delete_title">Odstranit pravidlo sítě?</string>
+    <string name="wifi_rule_delete_message">Odstranit pravidlo pro „%1$s“?</string>
+    <string name="wifi_rule_edit_description">Upravit pravidlo pro %1$s</string>
+    <string name="wifi_rule_delete_description">Odstranit pravidlo pro %1$s</string>
+    <string name="wifi_permission_open_settings">Otevřít nastavení aplikace</string>
+    <string name="wifi_permission_blocked_description">Android již nezobrazuje dialog oprávnění k poloze. Otevři nastavení aplikace, zvol Oprávnění → Poloha a povol přesnou polohu.</string>
+    <string name="wifi_boot_title">Automaticky pokračovat po restartu</string>
+    <string name="wifi_boot_description">Aby pravidla Wi-Fi fungovala po restartu a odemknutí telefonu, otevři nastavení aplikace → Oprávnění → Poloha a zvol „Povolit vždy“ se zapnutou přesnou polohou. Aplikace tak může rozpoznávat sítě Wi-Fi na pozadí; souřadnice polohy nečte. Je to volitelné: bez tohoto oprávnění otevři aplikaci po každém restartu.</string>
+    <string name="wifi_boot_ready">Pravidla Wi-Fi se automaticky obnoví po restartu a odemknutí telefonu.</string>
+    <string name="wifi_rule_use_detected_bssid">Použít zjištěnou BSSID: %1$s</string>
 </resources>

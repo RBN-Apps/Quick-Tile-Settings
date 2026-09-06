@@ -6,6 +6,7 @@ import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 
 internal data class ValidatedSettingsBackup(
     val dns: DnsSettingsBackup,
@@ -18,7 +19,6 @@ internal class SettingsBackupValidator(
 ) {
     private val validDnsModes = setOf(DNS_MODE_OFF, DNS_MODE_AUTO, DNS_MODE_ON)
     private val validDetectionModes = setOf(TILE_ONLY_DETECTION, BACKGROUND_DETECTION)
-
     fun validate(backup: SettingsBackup): ValidatedSettingsBackup {
         val dns = backup.dns ?: throw IllegalArgumentException("Backup is missing DNS settings")
         val usb = backup.usb ?: throw IllegalArgumentException("Backup is missing USB settings")
@@ -48,6 +48,10 @@ internal class SettingsBackupValidator(
         )
         val wifiState = normalizeDnsState(dns.dnsStateOnWifi, DNS_MODE_OFF)
         val mobileState = normalizeDnsState(dns.dnsStateOnMobile, DNS_MODE_AUTO)
+        val wifiNetworkRules = normalizeWifiNetworkRules(dns.wifiNetworkRules)
+            .take(MAX_RESTORED_WIFI_RULES)
+        val knownWifiNetworks = normalizeKnownWifiNetworks(dns.knownWifiNetworks)
+            .take(MAX_RESTORED_KNOWN_WIFI_NETWORKS)
 
         return ValidatedSettingsBackup(
             dns = dns.copy(
@@ -63,6 +67,8 @@ internal class SettingsBackupValidator(
                     availableHostnames,
                     DNS_MODE_ON
                 ),
+                wifiNetworkRules = wifiNetworkRules,
+                knownWifiNetworks = knownWifiNetworks,
                 dnsStateOnMobile = mobileState,
                 dnsHostnameOnMobile = DnsHostnamePolicy.normalizeStateHostname(
                     mobileState,
@@ -126,6 +132,29 @@ internal class SettingsBackupValidator(
     private fun normalizeDetectionMode(value: String?): String =
         value?.takeIf(validDetectionModes::contains) ?: TILE_ONLY_DETECTION
 
+    private fun normalizeWifiNetworkRules(values: List<WifiDnsRule>?): List<WifiDnsRule> {
+        @Suppress("SENSELESS_COMPARISON")
+        return values.orEmpty()
+            .mapNotNull { rule -> if (rule == null) null else WifiNetworkRuleUtils.normalizeRule(rule) }
+            .distinctBy { "${it.ssid.orEmpty()}|${it.bssid.orEmpty()}" }
+            .distinctBy(WifiDnsRule::id)
+    }
+
+    private fun normalizeKnownWifiNetworks(
+        values: List<KnownWifiNetwork>?
+    ): List<KnownWifiNetwork> {
+        @Suppress("SENSELESS_COMPARISON")
+        return values.orEmpty()
+            .mapNotNull { network ->
+                if (network == null) return@mapNotNull null
+                WifiNetworkRuleUtils.normalizeIdentity(network.identity)?.let { identity ->
+                    network.copy(ssid = identity.ssid, bssid = identity.bssid)
+                }
+            }
+            .distinctBy { "${it.ssid.orEmpty()}|${it.bssid.orEmpty()}" }
+            .sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
+    }
+
     private fun normalizeDelaySeconds(value: Int): Int =
         value.coerceIn(MIN_AUTO_REVERT_DELAY_SECONDS, MAX_AUTO_REVERT_DELAY_SECONDS)
 
@@ -133,5 +162,7 @@ internal class SettingsBackupValidator(
         const val MIN_AUTO_REVERT_DELAY_SECONDS = 1
         const val MAX_AUTO_REVERT_DELAY_SECONDS = 86_400
         const val MAX_RESTORED_CUSTOM_HOSTNAMES = 250
+        const val MAX_RESTORED_WIFI_RULES = 250
+        const val MAX_RESTORED_KNOWN_WIFI_NETWORKS = 100
     }
 }

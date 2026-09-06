@@ -2,8 +2,13 @@ package com.rbn.qtsettings.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.net.Uri
 import android.provider.Settings
+import androidx.core.content.edit
+import com.rbn.qtsettings.data.WifiIdentityAccessState
 import rikka.shizuku.Shizuku
 import java.io.File
 
@@ -12,6 +17,56 @@ object PermissionUtils {
 
     fun hasWriteSecureSettingsPermission(context: Context): Boolean {
         return context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun hasPreciseLocationPermission(context: Context): Boolean {
+        return context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+    }
+
+    fun hasBackgroundLocationPermission(context: Context): Boolean =
+        hasPreciseLocationPermission(context) &&
+            context.checkSelfPermission(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+
+    // Device-local permission state; deliberately excluded from exported settings backups.
+    fun setWifiLocationPermissionBlocked(context: Context, blocked: Boolean) {
+        context.getSharedPreferences("wifi_location_permission", Context.MODE_PRIVATE).edit {
+            putBoolean("blocked", blocked)
+        }
+    }
+
+    fun openAppPermissionSettings(context: Context) {
+        context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", context.packageName, null)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+    }
+
+    fun isLocationEnabled(context: Context): Boolean {
+        val locationManager = context.getSystemService(LocationManager::class.java)
+        return locationManager?.isLocationEnabled == true
+    }
+
+    fun canAccessWifiSsid(context: Context): Boolean {
+        return getWifiIdentityAccessState(context) == WifiIdentityAccessState.AVAILABLE
+    }
+
+    fun getWifiIdentityAccessState(context: Context): WifiIdentityAccessState {
+        return when {
+            !hasPreciseLocationPermission(context) -> {
+                if (context.getSharedPreferences("wifi_location_permission", Context.MODE_PRIVATE)
+                        .getBoolean("blocked", false)
+                ) {
+                    WifiIdentityAccessState.PRECISE_LOCATION_PERMISSION_BLOCKED
+                } else {
+                    WifiIdentityAccessState.PRECISE_LOCATION_PERMISSION_REQUIRED
+                }
+            }
+
+            !isLocationEnabled(context) -> WifiIdentityAccessState.LOCATION_SERVICES_DISABLED
+            else -> WifiIdentityAccessState.AVAILABLE
+        }
     }
 
     fun isDeveloperOptionsEnabled(context: Context): Boolean {

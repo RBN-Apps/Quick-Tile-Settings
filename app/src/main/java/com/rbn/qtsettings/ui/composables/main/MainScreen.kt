@@ -69,7 +69,6 @@ import com.rbn.qtsettings.ui.composables.settings.AppSettingsScreen
 import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionExplanationDialog
 import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionFallbackDialog
 import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionSettingsDialog
-import com.rbn.qtsettings.ui.composables.settings.NotificationSettingsDialog
 import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutSettingsScreen
 import com.rbn.qtsettings.ui.composables.usb.UsbDebuggingSettingsCard
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
@@ -125,6 +124,14 @@ fun MainScreen(
         viewModel.quickActionStatusMessage.collect { message ->
             if (message != null) {
                 viewModel.clearQuickActionStatusMessage()
+                snackbarHostState.showSnackbar(message)
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.networkDetectionStatusMessage.collect { message ->
+            if (message != null) {
+                viewModel.clearNetworkDetectionStatusMessage()
                 snackbarHostState.showSnackbar(message)
             }
         }
@@ -375,13 +382,6 @@ fun MainScreen(
         )
     }
 
-    val showNotificationSettingsDialog by viewModel.showNotificationSettingsDialog.collectAsState()
-    if (showNotificationSettingsDialog) {
-        NotificationSettingsDialog(
-            onDismiss = { viewModel.clearNotificationSettingsDialog() }
-        )
-    }
-
     val showNotificationPermissionExplanationDialog by
         viewModel.showNotificationPermissionExplanationDialog.collectAsState()
     val notificationPermissionExplanationFromBackup by
@@ -390,7 +390,9 @@ fun MainScreen(
         NotificationPermissionExplanationDialog(
             fromBackup = notificationPermissionExplanationFromBackup,
             onGrantPermission = { viewModel.requestNotificationPermissionFromExplanation() },
-            onDismiss = { viewModel.useTileOnlyDetectionForNotificationFallback() }
+            onContinueWithoutNotifications = {
+                viewModel.continueWithoutNotificationPermission()
+            }
         )
     }
 
@@ -399,7 +401,9 @@ fun MainScreen(
     if (showNotificationPermissionFallbackDialog) {
         NotificationPermissionFallbackDialog(
             onGrantPermission = { viewModel.requestNotificationPermissionFromExplanation() },
-            onUseTileOnly = { viewModel.useTileOnlyDetectionForNotificationFallback() }
+            onContinueWithoutNotifications = {
+                viewModel.continueWithoutNotificationPermission()
+            }
         )
     }
 
@@ -408,7 +412,9 @@ fun MainScreen(
     if (showNotificationPermissionSettingsDialog) {
         NotificationPermissionSettingsDialog(
             onOpenSettings = { viewModel.openNotificationPermissionSettings() },
-            onUseTileOnly = { viewModel.useTileOnlyDetectionForNotificationFallback() }
+            onContinueWithoutNotifications = {
+                viewModel.continueWithoutNotificationPermission()
+            }
         )
     }
 }
