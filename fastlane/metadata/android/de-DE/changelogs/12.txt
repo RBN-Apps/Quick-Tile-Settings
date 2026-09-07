@@ -1,0 +1,6 @@
+Version 1.5.0
+
+- Für einzelne WLANs automatisch privates DNS ausschalten, den Automatikmodus nutzen oder einen DNS-Anbieter festlegen.
+- WLAN-Regeln aus bekannten Netzwerken erstellen oder Netzwerkname und BSSID manuell eingeben.
+- WLAN-Regeln und bekannte Netzwerke mit den Einstellungen sichern und wiederherstellen.
+- Übersetzungen angepasst und Abhängigkeiten aktualisiert.
