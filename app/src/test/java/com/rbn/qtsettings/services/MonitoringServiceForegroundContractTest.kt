@@ -16,6 +16,7 @@ import com.rbn.qtsettings.data.WifiDnsRule
 import com.rbn.qtsettings.receivers.BootCompletedReceiver
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
+import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
@@ -36,6 +37,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowNetwork
 import org.robolectric.shadows.ShadowNetworkCapabilities
 import org.robolectric.shadows.ShadowWifiInfo
+import java.time.Duration
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
@@ -188,7 +190,80 @@ class MonitoringServiceForegroundContractTest {
         }
     }
 
+    @Test
+    fun wifiRule_waitsForVpnOverrideToEndEvenWhenWifiIdentityDoesNotChange() {
+        shadowOf(context as Application).grantPermissions(
+            android.Manifest.permission.WRITE_SECURE_SETTINGS,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        shadowOf(context.getSystemService(LocationManager::class.java)).setLocationEnabled(true)
+        preferencesManager.setVpnDetectionEnabled(true)
+        preferencesManager.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.setWifiNetworkRulesEnabled(true)
+        preferencesManager.addWifiNetworkRule(
+            WifiDnsRule(ssid = "Campus", actionMode = DNS_MODE_ON, dnsHostname = "wifi.example.com")
+        )
+        val connectivity = context.getSystemService(ConnectivityManager::class.java)
+        val network = requireNotNull(connectivity.activeNetwork)
+        val capabilities = ShadowNetworkCapabilities.newInstance()
+        shadowOf(capabilities).addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        shadowOf(capabilities).addTransportType(NetworkCapabilities.TRANSPORT_VPN)
+        shadowOf(capabilities).addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        val wifiInfo = ShadowWifiInfo.newInstance()
+        shadowOf(wifiInfo).setSSID("Campus")
+        shadowOf(capabilities).setTransportInfo(wifiInfo)
+        shadowOf(connectivity).setNetworkCapabilities(network, capabilities)
+        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_OFF)
+        val controller = Robolectric.buildService(NetworkMonitoringService::class.java).create()
+        try {
+            controller.get().onStartCommand(Intent(context, NetworkMonitoringService::class.java), 0, 401)
+            val callback = shadowOf(connectivity).networkCallbacks.single()
+            callback.onCapabilitiesChanged(network, capabilities)
+            shadowOf(Looper.getMainLooper()).idle()
+            assertEquals(DNS_MODE_OFF, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+
+            shadowOf(capabilities).removeTransportType(NetworkCapabilities.TRANSPORT_VPN)
+            callback.onCapabilitiesChanged(network, capabilities)
+            // The physical Wi-Fi identity is unchanged, so its callback is deduplicated.
+            // The service's three-second poll notices that the VPN override ended.
+            shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(4))
+            assertEquals(DNS_MODE_ON, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+            assertEquals("wifi.example.com", Settings.Global.getString(context.contentResolver, PRIVATE_DNS_SPECIFIER))
+        } finally {
+            controller.destroy()
+        }
+    }
+
+    @Test
+    fun vpnRecovery_prefersCurrentNetworkPolicyOverSavedDnsState() {
+        shadowOf(context as Application).grantPermissions(android.Manifest.permission.WRITE_SECURE_SETTINGS)
+        preferencesManager.setVpnDetectionEnabled(true)
+        preferencesManager.setVpnDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.setDnsStateOnWifi(DNS_MODE_AUTO)
+        context.getSharedPreferences("vpn_detection_shared_state", Context.MODE_PRIVATE).edit()
+            .putString("vpn_previous_dns_mode", DNS_MODE_ON)
+            .putString("vpn_previous_dns_hostname", "before-vpn.example.com")
+            .commit()
+        val connectivity = context.getSystemService(ConnectivityManager::class.java)
+        val capabilities = ShadowNetworkCapabilities.newInstance()
+        shadowOf(capabilities).addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        shadowOf(connectivity).setNetworkCapabilities(requireNotNull(connectivity.activeNetwork), capabilities)
+        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_OFF)
+        val controller = Robolectric.buildService(VpnMonitoringService::class.java).create()
+        try {
+            controller.get().onStartCommand(Intent(context, VpnMonitoringService::class.java), 0, 402)
+            assertEquals(DNS_MODE_AUTO, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+        } finally {
+            controller.destroy()
+        }
+    }
+
     private fun clearPreferences() {
+        context.getSharedPreferences("vpn_detection_shared_state", Context.MODE_PRIVATE)
+            .edit().clear().commit()
         context.getSharedPreferences("qt_settings_prefs", Context.MODE_PRIVATE)
             .edit()
             .clear()
