@@ -1,0 +1,6 @@
+Version 1.5.0
+
+- Automatically turn private DNS off, use automatic mode, or choose a DNS provider for individual Wi-Fi networks.
+- Create Wi-Fi rules from known networks or enter a network name and BSSID manually.
+- Back up and restore Wi-Fi rules and known networks with your settings.
+- Translations refined and dependencies updated.
