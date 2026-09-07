@@ -18,6 +18,8 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
+import com.rbn.qtsettings.utils.NetworkDnsAutomation
+import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.utils.VpnDetectionUtils
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +28,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class VpnMonitoringService : Service() {
 
@@ -63,19 +66,21 @@ class VpnMonitoringService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Fulfil the foreground-service contract before any early-return validation below.
+        startForeground(NOTIFICATION_ID, createNotification())
+
         if (!prefsManager.isVpnDetectionEnabled() || prefsManager.getVpnDetectionMode() != BACKGROUND_DETECTION) {
             Log.d(TAG, "VPN detection disabled or not in background mode, stopping service")
-            stopSelf()
+            stopSelf(startId)
             return START_NOT_STICKY
         }
 
         if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
             Log.w(TAG, "No WRITE_SECURE_SETTINGS permission, stopping service")
-            stopSelf()
+            stopSelf(startId)
             return START_NOT_STICKY
         }
 
-        startForeground(NOTIFICATION_ID, createNotification())
         startVpnMonitoring()
 
         Log.d(TAG, "VPN monitoring service started")
@@ -83,6 +88,8 @@ class VpnMonitoringService : Service() {
     }
 
     private fun startVpnMonitoring() {
+        stopVpnMonitoring()
+
         val currentVpnState = VpnDetectionUtils.isVpnActive(this)
         val existingVpnState = getVpnPreviousState()
 
@@ -91,20 +98,30 @@ class VpnMonitoringService : Service() {
             val currentHostname = VpnDetectionUtils.getCurrentPrivateDnsHostname(this)
 
             if (currentMode != DNS_MODE_OFF) {
-                saveVpnPreviousState(currentMode, currentHostname)
-                VpnDetectionUtils.setPrivateDnsOff(this)
-                Log.i(TAG, "Service started with VPN active: Set Private DNS to off")
+                if (VpnDetectionUtils.setPrivateDnsOff(this)) {
+                    saveVpnPreviousState(currentMode, currentHostname)
+                    Log.i(TAG, "Service started with VPN active: Set Private DNS to off")
+                } else {
+                    Log.w(TAG, "Service started with VPN active: Failed to disable Private DNS")
+                }
             }
         } else if (!currentVpnState && existingVpnState != null) {
-            VpnDetectionUtils.restorePrivateDns(
-                this,
-                existingVpnState.first,
-                existingVpnState.second
+            val restoreResult = restoreDnsAfterVpn(
+                previousMode = existingVpnState.first,
+                previousHostname = existingVpnState.second
             )
-            clearVpnPreviousState()
+            if (restoreResult.succeeded) {
+                clearVpnPreviousState()
+            }
             Log.i(
                 TAG,
-                "Service started with VPN inactive: Restored Private DNS to ${existingVpnState.first}"
+                if (restoreResult.networkPolicyApplied) {
+                    "Service started with VPN inactive: Applied current network DNS policy"
+                } else if (restoreResult.succeeded) {
+                    "Service started with VPN inactive: Restored Private DNS to ${existingVpnState.first}"
+                } else {
+                    "Service started with VPN inactive: DNS restoration failed; keeping saved state"
+                }
             )
         }
 
@@ -116,10 +133,10 @@ class VpnMonitoringService : Service() {
             while (isActive) {
                 try {
                     checkVpnStatus()
-                    delay(CHECK_INTERVAL_MS)
+                    delay(CHECK_INTERVAL_MS.milliseconds)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error in periodic VPN check", e)
-                    delay(CHECK_INTERVAL_MS)
+                    delay(CHECK_INTERVAL_MS.milliseconds)
                 }
             }
         }
@@ -135,7 +152,7 @@ class VpnMonitoringService : Service() {
                 },
                 onVpnDisconnected = {
                     CoroutineScope(Dispatchers.Main).launch {
-                        delay(1000)
+                        delay(1000.milliseconds)
                         val stillConnected =
                             VpnDetectionUtils.isVpnActive(this@VpnMonitoringService)
                         if (!stillConnected) {
@@ -181,11 +198,13 @@ class VpnMonitoringService : Service() {
             val currentMode = VpnDetectionUtils.getCurrentPrivateDnsMode(this)
             val currentHostname = VpnDetectionUtils.getCurrentPrivateDnsHostname(this)
 
-            saveVpnPreviousState(currentMode, currentHostname)
-
             if (currentMode != DNS_MODE_OFF) {
-                VpnDetectionUtils.setPrivateDnsOff(this)
-                Log.i(TAG, "VPN connected: Set Private DNS to off")
+                if (VpnDetectionUtils.setPrivateDnsOff(this)) {
+                    saveVpnPreviousState(currentMode, currentHostname)
+                    Log.i(TAG, "VPN connected: Set Private DNS to off")
+                } else {
+                    Log.w(TAG, "VPN connected: Failed to disable Private DNS")
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error handling VPN connection", e)
@@ -196,13 +215,49 @@ class VpnMonitoringService : Service() {
         try {
             val (previousMode, previousHostname) = getVpnPreviousState() ?: return
 
-            VpnDetectionUtils.restorePrivateDns(this, previousMode, previousHostname)
-            clearVpnPreviousState()
+            val restoreResult = restoreDnsAfterVpn(previousMode, previousHostname)
+            if (restoreResult.succeeded) {
+                clearVpnPreviousState()
+            }
 
-            Log.i(TAG, "VPN disconnected: Restored Private DNS to $previousMode")
+            Log.i(
+                TAG,
+                if (restoreResult.networkPolicyApplied) {
+                    "VPN disconnected: Applied current network DNS policy"
+                } else if (restoreResult.succeeded) {
+                    "VPN disconnected: Restored Private DNS to $previousMode"
+                } else {
+                    "VPN disconnected: DNS restoration failed; keeping saved state"
+                }
+            )
         } catch (e: Exception) {
             Log.e(TAG, "Error handling VPN disconnection", e)
         }
+    }
+
+    private fun restoreDnsAfterVpn(
+        previousMode: String,
+        previousHostname: String?
+    ): DnsRestoreResult {
+        val networkPolicyApplied = if (
+            prefsManager.isNetworkTypeDetectionEnabled() &&
+            prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION
+        ) {
+            val includeWifiIdentity = prefsManager.areWifiNetworkRulesEnabled()
+            val currentNetworkState = NetworkTypeDetectionUtils.getCurrentNetworkState(
+                context = this,
+                includeWifiSsid = includeWifiIdentity
+            )
+            NetworkDnsAutomation.apply(this, prefsManager, currentNetworkState)
+        } else {
+            false
+        }
+        val succeeded = networkPolicyApplied ||
+            VpnDetectionUtils.restorePrivateDns(this, previousMode, previousHostname)
+        return DnsRestoreResult(
+            succeeded = succeeded,
+            networkPolicyApplied = networkPolicyApplied
+        )
     }
 
     private fun saveVpnPreviousState(mode: String, hostname: String?) {
@@ -225,6 +280,11 @@ class VpnMonitoringService : Service() {
             remove("vpn_previous_dns_hostname")
         }
     }
+
+    private data class DnsRestoreResult(
+        val succeeded: Boolean,
+        val networkPolicyApplied: Boolean
+    )
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
@@ -275,14 +335,18 @@ class VpnMonitoringService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopVpnMonitoring()
 
+        Log.d(TAG, "VPN monitoring service destroyed")
+    }
+
+    private fun stopVpnMonitoring() {
         serviceJob?.cancel()
-
+        serviceJob = null
         networkCallback?.let { callback ->
             VpnDetectionUtils.unregisterVpnCallback(this, callback)
         }
-
-        Log.d(TAG, "VPN monitoring service destroyed")
+        networkCallback = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.data.WifiIdentityAccessState
 import com.rbn.qtsettings.ui.composables.main.MainScreen
 import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.utils.Constants
@@ -55,6 +56,24 @@ class MainActivity : ComponentActivity() {
         } else {
             viewModel.onNotificationPermissionResult(isGranted)
         }
+    }
+
+    private val wifiSsidPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val preciseLocationGranted =
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+        PermissionUtils.setWifiLocationPermissionBlocked(
+            this,
+            !preciseLocationGranted && !ActivityCompat.shouldShowRequestPermissionRationale(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        )
+        viewModel.onWifiSsidPermissionResult(preciseLocationGranted)
     }
 
     private var observingQuickActionSettings = false
@@ -121,6 +140,26 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        lifecycleScope.launch {
+            viewModel.requestWifiSsidPermission.collect { requestCounter ->
+                if (requestCounter > 0) {
+                    viewModel.clearWifiSsidPermissionRequest()
+                    if (PermissionUtils.getWifiIdentityAccessState(this@MainActivity) ==
+                        WifiIdentityAccessState.PRECISE_LOCATION_PERMISSION_BLOCKED
+                    ) {
+                        PermissionUtils.openAppPermissionSettings(this@MainActivity)
+                    } else {
+                        wifiSsidPermissionLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun openUsbDebuggingSettings(context: Context) {
@@ -136,6 +175,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         viewModel.checkSystemStates(this)
         viewModel.refreshNotificationPermissionAfterSettings(this)
+        viewModel.initializeNetworkMonitoring()
     }
 
     override fun onStart() {

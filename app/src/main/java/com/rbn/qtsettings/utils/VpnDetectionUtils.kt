@@ -56,7 +56,6 @@ object VpnDetectionUtils {
     fun setPrivateDnsOff(context: Context): Boolean {
         return try {
             Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_OFF)
-            true
         } catch (e: Exception) {
             Log.e(TAG, "Error setting Private DNS to off", e)
             false
@@ -66,25 +65,23 @@ object VpnDetectionUtils {
     fun restorePrivateDns(context: Context, mode: String, hostname: String? = null): Boolean {
         return try {
             when (mode) {
-                DNS_MODE_OFF -> {
-                    Settings.Global.putString(
-                        context.contentResolver,
-                        PRIVATE_DNS_MODE,
-                        DNS_MODE_OFF
-                    )
-                }
+                DNS_MODE_OFF -> Settings.Global.putString(
+                    context.contentResolver,
+                    PRIVATE_DNS_MODE,
+                    DNS_MODE_OFF
+                )
 
                 DNS_MODE_ON -> {
                     if (hostname != null) {
-                        Settings.Global.putString(
-                            context.contentResolver,
-                            PRIVATE_DNS_MODE,
-                            DNS_MODE_ON
-                        )
-                        Settings.Global.putString(
+                        val specifierSaved = Settings.Global.putString(
                             context.contentResolver,
                             PRIVATE_DNS_SPECIFIER,
                             hostname
+                        )
+                        specifierSaved && Settings.Global.putString(
+                            context.contentResolver,
+                            PRIVATE_DNS_MODE,
+                            DNS_MODE_ON
                         )
                     } else {
                         Settings.Global.putString(
@@ -103,7 +100,6 @@ object VpnDetectionUtils {
                     )
                 }
             }
-            true
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring Private DNS", e)
             false

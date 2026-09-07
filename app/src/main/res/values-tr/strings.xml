@@ -188,25 +188,22 @@
     <string name="vpn_monitoring_status_disconnected">VPN bağlantısı kesildi - Özel DNS geri yüklendi</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_title">Bildirimler İçin İzin Gerekli</string>
-    <string name="notification_permission_dialog_message">Arka planda VPN izleme için bildirim almak üzere, uygulama ayarlarından bu izni etkinleştirmeniz gerekir.\n\nİzni verdikten sonra, bildirimleri buradan etkinleştirebilirsiniz.</string>
-    <string name="notification_permission_dialog_settings_button">Ayarlar</string>
     <string name="notification_permission_dialog_settings_description">Ayarları aç</string>
     <string name="notification_permission_background_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
-    <string name="notification_permission_background_message">Arka plan algılama, Android arka planda izleme sırasında uygulamanın kalıcı bir bildirim göstermesini zorunlu tuttuğu için bildirim izni gerektirir.</string>
+    <string name="notification_permission_background_message">Arka plan algılama bildirim izni olmadan da çalışır. Sürekli izleme durumunu bildirim alanında görmek istiyorsanız izin verin; aksi halde Android hizmeti yalnızca etkin uygulamalar arasında gösterir.</string>
     <string name="notification_permission_import_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
-    <string name="notification_permission_import_message">İçe aktarılan yedek, VPN veya ağ türü değişiklikleri için arka plan algılamayı etkinleştiriyor. Android, arka planda izleme yapılırken uygulamanın kalıcı bir bildirim göstermesi için bildirim izni gerektirir.</string>
-    <string name="notification_permission_fallback_title">Bildirim izni gerekli</string>
-    <string name="notification_permission_fallback_message">Arka plan algılama, bildirim izni olmadan çalışamaz çünkü Android arka plan izleme için bildirim gerektirir. İzni şimdi verebilir veya bunun yerine yalnızca kutucuk algılamasını kullanabilirsiniz.</string>
+    <string name="notification_permission_import_message">İçe aktarılan yedek, VPN veya ağ değişiklikleri için arka plan algılamayı etkinleştiriyor. Bildirim izni olmadan da çalışır; izni yalnızca sürekli durumu bildirim alanında görmek için verin.</string>
+    <string name="notification_permission_fallback_title">Bildirim erişimi verilmedi</string>
+    <string name="notification_permission_fallback_message">Arka plan algılama çalışmaya devam edecek. Durum bildirim alanında görünmez, ancak Android hizmeti etkin uygulamalar arasında göstermeye devam eder.</string>
     <string name="notification_permission_grant_button">İzin ver</string>
-    <string name="notification_permission_use_tile_only_button">Yalnızca kutucuk algılamasını kullan</string>
-    <string name="notification_permission_settings_title">Bildirim izni gerekli</string>
-    <string name="notification_permission_settings_message">Android artık bildirim izni istemini göstermiyor. Bu uygulamanın bildirim ayarlarını açıp bildirimlere oradan izin verin veya yalnızca kutucuk algılamasını kullanın.</string>
+    <string name="notification_permission_continue_button">Bildirimler olmadan devam et</string>
+    <string name="notification_permission_settings_title">Bildirim erişimi devre dışı</string>
+    <string name="notification_permission_settings_message">Arka plan algılama, bildirim alanında durum göstermeden devam edecek. Durumu göstermek için uygulama ayarlarından bildirimlere izin verin.</string>
     <string name="notification_permission_settings_button">Ayarları aç</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Ağ türüne göre DNS\'i otomatik değiştir</string>
-    <string name="setting_network_type_detection_description">WiFi ile mobil veri arasında geçiş yaparken Özel DNS ayarlarını otomatik olarak değiştirir</string>
+    <string name="setting_network_type_detection_description">Wi-Fi ile mobil veri arasında geçiş yaparken Özel DNS’i otomatik olarak değiştirir. Tek tek Wi-Fi ağları veya erişim noktaları için kural ayarlamak üzere de bunu etkinleştirin.</string>
     <string name="setting_network_type_detection_mode">Ağ Algılama Modu:</string>
     <string name="network_type_detection_tile_only_title">Yalnızca Kutucuktan Algılama</string>
     <string name="network_type_detection_tile_only_description">Hızlı Ayarlar açıldığında ağ türünü kontrol eder. Pil dostudur, ancak ağ değişikliklerini yalnızca Hızlı Ayarlar açıldığında algılar.</string>
@@ -256,6 +253,7 @@
     <string name="shortcut_toast_permission_missing">İzin eksik. Vermek için uygulamayı açın.</string>
     <string name="shortcut_toast_action_disabled">Kısayol eylemi devre dışı. Önce uygulamada etkinleştirin.</string>
     <string name="shortcut_toast_action_unavailable">Kısayol eylemi artık kullanılamıyor. Uygulama yapılandırmasını kontrol edin.</string>
+    <string name="shortcut_toast_action_failed">Kısayol eylemi uygulanamadı.</string>
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Kısayol Eylemleri</string>
@@ -274,4 +272,53 @@
     <string name="shortcut_settings_mark_favorite_desc">%1$s\'i favori olarak işaretle</string>
     <string name="shortcut_settings_remove_favorite_desc">%1$s\'i favorilerden kaldır</string>
     <string name="shortcut_settings_open_desc">Kısayol ayarlarını aç</string>
+    <!-- Wi-Fi ağına özel DNS kuralları -->
+    <string name="setting_dns_state_on_wifi_other_networks">Diğer tüm ağlar için Wi-Fi DNS:</string>
+    <string name="setting_wifi_network_rules_title">Wi-Fi ağ kuralları</string>
+    <string name="setting_wifi_network_rules_description">Belirli ağlar veya erişim noktaları (SSID/BSSID) için varsayılan Wi-Fi DNS ayarını geçersiz kılar. Değişiklikleri uygulamak için uygulamanın Özel DNS denetim izni ve arka plan algılama gerekir. Bildirimler isteğe bağlıdır ve yalnızca durumu gösterir.</string>
+    <string name="wifi_rules_enabled">Ağa özel kuralları kullan</string>
+    <string name="wifi_rules_enabled_description">Eşleşen kurallar, tanımlanan diğer tüm ağların Wi-Fi DNS ayarını geçersiz kılar.</string>
+    <string name="wifi_ssid_permission_title">Kesin konum gerekli</string>
+    <string name="wifi_ssid_permission_description">Android; Wi-Fi adlarını (SSID), erişim noktası kimliklerini (BSSID) ve yakındaki Wi-Fi sonuçlarını konuma duyarlı bilgi olarak değerlendirir. Bunları okumak için kesin konum izni gerekir. Bu özellik konum koordinatlarını okumaz.</string>
+    <string name="wifi_ssid_permission_docs_link">SSID izinleriyle ilgili Android belgeleri</string>
+    <string name="wifi_ssid_permission_grant">Erişime izin ver</string>
+    <string name="wifi_location_services_title">Konum hizmetlerini açın</string>
+    <string name="wifi_location_services_description">İzin verilmiş olsa da Android, bağlı SSID/BSSID ve son Wi-Fi sonuçlarını yalnızca konum hizmetleri açıkken gösterir.</string>
+    <string name="wifi_location_services_open">Konum ayarlarını aç</string>
+    <string name="wifi_ssid_manual_entry_notice">Bir kuralı elle girebilirsiniz, ancak otomatik eşleştirme bu erişime yine de ihtiyaç duyar. Geçerli ağ bilinmiyorken Özel DNS değiştirilmez.</string>
+    <string name="wifi_ssid_permission_denied">Wi-Fi ağlarını tanımlamak için kesin konum izni gereklidir. Erişim verilene kadar Özel DNS değiştirilmez.</string>
+    <string name="wifi_location_services_disabled">Bağlı Wi-Fi adının belirlenebilmesi için Android konum hizmetlerini açın. Ağ kimliği kullanılamazken Özel DNS değiştirilmez.</string>
+    <string name="wifi_rules_require_background_detection">Wi-Fi ağ kuralları arka plan hizmeti algılaması gerektirir. Yalnızca kutucuk algılamasını seçmeden önce kuralları devre dışı bırakın.</string>
+    <string name="wifi_rules_enabled_background_detection">Ağa özel kurallar gerektirdiği için arka plan hizmeti algılaması etkinleştirildi.</string>
+    <string name="wifi_ssid_label">Ağ adı (SSID)</string>
+    <string name="wifi_rules_title">Ağ kuralları</string>
+    <string name="wifi_rules_empty">Ağ kuralı eklenmedi.</string>
+    <string name="wifi_rule_add_current">Şu anda bağlı olunan ağı kullan</string>
+    <string name="wifi_rule_choose_network">Yakındaki veya son kullanılan bir ağı seç</string>
+    <string name="wifi_rule_add_manual">SSID veya BSSID’yi elle gir</string>
+    <string name="wifi_network_picker_title">Wi-Fi ağı seç</string>
+    <string name="wifi_network_current_title">Şu anda bağlı</string>
+    <string name="wifi_network_nearby_title">Yakındaki ağlar</string>
+    <string name="wifi_network_history_title">Yakın zamanda görülen ağlar</string>
+    <string name="wifi_network_scanning">Android’in son kullanılabilir Wi-Fi sonuçları yükleniyor…</string>
+    <string name="wifi_network_none_found">Yakın tarihli Wi-Fi sonucu yok. Uygulama yeni tarama başlatmaz; Android önbelleğe alınmış sonuçlar sağlayabilir.</string>
+    <string name="wifi_network_refresh">Sonuçları yeniden yükle</string>
+    <string name="wifi_hidden_network">Gizli ağ</string>
+    <string name="wifi_rule_add_title">Ağ kuralı ekle</string>
+    <string name="wifi_rule_edit_title">Ağ kuralını düzenle</string>
+    <string name="wifi_bssid_label">Erişim noktası MAC adresi (BSSID, isteğe bağlı)</string>
+    <string name="wifi_bssid_hint">Bu SSID’ye sahip tüm erişim noktalarını eşleştirmek için boş bırakın.</string>
+    <string name="wifi_rule_action_label">Bu ağ için eylem</string>
+    <string name="wifi_rule_action_default">Varsayılan Wi-Fi DNS ayarını kullan</string>
+    <string name="wifi_rule_invalid_or_duplicate">Geçerli bir SSID veya BSSID girin ve aynı kuralın zaten bulunmadığından emin olun.</string>
+    <string name="wifi_rule_delete_title">Ağ kuralı silinsin mi?</string>
+    <string name="wifi_rule_delete_message">“%1$s” için olan kural kaldırılsın mı?</string>
+    <string name="wifi_rule_edit_description">%1$s için kuralı düzenle</string>
+    <string name="wifi_rule_delete_description">%1$s için kuralı sil</string>
+    <string name="wifi_permission_open_settings">Uygulama ayarlarını aç</string>
+    <string name="wifi_permission_blocked_description">Android artık konum izni iletişim kutusunu göstermiyor. Uygulama ayarlarını açın, İzinler → Konum seçeneğine gidin ve kesin konum erişimine izin verin.</string>
+    <string name="wifi_boot_title">Yeniden başlatmadan sonra otomatik devam et</string>
+    <string name="wifi_boot_description">Telefon yeniden başlatılıp kilidi açıldıktan sonra Wi-Fi kurallarının uygulanması için uygulama ayarları → İzinler → Konum bölümünde kesin konumu açıp “Her zaman izin ver” seçeneğini belirleyin. Böylece uygulama arka planda Wi-Fi ağlarını tanıyabilir; konum koordinatları okunmaz. Bu isteğe bağlıdır: izin vermezseniz her yeniden başlatmadan sonra uygulamayı bir kez açın.</string>
+    <string name="wifi_boot_ready">Wi-Fi kuralları telefon yeniden başlatılıp kilidi açıldıktan sonra otomatik devam eder.</string>
+    <string name="wifi_rule_use_detected_bssid">Algılanan BSSID’yi kullan: %1$s</string>
 </resources>

@@ -6,20 +6,17 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
-import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class NotificationPermissionCoordinator(
     private val preferences: PreferencesManager,
     private val manageVpnMonitoring: () -> Unit,
-    private val manageNetworkMonitoring: () -> Unit
+    private val manageNetworkMonitoring: (restartService: Boolean) -> Unit,
+    private val notifyWifiRulesRequireBackgroundDetection: () -> Unit
 ) {
     private val _requestPermission = MutableStateFlow(0)
     val requestPermission = _requestPermission.asStateFlow()
-
-    private val _showSettingsDialog = MutableStateFlow(false)
-    val showSettingsDialog = _showSettingsDialog.asStateFlow()
 
     private val _showExplanationDialog = MutableStateFlow(false)
     val showExplanationDialog = _showExplanationDialog.asStateFlow()
@@ -33,31 +30,63 @@ internal class NotificationPermissionCoordinator(
     private val _explanationFromBackup = MutableStateFlow(false)
     val explanationFromBackup = _explanationFromBackup.asStateFlow()
 
-    private var pendingVpnDetectionMode: String? = null
-    private var pendingNetworkTypeDetectionMode: String? = null
     private var awaitingSettingsResult = false
 
     fun setVpnDetectionMode(mode: String, context: Context?) {
-        if (requiresPermission(mode, context)) {
-            pendingVpnDetectionMode = mode
-            showMissingPermission(fromBackup = false)
-            return
-        }
         preferences.setVpnDetectionMode(mode)
         manageVpnMonitoring()
+        offerPermissionForBackgroundStatus(mode, context)
     }
 
     fun setNetworkTypeDetectionMode(mode: String, context: Context?) {
-        if (requiresPermission(mode, context)) {
-            pendingNetworkTypeDetectionMode = mode
-            showMissingPermission(fromBackup = false)
-            return
-        }
         preferences.setNetworkTypeDetectionMode(mode)
-        manageNetworkMonitoring()
+        manageNetworkMonitoring(false)
+        offerPermissionForBackgroundStatus(mode, context)
     }
 
-    fun needsPermissionForBackgroundDetection(context: Context): Boolean =
+    fun setNetworkTypeDetectionEnabled(
+        enabled: Boolean,
+        wifiNetworkRulesEnabled: Boolean,
+        context: Context?
+    ) {
+        if (enabled &&
+            wifiNetworkRulesEnabled &&
+            preferences.getNetworkTypeDetectionMode() != BACKGROUND_DETECTION
+        ) {
+            preferences.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+            notifyWifiRulesRequireBackgroundDetection()
+        }
+
+        preferences.setNetworkTypeDetectionEnabled(enabled)
+        manageNetworkMonitoring(false)
+        if (enabled && preferences.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION) {
+            offerPermissionForBackgroundStatus(BACKGROUND_DETECTION, context)
+        }
+    }
+
+    fun setWifiNetworkRulesEnabled(enabled: Boolean, context: Context?) {
+        val previouslyEnabled = preferences.areWifiNetworkRulesEnabled()
+        if (enabled &&
+            preferences.isNetworkTypeDetectionEnabled() &&
+            preferences.getNetworkTypeDetectionMode() != BACKGROUND_DETECTION
+        ) {
+            preferences.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+            notifyWifiRulesRequireBackgroundDetection()
+        }
+
+        preferences.setWifiNetworkRulesEnabled(enabled)
+        val locationForegroundTypeChanged =
+            previouslyEnabled != preferences.areWifiNetworkRulesEnabled()
+        manageNetworkMonitoring(locationForegroundTypeChanged)
+        if (enabled &&
+            preferences.isNetworkTypeDetectionEnabled() &&
+            preferences.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION
+        ) {
+            offerPermissionForBackgroundStatus(BACKGROUND_DETECTION, context)
+        }
+    }
+
+    fun shouldOfferPermissionForBackgroundStatus(context: Context): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !hasNotificationPermission(context) &&
             isAnyBackgroundDetectionEnabled()
@@ -69,16 +98,8 @@ internal class NotificationPermissionCoordinator(
         }
     }
 
-    fun requestPermissionForServiceStart() {
-        _requestPermission.value += 1
-    }
-
     fun clearPermissionRequest() {
         _requestPermission.value = 0
-    }
-
-    fun clearSettingsDialog() {
-        _showSettingsDialog.value = false
     }
 
     fun requestPermissionFromExplanation() {
@@ -91,14 +112,11 @@ internal class NotificationPermissionCoordinator(
         }
     }
 
-    fun useTileOnlyFallback() {
+    fun continueWithoutNotifications() {
         _showExplanationDialog.value = false
         _showFallbackDialog.value = false
         _showPermissionSettingsDialog.value = false
-        pendingVpnDetectionMode = null
-        pendingNetworkTypeDetectionMode = null
         awaitingSettingsResult = false
-        fallbackBackgroundDetectionToTileOnly()
     }
 
     fun openPermissionSettings() {
@@ -116,16 +134,16 @@ internal class NotificationPermissionCoordinator(
 
     fun onPermissionResult(granted: Boolean) {
         clearPermissionRequest()
+        _showExplanationDialog.value = false
         if (granted) {
             _showFallbackDialog.value = false
             _showPermissionSettingsDialog.value = false
             awaitingSettingsResult = false
-            applyPendingChanges()
-            manageVpnMonitoring()
-            manageNetworkMonitoring()
         } else {
             _showFallbackDialog.value = true
         }
+        manageVpnMonitoring()
+        manageNetworkMonitoring(false)
     }
 
     fun refreshPermissionAfterSettings(context: Context) {
@@ -134,15 +152,20 @@ internal class NotificationPermissionCoordinator(
         if (hasNotificationPermission(context.applicationContext)) {
             _showPermissionSettingsDialog.value = false
             awaitingSettingsResult = false
-            applyPendingChanges()
             manageVpnMonitoring()
-            manageNetworkMonitoring()
+            manageNetworkMonitoring(false)
         } else {
             _showPermissionSettingsDialog.value = true
         }
     }
 
-    private fun requiresPermission(mode: String, context: Context?): Boolean =
+    private fun offerPermissionForBackgroundStatus(mode: String, context: Context?) {
+        if (shouldOfferPermission(mode, context)) {
+            showMissingPermission(fromBackup = false)
+        }
+    }
+
+    private fun shouldOfferPermission(mode: String, context: Context?): Boolean =
         mode == BACKGROUND_DETECTION &&
             context != null &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -161,27 +184,4 @@ internal class NotificationPermissionCoordinator(
             (preferences.isNetworkTypeDetectionEnabled() &&
                 preferences.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION)
 
-    private fun applyPendingChanges() {
-        pendingVpnDetectionMode?.let(preferences::setVpnDetectionMode)
-        pendingVpnDetectionMode = null
-        pendingNetworkTypeDetectionMode?.let(preferences::setNetworkTypeDetectionMode)
-        pendingNetworkTypeDetectionMode = null
-    }
-
-    private fun fallbackBackgroundDetectionToTileOnly() {
-        if (
-            preferences.isVpnDetectionEnabled() &&
-            preferences.getVpnDetectionMode() == BACKGROUND_DETECTION
-        ) {
-            preferences.setVpnDetectionMode(TILE_ONLY_DETECTION)
-            manageVpnMonitoring()
-        }
-        if (
-            preferences.isNetworkTypeDetectionEnabled() &&
-            preferences.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION
-        ) {
-            preferences.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
-            manageNetworkMonitoring()
-        }
-    }
 }

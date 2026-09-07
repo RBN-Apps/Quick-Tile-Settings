@@ -188,25 +188,22 @@
     <string name="vpn_monitoring_status_disconnected">VPN отключен — Частный DNS восстановлен</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_title">Требуется разрешение на уведомления</string>
-    <string name="notification_permission_dialog_message">Чтобы получать уведомления для фонового мониторинга VPN, необходимо включить разрешение в настройках приложения.\n\nКак только вы предоставите разрешение, вы сможете включить уведомления здесь.</string>
-    <string name="notification_permission_dialog_settings_button">Настройки</string>
     <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
     <string name="notification_permission_background_title">Разрешить уведомления для фонового обнаружения?</string>
-    <string name="notification_permission_background_message">Для фонового обнаружения требуется разрешение на уведомления, потому что Android требует, чтобы приложение показывало постоянное уведомление во время фонового мониторинга.</string>
+    <string name="notification_permission_background_message">Фоновое обнаружение уже работает без разрешения на уведомления. Разрешите их, чтобы постоянно видеть состояние мониторинга в панели уведомлений; иначе Android покажет службу только среди активных приложений.</string>
     <string name="notification_permission_import_title">Разрешить уведомления для фонового обнаружения?</string>
-    <string name="notification_permission_import_message">Импортированная резервная копия включает фоновое обнаружение изменений VPN или типа сети. Android требует разрешение на уведомления, чтобы приложение могло показывать постоянное уведомление во время фонового мониторинга.</string>
-    <string name="notification_permission_fallback_title">Требуется разрешение на уведомления</string>
-    <string name="notification_permission_fallback_message">Фоновое обнаружение не может работать без разрешения на уведомления, потому что Android требует уведомление для фонового мониторинга. Вы можете предоставить разрешение сейчас или использовать обнаружение только через плитку.</string>
+    <string name="notification_permission_import_message">Импортированная резервная копия включает фоновое обнаружение изменений VPN или сети. Оно работает без разрешения на уведомления; разрешите их только для отображения состояния в панели уведомлений.</string>
+    <string name="notification_permission_fallback_title">Доступ к уведомлениям не предоставлен</string>
+    <string name="notification_permission_fallback_message">Фоновое обнаружение продолжит работу. Состояние не появится в панели уведомлений, но Android всё равно покажет службу среди активных приложений.</string>
     <string name="notification_permission_grant_button">Предоставить разрешение</string>
-    <string name="notification_permission_use_tile_only_button">Использовать режим только плитки</string>
-    <string name="notification_permission_settings_title">Требуется разрешение на уведомления</string>
-    <string name="notification_permission_settings_message">Android больше не показывает запрос разрешения на уведомления. Откройте настройки уведомлений этого приложения и разрешите уведомления там или используйте обнаружение только через плитку.</string>
+    <string name="notification_permission_continue_button">Продолжить без уведомлений</string>
+    <string name="notification_permission_settings_title">Доступ к уведомлениям отключён</string>
+    <string name="notification_permission_settings_message">Фоновое обнаружение продолжит работу без состояния в панели уведомлений. Чтобы показывать его, разрешите уведомления в настройках приложения.</string>
     <string name="notification_permission_settings_button">Открыть настройки</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Авто-переключение DNS по типу сети</string>
-    <string name="setting_network_type_detection_description">Автоматически менять настройки Частный DNS при переключении между WiFi и мобильными данными</string>
+    <string name="setting_network_type_detection_description">Автоматически меняет частный DNS при переключении между Wi-Fi и мобильными данными. Включите эту функцию также для настройки правил отдельных сетей Wi-Fi или точек доступа.</string>
     <string name="setting_network_type_detection_mode">Режим обнаружения сети:</string>
     <string name="network_type_detection_tile_only_title">Обнаружение только плиткой</string>
     <string name="network_type_detection_tile_only_description">Проверяет тип сети при открытии быстрых настроек. Экономит заряд, но обнаруживает смену сети только при открытии панели.</string>
@@ -256,6 +253,7 @@
     <string name="shortcut_toast_permission_missing">Отсутствует разрешение. Откройте приложение, чтобы предоставить его.</string>
     <string name="shortcut_toast_action_disabled">Действие ярлыка отключено. Сначала включите его в приложении.</string>
     <string name="shortcut_toast_action_unavailable">Действие ярлыка больше недоступно. Проверьте конфигурацию приложения.</string>
+    <string name="shortcut_toast_action_failed">Не удалось выполнить действие ярлыка.</string>
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Действия ярлыков</string>
@@ -274,4 +272,53 @@
     <string name="shortcut_settings_mark_favorite_desc">Пометить %1$s как избранное</string>
     <string name="shortcut_settings_remove_favorite_desc">Удалить %1$s из избранного</string>
     <string name="shortcut_settings_open_desc">Открыть настройки ярлыков</string>
+    <!-- Правила DNS для сетей Wi-Fi -->
+    <string name="setting_dns_state_on_wifi_other_networks">DNS через Wi-Fi для всех остальных сетей:</string>
+    <string name="setting_wifi_network_rules_title">Правила для сетей Wi-Fi</string>
+    <string name="setting_wifi_network_rules_description">Переопределяет стандартную настройку DNS через Wi-Fi для отдельных сетей или точек доступа (SSID/BSSID). Для применения нужны разрешение приложения управлять частным DNS и фоновое обнаружение. Уведомления необязательны и только показывают состояние.</string>
+    <string name="wifi_rules_enabled">Использовать правила для отдельных сетей</string>
+    <string name="wifi_rules_enabled_description">Подходящие правила переопределяют настройку DNS через Wi-Fi для всех остальных распознанных сетей.</string>
+    <string name="wifi_ssid_permission_title">Требуется точное местоположение</string>
+    <string name="wifi_ssid_permission_description">Android считает имена Wi-Fi (SSID), идентификаторы точек доступа (BSSID) и результаты ближайших сетей информацией, связанной с местоположением. Для чтения требуется разрешение на точное местоположение. Функция не считывает координаты.</string>
+    <string name="wifi_ssid_permission_docs_link">Документация Android о разрешении для SSID</string>
+    <string name="wifi_ssid_permission_grant">Разрешить доступ</string>
+    <string name="wifi_location_services_title">Включите службы геолокации</string>
+    <string name="wifi_location_services_description">Разрешение предоставлено, но Android показывает подключённый SSID/BSSID и последние результаты Wi-Fi только при включённых службах геолокации.</string>
+    <string name="wifi_location_services_open">Открыть настройки геолокации</string>
+    <string name="wifi_ssid_manual_entry_notice">Правило можно ввести вручную, но для автоматического сопоставления этот доступ всё равно нужен. Пока текущая сеть неизвестна, частный DNS не изменяется.</string>
+    <string name="wifi_ssid_permission_denied">Для распознавания сетей Wi-Fi требуется разрешение на точное местоположение. Пока доступ не предоставлен, частный DNS не изменяется.</string>
+    <string name="wifi_location_services_disabled">Включите службы геолокации Android, чтобы определить имя подключённой сети Wi-Fi. Пока сеть не распознана, частный DNS не изменяется.</string>
+    <string name="wifi_rules_require_background_detection">Для правил сетей Wi-Fi требуется обнаружение фоновым сервисом. Отключите правила перед выбором обнаружения только через плитку.</string>
+    <string name="wifi_rules_enabled_background_detection">Обнаружение фоновым сервисом включено, поскольку оно необходимо для правил отдельных сетей.</string>
+    <string name="wifi_ssid_label">Имя сети (SSID)</string>
+    <string name="wifi_rules_title">Правила сети</string>
+    <string name="wifi_rules_empty">Правила сети не добавлены.</string>
+    <string name="wifi_rule_add_current">Использовать текущую подключённую сеть</string>
+    <string name="wifi_rule_choose_network">Выбрать ближайшую или недавнюю сеть</string>
+    <string name="wifi_rule_add_manual">Ввести SSID или BSSID вручную</string>
+    <string name="wifi_network_picker_title">Выбор сети Wi-Fi</string>
+    <string name="wifi_network_current_title">Текущее подключение</string>
+    <string name="wifi_network_nearby_title">Сети поблизости</string>
+    <string name="wifi_network_history_title">Недавно обнаруженные сети</string>
+    <string name="wifi_network_scanning">Загружаются последние доступные Android результаты Wi-Fi…</string>
+    <string name="wifi_network_none_found">Недавние результаты Wi-Fi недоступны. Приложение не запускает новое сканирование; Android может предоставить сохранённые результаты.</string>
+    <string name="wifi_network_refresh">Загрузить результаты снова</string>
+    <string name="wifi_hidden_network">Скрытая сеть</string>
+    <string name="wifi_rule_add_title">Добавить правило сети</string>
+    <string name="wifi_rule_edit_title">Изменить правило сети</string>
+    <string name="wifi_bssid_label">MAC-адрес точки доступа (BSSID, необязательно)</string>
+    <string name="wifi_bssid_hint">Оставьте пустым, чтобы правило соответствовало всем точкам доступа с этим SSID.</string>
+    <string name="wifi_rule_action_label">Действие для этой сети</string>
+    <string name="wifi_rule_action_default">Использовать стандартную настройку DNS для Wi-Fi</string>
+    <string name="wifi_rule_invalid_or_duplicate">Введите допустимый SSID или BSSID и убедитесь, что такое правило ещё не существует.</string>
+    <string name="wifi_rule_delete_title">Удалить правило сети?</string>
+    <string name="wifi_rule_delete_message">Удалить правило для «%1$s»?</string>
+    <string name="wifi_rule_edit_description">Изменить правило для %1$s</string>
+    <string name="wifi_rule_delete_description">Удалить правило для %1$s</string>
+    <string name="wifi_permission_open_settings">Открыть настройки приложения</string>
+    <string name="wifi_permission_blocked_description">Android больше не показывает запрос разрешения на геолокацию. Откройте настройки приложения, выберите Разрешения → Местоположение и разрешите точное местоположение.</string>
+    <string name="wifi_boot_title">Продолжать автоматически после перезагрузки</string>
+    <string name="wifi_boot_description">Чтобы правила Wi-Fi работали после перезагрузки и разблокировки телефона, откройте настройки приложения → Разрешения → Местоположение и выберите «Разрешать всегда», включив точное местоположение. Это позволяет распознавать сети Wi-Fi в фоне; координаты не считываются. Это необязательно: без разрешения открывайте приложение после каждой перезагрузки.</string>
+    <string name="wifi_boot_ready">Правила Wi-Fi автоматически возобновляются после перезагрузки и разблокировки телефона.</string>
+    <string name="wifi_rule_use_detected_bssid">Использовать обнаруженный BSSID: %1$s</string>
 </resources>
