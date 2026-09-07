@@ -228,18 +228,8 @@ fun ShortcutSettingsScreen(
     }
 
     if (showPinnedShortcutInfoDialog.value) {
-        AlertDialog(
-            onDismissRequest = { showPinnedShortcutInfoDialog.value = false },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurface,
-            title = { Text(text = stringResource(R.string.shortcut_settings_allow_pinned_when_disabled)) },
-            text = { Text(text = stringResource(R.string.shortcut_settings_allow_pinned_when_disabled_desc)) },
-            confirmButton = {
-                TextButton(onClick = { showPinnedShortcutInfoDialog.value = false }) {
-                    Text(text = stringResource(R.string.dialog_close))
-                }
-            }
+        ShortcutPinnedInfoDialog(
+            onDismissRequest = { showPinnedShortcutInfoDialog.value = false }
         )
     }
 

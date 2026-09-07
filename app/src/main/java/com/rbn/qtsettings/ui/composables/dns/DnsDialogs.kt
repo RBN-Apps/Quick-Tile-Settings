@@ -107,45 +107,6 @@ fun DnsHostnameEditDialog(
 }
 
 @Composable
-fun ConfirmDeleteDialog(
-    hostnameEntry: DnsHostnameEntry,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurface,
-        title = { Text(stringResource(id = R.string.confirm_delete_hostname_title)) },
-        text = {
-            Text(
-                stringResource(
-                    id = R.string.confirm_delete_hostname_message,
-                    hostnameEntry.name
-                )
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirm()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text(stringResource(R.string.button_delete))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
-            }
-        }
-    )
-}
-
-@Composable
 fun DnsInfoDialog(entry: DnsHostnameEntry, onDismissRequest: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
