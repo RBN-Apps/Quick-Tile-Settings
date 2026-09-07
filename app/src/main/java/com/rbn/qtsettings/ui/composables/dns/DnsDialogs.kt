@@ -11,7 +11,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.core.designsystem.AppTextField
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
@@ -71,37 +71,21 @@ fun DnsHostnameEditDialog(
         },
         text = {
             Column {
-                OutlinedTextField(
+                AppTextField(
                     value = name,
                     onValueChange = { name = it; nameError = null },
-                    label = { Text(stringResource(R.string.dns_hostname_name_label)) },
-                    isError = nameError != null,
-                    singleLine = true,
+                    label = stringResource(R.string.dns_hostname_name_label),
+                    errorText = nameError,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (nameError != null) {
-                    Text(
-                        nameError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
+                AppTextField(
                     value = hostname,
                     onValueChange = { hostname = it; hostnameError = null },
-                    label = { Text(stringResource(R.string.dns_hostname_value_label)) },
-                    isError = hostnameError != null,
-                    singleLine = true,
+                    label = stringResource(R.string.dns_hostname_value_label),
+                    errorText = hostnameError,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (hostnameError != null) {
-                    Text(
-                        hostnameError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
         },
         confirmButton = {

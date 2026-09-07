@@ -23,7 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.WifiIdentityAccessState
 import com.rbn.qtsettings.ui.composables.main.MainScreen
-import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.utils.Constants
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel

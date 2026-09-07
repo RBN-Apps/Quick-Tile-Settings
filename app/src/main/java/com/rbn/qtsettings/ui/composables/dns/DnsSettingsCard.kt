@@ -559,13 +559,8 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                 CheckboxItem(
                     checked = dnsRequireUnlock,
                     onCheckedChange = { viewModel.setDnsRequireUnlock(it) },
-                    label = stringResource(R.string.setting_require_unlock)
-                )
-                Text(
-                    text = stringResource(R.string.setting_require_unlock_desc),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
+                    label = stringResource(R.string.setting_require_unlock),
+                    summary = stringResource(R.string.setting_require_unlock_desc)
                 )
             }
         }

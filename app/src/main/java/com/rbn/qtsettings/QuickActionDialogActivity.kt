@@ -35,7 +35,7 @@ import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
-import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.PermissionUtils

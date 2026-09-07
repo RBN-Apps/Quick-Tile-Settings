@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.theme
+package com.rbn.qtsettings.core.designsystem.theme
 
 import android.content.Context
 import android.content.res.Resources
@@ -26,15 +26,6 @@ private val LightColorScheme = lightColorScheme(
     secondary = PurpleGrey40,
     tertiary = Pink40
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
 
 @Composable
@@ -67,6 +58,7 @@ fun QuickTileSettingsTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = AppShapes.material,
         content = content
     )
 }

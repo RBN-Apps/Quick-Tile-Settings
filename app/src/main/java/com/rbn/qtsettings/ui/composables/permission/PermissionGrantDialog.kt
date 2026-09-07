@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 
 @Stable
 private enum class PermissionMethodType {

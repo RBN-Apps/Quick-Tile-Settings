@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.theme
+package com.rbn.qtsettings.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

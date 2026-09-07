@@ -43,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.core.designsystem.SettingsGroup
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.utils.ShortcutUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel
@@ -319,66 +320,22 @@ private fun ShortcutGroup(
     onToggle: (shortcutId: String, shouldEnable: Boolean) -> Unit,
     onFavorite: (shortcutId: String, shouldFavorite: Boolean) -> Unit
 ) {
-    val innerCornerRadius = 4.dp
-    val outerCornerRadius = 20.dp
-
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp)
-    )
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        items.forEachIndexed { index, item ->
-            val isEnabled = enabledShortcutIds.contains(item.id)
-            val isFavorite = favoriteShortcutIds.contains(item.id)
-            val canEnableMore = enabledShortcutIds.size < maxShortcutCount
-            val rowEnabled = isEnabled || canEnableMore
-            val canFavoriteMore = favoriteShortcutIds.size < ShortcutUtils.MAX_FAVORITE_SHORTCUTS
-            val favoriteToggleEnabled = isEnabled && (isFavorite || canFavoriteMore)
-            val rowShape = when {
-                items.size == 1 -> RoundedCornerShape(outerCornerRadius)
-                index == 0 -> RoundedCornerShape(
-                    topStart = outerCornerRadius,
-                    topEnd = outerCornerRadius,
-                    bottomStart = innerCornerRadius,
-                    bottomEnd = innerCornerRadius
-                )
-
-                index == items.lastIndex -> RoundedCornerShape(
-                    topStart = innerCornerRadius,
-                    topEnd = innerCornerRadius,
-                    bottomStart = outerCornerRadius,
-                    bottomEnd = outerCornerRadius
-                )
-
-                else -> RoundedCornerShape(innerCornerRadius)
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = rowShape
-            ) {
-                ShortcutToggleRow(
-                    item = item,
-                    checked = isEnabled,
-                    favorite = isFavorite,
-                    enabled = rowEnabled,
-                    favoriteEnabled = favoriteToggleEnabled,
-                    onCheckedChange = { shouldEnable ->
-                        onToggle(item.id, shouldEnable)
-                    },
-                    onFavoriteChange = { shouldFavorite ->
-                        onFavorite(item.id, shouldFavorite)
-                    },
-                    onDisabledClick = onLimitReached,
-                    onFavoriteLimitReached = onFavoriteLimitReached
-                )
-            }
-        }
+    SettingsGroup(items = items, itemKey = { it.id }, title = title) { item ->
+        val isEnabled = enabledShortcutIds.contains(item.id)
+        val isFavorite = favoriteShortcutIds.contains(item.id)
+        val canEnableMore = enabledShortcutIds.size < maxShortcutCount
+        val canFavoriteMore = favoriteShortcutIds.size < ShortcutUtils.MAX_FAVORITE_SHORTCUTS
+        ShortcutToggleRow(
+            item = item,
+            checked = isEnabled,
+            favorite = isFavorite,
+            enabled = isEnabled || canEnableMore,
+            favoriteEnabled = isEnabled && (isFavorite || canFavoriteMore),
+            onCheckedChange = { shouldEnable -> onToggle(item.id, shouldEnable) },
+            onFavoriteChange = { shouldFavorite -> onFavorite(item.id, shouldFavorite) },
+            onDisabledClick = onLimitReached,
+            onFavoriteLimitReached = onFavoriteLimitReached
+        )
     }
 }
 

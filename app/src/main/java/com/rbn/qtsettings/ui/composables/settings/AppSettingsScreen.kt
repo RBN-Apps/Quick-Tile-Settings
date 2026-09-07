@@ -8,19 +8,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,10 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.rbn.qtsettings.R
-import com.rbn.qtsettings.viewmodel.MainViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import com.rbn.qtsettings.R
+import com.rbn.qtsettings.core.designsystem.AppButton
+import com.rbn.qtsettings.core.designsystem.AppButtonStyle
+import com.rbn.qtsettings.viewmodel.MainViewModel
 
 @Composable
 fun AppSettingsScreen(
@@ -85,39 +83,21 @@ fun AppSettingsScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                OutlinedButton(
-                    onClick = {
-                        exportLauncher.launch(createBackupFilename())
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.FileDownload,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = stringResource(R.string.backup_export_button))
-                }
+                AppButton(
+                    text = stringResource(R.string.backup_export_button),
+                    icon = Icons.Outlined.FileDownload,
+                    style = AppButtonStyle.Secondary,
+                    onClick = { exportLauncher.launch(createBackupFilename()) },
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedButton(
+                AppButton(
+                    text = stringResource(R.string.backup_restore_button),
+                    icon = Icons.Outlined.Restore,
+                    style = AppButtonStyle.Secondary,
                     onClick = { restoreLauncher.launch(arrayOf("application/json", "text/json", "*/*")) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Restore,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = stringResource(R.string.backup_restore_button))
-                }
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

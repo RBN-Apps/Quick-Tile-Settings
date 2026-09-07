@@ -71,7 +71,7 @@ import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionFallback
 import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionSettingsDialog
 import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutSettingsScreen
 import com.rbn.qtsettings.ui.composables.usb.UsbDebuggingSettingsCard
-import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 

@@ -21,7 +21,7 @@ import com.rbn.qtsettings.data.WifiDnsRule
 import com.rbn.qtsettings.data.WifiIdentityAccessState
 import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.ui.composables.WifiNetworkRulesSection
-import com.rbn.qtsettings.ui.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
