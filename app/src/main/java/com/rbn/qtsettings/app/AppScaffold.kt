@@ -9,7 +9,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.rbn.qtsettings.app.navigation.AppDestination
-import com.rbn.qtsettings.app.navigation.LegacyDestinationContent
 
 /** App chrome only. Its slots are wired by AppRoot, never by feature screens. */
 @Composable
@@ -20,7 +19,7 @@ fun AppScaffold(
     onOpenDestination: (AppDestination) -> Unit,
     onShowPermissionHelp: () -> Unit,
     onShowAbout: () -> Unit,
-    content: @Composable (AppDestination) -> Unit
+    content: @Composable (Modifier) -> Unit
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -28,6 +27,6 @@ fun AppScaffold(
         topBar = { AppTopBar(destination, onBack, onOpenDestination, onShowPermissionHelp, onShowAbout) },
         modifier = Modifier.fillMaxSize()
     ) { padding ->
-        LegacyDestinationContent(destination, Modifier.padding(padding).fillMaxSize(), content)
+        content(Modifier.padding(padding).fillMaxSize())
     }
 }

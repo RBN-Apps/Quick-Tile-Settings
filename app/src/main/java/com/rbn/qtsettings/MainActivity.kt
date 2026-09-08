@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Recreation restores Compose's destination/pager, not the original tile intent.
+        // Recreation restores Navigation 3's stacks, not the original tile intent.
         if (savedInstanceState == null) externalArea = intent.resolveTileArea()
         val permissions = AppPermissionBinding(this, viewModel)
         lifecycle.addObserver(AppSystemStateObserver(applicationContext, viewModel))

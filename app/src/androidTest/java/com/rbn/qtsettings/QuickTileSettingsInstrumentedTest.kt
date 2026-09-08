@@ -439,12 +439,20 @@ class QuickTileSettingsInstrumentedTest {
                 useUnmergedTree = true
             )
 
-            adGuardHandle.performScrollTo()
+            // Position/drag assertions need all three rows in the viewport. Scrolling
+            // only AdGuard can leave Cloudflare clipped (boundsInRoot.top == 0) on phones.
+            quad9Handle.performScrollTo()
+            adGuardHandle.assertIsDisplayed()
+            cloudflareHandle.assertIsDisplayed()
+            quad9Handle.assertIsDisplayed()
             composeTestRule.waitForIdle()
 
             val adGuardStartY = adGuardHandle.fetchSemanticsNode().boundsInRoot.top
             val cloudflareStartY = cloudflareHandle.fetchSemanticsNode().boundsInRoot.top
-            assertTrue("The controlled DNS order was not shown", adGuardStartY < cloudflareStartY)
+            assertTrue(
+                "The controlled DNS order was not shown (AdGuard=$adGuardStartY, Cloudflare=$cloudflareStartY)",
+                adGuardStartY < cloudflareStartY
+            )
 
             composeTestRule.mainClock.autoAdvance = false
             adGuardHandle.performCustomAccessibilityActionWithLabel(

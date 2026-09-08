@@ -1,7 +1,9 @@
 package com.rbn.qtsettings.app.navigation
 
-/** Existing global destinations. Feature details join the Nav3 contract in #124. */
+import kotlinx.serialization.Serializable
+
+/** Chrome labels/callbacks only; navigation is owned by AppNavigation's typed stacks. */
 enum class AppDestination { TileSettings, ShortcutSettings, AppSettings }
 
-/** Semantic area identity; pager indices are private to the legacy adapter. */
+@Serializable
 enum class AppArea { Dns, Usb }

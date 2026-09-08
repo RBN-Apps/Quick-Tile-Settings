@@ -65,6 +65,7 @@ esac
         result, invoked, calls, diagnostics = self.run_driver()
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertTrue(invoked)
+        self.assertNotIn("shell input keyevent", calls)
         # Five readiness samples plus before/prepared/after diagnostic captures.
         self.assertEqual(8, calls.splitlines().count("shell dumpsys window"))
         self.assertTrue(diagnostics)

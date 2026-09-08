@@ -1,7 +1,6 @@
 package com.rbn.qtsettings.app
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,7 +12,8 @@ import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.app.navigation.AppDestination
-import com.rbn.qtsettings.app.navigation.LegacyTilesScreen
+import com.rbn.qtsettings.app.navigation.LegacyAreaTabs
+import androidx.compose.foundation.layout.Column
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 
 // Shell-only preview: no PreferencesManager, real ViewModel, services or permission requests.
@@ -29,12 +29,11 @@ private fun AppShellPreview() {
             onOpenDestination = {},
             onShowPermissionHelp = {},
             onShowAbout = {}
-        ) {
-            LegacyTilesScreen(rememberPagerState { 2 }, false, {}) { area ->
-                Text(
-                    text = stringResource(if (area == AppArea.Dns) R.string.setting_title_private_dns else R.string.setting_title_usb_debugging),
-                    modifier = Modifier.padding(16.dp)
-                )
+        ) { modifier ->
+            Column(modifier) {
+                PermissionWarningCard({}, Modifier.padding(horizontal = 16.dp))
+                LegacyAreaTabs(AppArea.Dns, {})
+                Text(stringResource(R.string.setting_title_private_dns), Modifier.padding(16.dp))
             }
         }
     }

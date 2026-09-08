@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Only the emulator created by android-emulator-runner is a test target.
+# Only the emulator created by run_emulator_tests.sh is a test target.
 export ANDROID_SERIAL=emulator-5554
 artifacts=app/build/ci-device-diagnostics
 mkdir -p "$artifacts"
@@ -34,7 +34,7 @@ capture_device before-prepare || true
 # Compose semantic actions can run behind system windows; real Back/IME events cannot.
 adb shell svc power stayon true
 adb shell settings put system screen_off_timeout 2147483647
-adb shell input keyevent KEYCODE_WAKEUP
+# svc power stayon wakes the device without injecting input into a booting launcher.
 adb shell wm dismiss-keyguard
 adb shell settings put secure show_ime_with_hard_keyboard 1
 # sys.boot_completed does not mean that the launcher/System UI has finished starting.
@@ -48,7 +48,7 @@ while (( SECONDS < deadline )); do
     echo "::error::Android system ANR before instrumentation; see ci-device-diagnostics."
     exit 1
   fi
-  # A fresh google_apis image initially resolves HOME to its setup activity.
+  # A fresh image may initially resolve HOME to its setup activity.
   # Resolve again after provisioning instead of retaining that temporary component.
   setup_complete=$(adb shell settings get secure user_setup_complete | tr -d '\r')
   launcher=$(adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME | tr -d '\r' | tail -n 1)

@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -71,7 +70,7 @@ class WifiNetworkRulesSectionInstrumentedTest {
         composeTestRule.onNodeWithText(context.getString(R.string.wifi_rule_add_title))
             .assertIsDisplayed()
         composeTestRule.onAllNodes(hasSetTextAction())[0].assert(
-            SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString("Campus"))
+            editableTextEquals("Campus")
         )
     }
 
@@ -158,7 +157,7 @@ class WifiNetworkRulesSectionInstrumentedTest {
         }
         composeTestRule.onNodeWithTag("wifi_rule_add_current").performClick()
         composeTestRule.onAllNodes(hasSetTextAction())[1].assert(
-            SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString(""))
+            editableTextEquals("")
         )
         composeTestRule.onNodeWithText(context.getString(R.string.dialog_save)).performClick()
         assertEquals(true, saved)
@@ -209,6 +208,13 @@ class WifiNetworkRulesSectionInstrumentedTest {
         composeTestRule.onNodeWithTag("wifi_rule_add_manual").performClick()
         composeTestRule.onNodeWithText(context.getString(R.string.wifi_rule_add_title)).assertIsDisplayed()
     }
+
+    // The restored SSID is plain text. IMEs may attach spans to EditableText;
+    // those presentation annotations are not part of the saved rule.
+    private fun editableTextEquals(expected: String) =
+        SemanticsMatcher("Editable text equals '$expected'") {
+            it.config[SemanticsProperties.EditableText].text == expected
+        }
 
     @androidx.compose.runtime.Composable
     private fun RuleSection(

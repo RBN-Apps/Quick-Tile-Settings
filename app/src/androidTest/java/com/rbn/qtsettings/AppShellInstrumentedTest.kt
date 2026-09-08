@@ -137,6 +137,14 @@ class AppShellInstrumentedTest {
         text(R.string.tab_title_dns).assertIsSelected()
     }
 
+    @Test fun systemBackAtUsbRootExitsDirectly() {
+        launch()
+        text(R.string.tab_title_usb).performClick()
+        text(R.string.tab_title_usb).assertIsSelected()
+        systemBack()
+        compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
+    }
+
     @Test fun repeatedWarmTileIntentsSelectTheirAreaWithoutAddingHistory() {
         launch()
         repeat(2) {

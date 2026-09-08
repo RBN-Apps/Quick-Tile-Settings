@@ -11,7 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.app.navigation.AppArea
-import com.rbn.qtsettings.app.navigation.rememberLegacyAppNavigation
+import com.rbn.qtsettings.app.navigation.rememberAppNavigation
+import com.rbn.qtsettings.app.navigation.AppNavigationContent
 import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
 import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
 import com.rbn.qtsettings.viewmodel.MainViewModel
@@ -36,7 +37,13 @@ fun AppRoot(
     LaunchedEffect(hasPermission, helpShown) {
         if (!hasPermission && !helpShown) showPermissionHelp()
     }
-    val navigation = rememberLegacyAppNavigation(externalArea, onExternalAreaConsumed, overlay == AppOverlay.None)
+    val navigation = rememberAppNavigation(externalArea ?: AppArea.Dns)
+    LaunchedEffect(externalArea) {
+        externalArea?.let {
+            navigation.openTileArea(it)
+            onExternalAreaConsumed()
+        }
+    }
     val snackbar = remember { SnackbarHostState() }
     AppStatusEffects(viewModel, snackbar)
     AppScaffold(
@@ -46,8 +53,10 @@ fun AppRoot(
         onOpenDestination = navigation::open,
         onShowPermissionHelp = showPermissionHelp,
         onShowAbout = { overlay = AppOverlay.About }
-    ) { destination ->
-        LegacyFeatureContentRoot(destination, viewModel, navigation.pagerState, showPermissionHelp)
+    ) { modifier ->
+        AppNavigationContent(navigation, modifier) { route ->
+            LegacyFeatureContentRoot(route, viewModel, navigation::selectArea, showPermissionHelp)
+        }
     }
     AppGlobalDialogsRoot(
         overlay = overlay,

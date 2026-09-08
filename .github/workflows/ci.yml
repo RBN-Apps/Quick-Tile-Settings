@@ -135,7 +135,8 @@ jobs:
   instrumented-tests:
     needs: build-and-test
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Include APK build/boot and diagnostic upload around the driver's 25-minute test limit.
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -178,20 +179,19 @@ jobs:
           ./gradlew assembleDebug assembleDebugAndroidTest --no-daemon --max-workers=2
           -Pkotlin.compiler.execution.strategy=in-process
 
+      # The API-35 userdata partition needs ~7.4 GB in addition to the downloaded system image.
+      # This Kotlin-only app uses neither the preinstalled NDK nor .NET on these disposable VMs.
+      - name: Free unused runner toolchains for the emulator
+        run: |
+          df -h "$HOME"
+          sudo rm -rf "${ANDROID_HOME:?}/ndk" /usr/share/dotnet
+          df -h "$HOME"
+
       - name: Run Instrumented Tests on API ${{ matrix.api-level }} on ${{ matrix.profile }}
-        uses: ReactiveCircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          arch: x86_64
-          target: google_apis
-          profile: ${{ matrix.profile }}
-          force-avd-creation: true
-          cores: 2
-          ram-size: 2048M
-          emulator-options: -no-window -gpu swiftshader -memory 2048 -no-snapshot -noaudio -no-boot-anim -no-metrics
-          disable-animations: true
-          script: |
-            bash .github/scripts/run_instrumented_tests.sh
+        env:
+          TEST_API: ${{ matrix.api-level }}
+          TEST_PROFILE: ${{ matrix.profile }}
+        run: bash .github/scripts/run_emulator_tests.sh
 
       - name: Summarize Instrumented Test Results
         if: always()

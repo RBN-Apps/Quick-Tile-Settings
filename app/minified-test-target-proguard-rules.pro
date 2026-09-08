@@ -6,3 +6,6 @@
 
 # Entry points invoked by the minified instrumentation test.
 -keep class com.rbn.qtsettings.BackupRestoreTestBridgeKt* { *; }
+
+# Keep only the reflective test entry point; navigation route serializers remain shrinkable.
+-keep class com.rbn.qtsettings.NavigationRestoreTestBridgeKt { public static void verifyMinifiedNavigationRestore(); }

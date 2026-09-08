@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -37,6 +38,9 @@ android {
             matchingFallbacks += listOf("release")
             proguardFiles("minified-test-target-proguard-rules.pro")
         }
+    }
+    if (providers.gradleProperty("minifiedTests").isPresent) {
+        sourceSets.getByName("androidTest").kotlin.srcDir("src/minifiedAndroidTest/java")
     }
     testBuildType = if (providers.gradleProperty("minifiedTests").isPresent) {
         "minifiedTest"
@@ -73,6 +77,10 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.kotlinx.serialization.core)
     implementation(libs.rikkax.shizuku.api)
     implementation(libs.rikkax.shizuku.provider)
 
