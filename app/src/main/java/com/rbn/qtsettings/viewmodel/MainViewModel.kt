@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
@@ -42,7 +41,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val dnsEnableAutoRevert = prefsManager.dnsEnableAutoRevert
     val dnsAutoRevertDelaySeconds = prefsManager.dnsAutoRevertDelaySeconds
 
-
     val usbToggleEnable = prefsManager.usbToggleEnable
     val usbToggleDisable = prefsManager.usbToggleDisable
     val usbAlsoHideDevOptions = prefsManager.usbAlsoHideDevOptions
@@ -72,9 +70,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val enabledShortcutIds = prefsManager.enabledShortcutIds
     val favoriteShortcutIds = prefsManager.favoriteShortcutIds
     val allowPinnedShortcutsWhenDisabled = prefsManager.allowPinnedShortcutsWhenDisabled
-
-    private val _initialTab = MutableStateFlow(0)
-    val initialTab = _initialTab.asStateFlow()
 
     private val _showHostnameEditDialog = MutableStateFlow(false)
     val showHostnameEditDialog = _showHostnameEditDialog.asStateFlow()
@@ -165,7 +160,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         prefsManager.reorderDnsHostnames(orderedIds)
     fun setDnsEnableAutoRevert(enabled: Boolean) = prefsManager.setDnsEnableAutoRevert(enabled)
     fun setDnsAutoRevertDelaySeconds(delay: Int) = prefsManager.setDnsAutoRevertDelaySeconds(delay)
-
 
     fun setUsbToggleEnable(enabled: Boolean) = prefsManager.setUsbToggleEnable(enabled)
     fun setUsbToggleDisable(enabled: Boolean) = prefsManager.setUsbToggleDisable(enabled)
@@ -419,10 +413,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private fun getCurrentContext(): Context? = applicationContext
 
     fun setHelpShown(shown: Boolean) = prefsManager.setHelpShown(shown)
-
-    fun setInitialTab(tabIndex: Int) {
-        _initialTab.value = tabIndex
-    }
 
     fun updateDnsHostnameEntrySelection(id: String, isSelected: Boolean) {
         val entry = dnsHostnames.value.find { it.id == id }
@@ -753,15 +743,5 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         }
         _currentWifiNetwork.value = identity
         identity?.let(prefsManager::recordKnownWifiNetwork)
-    }
-}
-
-class ViewModelFactory(private val prefsManager: PreferencesManager) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return MainViewModel(prefsManager) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

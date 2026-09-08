@@ -1,245 +1,54 @@
 package com.rbn.qtsettings
 
-import android.Manifest
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.database.ContentObserver
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
-import com.rbn.qtsettings.data.PreferencesManager
-import com.rbn.qtsettings.data.WifiIdentityAccessState
-import com.rbn.qtsettings.ui.composables.main.MainScreen
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.rbn.qtsettings.app.AppPermissionBinding
+import com.rbn.qtsettings.app.AppRoot
+import com.rbn.qtsettings.app.AppSystemStateObserver
+import com.rbn.qtsettings.app.navigation.AppArea
+import com.rbn.qtsettings.app.navigation.resolveTileArea
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
-import com.rbn.qtsettings.utils.Constants
-import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel
-import com.rbn.qtsettings.viewmodel.ViewModelFactory
-import kotlinx.coroutines.launch
-import rikka.shizuku.Shizuku
 
+/** Stable Android entry point. App setup belongs here; feature behavior does not. */
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels {
-        ViewModelFactory(PreferencesManager.getInstance(this.applicationContext))
+        (application as QuickTileSettingsApplication).container.mainViewModelFactory
     }
-
-    private val notificationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (!isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Check if permission is permanently denied
-            val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-
-            if (!shouldShowRationale) {
-                // Permission is permanently denied, show settings dialog
-                viewModel.onNotificationPermissionPermanentlyDenied()
-            } else {
-                // Permission denied but not permanently
-                viewModel.onNotificationPermissionResult(false)
-            }
-        } else {
-            viewModel.onNotificationPermissionResult(isGranted)
-        }
-    }
-
-    private val wifiSsidPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val preciseLocationGranted =
-            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-        PermissionUtils.setWifiLocationPermissionBlocked(
-            this,
-            !preciseLocationGranted && !ActivityCompat.shouldShowRequestPermissionRationale(
-                this, Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        )
-        viewModel.onWifiSsidPermissionResult(preciseLocationGranted)
-    }
-
-    private var observingQuickActionSettings = false
-    private val quickActionSettingsObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
-        override fun onChange(selfChange: Boolean) {
-            viewModel.refreshSystemQuickActionStates(applicationContext)
-        }
-    }
+    private var externalArea by mutableStateOf<AppArea?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        val tileSource = intent.getStringExtra("android.intent.extra.COMPONENT_NAME")
-        if (tileSource != null) {
-            if (tileSource.contains("PrivateDnsTileService")) {
-                viewModel.setInitialTab(0)
-            } else if (tileSource.contains("UsbDebuggingTileService")) {
-                viewModel.setInitialTab(1)
-            }
-        }
-
-        Shizuku.addRequestPermissionResultListener(shizukuPermissionResultListener)
-        viewModel.setApplicationContext(this)
-        viewModel.checkSystemStates(this)
-        viewModel.initializeVpnMonitoring()
-        viewModel.initializeNetworkMonitoring()
-        viewModel.refreshShortcutConfiguration()
-
+        // Recreation restores Compose's destination/pager, not the original tile intent.
+        if (savedInstanceState == null) externalArea = intent.resolveTileArea()
+        val permissions = AppPermissionBinding(this, viewModel)
+        lifecycle.addObserver(AppSystemStateObserver(applicationContext, viewModel))
+        lifecycle.addObserver(permissions)
         setContent {
             QuickTileSettingsTheme {
-                MainScreen(
+                AppRoot(
                     viewModel = viewModel,
-                    onOpenAdbSettings = { openUsbDebuggingSettings(this) },
-                    onRequestShizukuPermission = { requestShizukuPermissionForApp() }
+                    externalArea = externalArea,
+                    onExternalAreaConsumed = { externalArea = null },
+                    onOpenAdbSettings = { startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) },
+                    onRequestShizukuPermission = permissions::requestShizukuPermission
                 )
             }
         }
-
-        lifecycleScope.launch {
-            viewModel.permissionGrantStatus.collect { message ->
-                message?.let {
-                    Toast.makeText(applicationContext, it, Toast.LENGTH_LONG).show()
-                    viewModel.clearPermissionGrantStatus()
-                    viewModel.checkSystemStates(applicationContext)
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            viewModel.requestNotificationPermission.collect { requestCounter ->
-                if (requestCounter > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    val hasPermission = ContextCompat.checkSelfPermission(
-                        this@MainActivity,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) == PackageManager.PERMISSION_GRANTED
-
-                    if (!hasPermission) {
-                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    } else {
-                        viewModel.onNotificationPermissionResult(true)
-                    }
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            viewModel.requestWifiSsidPermission.collect { requestCounter ->
-                if (requestCounter > 0) {
-                    viewModel.clearWifiSsidPermissionRequest()
-                    if (PermissionUtils.getWifiIdentityAccessState(this@MainActivity) ==
-                        WifiIdentityAccessState.PRECISE_LOCATION_PERMISSION_BLOCKED
-                    ) {
-                        PermissionUtils.openAppPermissionSettings(this@MainActivity)
-                    } else {
-                        wifiSsidPermissionLauncher.launch(
-                            arrayOf(
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                                Manifest.permission.ACCESS_FINE_LOCATION
-                            )
-                        )
-                    }
-                }
-            }
-        }
     }
 
-    private fun openUsbDebuggingSettings(context: Context) {
-        try {
-            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-            context.startActivity(intent)
-        } catch (_: Exception) {
-            context.startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS))
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.checkSystemStates(this)
-        viewModel.refreshNotificationPermissionAfterSettings(this)
-        viewModel.initializeNetworkMonitoring()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (!observingQuickActionSettings) {
-            listOf(
-                Constants.PRIVATE_DNS_MODE,
-                Constants.PRIVATE_DNS_SPECIFIER,
-                Constants.ADB_ENABLED,
-                Constants.DEVELOPMENT_SETTINGS_ENABLED
-            ).forEach { settingName ->
-                contentResolver.registerContentObserver(
-                    Settings.Global.getUriFor(settingName),
-                    false,
-                    quickActionSettingsObserver
-                )
-            }
-            observingQuickActionSettings = true
-        }
-        viewModel.refreshSystemQuickActionStates(applicationContext)
-    }
-
-    override fun onStop() {
-        if (observingQuickActionSettings) {
-            contentResolver.unregisterContentObserver(quickActionSettingsObserver)
-            observingQuickActionSettings = false
-        }
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        Shizuku.removeRequestPermissionResultListener(shizukuPermissionResultListener)
-        super.onDestroy()
-    }
-
-    private val shizukuPermissionResultListener =
-        Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
-            if (requestCode == PermissionUtils.SHIZUKU_PERMISSION_REQUEST_CODE) {
-                if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(
-                        this,
-                        getString(R.string.shizuku_permission_granted_to_app),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    viewModel.checkSystemStates(this)
-                } else {
-                    Toast.makeText(
-                        this,
-                        getString(R.string.shizuku_permission_denied_to_app),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
-
-    private fun requestShizukuPermissionForApp() {
-        if (PermissionUtils.isShizukuAvailableAndReady()) {
-            PermissionUtils.requestShizukuPermission(this)
-        } else {
-            Toast.makeText(
-                this,
-                getString(R.string.shizuku_not_available_or_not_ready),
-                Toast.LENGTH_LONG
-            ).show()
-        }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        externalArea = intent.resolveTileArea()
     }
 }

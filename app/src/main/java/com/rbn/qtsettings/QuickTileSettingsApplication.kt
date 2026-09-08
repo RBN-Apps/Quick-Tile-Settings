@@ -1,10 +1,13 @@
 package com.rbn.qtsettings
 
 import android.app.Application
+import com.rbn.qtsettings.app.AppContainer
 import androidx.compose.ui.AndroidComposeUiFlags
 import androidx.compose.ui.ExperimentalComposeUiApi
 
 class QuickTileSettingsApplication : Application() {
+    val container: AppContainer by lazy { AppContainer(this) }
+
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate() {
         super.onCreate()

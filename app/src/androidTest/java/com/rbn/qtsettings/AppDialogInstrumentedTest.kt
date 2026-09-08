@@ -99,7 +99,7 @@ class AppDialogInstrumentedTest {
 
     @Test fun delete_systemBackOnlyDismisses() {
         val robot = DialogRobot().deleteDialog()
-        compose.waitForIdle()
+        compose.waitForDialogWindowFocus()
         shell("input keyevent KEYCODE_BACK")
         compose.waitUntil(5_000) { robot.dismissals == 1 }
         robot.assertCounts(0, 1)
@@ -107,11 +107,18 @@ class AppDialogInstrumentedTest {
 
     @Test fun delete_outsideTouchOnlyDismisses() {
         val robot = DialogRobot().deleteDialog()
-        // Left of the platform dialog window, inside the activity's content area.
-        ParcelFileDescriptor.AutoCloseInputStream(
-            instrumentation.uiAutomation.executeShellCommand("input tap 1 400")
-        ).use { it.readBytes() }
-        compose.waitUntil { robot.dismissals == 1 }
+        val view = compose.waitForDialogWindowFocus()
+        val frame = Rect()
+        val location = IntArray(2)
+        val outside = compose.runOnIdle {
+            view.getWindowVisibleDisplayFrame(frame)
+            view.getLocationOnScreen(location)
+            check(location[0] > frame.left) { "Dialog must leave room for an outside tap" }
+            // Inside the app's visible area, halfway through the left dialog margin.
+            (frame.left + location[0]) / 2 to (location[1] + view.height / 2)
+        }
+        shell("input tap ${outside.first} ${outside.second}")
+        compose.waitUntil(5_000) { robot.dismissals == 1 }
         robot.assertCounts(0, 1)
     }
 
@@ -143,11 +150,18 @@ class AppDialogInstrumentedTest {
         compose.onNodeWithText(label(R.string.shortcut_settings_allow_pinned_when_disabled))
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
         val closeLabel = label(R.string.dialog_close)
-        shell("input keyevent KEYCODE_TAB")
-        compose.onNodeWithText(closeLabel).assertIsFocused()
-        shell("input keyevent KEYCODE_ENTER")
-        compose.waitUntil(5_000) { dismissed == 1 }
-        compose.runOnIdle { assertEquals(1, dismissed) }
+        val view = compose.waitForDialogWindowFocus()
+        val wasInTouchMode = compose.runOnIdle { view.isInTouchMode }
+        try {
+            shell("input keyevent KEYCODE_TAB")
+            compose.onNodeWithText(closeLabel).assertIsFocused()
+            shell("input keyevent KEYCODE_ENTER")
+            compose.waitUntil(5_000) { dismissed == 1 }
+            compose.runOnIdle { assertEquals(1, dismissed) }
+        } finally {
+            // Tab changes a device-wide input mode. Do not leak it into later touch tests.
+            instrumentation.setInTouchMode(wasInTouchMode)
+        }
     }
 
     @Test fun longFormScrollsToErrorAndField_actionsRemainVisible_cancelDoesNotSave() {
@@ -176,6 +190,7 @@ class AppDialogInstrumentedTest {
                 }
             }
         }
+        compose.waitForDialogWindowFocus()
         compose.onNodeWithText(label(R.string.dialog_save)).assertIsDisplayed()
         compose.onNode(hasSetTextAction()).performScrollTo().performTouchInput { click() }
         compose.onNode(hasSetTextAction()).assert(

@@ -43,6 +43,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Test CI report summary
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+
       - name: Run linters
         run: ./gradlew lintDebug
 
@@ -169,27 +172,11 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Cache AVD & SDK
-        uses: actions/cache@v6
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ runner.os }}-api-${{ matrix.api-level }}-arch-x86_64-profile-${{ matrix.profile }}
-
-      - name: Generate AVD snapshot for API ${{ matrix.api-level }} on ${{ matrix.profile }}
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          arch: x86_64
-          target: google_apis
-          profile: ${{ matrix.profile }}
-          force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
-          disable-animations: false
-          script: echo "First boot complete; snapshot created."
+      # Compilation and the Android first boot must not compete for the private runner's CPU/RAM.
+      - name: Build APKs before starting the emulator
+        run: >-
+          ./gradlew assembleDebug assembleDebugAndroidTest --no-daemon --max-workers=2
+          -Pkotlin.compiler.execution.strategy=in-process
 
       - name: Run Instrumented Tests on API ${{ matrix.api-level }} on ${{ matrix.profile }}
         uses: ReactiveCircus/android-emulator-runner@v2
@@ -198,32 +185,22 @@ jobs:
           arch: x86_64
           target: google_apis
           profile: ${{ matrix.profile }}
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
+          force-avd-creation: true
+          cores: 2
+          ram-size: 2048M
+          emulator-options: -no-window -gpu swiftshader -memory 2048 -no-snapshot -noaudio -no-boot-anim -no-metrics
           disable-animations: true
           script: |
-            timeout --preserve-status 25m ./gradlew connectedDebugAndroidTest
+            bash .github/scripts/run_instrumented_tests.sh
 
-      - name: Upload Instrumented Test Results for API ${{ matrix.api-level }} on ${{ matrix.profile }}
+      - name: Summarize Instrumented Test Results
         if: always()
-        shell: bash
-        run: |
-          echo "## Instrumented Tests (API ${{ matrix.api-level }} - ${{ matrix.profile }})" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Suite                                   | Total | ✅ Pass | 🔴 Fail | ⚪ Skip | ⏱️ Duration (s) |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| --------------------------------------- | -----: | ------: | ------: | -----: | ----------: |" >> "$GITHUB_STEP_SUMMARY"
-          REPORT=$(find app/build -type f -path "*/connected/**/TEST-*.xml" | head -n1)
-          if [[ -f "$REPORT" ]]; then
-            NAME=$(grep -oP '<testsuite[^>]* name="\K[^"]+' "$REPORT" | head -1)
-            TOTAL=$(grep -oP 'tests="\K[0-9]+' "$REPORT" | head -1)
-            FAIL=$(grep -oP 'failures="\K[0-9]+' "$REPORT" | head -1)
-            ERR=$(grep -oP 'errors="\K[0-9]+' "$REPORT" | head -1)
-            SKIP=$(grep -oP 'skipped="\K[0-9]+' "$REPORT" | head -1 || echo 0)
-            TIME=$(grep -oP 'time="\K[0-9.]+' "$REPORT" | head -1)
-            PASSED=$((TOTAL - FAIL - ERR - SKIP))
-            echo "| $NAME | $TOTAL | $PASSED | $((FAIL+ERR)) | $SKIP | $TIME |" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "_No instrumented test results found._" >> "$GITHUB_STEP_SUMMARY"
-          fi
+        env:
+          TEST_PROFILE: API ${{ matrix.api-level }} / ${{ matrix.profile }}
+        run: >-
+          python3 .github/scripts/summarize_instrumented_tests.py
+          --reports app/build/outputs/androidTest-results/connected
+          --label "$TEST_PROFILE"
 
       - name: Upload Instrumented Test Artifacts
         if: always()
@@ -233,4 +210,5 @@ jobs:
           path: |
             app/build/reports/androidTests/connected/**/*
             app/build/outputs/androidTest-results/connected/**/*
+            app/build/ci-device-diagnostics/**/*
           retention-days: 7

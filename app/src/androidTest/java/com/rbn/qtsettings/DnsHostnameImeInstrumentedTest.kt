@@ -2,8 +2,6 @@ package com.rbn.qtsettings
 
 import android.os.ParcelFileDescriptor
 import android.view.Choreographer
-import android.view.View
-import android.view.inspector.WindowInspector
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasSetTextAction
@@ -37,10 +35,9 @@ class DnsHostnameImeInstrumentedTest {
                 )
             }
         }
+        val window = compose.waitForDialogWindowFocus()
         val fields = compose.onAllNodes(hasSetTextAction())
         fields[0].performTouchInput { click() }
-        lateinit var window: View
-        compose.runOnIdle { window = WindowInspector.getGlobalWindowViews().single { it.hasWindowFocus() } }
         compose.waitUntil(30_000) {
             ViewCompat.getRootWindowInsets(window)?.isVisible(WindowInsetsCompat.Type.ime()) == true
         }

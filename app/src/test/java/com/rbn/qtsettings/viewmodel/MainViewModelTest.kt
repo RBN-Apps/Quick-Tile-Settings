@@ -68,12 +68,6 @@ class MainViewModelTest {
     }
 
     @Test
-    fun setInitialTab_whenCalled_thenUpdatesInitialTabFlow() {
-        viewModel.setInitialTab(1)
-        assertEquals(1, viewModel.initialTab.value)
-    }
-
-    @Test
     fun startAddingNewHostname_whenCalled_thenShowsDialogAndClearsEditingEntry() {
         val existing = DnsHostnameEntry(id = "edit", name = "Edit Me", hostname = "dns.edit")
         viewModel.startEditingHostname(existing)
