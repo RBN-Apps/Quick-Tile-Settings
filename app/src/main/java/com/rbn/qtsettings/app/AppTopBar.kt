@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
@@ -18,9 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.rbn.qtsettings.R
-import androidx.compose.runtime.setValue
 import com.rbn.qtsettings.app.navigation.AppDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,12 +32,15 @@ fun AppTopBar(
     onBack: () -> Unit,
     onOpenDestination: (AppDestination) -> Unit,
     onShowPermissionHelp: () -> Unit,
-    onShowAbout: () -> Unit
+    onShowAbout: () -> Unit,
+    onOpenNavigation: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     val inSubScreen = destination != AppDestination.TileSettings
     var showOverflowMenu by remember { mutableStateOf(false) }
     if (inSubScreen) {
         TopAppBar(
+            modifier = modifier,
             title = {
                 Text(
                     when (destination) {
@@ -49,6 +54,9 @@ fun AppTopBar(
                             stringResource(R.string.app_name)
                     }
                 )
+            },
+            actions = {
+                if (onOpenNavigation != null) NavigationMenuButton(onOpenNavigation)
             },
             navigationIcon = {
                 IconButton(
@@ -65,7 +73,11 @@ fun AppTopBar(
         )
     } else {
         TopAppBar(
+            modifier = modifier,
             title = { Text(stringResource(R.string.app_name)) },
+            navigationIcon = {
+                if (onOpenNavigation != null) NavigationMenuButton(onOpenNavigation)
+            },
             actions = {
                 IconButton(
                     onClick = {
@@ -129,5 +141,12 @@ fun AppTopBar(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun NavigationMenuButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(Icons.Default.Menu, stringResource(R.string.navigation_open))
     }
 }

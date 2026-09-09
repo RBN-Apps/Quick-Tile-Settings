@@ -4,13 +4,18 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.rbn.qtsettings.app.navigation.AppArea
 
 /**
  * Extension functions for AndroidComposeTestRule to help with testing
@@ -32,32 +37,33 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.d
     }
 }
 
-fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToTab(
-    context: Context,
-    tabName: String
-) {
-    try {
-        onNodeWithText(tabName)
-            .performScrollTo()
-            .performClick()
-    } catch (_: AssertionError) {
-        // Try without scrolling if element is already visible
-        onNodeWithText(tabName)
-            .performClick()
-    }
+/** Open the modal rail only when the compact window hides its destinations. */
+fun ComposeTestRule.openNavigationIfNeeded(context: Context): Boolean {
+    val compact = onAllNodesWithTag("persistent_navigation_rail").fetchSemanticsNodes().isEmpty()
+    if (compact) onNodeWithContentDescription(context.getString(R.string.navigation_open)).performClick()
+    return compact
+}
+
+fun ComposeTestRule.selectNavigationArea(context: Context, area: AppArea) {
+    openNavigationIfNeeded(context)
+    onNodeWithTag("navigation_area_${area.name}").performClick()
     waitForIdle()
 }
 
-fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToDnsTab(
-    context: Context
-) {
-    navigateToTab(context, context.getString(R.string.tab_title_dns))
+fun ComposeTestRule.assertNavigationAreaSelected(context: Context, area: AppArea) {
+    val compact = openNavigationIfNeeded(context)
+    onNodeWithTag("navigation_area_${area.name}").assertIsSelected()
+    // Reselection closes the compact overlay without changing the Navigation 3 history.
+    if (compact) onNodeWithTag("navigation_area_${area.name}").performClick()
+    waitForIdle()
 }
 
-fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToUsbTab(
-    context: Context
-) {
-    navigateToTab(context, context.getString(R.string.tab_title_usb))
+fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToDnsArea(context: Context) {
+    selectNavigationArea(context, AppArea.Dns)
+}
+
+fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToUsbArea(context: Context) {
+    selectNavigationArea(context, AppArea.Usb)
 }
 
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.clickHelpButton(

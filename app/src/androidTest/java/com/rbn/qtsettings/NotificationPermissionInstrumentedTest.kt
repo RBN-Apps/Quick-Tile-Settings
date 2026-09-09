@@ -16,6 +16,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.core.content.ContextCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
@@ -24,8 +26,6 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.junit.runners.model.Statement
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 private const val NOTIFICATION_PERMISSION_TEST_TAG = "NotificationPermissionTest"
 private const val TAG_NETWORK_TYPE_DETECTION_TOGGLE = "network_type_detection_toggle"
@@ -50,7 +50,7 @@ class NotificationPermissionInstrumentedTest {
 
         composeTestRule.waitForIdle()
         composeTestRule.dismissInitialDialogsIfPresent(context)
-        composeTestRule.navigateToDnsTab(context)
+        composeTestRule.navigateToDnsArea(context)
         composeTestRule.safeScrollToAndAssert(
             context.getString(R.string.setting_network_type_detection_enabled)
         )

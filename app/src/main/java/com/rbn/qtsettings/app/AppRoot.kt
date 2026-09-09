@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.app.navigation.AppArea
-import com.rbn.qtsettings.app.navigation.rememberAppNavigation
 import com.rbn.qtsettings.app.navigation.AppNavigationContent
+import com.rbn.qtsettings.app.navigation.rememberAppNavigation
 import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
 import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
 import com.rbn.qtsettings.viewmodel.MainViewModel
@@ -47,6 +47,8 @@ fun AppRoot(
     val snackbar = remember { SnackbarHostState() }
     AppStatusEffects(viewModel, snackbar)
     AppScaffold(
+        area = navigation.area,
+        onSelectArea = navigation::selectArea,
         destination = navigation.destination,
         snackbarHostState = snackbar,
         onBack = navigation::back,
@@ -55,7 +57,7 @@ fun AppRoot(
         onShowAbout = { overlay = AppOverlay.About }
     ) { modifier ->
         AppNavigationContent(navigation, modifier) { route ->
-            LegacyFeatureContentRoot(route, viewModel, navigation::selectArea, showPermissionHelp)
+            LegacyFeatureContentRoot(route, viewModel, showPermissionHelp)
         }
     }
     AppGlobalDialogsRoot(

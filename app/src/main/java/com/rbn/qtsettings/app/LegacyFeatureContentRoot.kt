@@ -4,19 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.MaterialTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.app.navigation.AppArea
-import com.rbn.qtsettings.app.navigation.LegacyAreaTabs
 import com.rbn.qtsettings.app.navigation.AppRoute
 import com.rbn.qtsettings.ui.composables.dns.DnsSettingsCard
-import com.rbn.qtsettings.ui.composables.usb.UsbDebuggingSettingsCard
-import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutSettingsScreen
 import com.rbn.qtsettings.ui.composables.settings.AppSettingsScreen
+import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutSettingsScreen
+import com.rbn.qtsettings.ui.composables.usb.UsbDebuggingSettingsCard
 import com.rbn.qtsettings.viewmodel.MainViewModel
 
 /** Only the roots bridge to existing VM-coupled features. Remove per #113–#122. */
@@ -24,7 +23,6 @@ import com.rbn.qtsettings.viewmodel.MainViewModel
 fun LegacyFeatureContentRoot(
     route: AppRoute,
     viewModel: MainViewModel,
-    onSelectArea: (AppArea) -> Unit,
     onShowPermissionHelp: () -> Unit
 ) {
     when (route) {
@@ -42,7 +40,6 @@ fun LegacyFeatureContentRoot(
             val developerOptionsEnabled by viewModel.developerOptionsEnabled.collectAsStateWithLifecycle()
             Column(Modifier.fillMaxSize()) {
                 if (!hasPermission) PermissionWarningCard(onShowPermissionHelp, Modifier.padding(horizontal = 16.dp))
-                LegacyAreaTabs(area, onSelectArea)
                 Column(Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
                     when (area) {
                         AppArea.Dns -> DnsSettingsCard(viewModel)

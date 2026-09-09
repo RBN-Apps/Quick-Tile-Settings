@@ -342,4 +342,9 @@
     <string name="wifi_boot_description">Damit WLAN-Regeln nach dem Neustart und Entsperren deines Telefons wieder greifen, öffne App-Einstellungen → Berechtigungen → Standort und wähle „Immer zulassen“ mit aktiviertem genauen Standort. So kann die App WLAN-Netzwerke im Hintergrund erkennen; Standortkoordinaten werden nicht gelesen. Das ist optional: Ohne diese Freigabe musst du die App nach jedem Neustart einmal öffnen.</string>
     <string name="wifi_boot_ready">WLAN-Regeln werden nach dem Neustart und Entsperren automatisch fortgesetzt.</string>
     <string name="wifi_rule_use_detected_bssid">Erkannte BSSID übernehmen: %1$s</string>
+    <string name="navigation_open">Navigation öffnen</string>
+    <string name="navigation_expand">Navigation ausklappen</string>
+    <string name="navigation_collapse">Navigation einklappen</string>
+    <string name="navigation_dns_short">DNS</string>
+    <string name="navigation_usb_short">USB</string>
 </resources>

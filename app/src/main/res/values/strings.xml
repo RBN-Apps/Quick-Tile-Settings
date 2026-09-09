@@ -350,4 +350,9 @@
     <string name="wifi_boot_description">To apply Wi-Fi rules after restarting and unlocking your phone, open app settings → Permissions → Location and select “Allow all the time”, with precise location enabled. This allows the app to identify Wi-Fi networks in the background; no location coordinates are read. This is optional: without it, open the app once after each restart.</string>
     <string name="wifi_boot_ready">Wi-Fi rules resume automatically after restarting and unlocking your phone.</string>
     <string name="wifi_rule_use_detected_bssid">Use detected BSSID: %1$s</string>
+    <string name="navigation_open">Open navigation</string>
+    <string name="navigation_expand">Expand navigation</string>
+    <string name="navigation_collapse">Collapse navigation</string>
+    <string name="navigation_dns_short">DNS</string>
+    <string name="navigation_usb_short">USB</string>
 </resources>

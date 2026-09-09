@@ -7,10 +7,10 @@ import android.content.res.Configuration
 import android.os.ParcelFileDescriptor
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -20,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
@@ -73,7 +74,7 @@ class AppShellInstrumentedTest {
 
     @Test fun toolbarAndSystemBackReturnToUsbWithScrollPosition() {
         launch()
-        text(R.string.tab_title_usb).performClick()
+        compose.selectNavigationArea(context, AppArea.Usb)
         val unlock = text(R.string.setting_require_unlock)
         unlock.performScrollTo().assertIsDisplayed()
         val scroll = compose.onNode(
@@ -87,7 +88,7 @@ class AppShellInstrumentedTest {
         icon(R.string.shortcut_settings_open_desc).performClick()
         text(R.string.shortcut_settings_title).assertIsDisplayed()
         icon(R.string.navigate_back_desc).performClick()
-        text(R.string.tab_title_usb).assertIsSelected()
+        compose.assertNavigationAreaSelected(context, AppArea.Usb)
         unlock.assertIsDisplayed()
         assertEquals(before, offset(), 1f)
         openSettings()
@@ -96,14 +97,14 @@ class AppShellInstrumentedTest {
         scenario.recreate()
         text(R.string.app_settings_title).assertIsDisplayed()
         systemBack()
-        text(R.string.tab_title_usb).assertIsSelected()
+        compose.assertNavigationAreaSelected(context, AppArea.Usb)
         unlock.assertIsDisplayed()
         assertEquals(before, offset(), 1f)
     }
 
     @Test fun globalDestinationAndAreaSurviveRecreationAndRotation_withOneFeatureOwner() {
         launch()
-        text(R.string.tab_title_usb).performClick()
+        compose.selectNavigationArea(context, AppArea.Usb)
         icon(R.string.shortcut_settings_open_desc).performClick()
         lateinit var owner: MainViewModel
         scenario.onActivity { owner = ViewModelProvider(it)[MainViewModel::class.java] }
@@ -117,7 +118,7 @@ class AppShellInstrumentedTest {
         try {
             text(R.string.shortcut_settings_title).assertIsDisplayed()
             systemBack()
-            text(R.string.tab_title_usb).assertIsSelected()
+            compose.assertNavigationAreaSelected(context, AppArea.Usb)
         } finally {
             scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
         }
@@ -125,8 +126,8 @@ class AppShellInstrumentedTest {
 
     @Test fun coldTileEntryIsNotReappliedAfterResumeOrRecreation() {
         launch(usbIntent())
-        text(R.string.tab_title_usb).assertIsSelected()
-        text(R.string.tab_title_dns).performClick()
+        compose.assertNavigationAreaSelected(context, AppArea.Usb)
+        compose.selectNavigationArea(context, AppArea.Dns)
         openSettings()
         scenario.moveToState(Lifecycle.State.CREATED)
         scenario.moveToState(Lifecycle.State.RESUMED)
@@ -134,13 +135,13 @@ class AppShellInstrumentedTest {
         scenario.recreate()
         text(R.string.app_settings_title).assertIsDisplayed()
         systemBack()
-        text(R.string.tab_title_dns).assertIsSelected()
+        compose.assertNavigationAreaSelected(context, AppArea.Dns)
     }
 
     @Test fun systemBackAtUsbRootExitsDirectly() {
         launch()
-        text(R.string.tab_title_usb).performClick()
-        text(R.string.tab_title_usb).assertIsSelected()
+        compose.selectNavigationArea(context, AppArea.Usb)
+        compose.assertNavigationAreaSelected(context, AppArea.Usb)
         systemBack()
         compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
     }
@@ -154,7 +155,7 @@ class AppShellInstrumentedTest {
                 it.startActivity(usbIntent().addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP))
             }
             compose.waitForIdle()
-            text(R.string.tab_title_usb).assertIsSelected()
+            compose.assertNavigationAreaSelected(context, AppArea.Usb)
         }
         scenario.onActivity {
             it.startActivity(Intent(it, MainActivity::class.java)
@@ -162,7 +163,7 @@ class AppShellInstrumentedTest {
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
         compose.waitForIdle()
-        text(R.string.tab_title_dns).assertIsSelected()
+        compose.assertNavigationAreaSelected(context, AppArea.Dns)
         systemBack()
         compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
     }

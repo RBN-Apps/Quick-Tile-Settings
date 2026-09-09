@@ -25,18 +25,19 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.core.content.ContextCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.data.DnsListSortMode
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.utils.PermissionUtils
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import kotlin.math.abs
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import kotlin.math.abs
 
 private const val TAG = "QuickTileSettingsTest"
 private const val TAG_NETWORK_TYPE_DETECTION_TILE_OPTION = "network_type_detection_tile_only_option"
@@ -73,7 +74,7 @@ class QuickTileSettingsInstrumentedTest {
     }
 
     @Test
-    fun appLaunches_shouldShowMainScreenWithTabs() {
+    fun appLaunches_shouldShowMainScreenWithNavigation() {
         // Verify app name in top bar
         composeTestRule.onNodeWithText(context.getString(R.string.app_name))
             .assertIsDisplayed()
@@ -82,34 +83,34 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
             .assertIsDisplayed()
 
-        // Verify both tabs are present
-        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns))
-            .assertIsDisplayed()
-        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_usb))
-            .assertIsDisplayed()
+        // Both areas are reachable through the adaptive rail
+        composeTestRule.selectNavigationArea(context, AppArea.Dns)
+        composeTestRule.assertNavigationAreaSelected(context, AppArea.Dns)
+        composeTestRule.selectNavigationArea(context, AppArea.Usb)
+        composeTestRule.assertNavigationAreaSelected(context, AppArea.Usb)
 
         Log.i(TAG, "Main screen loaded successfully with all expected elements")
     }
 
     @Test
-    fun tabNavigation_shouldWorkCorrectly() {
-        // Start on DNS tab (should be default)
-        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns))
-            .assertIsDisplayed()
+    fun areaNavigation_shouldWorkCorrectly() {
+        // Start on DNS area (should be default)
+        composeTestRule.selectNavigationArea(context, AppArea.Dns)
+        composeTestRule.assertNavigationAreaSelected(context, AppArea.Dns)
 
-        // Navigate to USB tab
-        composeTestRule.navigateToUsbTab(context)
+        // Navigate to USB area
+        composeTestRule.navigateToUsbArea(context)
 
         // Verify USB settings are visible
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
 
-        // Navigate back to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate back to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         // Verify DNS settings are visible
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
 
-        Log.i(TAG, "Tab navigation works correctly")
+        Log.i(TAG, "Area navigation works correctly")
     }
 
     @Test
@@ -147,8 +148,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun dnsSettings_shouldShowAllOptions() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         // Verify DNS settings title
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
@@ -166,8 +167,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun usbDebuggingSettings_shouldShowAllOptions() {
-        // Navigate to USB tab
-        composeTestRule.navigateToUsbTab(context)
+        // Navigate to USB area
+        composeTestRule.navigateToUsbArea(context)
 
         // Verify USB debugging settings title
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
@@ -232,24 +233,24 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun multipleTabSwitches_shouldMaintainUIState() {
-        // Perform multiple tab switches to ensure UI state is maintained
+        // Perform multiple area switches to ensure UI state is maintained
         repeat(3) { iteration ->
             Log.i(TAG, "Tab switch iteration ${iteration + 1}")
 
-            // Switch to USB tab
-            composeTestRule.navigateToUsbTab(context)
+            // Switch to USB area
+            composeTestRule.navigateToUsbArea(context)
 
             // Verify USB content is visible
             composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
 
-            // Switch to DNS tab
-            composeTestRule.navigateToDnsTab(context)
+            // Switch to DNS area
+            composeTestRule.navigateToDnsArea(context)
 
             // Verify DNS content is visible
             composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
         }
 
-        Log.i(TAG, "Multiple tab switches completed successfully")
+        Log.i(TAG, "Multiple area switches completed successfully")
     }
 
     @Test
@@ -260,19 +261,19 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
             .assertIsDisplayed()
 
-        // Tab navigation should be accessible
-        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns))
-            .assertIsDisplayed()
-        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_usb))
-            .assertIsDisplayed()
+        // Both areas expose their selection through accessible navigation items
+        composeTestRule.selectNavigationArea(context, AppArea.Dns)
+        composeTestRule.assertNavigationAreaSelected(context, AppArea.Dns)
+        composeTestRule.selectNavigationArea(context, AppArea.Usb)
+        composeTestRule.assertNavigationAreaSelected(context, AppArea.Usb)
 
         Log.i(TAG, "UI accessibility verification completed")
     }
 
     @Test
     fun dnsProviderInfoButtons_shouldOpenInfoDialogs() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         // Test info buttons for predefined DNS providers
         val predefinedProviders = listOf(
@@ -341,7 +342,7 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun dnsOffAndAutoRows_shouldOfferSetActiveAction() {
-        composeTestRule.navigateToDnsTab(context)
+        composeTestRule.navigateToDnsArea(context)
 
         listOf(
             context.getString(R.string.dns_state_off),
@@ -357,7 +358,7 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun usbOnAndOffRows_shouldOfferSetActiveAction() {
-        composeTestRule.navigateToUsbTab(context)
+        composeTestRule.navigateToUsbArea(context)
 
         listOf(
             context.getString(R.string.usb_state_on),
@@ -373,7 +374,7 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun dnsSortingMenu_shouldExposeManualReorderingWithoutAddingRowActions() {
-        composeTestRule.navigateToDnsTab(context)
+        composeTestRule.navigateToDnsArea(context)
 
         composeTestRule.onNodeWithTag("dns_sort_menu_button")
             .performScrollTo()
@@ -419,7 +420,7 @@ class QuickTileSettingsInstrumentedTest {
         try {
             assertTrue(preferencesManager.reorderDnsHostnames(controlledOrder))
 
-            composeTestRule.navigateToDnsTab(context)
+            composeTestRule.navigateToDnsArea(context)
             composeTestRule.waitForIdle()
 
             val adGuardHandle = composeTestRule.onNodeWithContentDescription(
@@ -561,8 +562,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun customDnsHostname_shouldSupportFullCRUD() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         val testRunId = System.nanoTime().toString()
         val customHostname = "Test Custom DNS $testRunId"
@@ -669,8 +670,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun dnsSettings_shouldHandleCheckboxInteractions() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing DNS checkbox interactions")
 
@@ -702,8 +703,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun usbSettings_shouldHandleCheckboxInteractions() {
-        // Navigate to USB tab
-        composeTestRule.navigateToUsbTab(context)
+        // Navigate to USB area
+        composeTestRule.navigateToUsbArea(context)
 
         Log.i(TAG, "Testing USB checkbox interactions")
 
@@ -725,8 +726,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun networkTypeDetection_shouldShowInDnsSettings() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing Network Type Detection visibility in DNS settings")
 
@@ -745,8 +746,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun networkTypeDetection_shouldHandleEnableDisableToggle() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing Network Type Detection enable/disable toggle")
 
@@ -791,8 +792,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun networkTypeDetection_dnsStateSelectorsShouldWork() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing Network Type Detection DNS state selectors")
 
@@ -838,8 +839,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun networkTypeDetection_detectionModeShouldBeSelectable() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing Network Type Detection mode selection")
 
@@ -885,8 +886,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun networkTypeInfoDialog_shouldDisplayAndDismiss() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing Network Type Detection info dialog")
 
@@ -928,8 +929,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun networkTypeDetection_shouldCoexistWithVpnDetection() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing Network Type Detection and VPN Detection coexistence")
 
@@ -972,8 +973,8 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun networkTypeDetection_shouldShowAllDnsStateOptions() {
-        // Navigate to DNS tab
-        composeTestRule.navigateToDnsTab(context)
+        // Navigate to DNS area
+        composeTestRule.navigateToDnsArea(context)
 
         Log.i(TAG, "Testing DNS state options in Network Type Detection")
 
