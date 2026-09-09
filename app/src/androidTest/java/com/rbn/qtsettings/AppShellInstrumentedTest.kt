@@ -167,4 +167,55 @@ class AppShellInstrumentedTest {
         systemBack()
         compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
     }
+    @Test fun realBackGestures_cancelCommitRailAndHome_preserveUsbScroll() {
+        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
+        org.junit.Assume.assumeTrue(android.provider.Settings.Secure.getInt(context.contentResolver, "navigation_mode", 0) == 2)
+        org.junit.Assume.assumeTrue(context.resources.configuration.screenWidthDp < 600)
+        launch(usbIntent())
+        text(R.string.setting_require_unlock).performScrollTo()
+        val scroll = compose.onNode(
+            SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange) and
+                hasAnyDescendant(hasText(context.getString(R.string.setting_require_unlock)))
+        )
+        val offset = scroll.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        var width = 0
+        var height = 0
+        scenario.onActivity { width = it.window.decorView.width; height = it.window.decorView.height }
+        fun gesture(right: Boolean = false): SystemBackGesture {
+            compose.waitForIdle()
+            return SystemBackGesture(width, height, right)
+        }
+        fun capture(name: String) {
+            // Drain Compose's test clock before capturing a real window; wall-clock sleep alone
+            // leaves semantic-click transitions frozen (for example the closing overflow menu).
+            compose.waitForIdle()
+            if (InstrumentationRegistry.getArguments().getString("recordPredictiveBack") != "true") return
+            android.os.SystemClock.sleep(700)
+            val bitmap = instrumentation.uiAutomation.takeScreenshot()
+            java.io.File(context.getExternalFilesDir(null), "$name.png").outputStream().use {
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+            }
+            bitmap.recycle()
+        }
+        openSettings()
+        icon(R.string.navigate_back_desc).assertIsDisplayed()
+        capture("126-settings")
+        gesture().apply { begin(); capture("126-left-preview"); cancel() }
+        text(R.string.app_settings_title).assertIsDisplayed()
+        capture("126-cancelled")
+        gesture(true).apply { begin(); capture("126-right-preview"); commit() }
+        compose.assertNavigationAreaSelected(context, AppArea.Usb)
+        text(R.string.setting_require_unlock).assertIsDisplayed()
+        assertEquals(offset, scroll.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value(), 1f)
+        capture("126-returned-usb")
+        icon(R.string.navigation_open).performClick()
+        gesture().apply { begin(); capture("126-rail-preview"); cancel() }
+        icon(R.string.navigation_collapse).assertIsDisplayed()
+        gesture().apply { begin(); commit() }
+        icon(R.string.navigation_open).assertIsDisplayed()
+        capture("126-rail-closed")
+        gesture().apply { begin(); capture("126-home-preview"); commit() }
+        compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
+    }
+
 }
