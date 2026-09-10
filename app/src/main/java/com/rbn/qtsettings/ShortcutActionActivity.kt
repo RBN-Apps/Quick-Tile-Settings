@@ -6,7 +6,6 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.rbn.qtsettings.data.PreferencesManager
-import com.rbn.qtsettings.utils.Constants.ADB_ENABLED
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_ADGUARD
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_AUTO
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_CLOUDFLARE
@@ -16,12 +15,14 @@ import com.rbn.qtsettings.utils.Constants.ACTION_DNS_QUAD9
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_OFF
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_ON
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
-import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
+import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.utils.SystemQuickActionResult
+import com.rbn.qtsettings.utils.SystemQuickActions
 import com.rbn.qtsettings.utils.VpnDetectionUtils
 
 class ShortcutActionActivity : ComponentActivity() {
@@ -142,19 +143,16 @@ class ShortcutActionActivity : ComponentActivity() {
     }
 
     private fun handleUsbDebuggingAction(enable: Boolean) {
-        if (!PermissionUtils.isDeveloperOptionsEnabled(this)) {
-            Toast.makeText(
-                this,
-                R.string.toast_developer_options_disabled,
-                Toast.LENGTH_LONG
-            ).show()
-            return
+        val result = SystemQuickActions.setUsbDebuggingEnabled(
+            this, enable, toggleDeveloperOptions = false, toggleWirelessDebugging = false
+        )
+        val message = when (result) {
+            SystemQuickActionResult.SUCCESS ->
+                if (enable) R.string.shortcut_toast_usb_on else R.string.shortcut_toast_usb_off
+            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED -> R.string.toast_developer_options_disabled
+            SystemQuickActionResult.PERMISSION_MISSING -> R.string.toast_permission_not_granted_adb
+            else -> R.string.toast_error_saving_settings
         }
-        Settings.Global.putInt(contentResolver, ADB_ENABLED, if (enable) 1 else 0)
-        Toast.makeText(
-            this,
-            if (enable) R.string.shortcut_toast_usb_on else R.string.shortcut_toast_usb_off,
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

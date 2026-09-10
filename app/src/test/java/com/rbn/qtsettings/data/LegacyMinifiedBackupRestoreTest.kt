@@ -98,13 +98,13 @@ class LegacyMinifiedBackupRestoreTest {
         assertTrue(preferencesManager.networkTypeDetectionEnabled.value)
         assertEquals(BACKGROUND_DETECTION, preferencesManager.networkTypeDetectionMode.value)
 
-        assertFalse(preferencesManager.usbToggleEnable.value)
-        assertTrue(preferencesManager.usbToggleDisable.value)
-        assertTrue(preferencesManager.usbAlsoHideDevOptions.value)
-        assertTrue(preferencesManager.usbAlsoDisableWirelessDebugging.value)
-        assertTrue(preferencesManager.usbEnableAutoRevert.value)
-        assertEquals(expectedUsbDelay, preferencesManager.usbAutoRevertDelaySeconds.value)
-        assertTrue(preferencesManager.usbRequireUnlock.value)
+        assertFalse(preferencesManager.usbStore.state.value.toggleEnable)
+        assertTrue(preferencesManager.usbStore.state.value.toggleDisable)
+        assertTrue(preferencesManager.usbStore.state.value.alsoHideDevOptions)
+        assertTrue(preferencesManager.usbStore.state.value.alsoDisableWirelessDebugging)
+        assertTrue(preferencesManager.usbStore.state.value.enableAutoRevert)
+        assertEquals(expectedUsbDelay, preferencesManager.usbStore.state.value.autoRevertDelaySeconds)
+        assertTrue(preferencesManager.usbStore.state.value.requireUnlock)
 
         val shortcutId = "dns_custom_$customId"
         assertEquals(setOf(shortcutId), preferencesManager.enabledShortcutIds.value)

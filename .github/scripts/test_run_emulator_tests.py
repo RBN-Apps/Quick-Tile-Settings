@@ -9,7 +9,7 @@ SCRIPT = Path(__file__).with_name("run_emulator_tests.sh").resolve()
 
 
 class EmulatorStartupTest(unittest.TestCase):
-    def run_startup(self, test_exit=0, boot_failure=False):
+    def run_startup(self, test_exit=0, boot_failure=False, profile="Nexus 10"):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             sdk = root / "sdk"
@@ -45,7 +45,7 @@ exit "$TEST_EXIT"
                 path.write_text(content)
                 path.chmod(0o755)
             env = dict(os.environ, ANDROID_HOME=str(sdk), RUNNER_TEMP=str(root),
-                       TEST_PROFILE="Nexus 10", TEST_API="35", TEST_EXIT=str(test_exit),
+                       TEST_PROFILE=profile, TEST_API="35", TEST_EXIT=str(test_exit),
                        BOOT_FAILURE=str(int(boot_failure)))
             result = subprocess.run(["bash", str(SCRIPT)], cwd=root, env=env,
                                     capture_output=True, text=True, timeout=15)
@@ -57,6 +57,25 @@ exit "$TEST_EXIT"
         self.assertTrue(started)
         self.assertNotIn("input keyevent", calls)
         self.assertIn("emu kill", calls)
+
+    def test_profiles_reduce_rendering_work_without_changing_dp_geometry(self):
+        for profile, native_width, native_height, native_density in [
+            ("Nexus 6", 1440, 2560, 560),
+            ("Nexus 10", 2560, 1600, 320),
+            ("7.6in Foldable", 1768, 2208, 420),
+        ]:
+            with self.subTest(profile=profile):
+                result, started, calls = self.run_startup(profile=profile)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertTrue(started)
+                size = next(c.removeprefix("shell wm size ") for c in calls.splitlines()
+                            if c.startswith("shell wm size "))
+                density = int(next(c.removeprefix("shell wm density ") for c in calls.splitlines()
+                                   if c.startswith("shell wm density ")))
+                width, height = map(int, size.split("x"))
+                self.assertEqual(native_width / native_density, width / density)
+                self.assertEqual(native_height / native_density, height / density)
+                self.assertLess(width * height, native_width * native_height)
 
     def test_preserves_test_failure(self):
         result, started, calls = self.run_startup(test_exit=7)

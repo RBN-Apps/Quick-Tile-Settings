@@ -3,9 +3,9 @@ package com.rbn.qtsettings.utils
 import android.content.Context
 import android.provider.Settings
 import android.util.Log
-import com.rbn.qtsettings.utils.Constants.ADB_ENABLED
-import com.rbn.qtsettings.utils.Constants.ADB_WIFI_ENABLED
-import com.rbn.qtsettings.utils.Constants.DEVELOPMENT_SETTINGS_ENABLED
+import com.rbn.qtsettings.feature.usb.domain.UsbActionResult
+import com.rbn.qtsettings.feature.usb.domain.UsbActions
+import com.rbn.qtsettings.platform.usb.AndroidUsbSystemGateway
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
@@ -95,77 +95,9 @@ object SystemQuickActions {
         toggleDeveloperOptions: Boolean,
         toggleWirelessDebugging: Boolean
     ): SystemQuickActionResult {
-        if (!PermissionUtils.hasWriteSecureSettingsPermission(context)) {
-            return SystemQuickActionResult.PERMISSION_MISSING
-        }
-        if (!toggleDeveloperOptions && !PermissionUtils.isDeveloperOptionsEnabled(context)) {
-            return SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED
-        }
-
-        val resolver = context.contentResolver
-        var previousDeveloperOptions = 0
-        var previousUsbDebugging = 0
-        var previousWirelessDebugging = 0
-        var previousStateCaptured = false
-        return try {
-            previousDeveloperOptions = Settings.Global.getInt(
-                resolver,
-                DEVELOPMENT_SETTINGS_ENABLED,
-                0
-            )
-            previousUsbDebugging = Settings.Global.getInt(resolver, ADB_ENABLED, 0)
-            previousWirelessDebugging = Settings.Global.getInt(resolver, ADB_WIFI_ENABLED, 0)
-            previousStateCaptured = true
-
-            val developerOptionsSaved = when {
-                !toggleDeveloperOptions -> true
-                enabled -> Settings.Global.putInt(resolver, DEVELOPMENT_SETTINGS_ENABLED, 1)
-                else -> true
-            }
-            val usbDebuggingSaved = developerOptionsSaved && Settings.Global.putInt(
-                resolver,
-                ADB_ENABLED,
-                if (enabled) 1 else 0
-            )
-            val wirelessDebuggingSaved = usbDebuggingSaved && (
-                !toggleWirelessDebugging || Settings.Global.putInt(
-                    resolver,
-                    ADB_WIFI_ENABLED,
-                    if (enabled) 1 else 0
-                )
-            )
-            val developerOptionsDisabled = wirelessDebuggingSaved && (
-                !toggleDeveloperOptions || enabled || Settings.Global.putInt(
-                    resolver,
-                    DEVELOPMENT_SETTINGS_ENABLED,
-                    0
-                )
-            )
-
-            if (developerOptionsDisabled) {
-                AutoRevertCoordinator.invalidateUsbAutoRevert(context)
-                SystemQuickActionResult.SUCCESS
-            } else {
-                restoreUsbState(
-                    context = context,
-                    developerOptions = previousDeveloperOptions,
-                    usbDebugging = previousUsbDebugging,
-                    wirelessDebugging = previousWirelessDebugging
-                )
-                SystemQuickActionResult.FAILED
-            }
-        } catch (error: Exception) {
-            Log.e(TAG, "Unable to change USB debugging", error)
-            if (previousStateCaptured) {
-                restoreUsbState(
-                    context = context,
-                    developerOptions = previousDeveloperOptions,
-                    usbDebugging = previousUsbDebugging,
-                    wirelessDebugging = previousWirelessDebugging
-                )
-            }
-            SystemQuickActionResult.FAILED
-        }
+        return UsbActions(
+            AndroidUsbSystemGateway(context)
+        ).set(enabled, toggleDeveloperOptions, toggleWirelessDebugging).toQuickActionResult()
     }
 
     private fun restoreDnsState(
@@ -177,23 +109,6 @@ object SystemQuickActions {
             Settings.Global.putString(resolver, PRIVATE_DNS_SPECIFIER, specifier)
             Settings.Global.putString(resolver, PRIVATE_DNS_MODE, mode)
         }.onFailure { error -> Log.e(TAG, "Unable to restore Private DNS state", error) }
-    }
-
-    private fun restoreUsbState(
-        context: Context,
-        developerOptions: Int,
-        usbDebugging: Int,
-        wirelessDebugging: Int
-    ) {
-        runCatching {
-            val resolver = context.contentResolver
-            if (developerOptions == 1) {
-                Settings.Global.putInt(resolver, DEVELOPMENT_SETTINGS_ENABLED, 1)
-            }
-            Settings.Global.putInt(resolver, ADB_ENABLED, usbDebugging)
-            Settings.Global.putInt(resolver, ADB_WIFI_ENABLED, wirelessDebugging)
-            Settings.Global.putInt(resolver, DEVELOPMENT_SETTINGS_ENABLED, developerOptions)
-        }.onFailure { error -> Log.e(TAG, "Unable to restore USB debugging state", error) }
     }
 
     fun getActiveDnsHostname(context: Context): String? = runCatching {
@@ -211,7 +126,13 @@ object SystemQuickActions {
     }.getOrNull()
 
     fun isUsbDebuggingEnabled(context: Context): Boolean = runCatching {
-        PermissionUtils.isDeveloperOptionsEnabled(context) &&
-                Settings.Global.getInt(context.contentResolver, ADB_ENABLED, 0) == 1
+        AndroidUsbSystemGateway(context).read().active
     }.getOrDefault(false)
+}
+
+private fun UsbActionResult.toQuickActionResult(): SystemQuickActionResult = when (this) {
+    UsbActionResult.Success -> SystemQuickActionResult.SUCCESS
+    UsbActionResult.PermissionMissing -> SystemQuickActionResult.PERMISSION_MISSING
+    UsbActionResult.DeveloperOptionsDisabled -> SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED
+    else -> SystemQuickActionResult.FAILED
 }

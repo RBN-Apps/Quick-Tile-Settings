@@ -167,10 +167,9 @@ class AppShellInstrumentedTest {
         systemBack()
         compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
     }
-    @Test fun realBackGestures_cancelCommitRailAndHome_preserveUsbScroll() {
+    @Test fun realBackGestures_cancelCommitAndHome_preserveUsbScroll() {
         org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
-        org.junit.Assume.assumeTrue(android.provider.Settings.Secure.getInt(context.contentResolver, "navigation_mode", 0) == 2)
-        org.junit.Assume.assumeTrue(context.resources.configuration.screenWidthDp < 600)
+        org.junit.Assert.assertTrue("Enable gestural navigation before running real edge-gesture tests", android.provider.Settings.Secure.getInt(context.contentResolver, "navigation_mode", 0) == 2)
         launch(usbIntent())
         text(R.string.setting_require_unlock).performScrollTo()
         val scroll = compose.onNode(
@@ -200,21 +199,15 @@ class AppShellInstrumentedTest {
         openSettings()
         icon(R.string.navigate_back_desc).assertIsDisplayed()
         capture("126-settings")
-        gesture().apply { begin(); capture("126-left-preview"); cancel() }
+        gesture().use { gesture -> gesture.begin(); capture("126-left-preview"); gesture.cancel() }
         text(R.string.app_settings_title).assertIsDisplayed()
         capture("126-cancelled")
-        gesture(true).apply { begin(); capture("126-right-preview"); commit() }
+        gesture(true).use { gesture -> gesture.begin(); capture("126-right-preview"); gesture.commit() }
         compose.assertNavigationAreaSelected(context, AppArea.Usb)
         text(R.string.setting_require_unlock).assertIsDisplayed()
         assertEquals(offset, scroll.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value(), 1f)
         capture("126-returned-usb")
-        icon(R.string.navigation_open).performClick()
-        gesture().apply { begin(); capture("126-rail-preview"); cancel() }
-        icon(R.string.navigation_collapse).assertIsDisplayed()
-        gesture().apply { begin(); commit() }
-        icon(R.string.navigation_open).assertIsDisplayed()
-        capture("126-rail-closed")
-        gesture().apply { begin(); capture("126-home-preview"); commit() }
+        gesture().use { gesture -> gesture.begin(); capture("126-home-preview"); gesture.commit() }
         compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
     }
 

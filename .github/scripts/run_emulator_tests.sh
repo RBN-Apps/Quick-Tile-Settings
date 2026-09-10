@@ -41,6 +41,14 @@ while [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" != 1
   fi
   sleep 2
 done
+# Preserve each profile's logical dp size, but render one quarter of the pixels.
+# At native Nexus-10 resolution SwiftShader starved Launcher3's RenderThread on
+# the two-core runner; its ANR window then stole focus from the whole test suite.
+case "$TEST_PROFILE" in
+  "Nexus 6") adb shell wm size 720x1280; adb shell wm density 280 ;;
+  "Nexus 10") adb shell wm size 1280x800; adb shell wm density 160 ;;
+  "7.6in Foldable") adb shell wm size 884x1104; adb shell wm density 210 ;;
+esac
 # No synthetic key events during boot. The driver waits for stable launcher focus.
 adb shell settings put global window_animation_scale 0.0
 adb shell settings put global transition_animation_scale 0.0

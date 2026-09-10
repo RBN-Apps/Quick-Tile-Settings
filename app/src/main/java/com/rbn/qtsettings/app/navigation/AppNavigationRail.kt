@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.WideNavigationRailItem
@@ -101,7 +102,7 @@ internal fun Modifier.railWidth(expanded: Boolean): Modifier =
 private fun RailToggle(expanded: Boolean, onToggle: () -> Unit) {
     val description = stringResource(if (expanded) R.string.navigation_collapse else R.string.navigation_expand)
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = { PlainTooltip { Text(description) } },
         state = rememberTooltipState()
     ) {
@@ -122,7 +123,7 @@ private fun AppNavigationRailItem(area: AppArea, selected: Boolean, expanded: Bo
     var labelTop by remember { mutableFloatStateOf(0f) }
     val label = stringResource(if (area == AppArea.Dns) R.string.tab_title_dns else R.string.tab_title_usb)
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = { PlainTooltip { Text(label) } },
         state = rememberTooltipState()
     ) {

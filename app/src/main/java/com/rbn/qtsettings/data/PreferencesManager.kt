@@ -7,6 +7,8 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import com.rbn.qtsettings.feature.usb.data.UsbSettingsStore
+import com.rbn.qtsettings.feature.usb.domain.UsbSettings
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
@@ -55,35 +57,7 @@ class PreferencesManager private constructor(context: Context) {
     val dnsAutoRevertDelaySeconds: StateFlow<Int> = _dnsAutoRevertDelaySeconds.asStateFlow()
 
 
-    // USB Debugging Settings
-    private val _usbToggleEnable =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_TOGGLE_ENABLE, true))
-    val usbToggleEnable: StateFlow<Boolean> = _usbToggleEnable.asStateFlow()
-
-    private val _usbToggleDisable =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_TOGGLE_DISABLE, true))
-    val usbToggleDisable: StateFlow<Boolean> = _usbToggleDisable.asStateFlow()
-
-    private val _usbAlsoHideDevOptions =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, false))
-    val usbAlsoHideDevOptions: StateFlow<Boolean> = _usbAlsoHideDevOptions.asStateFlow()
-
-    private val _usbAlsoDisableWirelessDebugging =
-        MutableStateFlow(
-            sharedPreferences.getBoolean(
-                KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING,
-                false
-            )
-        )
-    val usbAlsoDisableWirelessDebugging: StateFlow<Boolean> =
-        _usbAlsoDisableWirelessDebugging.asStateFlow()
-
-    private val _usbEnableAutoRevert =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_ENABLE_AUTO_REVERT, false))
-    val usbEnableAutoRevert: StateFlow<Boolean> = _usbEnableAutoRevert.asStateFlow()
-    private val _usbAutoRevertDelaySeconds =
-        MutableStateFlow(sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5))
-    val usbAutoRevertDelaySeconds: StateFlow<Int> = _usbAutoRevertDelaySeconds.asStateFlow()
+    val usbStore = UsbSettingsStore(sharedPreferences)
 
     // VPN Detection Settings
     private val _vpnDetectionEnabled =
@@ -147,9 +121,6 @@ class PreferencesManager private constructor(context: Context) {
         MutableStateFlow(sharedPreferences.getBoolean(KEY_DNS_REQUIRE_UNLOCK, false))
     val dnsRequireUnlock: StateFlow<Boolean> = _dnsRequireUnlock.asStateFlow()
 
-    private val _usbRequireUnlock =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_USB_REQUIRE_UNLOCK, false))
-    val usbRequireUnlock: StateFlow<Boolean> = _usbRequireUnlock.asStateFlow()
 
     // Help Shown
     private val _helpShown = MutableStateFlow(sharedPreferences.getBoolean(KEY_HELP_SHOWN, false))
@@ -206,45 +177,24 @@ class PreferencesManager private constructor(context: Context) {
     }
 
 
-    fun setUsbToggleEnable(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_USB_TOGGLE_ENABLE, enabled) }
-        _usbToggleEnable.value = enabled
-    }
+    fun setUsbToggleEnable(value: Boolean) = usbStore.setToggleEnable(value)
 
-    fun setUsbToggleDisable(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_USB_TOGGLE_DISABLE, enabled) }
-        _usbToggleDisable.value = enabled
-    }
+    fun setUsbToggleDisable(value: Boolean) = usbStore.setToggleDisable(value)
 
-    fun setUsbAlsoHideDevOptions(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, enabled) }
-        _usbAlsoHideDevOptions.value = enabled
-    }
+    fun setUsbAlsoHideDevOptions(value: Boolean) = usbStore.setAlsoHideDevOptions(value)
 
-    fun setUsbAlsoDisableWirelessDebugging(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING, enabled) }
-        _usbAlsoDisableWirelessDebugging.value = enabled
-    }
+    fun setUsbAlsoDisableWirelessDebugging(value: Boolean) = usbStore.setAlsoDisableWirelessDebugging(value)
 
-    fun setUsbEnableAutoRevert(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_USB_ENABLE_AUTO_REVERT, enabled) }
-        _usbEnableAutoRevert.value = enabled
-    }
+    fun setUsbEnableAutoRevert(value: Boolean) = usbStore.setEnableAutoRevert(value)
 
-    fun setUsbAutoRevertDelaySeconds(delay: Int) {
-        sharedPreferences.edit { putInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, delay) }
-        _usbAutoRevertDelaySeconds.value = delay
-    }
+    fun setUsbAutoRevertDelaySeconds(value: Int) = usbStore.setAutoRevertDelaySeconds(value)
 
     fun setDnsRequireUnlock(enabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_DNS_REQUIRE_UNLOCK, enabled) }
         _dnsRequireUnlock.value = enabled
     }
 
-    fun setUsbRequireUnlock(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_USB_REQUIRE_UNLOCK, enabled) }
-        _usbRequireUnlock.value = enabled
-    }
+    fun setUsbRequireUnlock(value: Boolean) = usbStore.setRequireUnlock(value)
 
     fun setHelpShown(shown: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_HELP_SHOWN, shown) }
@@ -405,13 +355,13 @@ class PreferencesManager private constructor(context: Context) {
                     dnsHostnameOnMobile = _dnsHostnameOnMobile.value
                 ),
                 usb = UsbSettingsBackup(
-                    toggleEnable = _usbToggleEnable.value,
-                    toggleDisable = _usbToggleDisable.value,
-                    alsoHideDevOptions = _usbAlsoHideDevOptions.value,
-                    alsoDisableWirelessDebugging = _usbAlsoDisableWirelessDebugging.value,
-                    enableAutoRevert = _usbEnableAutoRevert.value,
-                    autoRevertDelaySeconds = _usbAutoRevertDelaySeconds.value,
-                    requireUnlock = _usbRequireUnlock.value
+                    toggleEnable = usbStore.state.value.toggleEnable,
+                    toggleDisable = usbStore.state.value.toggleDisable,
+                    alsoHideDevOptions = usbStore.state.value.alsoHideDevOptions,
+                    alsoDisableWirelessDebugging = usbStore.state.value.alsoDisableWirelessDebugging,
+                    enableAutoRevert = usbStore.state.value.enableAutoRevert,
+                    autoRevertDelaySeconds = usbStore.state.value.autoRevertDelaySeconds,
+                    requireUnlock = usbStore.state.value.requireUnlock
                 ),
                 shortcuts = ShortcutSettingsBackup(
                     enabledShortcutIds = _enabledShortcutIds.value,
@@ -460,16 +410,11 @@ class PreferencesManager private constructor(context: Context) {
             putString(KEY_DNS_STATE_ON_MOBILE, dns.dnsStateOnMobile)
             putString(KEY_DNS_HOSTNAME_ON_MOBILE, dns.dnsHostnameOnMobile)
 
-            putBoolean(KEY_USB_TOGGLE_ENABLE, usb.toggleEnable)
-            putBoolean(KEY_USB_TOGGLE_DISABLE, usb.toggleDisable)
-            putBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, usb.alsoHideDevOptions)
-            putBoolean(
-                KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING,
-                usb.alsoDisableWirelessDebugging
-            )
-            putBoolean(KEY_USB_ENABLE_AUTO_REVERT, usb.enableAutoRevert)
-            putInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, usb.autoRevertDelaySeconds)
-            putBoolean(KEY_USB_REQUIRE_UNLOCK, usb.requireUnlock)
+            usbStore.writeTo(this, UsbSettings(
+                usb.toggleEnable, usb.toggleDisable, usb.alsoHideDevOptions,
+                usb.alsoDisableWirelessDebugging, usb.enableAutoRevert,
+                usb.autoRevertDelaySeconds, usb.requireUnlock
+            ))
 
             putBoolean(
                 KEY_ALLOW_PINNED_SHORTCUTS_WHEN_DISABLED,
@@ -477,6 +422,7 @@ class PreferencesManager private constructor(context: Context) {
             )
         }
 
+        usbStore.refresh()
         _dnsToggleOff.value = dns.toggleOff
         _dnsToggleAuto.value = dns.toggleAuto
         manualDnsHostnames = restoredHostnames
@@ -497,13 +443,6 @@ class PreferencesManager private constructor(context: Context) {
         _dnsStateOnMobile.value = dns.dnsStateOnMobile
         _dnsHostnameOnMobile.value = dns.dnsHostnameOnMobile
 
-        _usbToggleEnable.value = usb.toggleEnable
-        _usbToggleDisable.value = usb.toggleDisable
-        _usbAlsoHideDevOptions.value = usb.alsoHideDevOptions
-        _usbAlsoDisableWirelessDebugging.value = usb.alsoDisableWirelessDebugging
-        _usbEnableAutoRevert.value = usb.enableAutoRevert
-        _usbAutoRevertDelaySeconds.value = usb.autoRevertDelaySeconds
-        _usbRequireUnlock.value = usb.requireUnlock
 
         _enabledShortcutIds.value = ShortcutUtils.migrateLegacyShortcutIds(
             shortcuts.enabledShortcutIds
@@ -888,29 +827,22 @@ class PreferencesManager private constructor(context: Context) {
     fun getDnsAutoRevertDelaySeconds(): Int =
         sharedPreferences.getInt(KEY_DNS_AUTO_REVERT_DELAY_SECONDS, 5)
 
-    fun isUsbToggleEnableEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_USB_TOGGLE_ENABLE, true)
+    fun isUsbToggleEnableEnabled(): Boolean = usbStore.read().toggleEnable
 
-    fun isUsbToggleDisableEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_USB_TOGGLE_DISABLE, true)
+    fun isUsbToggleDisableEnabled(): Boolean = usbStore.read().toggleDisable
 
-    fun isUsbAlsoHideDevOptionsEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_USB_ALSO_HIDE_DEV_OPTIONS, false)
+    fun isUsbAlsoHideDevOptionsEnabled(): Boolean = usbStore.read().alsoHideDevOptions
 
-    fun isUsbAlsoDisableWirelessDebuggingEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING, false)
+    fun isUsbAlsoDisableWirelessDebuggingEnabled(): Boolean = usbStore.read().alsoDisableWirelessDebugging
 
-    fun isUsbAutoRevertEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_USB_ENABLE_AUTO_REVERT, false)
+    fun isUsbAutoRevertEnabled(): Boolean = usbStore.read().enableAutoRevert
 
-    fun getUsbAutoRevertDelaySeconds(): Int =
-        sharedPreferences.getInt(KEY_USB_AUTO_REVERT_DELAY_SECONDS, 5)
+    fun getUsbAutoRevertDelaySeconds(): Int = usbStore.read().autoRevertDelaySeconds
 
     fun isDnsRequireUnlockEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_DNS_REQUIRE_UNLOCK, false)
 
-    fun isUsbRequireUnlockEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_USB_REQUIRE_UNLOCK, false)
+    fun isUsbRequireUnlockEnabled(): Boolean = usbStore.read().requireUnlock
 
     fun isVpnDetectionEnabled(): Boolean =
         sharedPreferences.getBoolean(KEY_VPN_DETECTION_ENABLED, false)
@@ -956,16 +888,8 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_DNS_LIST_SORT_MODE = "dns_list_sort_mode_v1"
 
 
-        private const val KEY_USB_TOGGLE_ENABLE = "usb_toggle_enable"
-        private const val KEY_USB_TOGGLE_DISABLE = "usb_toggle_disable"
-        private const val KEY_USB_ALSO_HIDE_DEV_OPTIONS = "usb_also_hide_dev_options"
-        private const val KEY_USB_ALSO_DISABLE_WIRELESS_DEBUGGING =
-            "usb_also_disable_wireless_debugging"
-        private const val KEY_USB_ENABLE_AUTO_REVERT = "usb_enable_auto_revert"
-        private const val KEY_USB_AUTO_REVERT_DELAY_SECONDS = "usb_auto_revert_delay_seconds"
 
         private const val KEY_DNS_REQUIRE_UNLOCK = "dns_require_unlock"
-        private const val KEY_USB_REQUIRE_UNLOCK = "usb_require_unlock"
 
         private const val KEY_HELP_SHOWN = "help_shown_v1"
 

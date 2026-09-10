@@ -193,7 +193,7 @@ jobs:
           TEST_PROFILE: ${{ matrix.profile }}
         run: bash .github/scripts/run_emulator_tests.sh
 
-      - name: Summarize Instrumented Test Results
+      - name: Summarize and enforce Instrumented Test Results
         if: always()
         env:
           TEST_PROFILE: API ${{ matrix.api-level }} / ${{ matrix.profile }}

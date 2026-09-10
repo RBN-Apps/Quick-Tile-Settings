@@ -9,7 +9,7 @@ SCRIPT = Path(__file__).with_name("run_instrumented_tests.sh").resolve()
 
 
 class InstrumentedDriverTest(unittest.TestCase):
-    def run_driver(self, test_exit=0, anr=False, first_boot=False):
+    def run_driver(self, test_exit=0, anr=False, first_boot=False, navigation_mode=2):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             bin_dir = root / "bin"
@@ -37,6 +37,9 @@ case "$*" in
     else
       echo 'mCurrentFocus=Window{com.example.launcher/com.example.launcher.Home}'
     fi ;;
+  'shell settings get secure navigation_mode') echo "$NAVIGATION_MODE" ;;
+  'shell cmd overlay enable-exclusive'*)
+    if [[ "$NAVIGATION_MODE" != 2 ]]; then exit 1; fi ;;
   pull*) exit 1 ;;
   *) echo diagnostic ;;
 esac
@@ -53,7 +56,7 @@ esac
             gradle.chmod(0o755)
             env = dict(os.environ, PATH=f"{bin_dir}:{os.environ['PATH']}",
                        TEST_EXIT=str(test_exit), SIMULATE_ANR=str(int(anr)),
-                       FIRST_BOOT=str(int(first_boot)))
+                       FIRST_BOOT=str(int(first_boot)), NAVIGATION_MODE=str(navigation_mode))
             result = subprocess.run(["bash", str(SCRIPT)], cwd=root, env=env,
                                     capture_output=True, text=True, timeout=10)
             invoked = (root / "gradle-invoked").exists()
@@ -65,6 +68,8 @@ esac
         result, invoked, calls, diagnostics = self.run_driver()
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertTrue(invoked)
+        self.assertIn("cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural", calls)
+        self.assertIn("settings get secure navigation_mode", calls)
         self.assertNotIn("shell input keyevent", calls)
         # Five readiness samples plus before/prepared/after diagnostic captures.
         self.assertEqual(8, calls.splitlines().count("shell dumpsys window"))
@@ -84,6 +89,12 @@ esac
                 self.assertEqual(code, result.returncode, result.stderr)
                 self.assertTrue(invoked)
                 self.assertTrue(diagnostics)
+
+    def test_unavailable_gestural_overlay_fails_before_tests(self):
+        result, invoked, _, diagnostics = self.run_driver(navigation_mode=0)
+        self.assertNotEqual(0, result.returncode)
+        self.assertFalse(invoked)
+        self.assertTrue(diagnostics)
 
     def test_system_anr_fails_preflight_without_starting_tests(self):
         result, invoked, _, diagnostics = self.run_driver(anr=True)

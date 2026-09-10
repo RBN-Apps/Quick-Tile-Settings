@@ -19,6 +19,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
@@ -231,34 +233,18 @@ class AppDialogInstrumentedTest {
     @Test fun destructiveGerman() = gallery("delete-de", "de", false) { DeleteDialogPreview() }
     @Test fun formErrorDarkGerman() = gallery("form-dark-de", "de", true) { FormDialogPreview() }
     @Test fun longContentLargeGerman() {
-        // Dialogs create a new Android composition root. Change the real configuration;
-        // a LocalDensity override outside that root does not exercise system font scaling.
-        val previousScale = shell("settings get system font_scale").trim()
-        try {
-            shell("settings put system font_scale 2.0")
-            compose.waitUntil(10_000) {
-                instrumentation.targetContext.resources.configuration.fontScale == 2f
-            }
-            gallery("long-large-de", "de", false) { LongDialogPreview() }
-            val scrollNode = compose.onNode(
-                SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange)
-            )
-            scrollNode.assert(SemanticsMatcher("content exceeds viewport") {
-                it.config[SemanticsProperties.VerticalScrollAxisRange].maxValue() > 0f
-            })
-            scrollNode.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) {
-                it(0f, 10000f)
-            }
-            compose.onNodeWithText("Schließen").assertIsDisplayed()
-            screenshot("long-large-de-scrolled")
-        } finally {
-            if (previousScale == "null") shell("settings delete system font_scale")
-            else shell("settings put system font_scale $previousScale")
-            val restoredScale = previousScale.toFloatOrNull() ?: 1f
-            compose.waitUntil(10_000) {
-                instrumentation.targetContext.resources.configuration.fontScale == restoredScale
-            }
+        gallery("long-large-de", "de", false, fontScale = 2f) { LongDialogPreview() }
+        val scrollNode = compose.onNode(
+            SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange)
+        )
+        scrollNode.assert(SemanticsMatcher("content exceeds viewport") {
+            it.config[SemanticsProperties.VerticalScrollAxisRange].maxValue() > 0f
+        })
+        scrollNode.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) {
+            it(0f, 10000f)
         }
+        compose.onNodeWithText("Schließen").assertIsDisplayed()
+        screenshot("long-large-de-scrolled")
     }
 
     private fun shell(command: String): String = ParcelFileDescriptor.AutoCloseInputStream(
@@ -267,6 +253,7 @@ class AppDialogInstrumentedTest {
 
     private fun gallery(
         name: String, locale: String, dark: Boolean,
+        fontScale: Float = 1f,
         content: @Composable () -> Unit
     ) {
         compose.setContent {
@@ -278,7 +265,11 @@ class AppDialogInstrumentedTest {
             CompositionLocalProvider(
                 LocalContext provides localizedContext,
                 LocalConfiguration provides configuration
-            ) { content() }
+            ) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(fontScale)) {
+                    content()
+                }
+            }
         }
         compose.onNode(isDialog()).assertExists()
         screenshot(name)

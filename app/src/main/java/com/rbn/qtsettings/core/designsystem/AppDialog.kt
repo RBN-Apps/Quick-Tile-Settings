@@ -11,10 +11,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.window.DialogProperties
 import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
 
@@ -36,6 +39,9 @@ fun AppDialog(
     icon: ImageVector? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    // Android dialogs use a separate window and rebuild LocalDensity from that window's
+    // configuration. Preserve an explicit caller override for previews and isolated a11y tests.
+    val callerDensity = LocalDensity.current
     AlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier.safeDrawingPadding(),
@@ -43,27 +49,42 @@ fun AppDialog(
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        icon = icon?.let { { Icon(it, contentDescription = null) } },
-        title = { Text(title, Modifier.semantics { heading() }) },
+        icon = icon?.let { { DialogSlot(callerDensity) { Icon(it, contentDescription = null) } } },
+        title = {
+            DialogSlot(callerDensity) {
+                Text(title, Modifier.semantics { heading() })
+            }
+        },
         text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.contentGap),
-                content = content
-            )
+            DialogSlot(callerDensity) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.contentGap),
+                    content = content
+                )
+            }
         },
         confirmButton = {
-            AppButton(
-                text = confirmLabel,
-                onClick = onConfirm,
-                enabled = confirmEnabled,
-                style = if (destructive) AppButtonStyle.Destructive else AppButtonStyle.Text
-            )
+            DialogSlot(callerDensity) {
+                AppButton(
+                    text = confirmLabel,
+                    onClick = onConfirm,
+                    enabled = confirmEnabled,
+                    style = if (destructive) AppButtonStyle.Destructive else AppButtonStyle.Text
+                )
+            }
         },
         dismissButton = dismissLabel?.let { label ->
             {
-                AppButton(label, onDismissRequest, style = AppButtonStyle.Text)
+                DialogSlot(callerDensity) {
+                    AppButton(label, onDismissRequest, style = AppButtonStyle.Text)
+                }
             }
         }
     )
+}
+
+@Composable
+private fun DialogSlot(density: Density, content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalDensity provides density, content = content)
 }

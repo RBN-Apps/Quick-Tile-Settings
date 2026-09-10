@@ -37,6 +37,23 @@ adb shell settings put system screen_off_timeout 2147483647
 # svc power stayon wakes the device without injecting input into a booting launcher.
 adb shell wm dismiss-keyguard
 adb shell settings put secure show_ime_with_hard_keyboard 1
+# Real edge-gesture tests require the actual System UI overlay, not merely a setting.
+if ! adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural; then
+  echo "::error::Could not enable the System UI gestural navigation overlay."
+  exit 1
+fi
+navigation_mode=
+deadline=$((SECONDS + 30))
+while (( SECONDS < deadline )); do
+  navigation_mode=$(adb shell settings get secure navigation_mode | tr -d '\r')
+  if [[ "$navigation_mode" == 2 ]]; then break; fi
+  sleep 1
+done
+if [[ "$navigation_mode" != 2 ]]; then
+  echo "::error::Gestural navigation was not activated (navigation_mode=$navigation_mode)."
+  exit 1
+fi
+# Apply the navigation configuration before checking stable launcher focus.
 # sys.boot_completed does not mean that the launcher/System UI has finished starting.
 # Require consecutive focused launcher samples instead of sleeping a fixed duration.
 adb shell am start -W -a android.intent.action.MAIN -c android.intent.category.HOME

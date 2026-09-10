@@ -17,14 +17,14 @@ import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
-import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
-import com.rbn.qtsettings.utils.WifiNetworkDiscovery
-import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
+import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
+import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
+import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.utils.SystemQuickActionResult
 import com.rbn.qtsettings.utils.SystemQuickActions
+import com.rbn.qtsettings.utils.WifiNetworkDiscovery
+import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,13 +41,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val dnsEnableAutoRevert = prefsManager.dnsEnableAutoRevert
     val dnsAutoRevertDelaySeconds = prefsManager.dnsAutoRevertDelaySeconds
 
-    val usbToggleEnable = prefsManager.usbToggleEnable
-    val usbToggleDisable = prefsManager.usbToggleDisable
-    val usbAlsoHideDevOptions = prefsManager.usbAlsoHideDevOptions
-    val usbAlsoDisableWirelessDebugging = prefsManager.usbAlsoDisableWirelessDebugging
-    val usbEnableAutoRevert = prefsManager.usbEnableAutoRevert
-    val usbAutoRevertDelaySeconds = prefsManager.usbAutoRevertDelaySeconds
-
     val vpnDetectionEnabled = prefsManager.vpnDetectionEnabled
     val vpnDetectionMode = prefsManager.vpnDetectionMode
 
@@ -62,7 +55,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val dnsHostnameOnMobile = prefsManager.dnsHostnameOnMobile
 
     val dnsRequireUnlock = prefsManager.dnsRequireUnlock
-    val usbRequireUnlock = prefsManager.usbRequireUnlock
 
     val helpShown = prefsManager.helpShown
 
@@ -88,9 +80,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     private val _activeDnsMode = MutableStateFlow<String?>(null)
     val activeDnsMode = _activeDnsMode.asStateFlow()
-
-    private val _usbDebuggingEnabled = MutableStateFlow(false)
-    val usbDebuggingEnabled = _usbDebuggingEnabled.asStateFlow()
 
     private val _developerOptionsEnabled = MutableStateFlow(false)
     val developerOptionsEnabled = _developerOptionsEnabled.asStateFlow()
@@ -161,17 +150,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun setDnsEnableAutoRevert(enabled: Boolean) = prefsManager.setDnsEnableAutoRevert(enabled)
     fun setDnsAutoRevertDelaySeconds(delay: Int) = prefsManager.setDnsAutoRevertDelaySeconds(delay)
 
-    fun setUsbToggleEnable(enabled: Boolean) = prefsManager.setUsbToggleEnable(enabled)
-    fun setUsbToggleDisable(enabled: Boolean) = prefsManager.setUsbToggleDisable(enabled)
-    fun setUsbAlsoHideDevOptions(enabled: Boolean) = prefsManager.setUsbAlsoHideDevOptions(enabled)
-    fun setUsbAlsoDisableWirelessDebugging(enabled: Boolean) =
-        prefsManager.setUsbAlsoDisableWirelessDebugging(enabled)
-
-    fun setUsbEnableAutoRevert(enabled: Boolean) = prefsManager.setUsbEnableAutoRevert(enabled)
-    fun setUsbAutoRevertDelaySeconds(delay: Int) = prefsManager.setUsbAutoRevertDelaySeconds(delay)
-
     fun setDnsRequireUnlock(enabled: Boolean) = prefsManager.setDnsRequireUnlock(enabled)
-    fun setUsbRequireUnlock(enabled: Boolean) = prefsManager.setUsbRequireUnlock(enabled)
 
     fun setVpnDetectionEnabled(enabled: Boolean) {
         prefsManager.setVpnDetectionEnabled(enabled)
@@ -495,29 +474,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
         refreshSystemQuickActionStates(appContext)
     }
 
-    fun setUsbDebuggingEnabled(context: Context, enabled: Boolean) {
-        val appContext = context.applicationContext
-        val result = SystemQuickActions.setUsbDebuggingEnabled(
-            context = appContext,
-            enabled = enabled,
-            toggleDeveloperOptions = prefsManager.isUsbAlsoHideDevOptionsEnabled(),
-            toggleWirelessDebugging = prefsManager.isUsbAlsoDisableWirelessDebuggingEnabled()
-        )
-        _quickActionStatusMessage.value = when (result) {
-            SystemQuickActionResult.SUCCESS -> appContext.getString(
-                if (enabled) R.string.shortcut_toast_usb_on else R.string.shortcut_toast_usb_off
-            )
-            SystemQuickActionResult.PERMISSION_MISSING ->
-                appContext.getString(R.string.toast_permission_not_granted_adb)
-            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED ->
-                appContext.getString(R.string.toast_developer_options_disabled)
-            SystemQuickActionResult.INVALID_DNS_HOSTNAME,
-            SystemQuickActionResult.FAILED ->
-                appContext.getString(R.string.toast_error_saving_settings)
-        }
-        refreshSystemQuickActionStates(appContext)
-    }
-
     fun clearQuickActionStatusMessage() {
         _quickActionStatusMessage.value = null
     }
@@ -525,7 +481,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     fun refreshSystemQuickActionStates(context: Context) {
         _activeDnsHostname.value = SystemQuickActions.getActiveDnsHostname(context)
         _activeDnsMode.value = SystemQuickActions.getActiveDnsMode(context)
-        _usbDebuggingEnabled.value = SystemQuickActions.isUsbDebuggingEnabled(context)
         _developerOptionsEnabled.value = PermissionUtils.isDeveloperOptionsEnabled(context)
     }
 

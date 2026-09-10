@@ -33,8 +33,8 @@ fun AppTopBar(
     onOpenDestination: (AppDestination) -> Unit,
     onShowPermissionHelp: () -> Unit,
     onShowAbout: () -> Unit,
-    onOpenNavigation: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onOpenNavigation: (() -> Unit)? = null
 ) {
     val inSubScreen = destination != AppDestination.TileSettings
     var showOverflowMenu by remember { mutableStateOf(false) }

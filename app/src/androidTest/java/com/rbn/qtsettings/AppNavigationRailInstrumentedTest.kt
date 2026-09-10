@@ -2,6 +2,7 @@ package com.rbn.qtsettings
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.platform.LocalDensity
@@ -48,7 +50,10 @@ class AppNavigationRailInstrumentedTest {
             CompositionLocalProvider(LocalDensity provides Density(1f, fontScale)) {
                 QuickTileSettingsTheme {
                     val nav = rememberAppNavigation()
-                    Box(Modifier.requiredWidth(width.dp)) {
+                    // Keep the rail inside the physical window when the simulated tablet
+                    // width exceeds a phone's pixels. requiredWidth alone centers overflow
+                    // and can push the menu off-screen, unrelated to rail state or timing.
+                    Box(Modifier.wrapContentWidth(Alignment.Start, unbounded = true).requiredWidth(width.dp)) {
                         AppScaffold(nav.destination, nav.area, nav::selectArea,
                             remember { SnackbarHostState() }, nav::back, nav::open, {}, {}) { modifier ->
                             AppNavigationContent(nav, modifier.testTag("screen")) { route ->

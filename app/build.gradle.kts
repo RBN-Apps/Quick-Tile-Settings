@@ -40,7 +40,7 @@ android {
         }
     }
     if (providers.gradleProperty("minifiedTests").isPresent) {
-        sourceSets.getByName("androidTest").kotlin.srcDir("src/minifiedAndroidTest/java")
+        sourceSets.getByName("androidTest").kotlin.directories.add("src/minifiedAndroidTest/java")
     }
     testBuildType = if (providers.gradleProperty("minifiedTests").isPresent) {
         "minifiedTest"

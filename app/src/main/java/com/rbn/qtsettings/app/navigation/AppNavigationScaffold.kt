@@ -51,6 +51,7 @@ fun AppNavigationScaffold(
         // The Material drawer supplies scrim, dismissal and predictive back. Its content geometry
         // is shared with the rail instead of using WideNavigationRail's fixed 44dp top/40dp gap.
         ModalNavigationDrawer(
+            modifier = if (drawer.isOpen) Modifier.testTag("modal_navigation_open") else Modifier,
             drawerState = drawer,
             gesturesEnabled = compact && drawer.isOpen,
             drawerContent = {

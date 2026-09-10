@@ -86,6 +86,12 @@ class PredictiveBackInstrumentedTest {
     private fun cancel() = compose.runOnIdle { activity.onBackPressedDispatcher.dispatchOnBackCancelled() }
     private fun commit() = compose.runOnIdle { activity.onBackPressedDispatcher.onBackPressed() }
     private fun settingsX() = compose.onNodeWithTag("page_AppSettings").fetchSemanticsNode().positionInRoot.x
+    private fun settleForSystemGesture() {
+        compose.waitForIdle()
+        // SystemUI and the IME animate on wall-clock time outside Compose's test clock. Starting
+        // another injected edge gesture while either is still settling can make SystemUI ignore it.
+        android.os.SystemClock.sleep(700)
+    }
 
     @Test fun bothEdges_previewTracksProgress_cancelRetainsDraftAndOwner_commitPopsOnce() {
         show()
@@ -139,10 +145,11 @@ class PredictiveBackInstrumentedTest {
 
     @Test fun realEdgeGestures_previewCancelAndCommitFromBothEdges() {
         org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
-        org.junit.Assume.assumeTrue(android.provider.Settings.Secure.getInt(
+        org.junit.Assert.assertTrue("Enable gestural navigation before running real edge-gesture tests", android.provider.Settings.Secure.getInt(
             androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.contentResolver,
             "navigation_mode", 0) == 2)
         show()
+        compose.waitForAppWindowFocus()
         compose.onNodeWithText("Settings").performClick()
         compose.onNodeWithTag("draft_AppSettings").performTextReplacement("Keep on cancel")
         compose.runOnIdle {
@@ -155,48 +162,85 @@ class PredictiveBackInstrumentedTest {
                 ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == false
         }
         for (right in listOf(false, true)) {
+            settleForSystemGesture()
             val restingX = settingsX()
-            val gesture = SystemBackGesture(activity.window.decorView.width, activity.window.decorView.height, right)
-            gesture.begin()
-            assertTrue("System gesture must move the page right from either edge", settingsX() - restingX > 10f)
-            gesture.cancel()
+            SystemBackGesture(activity.window.decorView.width, activity.window.decorView.height, right).use { gesture ->
+                gesture.begin()
+                compose.waitUntil(5_000) { settingsX() - restingX > 10f }
+                gesture.cancel()
+            }
             compose.onNodeWithTag("draft_AppSettings").assertTextEquals("Keep on cancel")
-            assertEquals(restingX, settingsX(), 1f)
+            compose.waitUntil(5_000) { abs(settingsX() - restingX) < 1f }
         }
-        SystemBackGesture(activity.window.decorView.width, activity.window.decorView.height, false).apply {
-            begin()
-            commit()
+        settleForSystemGesture()
+        SystemBackGesture(activity.window.decorView.width, activity.window.decorView.height, false).use {
+            it.begin()
+            it.commit()
         }
         compose.onNodeWithTag("page_TileSettings").assertIsDisplayed()
-        compose.runOnIdle { assertEquals(1, cleared.get()) }
+        compose.waitUntil(5_000) { cleared.get() == 1 }
+    }
+
+    @Test fun realGesture_failedPreviewReleasesPointerForNextGesture() {
+        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
+        val context = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext
+        assertEquals(2, android.provider.Settings.Secure.getInt(context.contentResolver, "navigation_mode", 0))
+        show()
+        compose.waitForAppWindowFocus()
+        compose.onNodeWithText("Settings").performClick()
+        settleForSystemGesture()
+        val restingX = settingsX()
+        val expected = AssertionError("Simulated assertion failure while the finger is held")
+        try {
+            SystemBackGesture(activity.window.decorView.width, activity.window.decorView.height, false).use {
+                it.begin()
+                compose.waitUntil(5_000) { settingsX() - restingX > 10f }
+                throw expected
+            }
+        } catch (failure: AssertionError) {
+            assertSame(expected, failure)
+        }
+        compose.waitUntil(5_000) { abs(settingsX() - restingX) < 1f }
+        compose.runOnIdle { assertEquals(0, cleared.get()) }
+        settleForSystemGesture()
+        SystemBackGesture(activity.window.decorView.width, activity.window.decorView.height, true).use {
+            it.begin()
+            compose.waitUntil(5_000) { settingsX() - restingX > 10f }
+            it.commit()
+        }
+        compose.onNodeWithTag("page_TileSettings").assertIsDisplayed()
+        compose.waitUntil(5_000) { cleared.get() == 1 }
     }
 
     @Test fun realGestures_imeThenDialogThenRailThenPage_noSaveOrExtraPop() {
         org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
-        org.junit.Assume.assumeTrue(android.provider.Settings.Secure.getInt(
+        org.junit.Assert.assertTrue("Enable gestural navigation before running real edge-gesture tests", android.provider.Settings.Secure.getInt(
             androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.contentResolver,
             "navigation_mode", 0) == 2)
-        org.junit.Assume.assumeTrue(
-            androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
-                .targetContext.resources.configuration.screenWidthDp < 600)
         show()
+        compose.waitForAppWindowFocus()
         compose.onNodeWithText("Settings").performClick()
         compose.onNodeWithText("Edit dialog").performClick()
-        compose.onNodeWithTag("dialog_draft").performClick().performTextReplacement("Do not save")
+        compose.waitForDialogWindowFocus()
+        compose.onNodeWithTag("dialog_draft").performTouchInput { click() }
+        compose.onNodeWithTag("dialog_draft").performTextReplacement("Do not save")
         // Dialogs have a separate window; query its view rather than the Activity's insets.
         compose.waitUntil(5_000) {
             androidx.core.view.ViewCompat.getRootWindowInsets(dialogView)
                 ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == true
         }
         fun gesture() = SystemBackGesture(activity.window.decorView.width, activity.window.decorView.height, false)
-        gesture().apply { begin(); commit() }
+        settleForSystemGesture()
+        gesture().use { it.begin(); it.commit() }
         compose.onNodeWithText("Edit draft").assertExists()
         compose.waitUntil(5_000) {
             androidx.core.view.ViewCompat.getRootWindowInsets(dialogView)
                 ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == false
         }
         compose.onNodeWithTag("dialog_draft").assertTextContains("Do not save")
-        gesture().apply { begin(); commit() }
+        compose.waitForDialogWindowFocus()
+        settleForSystemGesture()
+        gesture().use { it.begin(); it.commit() }
         // Android delivers the dialog-window dismissal asynchronously after touch injection.
         // Wait for that observable result; Compose idle alone does not drain the system callback.
         compose.waitUntil(5_000) {
@@ -205,16 +249,32 @@ class PredictiveBackInstrumentedTest {
         compose.onNodeWithText("Edit draft").assertDoesNotExist()
         compose.onNodeWithTag("page_AppSettings").assertIsDisplayed()
         assertEquals(0, saved.get())
-        compose.onNodeWithContentDescription(activity.getString(R.string.navigation_open)).performClick()
-        gesture().apply { begin(); cancel() }
-        compose.onNodeWithTag("navigation_area_Usb").assertIsDisplayed()
-        gesture().apply { begin(); commit() }
-        compose.onNodeWithTag("navigation_area_Usb").assertDoesNotExist()
-        compose.onNodeWithTag("page_AppSettings").assertIsDisplayed()
-        assertEquals(0, cleared.get())
-        gesture().apply { begin(); commit() }
+        compose.waitForAppWindowFocus()
+        // Persistent rails remain visible on wide windows; only modal rails consume Back.
+        if (activity.resources.configuration.screenWidthDp < 600) {
+            compose.onNodeWithContentDescription(activity.getString(R.string.navigation_open)).performClick()
+            compose.waitUntil(5_000) {
+                compose.onAllNodesWithTag("modal_navigation_open").fetchSemanticsNodes().isNotEmpty()
+            }
+            begin(BackEventCompat.EDGE_RIGHT)
+            progress(BackEventCompat.EDGE_RIGHT, .65f)
+            cancel()
+            compose.onNodeWithTag("navigation_area_Usb").assertIsDisplayed()
+            begin(BackEventCompat.EDGE_RIGHT)
+            progress(BackEventCompat.EDGE_RIGHT, .65f)
+            commit()
+            compose.waitUntil(5_000) {
+                compose.onAllNodesWithTag("navigation_area_Usb").fetchSemanticsNodes().isEmpty()
+            }
+            compose.onNodeWithTag("page_AppSettings").assertIsDisplayed()
+            assertEquals(0, cleared.get())
+        }
+        compose.waitForAppWindowFocus()
+        settleForSystemGesture()
+        gesture().use { it.begin(); it.commit() }
         compose.onNodeWithTag("page_TileSettings").assertIsDisplayed()
-        compose.runOnIdle { assertEquals(1, cleared.get()) }
+        // NavDisplay removes the outgoing entry before its ViewModel store is cleared.
+        compose.waitUntil(5_000) { cleared.get() == 1 }
     }
 
     private class EntryOwner(private val cleared: AtomicInteger) : ViewModel() {

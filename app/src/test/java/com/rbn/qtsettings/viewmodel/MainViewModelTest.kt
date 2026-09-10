@@ -14,8 +14,8 @@ import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.SettingsBackup
 import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.services.NetworkMonitoringService
-import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.ADB_ENABLED
+import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DEVELOPMENT_SETTINGS_ENABLED
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
@@ -24,6 +24,7 @@ import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
+import java.time.Instant
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -34,11 +35,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
-import java.time.Instant
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class MainViewModelTest {
@@ -101,7 +101,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun refreshSystemQuickActionStates_whenGlobalSettingsChange_updatesDnsAndUsbSnapshots() {
+    fun refreshSystemQuickActionStates_whenGlobalSettingsChange_updatesDnsAndDeveloperOptionsSnapshots() {
         Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
         Settings.Global.putString(
             context.contentResolver,
@@ -115,7 +115,6 @@ class MainViewModelTest {
 
         assertEquals("dns.example.com", viewModel.activeDnsHostname.value)
         assertTrue(viewModel.developerOptionsEnabled.value)
-        assertTrue(viewModel.usbDebuggingEnabled.value)
 
         Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_OFF)
         Settings.Global.putInt(context.contentResolver, ADB_ENABLED, 0)
@@ -123,7 +122,6 @@ class MainViewModelTest {
 
         assertNull(viewModel.activeDnsHostname.value)
         assertEquals(DNS_MODE_OFF, viewModel.activeDnsMode.value)
-        assertFalse(viewModel.usbDebuggingEnabled.value)
     }
 
     @Test
@@ -589,13 +587,13 @@ class MainViewModelTest {
         viewModel.setDnsStateOnWifi(DNS_MODE_ON)
         viewModel.setDnsHostnameOnWifi(customEntry.hostname)
 
-        viewModel.setUsbToggleEnable(false)
-        viewModel.setUsbToggleDisable(true)
-        viewModel.setUsbAlsoHideDevOptions(true)
-        viewModel.setUsbAlsoDisableWirelessDebugging(true)
-        viewModel.setUsbEnableAutoRevert(true)
-        viewModel.setUsbAutoRevertDelaySeconds(33)
-        viewModel.setUsbRequireUnlock(true)
+        prefsManager.setUsbToggleEnable(false)
+        prefsManager.setUsbToggleDisable(true)
+        prefsManager.setUsbAlsoHideDevOptions(true)
+        prefsManager.setUsbAlsoDisableWirelessDebugging(true)
+        prefsManager.setUsbEnableAutoRevert(true)
+        prefsManager.setUsbAutoRevertDelaySeconds(33)
+        prefsManager.setUsbRequireUnlock(true)
 
         val customShortcutId = "dns_custom_${customEntry.id}"
         assertTrue(viewModel.setShortcutExposureEnabled(customShortcutId, true))
@@ -606,7 +604,7 @@ class MainViewModelTest {
 
         viewModel.setDnsToggleOff(true)
         viewModel.deleteCustomDnsHostname(customEntry.id)
-        viewModel.setUsbToggleEnable(true)
+        prefsManager.setUsbToggleEnable(true)
         viewModel.setAllowPinnedShortcutsWhenDisabled(false)
 
         prefsManager.restoreSettingsBackupJson(backupJson)
@@ -625,12 +623,12 @@ class MainViewModelTest {
         assertEquals(DNS_MODE_ON, viewModel.dnsStateOnWifi.value)
         assertEquals("backup.example.com", viewModel.dnsHostnameOnWifi.value)
 
-        assertFalse(viewModel.usbToggleEnable.value)
-        assertTrue(viewModel.usbAlsoHideDevOptions.value)
-        assertTrue(viewModel.usbAlsoDisableWirelessDebugging.value)
-        assertTrue(viewModel.usbEnableAutoRevert.value)
-        assertEquals(33, viewModel.usbAutoRevertDelaySeconds.value)
-        assertTrue(viewModel.usbRequireUnlock.value)
+        assertFalse(prefsManager.usbStore.state.value.toggleEnable)
+        assertTrue(prefsManager.usbStore.state.value.alsoHideDevOptions)
+        assertTrue(prefsManager.usbStore.state.value.alsoDisableWirelessDebugging)
+        assertTrue(prefsManager.usbStore.state.value.enableAutoRevert)
+        assertEquals(33, prefsManager.usbStore.state.value.autoRevertDelaySeconds)
+        assertTrue(prefsManager.usbStore.state.value.requireUnlock)
 
         assertTrue(viewModel.enabledShortcutIds.value.contains(customShortcutId))
         assertTrue(viewModel.favoriteShortcutIds.value.contains(customShortcutId))
@@ -705,7 +703,7 @@ class MainViewModelTest {
         assertEquals("good.example.com", restoredGood?.hostname)
 
         assertEquals(1, viewModel.dnsAutoRevertDelaySeconds.value)
-        assertEquals(86_400, viewModel.usbAutoRevertDelaySeconds.value)
+        assertEquals(86_400, prefsManager.usbStore.state.value.autoRevertDelaySeconds)
         assertEquals(TILE_ONLY_DETECTION, viewModel.vpnDetectionMode.value)
         assertEquals(TILE_ONLY_DETECTION, viewModel.networkTypeDetectionMode.value)
         assertEquals(DNS_MODE_OFF, viewModel.dnsStateOnWifi.value)
