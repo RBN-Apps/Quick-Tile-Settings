@@ -25,6 +25,7 @@ import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
  * Shared modal frame. The owner decides when to remove it and what confirmation does.
  * Content scrolls independently of the actions; do not nest another vertical scroller here.
  * Android/Material own Back, outside-touch dismissal and IME window resizing.
+ * With decor fitting enabled, Android also owns the insets; do not apply them a second time.
  */
 @Composable
 fun AppDialog(
@@ -37,6 +38,7 @@ fun AppDialog(
     confirmEnabled: Boolean = true,
     destructive: Boolean = false,
     icon: ImageVector? = null,
+    properties: DialogProperties = DialogProperties(decorFitsSystemWindows = false),
     content: @Composable ColumnScope.() -> Unit
 ) {
     // Android dialogs use a separate window and rebuild LocalDensity from that window's
@@ -44,8 +46,8 @@ fun AppDialog(
     val callerDensity = LocalDensity.current
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        modifier = modifier.safeDrawingPadding(),
-        properties = DialogProperties(decorFitsSystemWindows = false),
+        modifier = if (properties.decorFitsSystemWindows) modifier else modifier.safeDrawingPadding(),
+        properties = properties,
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,

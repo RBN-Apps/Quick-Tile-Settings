@@ -114,10 +114,9 @@
     <string name="setting_also_disable_wireless_debugging">Také přepínat Bezdrátové ladění</string>
     <string name="setting_also_disable_wireless_debugging_desc">Pokud je zapnuto, Bezdrátové ladění se bude přepínat spolu s USB laděním.</string>
     <string name="usb_set_active_mode">Nastavit %1$s jako aktivní USB debugovací stav</string>
-    <string name="usb_active">Aktivní USB debugovací stav</string>
     
     <string name="setting_enable_auto_revert">Povolit automatické obnovení po prodlevě</string>
-    <string name="setting_auto_revert_delay">Prodleva obnovení (sekundy):</string>
+    <string name="setting_auto_revert_delay">Prodleva obnovení (sekundy)</string>
     <string name="toast_reverting_dns_to">Obnovení DNS na \n\"%1$s\" za %2$d s…</string>
     <string name="toast_reverting_usb_to">Obnovení USB ladění na %1$s za %2$d s…</string>
     <string name="toast_revert_cancelled">Automatické obnovení zrušeno.</string>

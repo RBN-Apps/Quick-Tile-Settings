@@ -115,7 +115,7 @@
     <string name="setting_also_disable_wireless_debugging_desc">Etkinleştirildiğinde, Kablosuz Hata Ayıklama da USB Hata Ayıklama ile birlikte açılıp kapatılacaktır.</string>
 
     <string name="setting_enable_auto_revert">Belirli bir süre sonra otomatik geri almayı etkinleştir</string>
-    <string name="setting_auto_revert_delay">Geri alma gecikmesi (saniye):</string>
+    <string name="setting_auto_revert_delay">Geri alma gecikmesi (saniye)</string>
     <string name="toast_reverting_dns_to">DNS, %2$d sn. içinde \n\"%1$s\" durumuna geri alınıyor…</string>
     <string name="toast_reverting_usb_to">USB Hata Ayıklama, %2$d sn. içinde %1$s durumuna geri alınıyor…</string>
     <string name="toast_revert_cancelled">Otomatik geri alma iptal edildi.</string>

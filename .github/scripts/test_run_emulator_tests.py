@@ -9,7 +9,7 @@ SCRIPT = Path(__file__).with_name("run_emulator_tests.sh").resolve()
 
 
 class EmulatorStartupTest(unittest.TestCase):
-    def run_startup(self, test_exit=0, boot_failure=False, profile="Nexus 10"):
+    def run_startup(self, test_exit=0, boot_failure=False, profile="Nexus 10", stubborn_emulator=False):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             sdk = root / "sdk"
@@ -22,6 +22,8 @@ class EmulatorStartupTest(unittest.TestCase):
                 tools / "avdmanager": '#!/bin/bash\ncat >/dev/null\n',
                 sdk / "emulator/emulator": '''#!/bin/bash
 if [[ "$BOOT_FAILURE" == 1 ]]; then exit 1; fi
+if [[ "$STUBBORN_EMULATOR" == 1 ]]; then trap '' TERM; fi
+echo $$ > emulator-pid
 touch emulator-started
 exec /bin/sleep 60
 ''',
@@ -46,9 +48,13 @@ exit "$TEST_EXIT"
                 path.chmod(0o755)
             env = dict(os.environ, ANDROID_HOME=str(sdk), RUNNER_TEMP=str(root),
                        TEST_PROFILE=profile, TEST_API="35", TEST_EXIT=str(test_exit),
-                       BOOT_FAILURE=str(int(boot_failure)))
+                       BOOT_FAILURE=str(int(boot_failure)),
+                       STUBBORN_EMULATOR=str(int(stubborn_emulator)))
             result = subprocess.run(["bash", str(SCRIPT)], cwd=root, env=env,
                                     capture_output=True, text=True, timeout=15)
+            if (root / "emulator-pid").exists():
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(int((root / "emulator-pid").read_text()), 0)
             return result, (root / "tests-started").exists(), (root / "calls").read_text()
 
     def test_waits_for_boot_without_injecting_input_and_cleans_up(self):
@@ -56,7 +62,6 @@ exit "$TEST_EXIT"
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertTrue(started)
         self.assertNotIn("input keyevent", calls)
-        self.assertIn("emu kill", calls)
 
     def test_profiles_reduce_rendering_work_without_changing_dp_geometry(self):
         for profile, native_width, native_height, native_density in [
@@ -81,11 +86,17 @@ exit "$TEST_EXIT"
         result, started, calls = self.run_startup(test_exit=7)
         self.assertEqual(7, result.returncode, result.stderr)
         self.assertTrue(started)
-        self.assertIn("emu kill", calls)
 
     def test_dead_emulator_never_starts_tests(self):
         result, started, calls = self.run_startup(boot_failure=True)
         self.assertEqual(1, result.returncode, result.stderr)
         self.assertFalse(started)
         self.assertIn("Emulator failed to boot", result.stdout)
-        self.assertIn("emu kill", calls)
+
+    def test_stubborn_emulator_is_reaped_without_losing_test_result(self):
+        for exit_code in (0, 7):
+            with self.subTest(exit_code=exit_code):
+                result, started, _ = self.run_startup(
+                    test_exit=exit_code, stubborn_emulator=True)
+                self.assertTrue(started)
+                self.assertEqual(exit_code, result.returncode, result.stderr)

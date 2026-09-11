@@ -9,14 +9,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.app.PermissionWarningCard
+import com.rbn.qtsettings.app.navigation.AppDestination
+import com.rbn.qtsettings.app.navigation.AppRoute
 
 @Composable
-fun UsbSettingsRoot(viewModel: UsbSettingsViewModel, onShowPermissionHelp: () -> Unit) {
+fun UsbSettingsRoot(
+    viewModel: UsbSettingsViewModel,
+    onShowPermissionHelp: () -> Unit,
+    route: AppRoute,
+    onOpen: (AppDestination) -> Unit
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    Column(Modifier.fillMaxSize()) {
-        if (!state.hasPermission) PermissionWarningCard(onShowPermissionHelp, Modifier.padding(horizontal = 16.dp))
-        Column(Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
-            UsbSettingsScreen(state, viewModel::onAction)
+    Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        if (!state.hasPermission) PermissionWarningCard(onShowPermissionHelp)
+        when (route) {
+            AppRoute.Usb -> UsbSettingsScreen(
+                state,
+                viewModel::onAction,
+                { onOpen(AppDestination.UsbTile) },
+                { onOpen(AppDestination.UsbActions) },
+                { onOpen(AppDestination.UsbRevert) })
+
+            AppRoute.UsbTile -> UsbTileScreen(state, viewModel::onAction)
+            AppRoute.UsbActions -> UsbAdditionalActionsScreen(state, viewModel::onAction)
+            AppRoute.UsbRevert -> UsbAutoRevertScreen(state, viewModel::onAction)
+            else -> error("Not a USB destination")
         }
     }
 }

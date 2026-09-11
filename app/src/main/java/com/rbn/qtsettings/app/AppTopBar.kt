@@ -50,6 +50,9 @@ fun AppTopBar(
                         AppDestination.AppSettings ->
                             stringResource(R.string.app_settings_title)
 
+                        AppDestination.UsbTile -> stringResource(R.string.usb_menu_tile)
+                        AppDestination.UsbActions -> stringResource(R.string.usb_menu_actions)
+                        AppDestination.UsbRevert -> stringResource(R.string.usb_menu_revert)
                         AppDestination.TileSettings ->
                             stringResource(R.string.app_name)
                     }

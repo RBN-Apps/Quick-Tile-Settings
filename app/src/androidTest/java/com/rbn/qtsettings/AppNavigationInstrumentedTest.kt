@@ -50,6 +50,9 @@ class AppNavigationInstrumentedTest {
                         Text(when (route) {
                             AppRoute.Dns -> "DNS root"
                             AppRoute.Usb -> "USB root"
+                            AppRoute.UsbTile -> "USB tile settings"
+                            AppRoute.UsbActions -> "USB actions"
+                            AppRoute.UsbRevert -> "USB revert"
                             is AppRoute.Settings -> "${route.origin} settings"
                             is AppRoute.Shortcuts -> "${route.origin} shortcuts"
                         })

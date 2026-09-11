@@ -72,8 +72,9 @@ fun AppRoot(
         onShowAbout = { overlay = AppOverlay.About }
     ) { modifier ->
         AppNavigationContent(navigation, modifier) { route ->
-            if (route == AppRoute.Usb) {
-                UsbSettingsRoot(usbViewModel, showPermissionHelp)
+            if (route == AppRoute.Usb || route == AppRoute.UsbTile ||
+                route == AppRoute.UsbActions || route == AppRoute.UsbRevert) {
+                UsbSettingsRoot(usbViewModel, showPermissionHelp, route, navigation::open)
             } else LegacyFeatureContentRoot(route, viewModel, showPermissionHelp)
         }
     }

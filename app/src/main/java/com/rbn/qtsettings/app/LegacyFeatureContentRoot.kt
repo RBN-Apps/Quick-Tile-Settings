@@ -32,7 +32,7 @@ fun LegacyFeatureContentRoot(
             viewModel = viewModel,
             modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize()
         )
-        AppRoute.Usb -> error("USB has its own feature root")
+        AppRoute.Usb, AppRoute.UsbTile, AppRoute.UsbActions, AppRoute.UsbRevert -> error("USB has its own feature root")
         AppRoute.Dns -> {
             val hasPermission by viewModel.hasWriteSecureSettings.collectAsStateWithLifecycle()
             Column(Modifier.fillMaxSize()) {

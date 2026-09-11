@@ -11,6 +11,9 @@ import kotlinx.serialization.modules.subclass
 /** Stable wire names and explicit serializers keep saved routes independent of R8 class names. */
 @Serializable
 sealed interface AppRoute : NavKey {
+    @Serializable @SerialName("usb_tile") data object UsbTile : AppRoute
+    @Serializable @SerialName("usb_actions") data object UsbActions : AppRoute
+    @Serializable @SerialName("usb_revert") data object UsbRevert : AppRoute
     @Serializable @SerialName("dns") data object Dns : AppRoute
     @Serializable @SerialName("usb") data object Usb : AppRoute
     @Serializable @SerialName("shortcuts") data class Shortcuts(val origin: AppArea) : AppRoute
@@ -20,6 +23,9 @@ sealed interface AppRoute : NavKey {
 internal val AppNavigationSavedState = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
+            subclass(AppRoute.UsbTile.serializer())
+            subclass(AppRoute.UsbActions.serializer())
+            subclass(AppRoute.UsbRevert.serializer())
             subclass(AppRoute.Dns.serializer())
             subclass(AppRoute.Usb.serializer())
             subclass(AppRoute.Shortcuts.serializer())
@@ -32,4 +38,7 @@ internal val AppRoute.destination: AppDestination get() = when (this) {
     AppRoute.Dns, AppRoute.Usb -> AppDestination.TileSettings
     is AppRoute.Shortcuts -> AppDestination.ShortcutSettings
     is AppRoute.Settings -> AppDestination.AppSettings
+    AppRoute.UsbTile -> AppDestination.UsbTile
+    AppRoute.UsbActions -> AppDestination.UsbActions
+    AppRoute.UsbRevert -> AppDestination.UsbRevert
 }

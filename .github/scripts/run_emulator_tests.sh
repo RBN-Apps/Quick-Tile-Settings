@@ -21,9 +21,12 @@ emulator_pid=
 finish() {
   local result=$?
   trap - EXIT
-  adb emu kill || true
   if [[ -n "$emulator_pid" ]]; then
-    kill "$emulator_pid" 2>/dev/null || true
+    # Diagnostics are already captured; this disposable AVD has no snapshot to save.
+    # QEMU can acknowledge `adb emu kill` yet hang during teardown and ignore TERM.
+    # Kill only our own child before reaping it, preserving the test exit status.
+    echo "Stopping CI emulator process $emulator_pid"
+    kill -KILL "$emulator_pid" 2>/dev/null || true
     wait "$emulator_pid" 2>/dev/null || true
   fi
   exit "$result"

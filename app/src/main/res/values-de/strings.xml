@@ -114,10 +114,9 @@
     <string name="setting_also_disable_wireless_debugging">Auch Wireless-Debugging umschalten</string>
     <string name="setting_also_disable_wireless_debugging_desc">Wenn aktiviert, wird Wireless-Debugging zusammen mit USB-Debugging ebenfalls umgeschaltet.</string>
     <string name="usb_set_active_mode">%1$s als aktiven USB-Debugging-Zustand festlegen</string>
-    <string name="usb_active">Aktiver USB-Debugging-Zustand</string>
 
     <string name="setting_enable_auto_revert">Automatisches Zurücksetzen nach Verzögerung aktivieren</string>
-    <string name="setting_auto_revert_delay">Verzögerung (Sekunden):</string>
+    <string name="setting_auto_revert_delay">Verzögerung (Sekunden)</string>
     <string name="toast_reverting_dns_to">DNS wird in %2$d Sek. auf \n\"%1$s\" zurückgesetzt…</string>
     <string name="toast_reverting_usb_to">USB-Debug wird in %2$d Sek. auf %1$s zurückgesetzt…</string>
     <string name="toast_revert_cancelled">Autom. Zurücksetzen abgebrochen.</string>
@@ -347,4 +346,26 @@
     <string name="navigation_collapse">Navigation einklappen</string>
     <string name="navigation_dns_short">DNS</string>
     <string name="navigation_usb_short">USB</string>
+    <string name="usb_menu_tile">Kachelverhalten</string>
+    <string name="usb_menu_actions">Zusätzliche Aktionen</string>
+    <string name="usb_menu_revert">Automatisch zurücksetzen</string>
+    <string name="usb_menu_tile_summary">Zustände für den Zyklus auswählen oder direkt aktivieren.</string>
+    <string name="usb_menu_actions_summary">Entwickleroptionen und drahtloses Debugging mit umschalten.</string>
+    <string name="usb_menu_revert_summary">Nach einem Kacheltipp den vorherigen Zustand wiederherstellen.</string>
+    <string name="usb_status_on">USB-Debugging ist an</string>
+    <string name="usb_status_off">USB-Debugging ist aus</string>
+    <string name="usb_status_summary">Aktueller Systemzustand, unabhängig von der Zyklusauswahl.</string>
+    <plurals name="usb_delay_seconds">
+        <item quantity="one">%1$d Sekunde</item>
+        <item quantity="other">%1$d Sekunden</item>
+    </plurals>
+    <string name="usb_seconds_label">Sekunden</string>
+    <string name="usb_apply">Übernehmen</string>
+    <string name="usb_delay_error">Gib eine ganze Zahl größer als null ein.</string>
+    <string name="usb_revert_details">Wie das Zurücksetzen funktioniert</string>
+    <string name="usb_revert_explanation">Nach einem erfolgreichen Kacheltipp stellt der Timer den vorherigen USB-Debugging-Zustand wieder her. Entwickleroptionen und drahtloses Debugging werden ebenfalls wiederhergestellt, wenn ihre Zusatzaktionen aktiviert sind. Direkte Aktionen in der App starten diesen Timer nicht.</string>
+    <string name="usb_revert_cancellation">Ein weiterer Kacheltipp beendet den laufenden Timer und führt die nächste Zyklusaktion aus. Eine erfolgreiche direkte Aktion bricht den laufenden Timer ab. Der Timer endet auch, wenn Android den Kacheldienst beendet.</string>
+    <string name="usb_tile_cycle_title">Kachel-Zyklus</string>
+    <string name="usb_tile_cycle_explanation">Jedes Tippen auf die Kachel wechselt zum nächsten ausgewählten Zustand.</string>
+    <string name="usb_state_active">Derzeit aktiv</string>
 </resources>

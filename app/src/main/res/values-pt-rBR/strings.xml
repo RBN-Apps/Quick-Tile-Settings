@@ -103,7 +103,7 @@
     <string name="setting_also_disable_wireless_debugging_desc">Quando ativado, a Depuração sem fio também será alternada junto com a Depuração USB.</string>
 
     <string name="setting_enable_auto_revert">Ativar reversão automática após um atraso</string>
-    <string name="setting_auto_revert_delay">Tempo para reversão (segundos):</string>
+    <string name="setting_auto_revert_delay">Tempo para reversão (segundos)</string>
     <string name="toast_reverting_dns_to">Revertendo DNS para \n\"%1$s\" em %2$d seg…</string>
     <string name="toast_reverting_usb_to">Revertendo Depuração USB para %1$s em %2$d seg…</string>
     <string name="toast_revert_cancelled">Reversão automática cancelada.</string>

@@ -112,7 +112,7 @@
     <string name="setting_also_disable_wireless_debugging">Basculer également le débogage sans fil</string>
     <string name="setting_also_disable_wireless_debugging_desc">Lorsqu\'elle est activée, le débogage sans fil sera également basculé avec le débogage USB.</string>
     <string name="setting_enable_auto_revert">Activer la restauration automatique après un délai</string>
-    <string name="setting_auto_revert_delay">Délai de restauration (secondes) :</string>
+    <string name="setting_auto_revert_delay">Délai de restauration (secondes)</string>
     <string name="toast_reverting_dns_to">Rétablissement du DNS sur \n« %1$s » dans %2$d s…</string>
     <string name="toast_reverting_usb_to">Rétablissement du débogage USB sur %1$s dans %2$d s…</string>
     <string name="toast_revert_cancelled">Restauration automatique annulée.</string>

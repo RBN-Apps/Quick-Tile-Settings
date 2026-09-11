@@ -24,12 +24,13 @@ internal fun SettingsRowContent(
     enabled: Boolean,
     modifier: Modifier,
     status: String? = null,
+    titleBadge: (@Composable () -> Unit)? = null,
     trailing: @Composable () -> Unit
 ) {
     val alpha = if (enabled) 1f else AppSpacing.disabledContentAlpha
     Row(
         modifier = modifier.fillMaxWidth()
-            .heightIn(min = AppSpacing.minimumTouchTarget)
+            .heightIn(min = AppSpacing.rowMinHeight)
             .padding(horizontal = AppSpacing.rowHorizontal, vertical = AppSpacing.rowVertical),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.rowGap)
@@ -39,8 +40,14 @@ internal fun SettingsRowContent(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha))
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(AppSpacing.textGap)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha))
+            Row(verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.textGap)) {
+                Text(title, style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
+                    modifier = Modifier.weight(1f, fill = false))
+                // The badge marks state; it never becomes a second control.
+                titleBadge?.invoke()
+            }
             if (summary != null) {
                 Text(summary, style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha))

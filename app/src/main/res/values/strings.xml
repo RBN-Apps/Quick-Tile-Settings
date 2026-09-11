@@ -119,10 +119,9 @@
     <string name="setting_also_disable_wireless_debugging">Also toggle Wireless Debugging</string>
     <string name="setting_also_disable_wireless_debugging_desc">When enabled, Wireless Debugging will also be toggled alongside USB Debugging.</string>
     <string name="usb_set_active_mode">Set %1$s as active USB debugging state</string>
-    <string name="usb_active">Active USB debugging state</string>
 
     <string name="setting_enable_auto_revert">Enable auto-revert after a delay</string>
-    <string name="setting_auto_revert_delay">Revert delay (seconds):</string>
+    <string name="setting_auto_revert_delay">Revert delay (seconds)</string>
     <string name="toast_reverting_dns_to">Reverting DNS to \n\"%1$s\" in %2$d s…</string>
     <string name="toast_reverting_usb_to">Reverting USB Debug to %1$s in %2$d s…</string>
     <string name="toast_revert_cancelled">Auto-revert cancelled.</string>
@@ -355,4 +354,26 @@
     <string name="navigation_collapse">Collapse navigation</string>
     <string name="navigation_dns_short">DNS</string>
     <string name="navigation_usb_short">USB</string>
+    <string name="usb_menu_tile">Tile behaviour</string>
+    <string name="usb_menu_actions">Additional actions</string>
+    <string name="usb_menu_revert">Automatically revert</string>
+    <string name="usb_menu_tile_summary">Choose cycle states or activate a state directly.</string>
+    <string name="usb_menu_actions_summary">Toggle Developer Options and Wireless Debugging alongside USB.</string>
+    <string name="usb_menu_revert_summary">Restore the previous state after a tile tap.</string>
+    <string name="usb_status_on">USB debugging is on</string>
+    <string name="usb_status_off">USB debugging is off</string>
+    <string name="usb_status_summary">Current system state, independent of the selected cycle states.</string>
+    <plurals name="usb_delay_seconds">
+        <item quantity="one">%1$d second</item>
+        <item quantity="other">%1$d seconds</item>
+    </plurals>
+    <string name="usb_seconds_label">Seconds</string>
+    <string name="usb_apply">Apply</string>
+    <string name="usb_delay_error">Enter a whole number greater than zero.</string>
+    <string name="usb_revert_details">How auto-revert works</string>
+    <string name="usb_revert_explanation">After a successful tile tap, the timer restores the previous USB debugging state. Developer Options and Wireless Debugging are also restored when their companion actions are enabled. Direct actions in the app do not start this timer.</string>
+    <string name="usb_revert_cancellation">Another tile tap cancels the pending timer and performs the next cycle action. A successful direct action cancels the pending timer. The timer also ends when Android stops the tile service.</string>
+    <string name="usb_tile_cycle_title">Tile cycle</string>
+    <string name="usb_tile_cycle_explanation">Every tile tap switches to the next selected state.</string>
+    <string name="usb_state_active">Currently active</string>
 </resources>

@@ -115,7 +115,7 @@
     <string name="setting_also_disable_wireless_debugging_desc">Если включено, беспроводная отладка будет переключаться вместе с отладкой по USB.</string>
 
     <string name="setting_enable_auto_revert">Включить авто-возврат с задержкой</string>
-    <string name="setting_auto_revert_delay">Задержка возврата (секунды):</string>
+    <string name="setting_auto_revert_delay">Задержка возврата (секунды)</string>
     <string name="toast_reverting_dns_to">Возврат DNS к \n\"%1$s\" через %2$d сек…</string>
     <string name="toast_reverting_usb_to">Возврат USB отладки к %1$s через %2$d сек…</string>
     <string name="toast_revert_cancelled">Авто-возврат отменен.</string>

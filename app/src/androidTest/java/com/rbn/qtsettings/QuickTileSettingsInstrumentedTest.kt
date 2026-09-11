@@ -173,8 +173,10 @@ class QuickTileSettingsInstrumentedTest {
         // Verify USB debugging settings title
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
 
+        composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_tile)).performClick()
+
         // Verify tile cycles description
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_desc_tile_cycles))
+        composeTestRule.onNodeWithText(context.getString(R.string.usb_tile_cycle_explanation))
             .assertIsDisplayed()
 
         // Verify USB state options exist
@@ -359,6 +361,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun usbOnAndOffRows_shouldOfferSetActiveAction() {
         composeTestRule.navigateToUsbArea(context)
+        composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_tile)).performClick()
 
         listOf(
             context.getString(R.string.usb_state_on),
@@ -705,6 +708,7 @@ class QuickTileSettingsInstrumentedTest {
     fun usbSettings_shouldHandleCheckboxInteractions() {
         // Navigate to USB area
         composeTestRule.navigateToUsbArea(context)
+        composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_tile)).performClick()
 
         Log.i(TAG, "Testing USB checkbox interactions")
 
@@ -718,6 +722,8 @@ class QuickTileSettingsInstrumentedTest {
             .performClick()
         composeTestRule.waitForIdle()
 
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_revert)).performClick()
         // Test USB Auto-Revert checkbox
         composeTestRule.onNodeWithText(context.getString(R.string.setting_enable_auto_revert))
             .performClick()
