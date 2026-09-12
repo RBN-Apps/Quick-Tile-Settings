@@ -11,9 +11,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.ui.composables.permission.PermissionGrantDialog
-import com.rbn.qtsettings.ui.composables.permission.AdbInstructionDialog
-import com.rbn.qtsettings.ui.composables.settings.AboutDialog
+import com.rbn.qtsettings.feature.permissions.presentation.PermissionGrantDialog
+import com.rbn.qtsettings.feature.permissions.presentation.AdbInstructionDialog
+import com.rbn.qtsettings.feature.settings.presentation.AboutDialog
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import com.rbn.qtsettings.feature.permissions.domain.GrantMethod
 
@@ -35,7 +35,7 @@ internal fun AppGlobalDialogsRoot(
     val dialogState = rememberSaveableStateHolder()
     when (overlay) {
         AppOverlay.None -> Unit
-        AppOverlay.About -> AboutDialog(onDismiss, onShowPermissionHelp)
+        AppOverlay.About -> AboutDialog(com.rbn.qtsettings.platform.app.appVersionName(context), onDismiss, onShowPermissionHelp)
         AppOverlay.AdbInstructions -> AdbInstructionDialog(onDismissRequest = onDismiss,
             onCopyToClipboard = { text ->
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

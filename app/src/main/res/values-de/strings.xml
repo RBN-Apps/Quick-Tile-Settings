@@ -214,7 +214,6 @@
     <string name="setting_network_type_detection_description">Ändert Privates DNS automatisch beim Wechsel zwischen WLAN und mobilen Daten. Aktiviere dies auch, um Regeln für einzelne WLAN-Netzwerke oder Access Points einzurichten.</string>
     <string name="setting_network_type_detection_mode">Erkennungsmodus</string>
 
-    <string name="setting_select_hostname">Hostname auswählen…</string>
 
     <!-- WLAN-Netzwerkregeln -->
     <string name="setting_wifi_network_rules_title">WLAN-Netzwerkregeln</string>
@@ -371,7 +370,6 @@
     <string name="automation_vpn_section">VPN-Verbindungen</string>
     <string name="automation_vpn_summary">Privates DNS während einer VPN-Verbindung ausschalten und danach wiederherstellen. Zum Auswählen des Erkennungsmodus aktivieren.</string>
     <string name="automation_notification_title">Benachrichtigung zur Erkennung</string>
-    <string name="automation_notification_summary">Hintergrunderkennung ist ausgewählt. Benachrichtigungen erlauben, um ihren laufenden Status in der Benachrichtigungsleiste zu sehen.</string>
     <string name="automation_rules_summary">Lege für einzelne WLANs eigene DNS-Einstellungen fest. Netzwerke ohne Regel verwenden den WLAN-Standard.</string>
     <string name="automation_rules_requires_network">Aktiviere zuerst „DNS automatisch wechseln“ unter Automatisierung.</string>
     <string name="automation_picker_access">Netzwerke in der Nähe sind ohne Standortzugriff und aktivierte Standortdienste nicht verfügbar. Zuletzt verwendete Netzwerke und die manuelle Eingabe bleiben nutzbar.</string>

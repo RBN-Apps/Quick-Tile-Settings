@@ -214,7 +214,6 @@
     <string name="setting_network_type_detection_description">Automaticky mění soukromé DNS při přechodu mezi Wi-Fi a mobilními daty. Zapněte tuto možnost také pro nastavení pravidel jednotlivých sítí Wi-Fi nebo přístupových bodů.</string>
     <string name="setting_network_type_detection_mode">Režim detekce sítě:</string>
 
-    <string name="setting_select_hostname">Vybrat hostname…</string>
 
     <string name="dns_mode_off_label">Vypnuto</string>
     <string name="dns_mode_auto_label">Automaticky</string>

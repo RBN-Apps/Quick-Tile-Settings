@@ -10,8 +10,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.data.DnsHostnameEntry
-import com.rbn.qtsettings.ui.composables.dns.ConfirmDeleteDialog
-import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutPinnedInfoDialog
+import com.rbn.qtsettings.feature.dns.presentation.ConfirmDeleteDialog
+import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutPinnedInfoDialog
 
 @Preview(name = "Info · EN light", locale = "en", widthDp = 360)
 @Preview(name = "Info · DE dark", locale = "de", widthDp = 360,

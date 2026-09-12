@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rbn.qtsettings.ui.composables.settings.AppSettingsScreen
+import com.rbn.qtsettings.feature.settings.presentation.AppSettingsScreen
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

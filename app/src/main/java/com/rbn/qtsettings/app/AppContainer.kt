@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.feature.automation.domain.VpnAutomation
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.feature.dns.domain.DnsActions
@@ -23,12 +22,10 @@ import com.rbn.qtsettings.platform.permissions.AndroidPermissionGateway
 import com.rbn.qtsettings.platform.backup.AndroidBackupDocuments
 
 /** Application-scoped composition root. Never retain an Activity here.
- * AppStores is also shared by legacy platform callers until #123.
  */
 class AppContainer(context: Context) {
     private val applicationContext = context.applicationContext
     val stores: AppStores by lazy { AppStores.getInstance(applicationContext) }
-    val preferences: PreferencesManager get() = stores.legacyPreferences
     val vpnAutomation by lazy {
         VpnAutomation(AndroidVpnAutomationGateway(applicationContext))
     }

@@ -8,7 +8,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.platform.app.InstrumentationRegistry
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsAction
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import org.junit.Assert.assertEquals
@@ -21,7 +21,7 @@ class DnsEditorInstrumentedTest {
     @Test fun draftSurvivesActivityRecreation_cancelLeavesStoredProvidersUntouched() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         compose.dismissInitialDialogsIfPresent(context)
-        val store = PreferencesManager.getInstance(context).dnsStore
+        val store = AppStores.getInstance(context).dns
         val before = store.read().providers
         compose.runOnIdle {
             ViewModelProvider(compose.activity)[DnsSettingsViewModel::class.java]

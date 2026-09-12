@@ -11,7 +11,7 @@ import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
-import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

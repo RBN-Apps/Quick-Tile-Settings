@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import com.rbn.qtsettings.feature.automation.domain.VpnAutomationGateway
 import com.rbn.qtsettings.feature.automation.domain.VpnDnsState
-import com.rbn.qtsettings.utils.VpnDetectionUtils
+import com.rbn.qtsettings.platform.automation.VpnDetectionUtils
 
 class AndroidVpnAutomationGateway(context: Context) : VpnAutomationGateway {
     private val context = context.applicationContext

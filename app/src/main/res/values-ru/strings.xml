@@ -201,7 +201,6 @@
     <string name="setting_network_type_detection_description">Автоматически меняет частный DNS при переключении между Wi-Fi и мобильными данными. Включите эту функцию также для настройки правил отдельных сетей Wi-Fi или точек доступа.</string>
     <string name="setting_network_type_detection_mode">Режим обнаружения сети:</string>
 
-    <string name="setting_select_hostname">Выберите имя хоста…</string>
 
     <string name="dns_mode_off_label">Выкл.</string>
     <string name="dns_mode_auto_label">Авто</string>

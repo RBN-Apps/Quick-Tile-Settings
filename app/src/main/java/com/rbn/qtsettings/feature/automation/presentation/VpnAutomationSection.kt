@@ -20,7 +20,7 @@ internal fun VpnAutomationSection(state: AutomationUiState, actions: AutomationU
             Modifier.testTag("vpn_detection_toggle"), icon = Icons.Outlined.VpnKey,
             summary = stringResource(R.string.automation_vpn_summary))
         else SettingsNavigationRow(stringResource(R.string.setting_vpn_detection_mode), Icons.Outlined.Radar,
-            { onOpen(AutomationDialogViewModel.VPN_MODE) }, Modifier.testTag("automation_vpn_mode"),
+            { onOpen(AutomationDestination.VPN_MODE) }, Modifier.testTag("automation_vpn_mode"),
             enabled = state.vpnDetectionEnabled,
             status = stringResource(if (state.vpnDetectionMode == BACKGROUND_DETECTION)
                 R.string.automation_mode_background else R.string.automation_mode_tile))

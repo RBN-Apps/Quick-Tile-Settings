@@ -8,7 +8,6 @@ import android.os.ParcelFileDescriptor
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
@@ -23,7 +22,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.rbn.qtsettings.app.navigation.AppArea
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
@@ -44,14 +43,14 @@ class AppShellInstrumentedTest {
     @Before fun prepare() {
         // Semantic clicks do not switch Android out of keyboard navigation mode.
         instrumentation.setInTouchMode(true)
-        val preferences = PreferencesManager.getInstance(context)
-        previousHelpShown = preferences.helpShown.value
-        preferences.setHelpShown(true)
+        val preferences = AppStores.getInstance(context)
+        previousHelpShown = preferences.app.helpShown.value
+        preferences.app.setHelpShown(true)
     }
 
     @After fun close() {
         if (::scenario.isInitialized) scenario.close()
-        PreferencesManager.getInstance(context).setHelpShown(previousHelpShown)
+        AppStores.getInstance(context).app.setHelpShown(previousHelpShown)
     }
 
     private fun text(id: Int) = compose.onNodeWithText(context.getString(id))

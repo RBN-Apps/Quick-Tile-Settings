@@ -15,7 +15,7 @@ import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
-import com.rbn.qtsettings.utils.NetworkDnsAutomation
+import com.rbn.qtsettings.platform.automation.NetworkDnsAutomation
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue

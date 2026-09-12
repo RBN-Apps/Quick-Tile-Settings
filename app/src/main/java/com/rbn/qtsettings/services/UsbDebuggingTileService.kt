@@ -6,7 +6,7 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.feature.usb.data.UsbSettingsStore
 import com.rbn.qtsettings.feature.usb.domain.UsbActionResult
 import com.rbn.qtsettings.feature.usb.domain.UsbActions
@@ -22,7 +22,7 @@ class UsbDebuggingTileService : TileService() {
 
     override fun onCreate() {
         super.onCreate()
-        store = PreferencesManager.getInstance(applicationContext).usbStore
+        store = AppStores.getInstance(applicationContext).usb
         actions = UsbActions(AndroidUsbSystemGateway(this))
         autoRevert = UsbAutoRevert(actions)
     }

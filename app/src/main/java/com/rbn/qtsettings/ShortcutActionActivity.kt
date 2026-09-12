@@ -17,9 +17,9 @@ import com.rbn.qtsettings.utils.Constants.ACTION_USB_ON
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.SystemQuickActionResult
-import com.rbn.qtsettings.utils.SystemQuickActions
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActionResult
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActions
 
 class ShortcutActionActivity : ComponentActivity() {
 

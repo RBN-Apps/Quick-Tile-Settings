@@ -196,7 +196,6 @@
     <string name="setting_network_type_detection_enabled">Basculer automatiquement le DNS selon le type de réseau</string>
     <string name="setting_network_type_detection_description">Modifie automatiquement le DNS privé lors du passage entre le Wi-Fi et les données mobiles. Activez cette option pour configurer aussi des règles par réseau Wi-Fi ou point d’accès.</string>
     <string name="setting_network_type_detection_mode">Mode de détection réseau :</string>
-    <string name="setting_select_hostname">Sélectionner un nom d\'hôte…</string>
     <string name="dns_mode_off_label">Désactivé</string>
     <string name="dns_mode_auto_label">Auto</string>
     <string name="network_type_info_title">Détection du type de réseau</string>

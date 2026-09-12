@@ -15,14 +15,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.rbn.qtsettings.MainActivity
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.feature.automation.domain.AutomationSettingsSource
 import com.rbn.qtsettings.platform.automation.NetworkMonitor
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_MOBILE
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_NONE
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
-import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 
 class NetworkMonitoringService : Service() {
 
@@ -51,7 +51,7 @@ class NetworkMonitoringService : Service() {
     private val currentNetworkState get() = monitor.currentNetworkState
     override fun onCreate() {
         super.onCreate()
-        prefsManager = PreferencesManager.getInstance(applicationContext).automationStore
+        prefsManager = AppStores.getInstance(applicationContext).automation
         monitor = NetworkMonitor(this, prefsManager, ::updateNotification)
         createNotificationChannel()
         Log.d(TAG, "Network monitoring service created")

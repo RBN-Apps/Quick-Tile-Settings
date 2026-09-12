@@ -5,7 +5,7 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.feature.shortcuts.presentation.QuickActionKind
 import com.rbn.qtsettings.feature.shortcuts.presentation.QuickActionResolver
 import com.rbn.qtsettings.feature.shortcuts.presentation.TileType
@@ -27,20 +27,20 @@ import org.robolectric.Shadows.shadowOf
 class QuickActionResolverTest {
 
     private lateinit var context: Context
-    private lateinit var prefsManager: PreferencesManager
+    private lateinit var prefsManager: AppStores
 
     @Before
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
         clearPreferences()
-        prefsManager = PreferencesManager.getInstance(context)
+        prefsManager = AppStores.getInstance(context)
     }
 
     @After
     fun tearDown() {
         clearPreferences()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
     }
 
     @Test
@@ -99,11 +99,11 @@ class QuickActionResolverTest {
 
     @Test
     fun buildQuickActions_dnsTile_returnsOnlyConfiguredDnsActions() {
-        prefsManager.setDnsToggleAuto(false)
-        val cloudflare = prefsManager.dnsHostnames.value.first { it.id == "cloudflare_default" }
-        prefsManager.updateDnsHostnameEntry(cloudflare.copy(isSelectedForCycle = false))
+        prefsManager.dns.setDnsToggleAuto(false)
+        val cloudflare = prefsManager.dns.dnsHostnames.value.first { it.id == "cloudflare_default" }
+        prefsManager.dns.updateDnsHostnameEntry(cloudflare.copy(isSelectedForCycle = false))
 
-        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dnsStore.read(), prefsManager.usbStore.read(), TileType.DNS)
+        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dns.read(), prefsManager.usb.read(), TileType.DNS)
 
         assertTrue(actions.any { it.kind == QuickActionKind.DnsOff })
         assertFalse(actions.any { it.kind == QuickActionKind.DnsAuto })
@@ -122,10 +122,10 @@ class QuickActionResolverTest {
 
     @Test
     fun buildQuickActions_usbTile_returnsOnlyConfiguredUsbActions() {
-        prefsManager.setUsbToggleEnable(false)
-        prefsManager.setUsbToggleDisable(true)
+        prefsManager.usb.setToggleEnable(false)
+        prefsManager.usb.setToggleDisable(true)
 
-        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dnsStore.read(), prefsManager.usbStore.read(), TileType.USB)
+        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dns.read(), prefsManager.usb.read(), TileType.USB)
 
         assertFalse(actions.any { it.kind == QuickActionKind.DnsOff })
         assertFalse(actions.any { it.kind == QuickActionKind.DnsAuto })
@@ -136,7 +136,7 @@ class QuickActionResolverTest {
 
     @Test
     fun buildQuickActions_allFallback_includesDnsAndUsbActions() {
-        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dnsStore.read(), prefsManager.usbStore.read(), TileType.ALL)
+        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dns.read(), prefsManager.usb.read(), TileType.ALL)
 
         assertTrue(actions.any { it.kind == QuickActionKind.DnsOff })
         assertTrue(actions.any { it.kind == QuickActionKind.DnsAuto })
@@ -151,7 +151,7 @@ class QuickActionResolverTest {
             .commit()
     }
 
-    private fun resetPreferencesManagerSingleton() {
+    private fun resetAppStoresSingleton() {
         val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)

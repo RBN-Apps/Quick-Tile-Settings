@@ -11,7 +11,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Looper
 import android.provider.Settings
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.data.WifiDnsRule
 import com.rbn.qtsettings.receivers.BootCompletedReceiver
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
@@ -21,7 +21,7 @@ import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_NONE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
-import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
+import com.rbn.qtsettings.platform.automation.NetworkTypeDetectionUtils
 import java.time.Duration
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -46,14 +46,14 @@ import org.robolectric.shadows.ShadowWifiInfo
 class MonitoringServiceForegroundContractTest {
 
     private lateinit var context: Context
-    private lateinit var preferencesManager: PreferencesManager
+    private lateinit var preferencesManager: AppStores
 
     @Before
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
         clearPreferences()
-        preferencesManager = PreferencesManager.getInstance(context)
+        preferencesManager = AppStores.getInstance(context)
         assertEquals(
             PackageManager.PERMISSION_DENIED,
             context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS)
@@ -69,13 +69,13 @@ class MonitoringServiceForegroundContractTest {
                 android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
             )
         clearPreferences()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
     }
 
     @Test
     fun networkMonitoringService_withoutWriteSecureSettings_promotesBeforeStopping() {
-        preferencesManager.setNetworkTypeDetectionEnabled(true)
-        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
         val controller = Robolectric.buildService(NetworkMonitoringService::class.java).create()
         val service = controller.get()
 
@@ -91,8 +91,8 @@ class MonitoringServiceForegroundContractTest {
 
     @Test
     fun vpnMonitoringService_withoutWriteSecureSettings_promotesBeforeStopping() {
-        preferencesManager.setVpnDetectionEnabled(true)
-        preferencesManager.setVpnDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setVpnDetectionEnabled(true)
+        preferencesManager.automation.setVpnDetectionMode(BACKGROUND_DETECTION)
         val controller = Robolectric.buildService(VpnMonitoringService::class.java).create()
         val service = controller.get()
 
@@ -110,8 +110,8 @@ class MonitoringServiceForegroundContractTest {
     fun networkMonitoringService_initializationStartDoesNotRestartActiveMonitoring() {
         shadowOf(context as Application)
             .grantPermissions(android.Manifest.permission.WRITE_SECURE_SETTINGS)
-        preferencesManager.setNetworkTypeDetectionEnabled(true)
-        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
         val controller = Robolectric.buildService(NetworkMonitoringService::class.java).create()
         val service = controller.get()
         val connectivity = context.getSystemService(ConnectivityManager::class.java)
@@ -147,11 +147,11 @@ class MonitoringServiceForegroundContractTest {
             android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
         )
         shadowOf(context.getSystemService(LocationManager::class.java)).setLocationEnabled(true)
-        preferencesManager.setNetworkTypeDetectionEnabled(true)
-        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
-        preferencesManager.setWifiNetworkRulesEnabled(true)
-        preferencesManager.setDnsStateOnWifi(DNS_MODE_AUTO)
-        preferencesManager.addWifiNetworkRule(WifiDnsRule(ssid = "Campus", actionMode = DNS_MODE_OFF))
+        preferencesManager.automation.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setWifiNetworkRulesEnabled(true)
+        preferencesManager.automation.setDnsStateOnWifi(DNS_MODE_AUTO)
+        preferencesManager.automation.addWifiNetworkRule(WifiDnsRule(ssid = "Campus", actionMode = DNS_MODE_OFF))
         Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
         shadowOf(context as Application).clearStartedServices()
 
@@ -196,11 +196,11 @@ class MonitoringServiceForegroundContractTest {
             android.Manifest.permission.ACCESS_FINE_LOCATION
         )
         shadowOf(context.getSystemService(LocationManager::class.java)).setLocationEnabled(true)
-        preferencesManager.setVpnDetectionEnabled(true)
-        preferencesManager.setNetworkTypeDetectionEnabled(true)
-        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
-        preferencesManager.setWifiNetworkRulesEnabled(true)
-        preferencesManager.addWifiNetworkRule(
+        preferencesManager.automation.setVpnDetectionEnabled(true)
+        preferencesManager.automation.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setWifiNetworkRulesEnabled(true)
+        preferencesManager.automation.addWifiNetworkRule(
             WifiDnsRule(ssid = "Campus", actionMode = DNS_MODE_ON, dnsHostname = "wifi.example.com")
         )
         val connectivity = context.getSystemService(ConnectivityManager::class.java)
@@ -237,11 +237,11 @@ class MonitoringServiceForegroundContractTest {
     @Test
     fun vpnRecovery_prefersCurrentNetworkPolicyOverSavedDnsState() {
         shadowOf(context as Application).grantPermissions(android.Manifest.permission.WRITE_SECURE_SETTINGS)
-        preferencesManager.setVpnDetectionEnabled(true)
-        preferencesManager.setVpnDetectionMode(BACKGROUND_DETECTION)
-        preferencesManager.setNetworkTypeDetectionEnabled(true)
-        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
-        preferencesManager.setDnsStateOnWifi(DNS_MODE_AUTO)
+        preferencesManager.automation.setVpnDetectionEnabled(true)
+        preferencesManager.automation.setVpnDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setDnsStateOnWifi(DNS_MODE_AUTO)
         context.getSharedPreferences("vpn_detection_shared_state", Context.MODE_PRIVATE).edit()
             .putString("vpn_previous_dns_mode", DNS_MODE_ON)
             .putString("vpn_previous_dns_hostname", "before-vpn.example.com")
@@ -272,9 +272,9 @@ class MonitoringServiceForegroundContractTest {
     @Test
     fun obsoleteNetworkCallbacks_cannotUndoManualDnsAfterRestartOrDestroy() {
         shadowOf(context as Application).grantPermissions(android.Manifest.permission.WRITE_SECURE_SETTINGS)
-        preferencesManager.setNetworkTypeDetectionEnabled(true)
-        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
-        preferencesManager.setDnsStateOnWifi(DNS_MODE_OFF)
+        preferencesManager.automation.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setDnsStateOnWifi(DNS_MODE_OFF)
         val connectivity = context.getSystemService(ConnectivityManager::class.java)
         shadowOf(connectivity).setNetworkCapabilities(requireNotNull(connectivity.activeNetwork), ShadowNetworkCapabilities.newInstance())
         val controller = Robolectric.buildService(NetworkMonitoringService::class.java).create()
@@ -312,8 +312,8 @@ class MonitoringServiceForegroundContractTest {
     @Test
     fun pendingVpnDisconnect_isCancelledWhenServiceIsDestroyed() {
         shadowOf(context as Application).grantPermissions(android.Manifest.permission.WRITE_SECURE_SETTINGS)
-        preferencesManager.setVpnDetectionEnabled(true)
-        preferencesManager.setVpnDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.automation.setVpnDetectionEnabled(true)
+        preferencesManager.automation.setVpnDetectionMode(BACKGROUND_DETECTION)
         val connectivity = context.getSystemService(ConnectivityManager::class.java)
         val network = requireNotNull(connectivity.activeNetwork)
         val capabilities = ShadowNetworkCapabilities.newInstance()
@@ -335,7 +335,7 @@ class MonitoringServiceForegroundContractTest {
             .getString("vpn_previous_dns_mode", null))
     }
 
-    private fun resetPreferencesManagerSingleton() {
+    private fun resetAppStoresSingleton() {
         val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)

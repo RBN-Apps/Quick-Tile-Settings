@@ -221,7 +221,6 @@
     <string name="setting_network_type_detection_description">Automatically change Private DNS when switching between Wi-Fi and mobile data. Enable this to also configure rules for individual Wi-Fi networks or access points.</string>
     <string name="setting_network_type_detection_mode">Detection mode</string>
 
-    <string name="setting_select_hostname">Select hostname…</string>
 
     <!-- WiFi Network Rules -->
     <string name="setting_wifi_network_rules_title">Wi-Fi network rules</string>
@@ -379,7 +378,6 @@
     <string name="automation_vpn_section">VPN connections</string>
     <string name="automation_vpn_summary">Disable private DNS during a VPN connection and restore it after disconnecting. Enable to choose the detection mode.</string>
     <string name="automation_notification_title">Monitoring notification</string>
-    <string name="automation_notification_summary">Background detection is selected. Allow notifications to see its ongoing status in the notification shade.</string>
     <string name="automation_rules_summary">Choose a DNS setting for specific Wi-Fi networks. Networks without a rule use the Wi-Fi default.</string>
     <string name="automation_rules_requires_network">Turn on “Switch DNS automatically” under Automation first.</string>
     <string name="automation_picker_access">Nearby networks are unavailable without location access and enabled location services. You can still choose a recent network or enter a rule manually.</string>

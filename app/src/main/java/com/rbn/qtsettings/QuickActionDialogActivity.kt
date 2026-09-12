@@ -16,9 +16,9 @@ import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.SystemQuickActionResult
-import com.rbn.qtsettings.utils.SystemQuickActions
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActionResult
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActions
 
 class QuickActionDialogActivity : ComponentActivity() {
 

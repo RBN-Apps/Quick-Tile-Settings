@@ -30,9 +30,9 @@ import com.rbn.qtsettings.core.designsystem.SettingsSection
 import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
 import com.rbn.qtsettings.data.DnsListSortMode
 import com.rbn.qtsettings.feature.dns.domain.DnsTarget
-import com.rbn.qtsettings.ui.composables.dns.DnsHostnameList
-import com.rbn.qtsettings.ui.composables.dns.DnsInfoDialog
-import com.rbn.qtsettings.ui.composables.dns.DnsListHeader
+import com.rbn.qtsettings.feature.dns.presentation.DnsHostnameList
+import com.rbn.qtsettings.feature.dns.presentation.DnsInfoDialog
+import com.rbn.qtsettings.feature.dns.presentation.DnsListHeader
 
 @Composable
 fun DnsProvidersScreen(

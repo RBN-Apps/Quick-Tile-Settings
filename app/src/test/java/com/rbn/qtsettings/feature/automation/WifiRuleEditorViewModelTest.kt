@@ -1,5 +1,6 @@
 package com.rbn.qtsettings.feature.automation
 
+import com.rbn.qtsettings.feature.automation.presentation.AutomationDestination
 import androidx.lifecycle.SavedStateHandle
 import com.rbn.qtsettings.data.WifiDnsRule
 import com.rbn.qtsettings.data.WifiNetworkIdentity
@@ -125,9 +126,9 @@ class WifiRuleEditorViewModelTest {
 
     @Test fun dialogOwnerRestoresAndDismissesItsDestination() {
         val saved = SavedStateHandle()
-        AutomationDialogViewModel(saved).open(AutomationDialogViewModel.NETWORK_MODE)
+        AutomationDialogViewModel(saved).open(AutomationDestination.NETWORK_MODE)
         val restored = AutomationDialogViewModel(SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) }))
-        assertEquals(AutomationDialogViewModel.NETWORK_MODE, restored.dialog.value)
+        assertEquals(AutomationDestination.NETWORK_MODE, restored.dialog.value)
         restored.dismiss()
         assertEquals("", restored.dialog.value)
     }

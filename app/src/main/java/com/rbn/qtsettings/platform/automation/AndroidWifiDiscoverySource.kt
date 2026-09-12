@@ -4,9 +4,9 @@ import android.content.Context
 import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.feature.automation.domain.WifiDiscoverySource
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
-import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.WifiNetworkDiscovery
+import com.rbn.qtsettings.platform.automation.NetworkTypeDetectionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
+import com.rbn.qtsettings.platform.automation.WifiNetworkDiscovery
 import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 
 class AndroidWifiDiscoverySource(context: Context) : WifiDiscoverySource {

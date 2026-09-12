@@ -201,7 +201,6 @@
     <string name="setting_network_type_detection_description">Wi-Fi ile mobil veri arasında geçiş yaparken Özel DNS’i otomatik olarak değiştirir. Tek tek Wi-Fi ağları veya erişim noktaları için kural ayarlamak üzere de bunu etkinleştirin.</string>
     <string name="setting_network_type_detection_mode">Ağ Algılama Modu:</string>
 
-    <string name="setting_select_hostname">Ana bilgisayar adı seçin…</string>
 
     <string name="dns_mode_off_label">Kapalı</string>
     <string name="dns_mode_auto_label">Otomatik</string>

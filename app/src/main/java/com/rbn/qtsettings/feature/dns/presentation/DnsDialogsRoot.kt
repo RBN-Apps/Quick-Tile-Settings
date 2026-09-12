@@ -3,8 +3,8 @@ package com.rbn.qtsettings.feature.dns.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rbn.qtsettings.ui.composables.dns.ConfirmDeleteDialog
-import com.rbn.qtsettings.ui.composables.dns.DnsHostnameEditForm
+import com.rbn.qtsettings.feature.dns.presentation.ConfirmDeleteDialog
+import com.rbn.qtsettings.feature.dns.presentation.DnsHostnameEditForm
 
 @Composable
 fun DnsDialogsRoot(viewModel: DnsSettingsViewModel) {

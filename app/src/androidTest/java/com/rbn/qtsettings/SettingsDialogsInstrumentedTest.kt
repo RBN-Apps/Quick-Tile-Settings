@@ -4,9 +4,9 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
-import com.rbn.qtsettings.ui.composables.permission.AdbInstructionDialog
-import com.rbn.qtsettings.ui.composables.permission.PermissionGrantDialog
-import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionSettingsDialog
+import com.rbn.qtsettings.feature.permissions.presentation.AdbInstructionDialog
+import com.rbn.qtsettings.feature.permissions.presentation.PermissionGrantDialog
+import com.rbn.qtsettings.feature.settings.presentation.NotificationPermissionSettingsDialog
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

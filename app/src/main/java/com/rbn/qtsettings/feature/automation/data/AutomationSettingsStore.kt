@@ -206,7 +206,7 @@ class AutomationSettingsStore(private val sharedPreferences: SharedPreferences) 
                 wifiDnsRuleListType
             ).orEmpty().mapNotNull(WifiNetworkRuleUtils::normalizeRule)
         } catch (e: Exception) {
-            Log.e("PreferencesManager", "Error loading Wi-Fi DNS rules", e)
+            Log.e("AutomationSettingsStore", "Error loading Wi-Fi DNS rules", e)
             emptyList()
         }
     }
@@ -223,7 +223,7 @@ class AutomationSettingsStore(private val sharedPreferences: SharedPreferences) 
             }.sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
                 .take(MAX_KNOWN_WIFI_NETWORKS)
         } catch (e: Exception) {
-            Log.e("PreferencesManager", "Error loading known Wi-Fi networks", e)
+            Log.e("AutomationSettingsStore", "Error loading known Wi-Fi networks", e)
             emptyList()
         }
     }

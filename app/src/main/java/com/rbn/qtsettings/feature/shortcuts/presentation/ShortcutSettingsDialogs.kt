@@ -5,7 +5,7 @@ import androidx.compose.ui.res.stringResource
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.core.designsystem.AppInfoDialog
 import com.rbn.qtsettings.core.designsystem.AppConfirmationDialog
-import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutPinnedInfoDialog
+import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutPinnedInfoDialog
 
 @Composable
 internal fun ShortcutSettingsDialogs(state: ShortcutSettingsState, onAction: (ShortcutSettingsAction) -> Unit) {

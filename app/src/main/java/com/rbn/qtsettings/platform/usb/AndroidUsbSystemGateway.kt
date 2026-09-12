@@ -3,9 +3,9 @@ package com.rbn.qtsettings.platform.usb
 import android.content.Context
 import android.provider.Settings
 import com.rbn.qtsettings.feature.usb.domain.*
-import com.rbn.qtsettings.utils.AutoRevertCoordinator
+import com.rbn.qtsettings.platform.revert.AutoRevertCoordinator
 import com.rbn.qtsettings.utils.Constants
-import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 
 class AndroidUsbSystemGateway(context: Context) : UsbSystemGateway {
     private val context = context.applicationContext

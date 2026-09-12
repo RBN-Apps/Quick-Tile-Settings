@@ -9,9 +9,9 @@ import com.rbn.qtsettings.feature.automation.data.toAutomationNetwork
 import com.rbn.qtsettings.feature.automation.domain.AutomationSettingsSource
 import com.rbn.qtsettings.feature.automation.domain.NetworkTransitionPolicy
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
-import com.rbn.qtsettings.utils.NetworkDnsAutomation
-import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
-import com.rbn.qtsettings.utils.VpnDetectionUtils
+import com.rbn.qtsettings.platform.automation.NetworkDnsAutomation
+import com.rbn.qtsettings.platform.automation.NetworkTypeDetectionUtils
+import com.rbn.qtsettings.platform.automation.VpnDetectionUtils
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

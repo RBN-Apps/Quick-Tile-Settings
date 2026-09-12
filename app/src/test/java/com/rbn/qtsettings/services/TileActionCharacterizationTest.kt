@@ -6,7 +6,7 @@ import android.content.Context
 import android.os.Looper
 import android.provider.Settings
 import android.service.quicksettings.TileService
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.utils.Constants.ADB_ENABLED
 import com.rbn.qtsettings.utils.Constants.ADB_WIFI_ENABLED
 import com.rbn.qtsettings.utils.Constants.DEVELOPMENT_SETTINGS_ENABLED
@@ -15,8 +15,8 @@ import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
-import com.rbn.qtsettings.utils.SystemQuickActionResult
-import com.rbn.qtsettings.utils.SystemQuickActions
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActionResult
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActions
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -48,22 +48,22 @@ class TileActionCharacterizationTest {
     }
 
     private lateinit var application: Application
-    private lateinit var preferences: PreferencesManager
+    private lateinit var preferences: AppStores
 
     @Before
     fun setUp() {
         application = RuntimeEnvironment.getApplication()
         resetPreferences()
-        preferences = PreferencesManager.getInstance(application)
+        preferences = AppStores.getInstance(application)
         shadowOf(application).grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
-        preferences.setDnsRequireUnlock(false)
-        preferences.setUsbRequireUnlock(false)
-        preferences.setDnsEnableAutoRevert(false)
-        preferences.setUsbEnableAutoRevert(false)
-        preferences.setUsbAlsoHideDevOptions(false)
-        preferences.setUsbAlsoDisableWirelessDebugging(false)
-        preferences.setUsbToggleEnable(true)
-        preferences.setUsbToggleDisable(true)
+        preferences.dns.setDnsRequireUnlock(false)
+        preferences.usb.setRequireUnlock(false)
+        preferences.dns.setDnsEnableAutoRevert(false)
+        preferences.usb.setEnableAutoRevert(false)
+        preferences.usb.setAlsoHideDevOptions(false)
+        preferences.usb.setAlsoDisableWirelessDebugging(false)
+        preferences.usb.setToggleEnable(true)
+        preferences.usb.setToggleDisable(true)
         Settings.Global.putInt(application.contentResolver, DEVELOPMENT_SETTINGS_ENABLED, 1)
         Settings.Global.putInt(application.contentResolver, ADB_ENABLED, 0)
         Settings.Global.putInt(application.contentResolver, ADB_WIFI_ENABLED, 0)
@@ -87,10 +87,10 @@ class TileActionCharacterizationTest {
 
     @Test
     fun usbTile_emptySelectionDoesNotChangeAnySystemSetting() = withUsbTile { tile ->
-        preferences.setUsbToggleEnable(false)
-        preferences.setUsbToggleDisable(false)
-        preferences.setUsbAlsoHideDevOptions(true)
-        preferences.setUsbAlsoDisableWirelessDebugging(true)
+        preferences.usb.setToggleEnable(false)
+        preferences.usb.setToggleDisable(false)
+        preferences.usb.setAlsoHideDevOptions(true)
+        preferences.usb.setAlsoDisableWirelessDebugging(true)
         tile.onClick()
         assertEquals(0, globalInt(ADB_ENABLED))
         assertEquals(1, globalInt(DEVELOPMENT_SETTINGS_ENABLED))
@@ -99,7 +99,7 @@ class TileActionCharacterizationTest {
 
     @Test
     fun usbTile_singleEnabledStateStaysSelectedOnRepeatedClicks() = withUsbTile { tile ->
-        preferences.setUsbToggleDisable(false)
+        preferences.usb.setToggleDisable(false)
         tile.onClick()
         tile.onClick()
         assertEquals(1, globalInt(ADB_ENABLED))
@@ -107,8 +107,8 @@ class TileActionCharacterizationTest {
 
     @Test
     fun usbTile_hiddenDeveloperOptionsTreatStaleAdbFlagAsOff() = withUsbTile { tile ->
-        preferences.setUsbAlsoHideDevOptions(true)
-        preferences.setUsbAlsoDisableWirelessDebugging(true)
+        preferences.usb.setAlsoHideDevOptions(true)
+        preferences.usb.setAlsoDisableWirelessDebugging(true)
         Settings.Global.putInt(application.contentResolver, DEVELOPMENT_SETTINGS_ENABLED, 0)
         Settings.Global.putInt(application.contentResolver, ADB_ENABLED, 1)
         tile.onClick()
@@ -120,8 +120,8 @@ class TileActionCharacterizationTest {
     @Test
     fun usbAutoRevert_restoresIndependentCompanionStates() = withUsbTile { tile ->
         enableUsbAutoRevert()
-        preferences.setUsbAlsoHideDevOptions(true)
-        preferences.setUsbAlsoDisableWirelessDebugging(true)
+        preferences.usb.setAlsoHideDevOptions(true)
+        preferences.usb.setAlsoDisableWirelessDebugging(true)
         tile.onClick()
         assertEquals(1, globalInt(ADB_ENABLED))
         assertEquals(1, globalInt(ADB_WIFI_ENABLED))
@@ -201,13 +201,13 @@ class TileActionCharacterizationTest {
     }
 
     private fun withDnsTile(block: (PrivateDnsTileService) -> Unit) {
-        preferences.setDnsToggleOff(false)
-        preferences.setDnsToggleAuto(true)
-        preferences.getAllDnsHostnamesBlocking().forEach {
-            preferences.updateDnsHostnameEntry(it.copy(isSelectedForCycle = false))
+        preferences.dns.setDnsToggleOff(false)
+        preferences.dns.setDnsToggleAuto(true)
+        preferences.dns.getAllDnsHostnamesBlocking().forEach {
+            preferences.dns.updateDnsHostnameEntry(it.copy(isSelectedForCycle = false))
         }
-        preferences.setDnsEnableAutoRevert(true)
-        preferences.setDnsAutoRevertDelaySeconds(2)
+        preferences.dns.setDnsEnableAutoRevert(true)
+        preferences.dns.setDnsAutoRevertDelaySeconds(2)
         val controller = Robolectric.buildService(PrivateDnsTileService::class.java).create()
         try {
             block(controller.get())
@@ -217,8 +217,8 @@ class TileActionCharacterizationTest {
     }
 
     private fun enableUsbAutoRevert() {
-        preferences.setUsbEnableAutoRevert(true)
-        preferences.setUsbAutoRevertDelaySeconds(2)
+        preferences.usb.setEnableAutoRevert(true)
+        preferences.usb.setAutoRevertDelaySeconds(2)
     }
 
     private fun setUsbDirectly(enabled: Boolean) = SystemQuickActions.setUsbDebuggingEnabled(

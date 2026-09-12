@@ -51,8 +51,8 @@ import com.rbn.qtsettings.core.designsystem.InfoDialogPreview
 import com.rbn.qtsettings.core.designsystem.LongDialogPreview
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.data.DnsHostnameEntry
-import com.rbn.qtsettings.ui.composables.dns.ConfirmDeleteDialog
-import com.rbn.qtsettings.ui.composables.shortcuts.ShortcutPinnedInfoDialog
+import com.rbn.qtsettings.feature.dns.presentation.ConfirmDeleteDialog
+import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutPinnedInfoDialog
 import java.io.File
 import java.util.Locale
 import org.junit.Assert.assertEquals

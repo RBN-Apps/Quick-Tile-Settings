@@ -11,7 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -37,32 +37,32 @@ class ShortcutSettingsInstrumentedTest {
         context = InstrumentationRegistry.getInstrumentation().targetContext
         composeTestRule.waitForIdle()
         composeTestRule.dismissInitialDialogsIfPresent(context)
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.dnsHostnames.value
+            prefsManager.dns.dnsHostnames.value
                 .filter { !it.isPredefined }
-                .forEach { prefsManager.deleteCustomDnsHostname(it.id) }
+                .forEach { prefsManager.dns.deleteCustomDnsHostname(it.id) }
             val allAvailableIds =
-                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
-            prefsManager.setAllowPinnedShortcutsWhenDisabled(false)
-            allAvailableIds.forEach { prefsManager.setShortcutExposureEnabled(it, false) }
-            allAvailableIds.forEach { prefsManager.setShortcutFavorite(it, false) }
+                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dns.dnsHostnames.value)
+            prefsManager.shortcuts.setAllowPinnedShortcutsWhenDisabled(false)
+            allAvailableIds.forEach { prefsManager.shortcuts.setShortcutExposureEnabled(it, false) }
+            allAvailableIds.forEach { prefsManager.shortcuts.setShortcutFavorite(it, false) }
         }
     }
 
     @After
     fun tearDown() {
         // Remove any custom DNS entries added during limit tests so they don't leak into other tests
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.dnsHostnames.value
+            prefsManager.dns.dnsHostnames.value
                 .filter { !it.isPredefined }
-                .forEach { prefsManager.deleteCustomDnsHostname(it.id) }
+                .forEach { prefsManager.dns.deleteCustomDnsHostname(it.id) }
             val allAvailableIds =
-                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
-            prefsManager.setAllowPinnedShortcutsWhenDisabled(false)
-            allAvailableIds.forEach { prefsManager.setShortcutExposureEnabled(it, false) }
-            allAvailableIds.forEach { prefsManager.setShortcutFavorite(it, false) }
+                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dns.dnsHostnames.value)
+            prefsManager.shortcuts.setAllowPinnedShortcutsWhenDisabled(false)
+            allAvailableIds.forEach { prefsManager.shortcuts.setShortcutExposureEnabled(it, false) }
+            allAvailableIds.forEach { prefsManager.shortcuts.setShortcutFavorite(it, false) }
         }
     }
 
@@ -112,7 +112,7 @@ class ShortcutSettingsInstrumentedTest {
         composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_allow_pinned_warning_title))
             .assertIsDisplayed()
         composeTestRule.onNodeWithText(context.getString(R.string.dialog_cancel)).performClick()
-        assertFalse(PreferencesManager.getInstance(context).shortcutStore.state.value.allowPinnedWhenDisabled)
+        assertFalse(AppStores.getInstance(context).shortcuts.state.value.allowPinnedWhenDisabled)
         composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_title)).assertIsDisplayed()
     }
 
@@ -122,7 +122,7 @@ class ShortcutSettingsInstrumentedTest {
     fun shortcutSettings_shouldShowActiveShortcutCountIndicator() {
         composeTestRule.navigateToShortcutSettings(context)
 
-        val configuration = PreferencesManager.getInstance(context).shortcutStore.state.value
+        val configuration = AppStores.getInstance(context).shortcuts.state.value
         val countLabel = context.getString(R.string.shortcut_settings_limit,
             configuration.enabledIds.size, configuration.maxCount)
         composeTestRule.onNodeWithText(countLabel).assertIsDisplayed()
@@ -179,20 +179,20 @@ class ShortcutSettingsInstrumentedTest {
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
 
         // Pre-condition: ensure DNS Off is enabled so disabling it decreases the count
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.setShortcutExposureEnabled(dnsOffId, true)
+            prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, true)
         }
         composeTestRule.waitForIdle()
 
-        val countBefore = prefsManager.enabledShortcutIds.value.size
+        val countBefore = prefsManager.shortcuts.enabledShortcutIds.value.size
 
         composeTestRule.navigateToShortcutSettings(context)
         composeTestRule.safeScrollToAndAssert(dnsOffTitle)
         composeTestRule.onNodeWithText(dnsOffTitle).performClick()
         composeTestRule.waitForIdle()
 
-        val countAfter = prefsManager.enabledShortcutIds.value.size
+        val countAfter = prefsManager.shortcuts.enabledShortcutIds.value.size
         assertEquals(
             "Active count should decrease by 1 after disabling (before=$countBefore, after=$countAfter)",
             countBefore - 1,
@@ -208,13 +208,13 @@ class ShortcutSettingsInstrumentedTest {
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
 
         // Pre-condition: ensure DNS Off is disabled so enabling it increases the count
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.setShortcutExposureEnabled(dnsOffId, false)
+            prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, false)
         }
         composeTestRule.waitForIdle()
 
-        val countBefore = prefsManager.enabledShortcutIds.value.size
+        val countBefore = prefsManager.shortcuts.enabledShortcutIds.value.size
 
         composeTestRule.navigateToShortcutSettings(context)
         composeTestRule.safeScrollToAndAssert(dnsOffTitle)
@@ -232,7 +232,7 @@ class ShortcutSettingsInstrumentedTest {
             return
         }
 
-        val countAfter = prefsManager.enabledShortcutIds.value.size
+        val countAfter = prefsManager.shortcuts.enabledShortcutIds.value.size
         assertEquals(
             "Active count should increase by 1 after enabling (before=$countBefore, after=$countAfter)",
             countBefore + 1,
@@ -252,8 +252,8 @@ class ShortcutSettingsInstrumentedTest {
         // Ensure there are more shortcuts available than the system limit so the limit can be hit
         ensureEnoughShortcutsForLimit(maxCount)
 
-        val prefsManager = PreferencesManager.getInstance(context)
-        val allOrderedIds = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
+        val prefsManager = AppStores.getInstance(context)
+        val allOrderedIds = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dns.dnsHostnames.value)
         val idToTitle = buildIdToTitleMap()
 
         check(allOrderedIds.size > maxCount) {
@@ -263,9 +263,9 @@ class ShortcutSettingsInstrumentedTest {
 
         // Set up known state: disable all, then enable exactly maxCount shortcuts
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            allOrderedIds.forEach { id -> prefsManager.setShortcutExposureEnabled(id, false) }
+            allOrderedIds.forEach { id -> prefsManager.shortcuts.setShortcutExposureEnabled(id, false) }
             allOrderedIds.take(maxCount).forEach { id ->
-                prefsManager.setShortcutExposureEnabled(id, true)
+                prefsManager.shortcuts.setShortcutExposureEnabled(id, true)
             }
         }
         composeTestRule.waitForIdle()
@@ -319,8 +319,8 @@ class ShortcutSettingsInstrumentedTest {
         // Ensure there are more shortcuts available than the system limit so the limit can be hit
         ensureEnoughShortcutsForLimit(maxCount)
 
-        val prefsManager = PreferencesManager.getInstance(context)
-        val allOrderedIds = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
+        val prefsManager = AppStores.getInstance(context)
+        val allOrderedIds = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dns.dnsHostnames.value)
 
         check(allOrderedIds.size > maxCount) {
             "Expected more than $maxCount shortcuts after adding custom entries, " +
@@ -329,9 +329,9 @@ class ShortcutSettingsInstrumentedTest {
 
         // Fill shortcuts to the limit; DNS Off (index 0) is always among the enabled ones
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            allOrderedIds.forEach { id -> prefsManager.setShortcutExposureEnabled(id, false) }
+            allOrderedIds.forEach { id -> prefsManager.shortcuts.setShortcutExposureEnabled(id, false) }
             allOrderedIds.take(maxCount).forEach { id ->
-                prefsManager.setShortcutExposureEnabled(id, true)
+                prefsManager.shortcuts.setShortcutExposureEnabled(id, true)
             }
         }
         composeTestRule.waitForIdle()
@@ -361,12 +361,12 @@ class ShortcutSettingsInstrumentedTest {
     fun shortcutSettings_enablingShortcut_shouldPublishToShortcutManager() {
         val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
 
         // Pre-condition: DNS Off disabled so enabling it is a meaningful action
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.setShortcutExposureEnabled(dnsOffId, false)
+            prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, false)
         }
         composeTestRule.waitForIdle()
 
@@ -405,12 +405,12 @@ class ShortcutSettingsInstrumentedTest {
     fun shortcutSettings_disablingShortcut_shouldRemoveFromShortcutManager() {
         val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
 
         // Pre-condition: DNS Off enabled so disabling it removes it from ShortcutManager
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.setShortcutExposureEnabled(dnsOffId, true)
+            prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, true)
         }
         composeTestRule.waitForIdle()
 
@@ -437,7 +437,7 @@ class ShortcutSettingsInstrumentedTest {
 
     @Test
     fun shortcutSettings_enabledShortcuts_publishedInOrderMatchingGetOrderedShortcutIds() {
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
 
         // Enable three shortcuts in a deliberately non-canonical order to verify ordering
@@ -448,14 +448,14 @@ class ShortcutSettingsInstrumentedTest {
         )
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             val allAvailable =
-                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
-            allAvailable.forEach { id -> prefsManager.setShortcutExposureEnabled(id, false) }
-            targetIds.forEach { id -> prefsManager.setShortcutExposureEnabled(id, true) }
+                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dns.dnsHostnames.value)
+            allAvailable.forEach { id -> prefsManager.shortcuts.setShortcutExposureEnabled(id, false) }
+            targetIds.forEach { id -> prefsManager.shortcuts.setShortcutExposureEnabled(id, true) }
         }
         composeTestRule.waitForIdle()
 
         // The canonical order from ShortcutCatalog must be reflected in the published shortcuts
-        val expectedOrder = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
+        val expectedOrder = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dns.dnsHostnames.value)
             .filter { targetIds.contains(it) }
 
         val publishedIds = shortcutManager?.dynamicShortcuts
@@ -488,10 +488,10 @@ class ShortcutSettingsInstrumentedTest {
         val neededCustomCount = maxOf(0, maxCount - builtInCount + 1)
         if (neededCustomCount == 0) return
 
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             repeat(neededCustomCount) { i ->
-                prefsManager.addCustomDnsHostname(
+                prefsManager.dns.addCustomDnsHostname(
                     "Test DNS %02d".format(i + 1),
                     "test-dns-%02d.example.com".format(i + 1)
                 )
@@ -502,10 +502,10 @@ class ShortcutSettingsInstrumentedTest {
 
     /**
      * Returns a map from shortcut ID to its display title as shown in [ShortcutSettingsScreen].
-     * Covers all built-in shortcuts and any custom DNS entries currently in [PreferencesManager].
+     * Covers all built-in shortcuts and any custom DNS entries currently in [AppStores].
      */
     private fun buildIdToTitleMap(): Map<String, String> {
-        val prefsManager = PreferencesManager.getInstance(context)
+        val prefsManager = AppStores.getInstance(context)
         return buildMap {
             put(
                 ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
@@ -532,7 +532,7 @@ class ShortcutSettingsInstrumentedTest {
                 ShortcutCatalog.SHORTCUT_ID_USB_OFF,
                 context.getString(R.string.shortcut_usb_off_short)
             )
-            prefsManager.dnsHostnames.value.filter { !it.isPredefined }.forEach { entry ->
+            prefsManager.dns.dnsHostnames.value.filter { !it.isPredefined }.forEach { entry ->
                 put(ShortcutCatalog.getShortcutIdForDnsEntry(entry), entry.name)
             }
         }

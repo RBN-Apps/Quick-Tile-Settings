@@ -7,9 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
-import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionExplanationDialog
-import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionFallbackDialog
-import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionSettingsDialog
+import com.rbn.qtsettings.feature.settings.presentation.NotificationPermissionExplanationDialog
+import com.rbn.qtsettings.feature.settings.presentation.NotificationPermissionFallbackDialog
+import com.rbn.qtsettings.feature.settings.presentation.NotificationPermissionSettingsDialog
 
 /** One notification dialog at a time; global help takes precedence without discarding pending state. */
 @Composable

@@ -30,12 +30,12 @@ internal fun NetworkAutomationSection(state: AutomationUiState, actions: Automat
                 Modifier.testTag("network_type_detection_toggle"), icon = Icons.Outlined.SwapHoriz,
                 summary = stringResource(R.string.automation_network_summary))
             "mode" -> SettingsNavigationRow(stringResource(R.string.setting_network_type_detection_mode),
-                Icons.Outlined.Radar, { onOpen(AutomationDialogViewModel.NETWORK_MODE) },
+                Icons.Outlined.Radar, { onOpen(AutomationDestination.NETWORK_MODE) },
                 Modifier.testTag("automation_network_mode"), enabled = state.networkTypeDetectionEnabled,
                 status = stringResource(if (state.networkTypeDetectionMode == BACKGROUND_DETECTION)
                     R.string.automation_mode_background else R.string.automation_mode_tile))
             "wifi" -> SettingsNavigationRow(stringResource(R.string.automation_wifi), Icons.Outlined.Wifi,
-                { onOpen(AutomationDialogViewModel.WIFI_TARGET) },
+                { onOpen(AutomationDestination.WIFI_TARGET) },
                 Modifier.testTag("network_type_detection_wifi_state_label"),
                 enabled = state.networkTypeDetectionEnabled,
                 summary = if (state.wifiNetworkRulesEnabled) stringResource(R.string.automation_wifi_fallback) else null,
@@ -44,12 +44,12 @@ internal fun NetworkAutomationSection(state: AutomationUiState, actions: Automat
                 onOpenRules, Modifier.testTag("automation_wifi_rules"), enabled = state.networkTypeDetectionEnabled,
                 status = wifiRulesStatus(state))
             "mobile" -> SettingsNavigationRow(stringResource(R.string.automation_mobile), Icons.Outlined.SignalCellularAlt,
-                { onOpen(AutomationDialogViewModel.MOBILE_TARGET) },
+                { onOpen(AutomationDestination.MOBILE_TARGET) },
                 Modifier.testTag("network_type_detection_mobile_state_label"),
                 enabled = state.networkTypeDetectionEnabled,
                 status = automationTargetLabel(state.dnsStateOnMobile, state.dnsHostnameOnMobile, providers))
             "details" -> SettingsNavigationRow(stringResource(R.string.automation_network_details), Icons.Outlined.Info,
-                { onOpen(AutomationDialogViewModel.NETWORK_INFO) })
+                { onOpen(AutomationDestination.NETWORK_INFO) })
         }
     }
 }

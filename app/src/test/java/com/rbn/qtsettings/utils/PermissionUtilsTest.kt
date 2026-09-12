@@ -1,5 +1,6 @@
 package com.rbn.qtsettings.utils
 
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 import android.Manifest
 import android.app.Application
 import android.content.Context

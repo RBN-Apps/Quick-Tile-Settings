@@ -15,7 +15,7 @@ import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.app.navigation.AppDestination
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 
-// Shell-only preview: no PreferencesManager, real ViewModel, services or permission requests.
+// Shell-only preview: no AppStores, real ViewModel, services or permission requests.
 @Preview(name = "Shell / compact", widthDp = 390, heightDp = 800)
 @Preview(name = "Shell / medium", widthDp = 700, heightDp = 800)
 @Preview(name = "Shell / expanded", widthDp = 1000, heightDp = 800)

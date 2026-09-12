@@ -16,7 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rbn.qtsettings.app.navigation.AppDestination
 import com.rbn.qtsettings.app.navigation.AppRoute
 import com.rbn.qtsettings.data.DnsHostnameEntry
-import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 
 /** Feature binding; Android permission/settings actions remain at this boundary. */
 @Composable
@@ -91,8 +91,8 @@ fun AutomationRoot(
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                 AutomationScreen(state, viewModel, dnsHostnames, { destination ->
                     when (destination) {
-                        AutomationDialogViewModel.WIFI_TARGET -> onOpen(AppDestination.DnsWifiTarget)
-                        AutomationDialogViewModel.MOBILE_TARGET -> onOpen(AppDestination.DnsMobileTarget)
+                        AutomationDestination.WIFI_TARGET -> onOpen(AppDestination.DnsWifiTarget)
+                        AutomationDestination.MOBILE_TARGET -> onOpen(AppDestination.DnsMobileTarget)
                         else -> dialogs.open(destination)
                     }
                 },
@@ -104,7 +104,7 @@ fun AutomationRoot(
                         }
                     }, onOpenRules = { onOpen(AppDestination.WifiRules) })
             }
-            AutomationDialogs(dialogs, state, viewModel)
+            AutomationDialogsRoot(dialogs, state, viewModel)
         }
     }
 }

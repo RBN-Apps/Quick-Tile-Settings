@@ -8,7 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.platform.app.InstrumentationRegistry
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsAction
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import org.junit.Assert.assertFalse
@@ -21,12 +21,12 @@ class DnsDeleteDialogInstrumentedTest {
 
     @Test fun deletionSurvivesRecreationAndRotation_cancelPreservesEntry_confirmDeletesIt() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val preferences = PreferencesManager.getInstance(context)
+        val preferences = AppStores.getInstance(context)
         compose.dismissInitialDialogsIfPresent(context)
         lateinit var entryId: String
         compose.runOnIdle {
-            preferences.addCustomDnsHostname("Dialog rotation test", "dialog-test.example.com")
-            val entry = preferences.dnsHostnames.value.single { it.hostname == "dialog-test.example.com" }
+            preferences.dns.addCustomDnsHostname("Dialog rotation test", "dialog-test.example.com")
+            val entry = preferences.dns.dnsHostnames.value.single { it.hostname == "dialog-test.example.com" }
             entryId = entry.id
             ViewModelProvider(compose.activity)[DnsSettingsViewModel::class.java].onAction(DnsSettingsAction.Delete(entry.id))
         }
@@ -41,14 +41,14 @@ class DnsDeleteDialogInstrumentedTest {
             }
             compose.onNodeWithText(context.getString(R.string.dialog_cancel)).assertIsDisplayed().performClick()
             compose.runOnIdle {
-                assertTrue(preferences.dnsHostnames.value.any { it.id == entryId })
-                val entry = preferences.dnsHostnames.value.single { it.id == entryId }
+                assertTrue(preferences.dns.dnsHostnames.value.any { it.id == entryId })
+                val entry = preferences.dns.dnsHostnames.value.single { it.id == entryId }
                 ViewModelProvider(compose.activity)[DnsSettingsViewModel::class.java].onAction(DnsSettingsAction.Delete(entry.id))
             }
             compose.onNodeWithText(context.getString(R.string.button_delete)).assertIsDisplayed().performClick()
-            compose.runOnIdle { assertFalse(preferences.dnsHostnames.value.any { it.id == entryId }) }
+            compose.runOnIdle { assertFalse(preferences.dns.dnsHostnames.value.any { it.id == entryId }) }
         } finally {
-            compose.runOnIdle { preferences.deleteCustomDnsHostname(entryId) }
+            compose.runOnIdle { preferences.dns.deleteCustomDnsHostname(entryId) }
             compose.activityRule.scenario.onActivity {
                 it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             }

@@ -16,7 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.WifiIdentityAccessState
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
-import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku

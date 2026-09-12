@@ -7,10 +7,10 @@ import com.rbn.qtsettings.feature.dns.data.toDomain
 import com.rbn.qtsettings.feature.dns.data.toPersisted
 import com.rbn.qtsettings.feature.dns.domain.DnsSystemGateway
 import com.rbn.qtsettings.feature.dns.domain.DnsTarget
-import com.rbn.qtsettings.utils.AutoRevertCoordinator
+import com.rbn.qtsettings.platform.revert.AutoRevertCoordinator
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
-import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 
 class AndroidDnsSystemGateway(context: Context) : DnsSystemGateway {
     private val context = context.applicationContext

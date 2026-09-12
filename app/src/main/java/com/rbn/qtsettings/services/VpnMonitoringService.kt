@@ -14,13 +14,13 @@ import androidx.core.app.NotificationCompat
 import com.rbn.qtsettings.MainActivity
 import com.rbn.qtsettings.QuickTileSettingsApplication
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.feature.automation.domain.AutomationSettingsSource
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
-import com.rbn.qtsettings.utils.NetworkDnsAutomation
-import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.VpnDetectionUtils
+import com.rbn.qtsettings.platform.automation.NetworkDnsAutomation
+import com.rbn.qtsettings.platform.automation.NetworkTypeDetectionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
+import com.rbn.qtsettings.platform.automation.VpnDetectionUtils
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -62,7 +62,7 @@ class VpnMonitoringService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        prefsManager = PreferencesManager.getInstance(applicationContext).automationStore
+        prefsManager = AppStores.getInstance(applicationContext).automation
         createNotificationChannel()
         Log.d(TAG, "VPN monitoring service created")
     }

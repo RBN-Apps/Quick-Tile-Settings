@@ -2,7 +2,7 @@ package com.rbn.qtsettings.receivers
 
 import android.content.Context
 import android.content.Intent
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
@@ -21,27 +21,27 @@ import org.robolectric.Shadows.shadowOf
 class BootCompletedReceiverTest {
 
     private lateinit var context: Context
-    private lateinit var preferences: PreferencesManager
+    private lateinit var preferences: AppStores
 
     @Before
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
         clearPreferences()
-        preferences = PreferencesManager.getInstance(context)
+        preferences = AppStores.getInstance(context)
         shadowOf(RuntimeEnvironment.getApplication()).clearStartedServices()
     }
 
     @After
     fun tearDown() {
         clearPreferences()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
     }
 
     @Test
     fun onReceive_whenActionIsNotBootCompleted_startsNoServices() {
-        preferences.setVpnDetectionEnabled(true)
-        preferences.setVpnDetectionMode(BACKGROUND_DETECTION)
+        preferences.automation.setVpnDetectionEnabled(true)
+        preferences.automation.setVpnDetectionMode(BACKGROUND_DETECTION)
 
         BootCompletedReceiver().onReceive(context, Intent(Intent.ACTION_TIME_CHANGED))
 
@@ -50,10 +50,10 @@ class BootCompletedReceiverTest {
 
     @Test
     fun onReceive_whenBackgroundDetectionIsDisabled_startsNoServices() {
-        preferences.setVpnDetectionEnabled(true)
-        preferences.setVpnDetectionMode(TILE_ONLY_DETECTION)
-        preferences.setNetworkTypeDetectionEnabled(false)
-        preferences.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferences.automation.setVpnDetectionEnabled(true)
+        preferences.automation.setVpnDetectionMode(TILE_ONLY_DETECTION)
+        preferences.automation.setNetworkTypeDetectionEnabled(false)
+        preferences.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
 
         sendBootCompleted()
 
@@ -62,8 +62,8 @@ class BootCompletedReceiverTest {
 
     @Test
     fun onReceive_whenVpnBackgroundDetectionIsEnabled_startsVpnService() {
-        preferences.setVpnDetectionEnabled(true)
-        preferences.setVpnDetectionMode(BACKGROUND_DETECTION)
+        preferences.automation.setVpnDetectionEnabled(true)
+        preferences.automation.setVpnDetectionMode(BACKGROUND_DETECTION)
 
         sendBootCompleted()
 
@@ -72,10 +72,10 @@ class BootCompletedReceiverTest {
 
     @Test
     fun onReceive_whenBothBackgroundDetectionsAreEnabled_startsBothServices() {
-        preferences.setVpnDetectionEnabled(true)
-        preferences.setVpnDetectionMode(BACKGROUND_DETECTION)
-        preferences.setNetworkTypeDetectionEnabled(true)
-        preferences.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferences.automation.setVpnDetectionEnabled(true)
+        preferences.automation.setVpnDetectionMode(BACKGROUND_DETECTION)
+        preferences.automation.setNetworkTypeDetectionEnabled(true)
+        preferences.automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
 
         sendBootCompleted()
 
@@ -102,7 +102,7 @@ class BootCompletedReceiverTest {
             .commit()
     }
 
-    private fun resetPreferencesManagerSingleton() {
+    private fun resetAppStoresSingleton() {
         val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)

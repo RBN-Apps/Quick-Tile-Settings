@@ -1,5 +1,8 @@
 package com.rbn.qtsettings.utils
 
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActionResult
+import com.rbn.qtsettings.platform.revert.AutoRevertCoordinator
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActions
 import android.Manifest
 import android.app.Application
 import android.provider.Settings

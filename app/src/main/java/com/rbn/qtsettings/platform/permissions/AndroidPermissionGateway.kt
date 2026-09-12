@@ -6,7 +6,7 @@ import android.util.Log
 import com.rbn.qtsettings.feature.permissions.domain.GrantMethod
 import com.rbn.qtsettings.feature.permissions.domain.PermissionGateway
 import com.rbn.qtsettings.feature.permissions.domain.PermissionSnapshot
-import com.rbn.qtsettings.utils.PermissionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

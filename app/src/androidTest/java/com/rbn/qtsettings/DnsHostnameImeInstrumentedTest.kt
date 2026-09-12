@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.data.DnsHostnameEntry
-import com.rbn.qtsettings.ui.composables.dns.DnsHostnameEditDialog
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
