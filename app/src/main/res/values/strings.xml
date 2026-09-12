@@ -193,12 +193,8 @@
     <string name="backup_restore_error">Backup restore failed: %1$s</string>
 
     <!-- VPN Detection Settings -->
-    <string name="setting_vpn_detection_enabled">Automatically disable DNS on VPN connections</string>
-    <string name="setting_vpn_detection_mode">VPN Detection Mode:</string>
-    <string name="vpn_detection_tile_only_title">Tile-Only Detection</string>
-    <string name="vpn_detection_tile_only_description">Checks for VPN connections when opening the Quick Settings. More battery-friendly, but detects VPN connections only when Quick Settings are opened. If you usually enable or disable VPN through Quick Settings anyway, this option is sufficient.</string>
-    <string name="vpn_detection_background_title">Background Service Detection</string>
-    <string name="vpn_detection_background_description">Continuously monitors VPN status. Provides an instant response, but uses more battery and shows a persistent notification to stay active.</string>
+    <string name="setting_vpn_detection_enabled">Disable DNS for VPN</string>
+    <string name="setting_vpn_detection_mode">Detection mode</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">VPN Monitoring</string>
@@ -222,62 +218,43 @@
     <string name="notification_permission_settings_button">Open settings</string>
 
     <!-- Network Type Detection Settings -->
-    <string name="setting_network_type_detection_enabled">Auto-switch DNS based on network type</string>
+    <string name="setting_network_type_detection_enabled">Switch DNS automatically</string>
     <string name="setting_network_type_detection_description">Automatically change Private DNS when switching between Wi-Fi and mobile data. Enable this to also configure rules for individual Wi-Fi networks or access points.</string>
-    <string name="setting_network_type_detection_mode">Network Detection Mode:</string>
-    <string name="network_type_detection_tile_only_title">Tile-Only Detection</string>
-    <string name="network_type_detection_tile_only_description">Checks network type when opening Quick Settings. Battery-friendly, but only detects network changes when Quick Settings are opened.</string>
-    <string name="network_type_detection_background_title">Background Service Detection</string>
-    <string name="network_type_detection_background_description">Continuously monitors network type changes. Instant response when switching networks, but uses more battery and shows a persistent notification.</string>
+    <string name="setting_network_type_detection_mode">Detection mode</string>
 
-    <string name="setting_dns_state_on_wifi">DNS on WiFi:</string>
-    <string name="setting_dns_state_on_wifi_other_networks">Wi-Fi DNS for all other networks:</string>
-    <string name="setting_dns_state_on_mobile">DNS on Mobile Data:</string>
     <string name="setting_select_hostname">Select hostname…</string>
 
     <!-- WiFi Network Rules -->
     <string name="setting_wifi_network_rules_title">Wi-Fi network rules</string>
-    <string name="setting_wifi_network_rules_description">Override the default Wi-Fi DNS setting for specific networks or access points (SSID/BSSID). Applying changes requires the app\'s Private DNS control permission and background detection. Notification access is optional and only makes the monitoring status visible in the notification drawer.</string>
     <string name="wifi_rules_enabled">Use per-network rules</string>
-    <string name="wifi_rules_enabled_description">Matching rules override the Wi-Fi DNS setting for all other identified networks.</string>
     <string name="wifi_ssid_permission_title">Precise location required</string>
-    <string name="wifi_ssid_permission_description">Android treats Wi-Fi names (SSIDs), access-point identifiers (BSSIDs), and nearby Wi-Fi results as location-sensitive information. Precise location permission is required to read them. This feature does not read location coordinates.</string>
-    <string name="wifi_ssid_permission_docs_link">Android documentation for location-sensitive Wi-Fi information</string>
+    <string name="wifi_ssid_permission_description">Allow precise location so Android can reveal Wi-Fi names and access points. The app does not read location coordinates.</string>
+    <string name="wifi_ssid_permission_docs_link">Why Android requires location access</string>
     <string name="wifi_ssid_permission_docs_url" translatable="false">https://developer.android.com/develop/connectivity/wifi/wifi-scan#permissions</string>
     <string name="wifi_ssid_permission_grant">Allow access</string>
     <string name="wifi_location_services_title">Turn on location services</string>
     <string name="wifi_location_services_description">The permission is granted, but Android also requires location services to be on before it reveals the connected SSID/BSSID and recent Wi-Fi results.</string>
     <string name="wifi_location_services_open">Open location settings</string>
-    <string name="wifi_ssid_manual_entry_notice">You can enter a rule manually now, but automatic matching still needs this access. Private DNS remains unchanged while the current network identity is unavailable.</string>
+    <string name="wifi_ssid_manual_entry_notice">Manual rules can be saved now. Automatic matching waits until the Wi-Fi identity is available; private DNS stays unchanged meanwhile.</string>
     <string name="wifi_ssid_permission_denied">Precise location permission is required to identify Wi-Fi networks. Private DNS remains unchanged until access is granted.</string>
     <string name="wifi_location_services_disabled">Turn on Android location services so the connected Wi-Fi name can be identified. Private DNS remains unchanged while the network identity is unavailable.</string>
     <string name="wifi_rules_require_background_detection">Wi-Fi network rules require background service detection. Disable the rules before selecting tile-only detection.</string>
     <string name="wifi_rules_enabled_background_detection">Background service detection was enabled because per-network rules require it.</string>
     <string name="wifi_ssid_label">Network name (SSID)</string>
-    <string name="wifi_rules_title">Network rules</string>
-    <string name="wifi_rules_empty">No network rules added.</string>
-    <string name="wifi_rule_add_current">Use currently connected network</string>
-    <string name="wifi_rule_choose_network">Choose nearby or recent network</string>
-    <string name="wifi_rule_add_manual">Enter SSID or BSSID manually</string>
-    <string name="wifi_network_picker_title">Choose Wi-Fi network</string>
     <string name="wifi_network_current_title">Currently connected</string>
-    <string name="wifi_network_nearby_title">Nearby networks</string>
-    <string name="wifi_network_history_title">Recently seen networks</string>
+    <string name="wifi_network_nearby_title">Nearby</string>
+    <string name="wifi_network_history_title">Recently seen</string>
     <string name="wifi_network_scanning">Loading Android\'s latest available Wi-Fi results…</string>
     <string name="wifi_network_none_found">No recent Wi-Fi results are available. This app does not start a new scan; Android may provide cached results.</string>
     <string name="wifi_network_refresh">Reload results</string>
     <string name="wifi_hidden_network">Hidden network</string>
-    <string name="wifi_rule_add_title">Add network rule</string>
-    <string name="wifi_rule_edit_title">Edit network rule</string>
-    <string name="wifi_bssid_label">Access point MAC (BSSID, optional)</string>
-    <string name="wifi_bssid_hint">Leave blank to match every access point with this SSID.</string>
-    <string name="wifi_rule_action_label">Action for this network</string>
+    <string name="wifi_bssid_label">BSSID (optional)</string>
+    <string name="wifi_bssid_hint">MAC address of the access point. Leave blank to match every access point with this SSID.</string>
+    <string name="wifi_rule_action_label">DNS target</string>
     <string name="wifi_rule_action_default">Use the default Wi-Fi DNS setting</string>
     <string name="wifi_rule_invalid_or_duplicate">Enter a valid SSID or BSSID and make sure the same rule does not already exist.</string>
     <string name="wifi_rule_delete_title">Delete network rule?</string>
     <string name="wifi_rule_delete_message">Remove the rule for “%1$s”?</string>
-    <string name="wifi_rule_edit_description">Edit rule for %1$s</string>
-    <string name="wifi_rule_delete_description">Delete rule for %1$s</string>
 
     <string name="dns_mode_off_label">Off</string>
     <string name="dns_mode_auto_label">Auto</string>
@@ -346,7 +323,7 @@
     <string name="wifi_permission_open_settings">Open app settings</string>
     <string name="wifi_permission_blocked_description">Android no longer shows the location permission dialog. Open app settings, choose Permissions → Location, and allow precise location access.</string>
     <string name="wifi_boot_title">Continue automatically after a restart</string>
-    <string name="wifi_boot_description">To apply Wi-Fi rules after restarting and unlocking your phone, open app settings → Permissions → Location and select “Allow all the time”, with precise location enabled. This allows the app to identify Wi-Fi networks in the background; no location coordinates are read. This is optional: without it, open the app once after each restart.</string>
+    <string name="wifi_boot_description">Optional: In app settings → Permissions → Location, choose “Allow all the time” to apply Wi-Fi rules after a restart without opening the app first. No location coordinates are read.</string>
     <string name="wifi_boot_ready">Wi-Fi rules resume automatically after restarting and unlocking your phone.</string>
     <string name="wifi_rule_use_detected_bssid">Use detected BSSID: %1$s</string>
     <string name="navigation_open">Open navigation</string>
@@ -388,4 +365,52 @@
     <string name="dns_providers_empty">No providers available. Add a hostname to include it in the cycle.</string>
     <string name="dns_revert_explanation">After a tile change, the timer restores the DNS state that was active beforehand. A new tile tap cancels the pending timer and starts a new cycle. A successful direct DNS action supersedes an older timer. A timer only runs when enabled and the delay is greater than zero.</string>
     <string name="dns_delay_error">Enter a whole number of seconds. Zero or negative values do not start a timer.</string>
+    <string name="automation_detection_mode">Detection mode</string>
+    <string name="automation_mode_tile">When the tile is visible</string>
+    <string name="automation_mode_background">In the background</string>
+    <string name="automation_vpn_tile_description">Detect VPN changes while the Private DNS tile is visible in Quick Settings.</string>
+    <string name="automation_network_tile_description">Detect network changes while the Private DNS tile is visible in Quick Settings.</string>
+    <string name="automation_background_description">Detect changes even when the tile is hidden. Uses a foreground service; notification access is optional on Android 13 and later.</string>
+    <string name="automation_network_section">Network changes</string>
+    <string name="automation_network_summary">Use separate DNS targets for Wi-Fi and mobile data.</string>
+    <string name="automation_wifi">DNS on Wi-Fi</string>
+    <string name="automation_wifi_fallback">Default for networks without a matching rule.</string>
+    <string name="automation_mobile">DNS on mobile data</string>
+    <string name="automation_network_details">How network switching works</string>
+    <string name="automation_vpn_section">VPN connections</string>
+    <string name="automation_vpn_summary">Disable private DNS during a VPN connection and restore it after disconnecting. Enable to choose the detection mode.</string>
+    <string name="automation_notification_title">Monitoring notification</string>
+    <string name="automation_notification_summary">Background detection is selected. Allow notifications to see its ongoing status in the notification shade.</string>
+    <string name="automation_rules_summary">Choose a DNS setting for specific Wi-Fi networks. Networks without a rule use the Wi-Fi default.</string>
+    <string name="automation_rules_requires_network">Turn on “Switch DNS automatically” under Automation first.</string>
+    <string name="automation_picker_access">Nearby networks are unavailable without location access and enabled location services. You can still choose a recent network or enter a rule manually.</string>
+    <string name="automation_known_empty">No recent networks yet. You can enter an SSID or BSSID manually.</string>
+    <string name="wifi_rule_add">Add rule</string>
+    <string name="wifi_rules_empty_guidance">No rules yet. Add a network and choose which DNS setting to use while connected to it.</string>
+    <string name="wifi_rule_title">Network rule</string>
+    <string name="wifi_rules_list_title">Rules</string>
+    <string name="wifi_rules_status_off">Off</string>
+    <string name="wifi_rules_status_none">On, no rules yet</string>
+    <plurals name="wifi_rules_count">
+        <item quantity="one">%d rule</item>
+        <item quantity="other">%d rules</item>
+    </plurals>
+    <string name="wifi_rules_fallback_status">Networks without a rule use the Wi-Fi default: %1$s</string>
+    <string name="wifi_rules_access_section">Location access</string>
+    <string name="wifi_rule_network_section">Network</string>
+    <string name="wifi_rule_pick_section">Pick a network</string>
+    <string name="wifi_rule_pick_summary">Tap a network to fill in its name.</string>
+    <string name="wifi_rule_action_summary">Applied while connected to this network.</string>
+    <string name="wifi_rule_action_default_summary">Currently: %1$s</string>
+    <string name="wifi_rule_delete">Delete rule</string>
+    <string name="wifi_rule_step_network">Step 1 of 2 · Network</string>
+    <string name="wifi_rule_step_target">Step 2 of 2 · DNS target</string>
+    <string name="wifi_rule_next">Next</string>
+    <string name="wifi_rule_previous">Back</string>
+    <string name="wifi_rule_search_networks">Search Wi-Fi name or BSSID</string>
+    <string name="wifi_rule_search_targets">Search DNS name or hostname</string>
+    <string name="wifi_rule_search_empty">No matching entries.</string>
+    <string name="automation_notification_optional_summary">Optional: show the ongoing monitoring status in the notification shade. Detection also works without this permission.</string>
+    <string name="automation_notification_legacy_summary">Background detection requires an ongoing service notification on this Android version. Manage its visibility in Android notification settings.</string>
+    <string name="search_hide_keyboard">Search and hide keyboard</string>
 </resources>

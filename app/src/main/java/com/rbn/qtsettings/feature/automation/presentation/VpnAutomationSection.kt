@@ -1,123 +1,28 @@
 package com.rbn.qtsettings.feature.automation.presentation
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Radar
+import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.core.designsystem.*
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
-import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 
 @Composable
-internal fun VpnAutomationSection(state: AutomationUiState, viewModel: AutomationUiActions) {
-    val vpnDetectionEnabled = state.vpnDetectionEnabled
-    val vpnDetectionMode = state.vpnDetectionMode
-    // VPN Detection Section
-    val interactionSourceVpnDetection = remember { MutableInteractionSource() }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = interactionSourceVpnDetection,
-                indication = null,
-                onClick = { viewModel.setVpnDetectionEnabled(!vpnDetectionEnabled) }
-            )
-    ) {
-        Checkbox(
-            checked = vpnDetectionEnabled,
-            onCheckedChange = { viewModel.setVpnDetectionEnabled(it) }
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = stringResource(R.string.setting_vpn_detection_enabled),
-            style = MaterialTheme.typography.titleMedium,
-        )
+internal fun VpnAutomationSection(state: AutomationUiState, actions: AutomationUiActions,
+                                  onOpen: (String) -> Unit) {
+    SettingsGroup(listOf("enabled", "mode"), { it }, title = stringResource(R.string.automation_vpn_section)) { row ->
+        if (row == "enabled") SettingsSwitchRow(stringResource(R.string.setting_vpn_detection_enabled),
+            state.vpnDetectionEnabled, actions::setVpnDetectionEnabled,
+            Modifier.testTag("vpn_detection_toggle"), icon = Icons.Outlined.VpnKey,
+            summary = stringResource(R.string.automation_vpn_summary))
+        else SettingsNavigationRow(stringResource(R.string.setting_vpn_detection_mode), Icons.Outlined.Radar,
+            { onOpen(AutomationDialogViewModel.VPN_MODE) }, Modifier.testTag("automation_vpn_mode"),
+            enabled = state.vpnDetectionEnabled,
+            status = stringResource(if (state.vpnDetectionMode == BACKGROUND_DETECTION)
+                R.string.automation_mode_background else R.string.automation_mode_tile))
     }
-
-    if (vpnDetectionEnabled) {
-        Text(
-            text = stringResource(R.string.setting_vpn_detection_mode),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectable(
-                    selected = vpnDetectionMode == TILE_ONLY_DETECTION,
-                    onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
-                )
-                .padding(vertical = 4.dp)
-        ) {
-            RadioButton(
-                selected = vpnDetectionMode == TILE_ONLY_DETECTION,
-                onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = stringResource(R.string.vpn_detection_tile_only_title),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = stringResource(R.string.vpn_detection_tile_only_description),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectable(
-                    selected = vpnDetectionMode == BACKGROUND_DETECTION,
-                    onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
-                )
-                .padding(vertical = 4.dp)
-        ) {
-            RadioButton(
-                selected = vpnDetectionMode == BACKGROUND_DETECTION,
-                onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = stringResource(R.string.vpn_detection_background_title),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = stringResource(R.string.vpn_detection_background_description),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-
-    Spacer(modifier = Modifier.height(16.dp))
-    HorizontalDivider()
-    Spacer(modifier = Modifier.height(16.dp))
-
 }

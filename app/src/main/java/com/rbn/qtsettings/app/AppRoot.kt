@@ -75,12 +75,17 @@ fun AppRoot(
             }
         }
     }
+    val backDispatcher = androidx.activity.compose.LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     AppScaffold(
         area = navigation.area,
         onSelectArea = navigation::selectArea,
         destination = navigation.destination,
         snackbarHostState = snackbar,
-        onBack = navigation::back,
+        onBack = {
+            if (navigation.destination == com.rbn.qtsettings.app.navigation.AppDestination.WifiRule && backDispatcher != null)
+                backDispatcher.onBackPressed()
+            else navigation.back()
+        },
         onOpenDestination = navigation::open,
         onShowPermissionHelp = showPermissionHelp,
         onShowAbout = { overlay = AppOverlay.About }
@@ -90,9 +95,12 @@ fun AppRoot(
                 route == AppRoute.UsbActions || route == AppRoute.UsbRevert) {
                 UsbSettingsRoot(usbViewModel, showPermissionHelp, route, navigation::open)
             } else if (route == AppRoute.Dns || route == AppRoute.DnsProviders ||
-                route == AppRoute.DnsAutomation || route == AppRoute.DnsRevert) {
-                DnsSettingsRoot(dnsViewModel, showPermissionHelp, route, navigation::open) { providers ->
-                    AutomationRoot(automationViewModel, providers)
+                route == AppRoute.DnsAutomation || route == AppRoute.DnsRevert ||
+                route == AppRoute.DnsWifiTarget || route == AppRoute.DnsMobileTarget ||
+                route == AppRoute.WifiRules || route is AppRoute.WifiRule) {
+                DnsSettingsRoot(dnsViewModel, showPermissionHelp, route, navigation::open) { automationRoute, providers ->
+                    AutomationRoot(automationViewModel, providers, automationRoute,
+                        onOpen = navigation::open, onEditRule = navigation::openWifiRule, onBack = navigation::back)
                 }
             } else LegacyFeatureContentRoot(route, viewModel)
         }

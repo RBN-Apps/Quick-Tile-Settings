@@ -8,6 +8,10 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -698,7 +702,7 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.navigateToDnsAutomation(context)
         // Test VPN Detection checkbox
         composeTestRule.onNodeWithText(context.getString(R.string.setting_vpn_detection_enabled))
-            .performClick()
+            .performScrollTo().performClick()
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
@@ -747,9 +751,9 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
 
         // Verify Network Type Detection info button is present
-        composeTestRule.onNodeWithContentDescription(
-            context.getString(R.string.network_type_info_title)
-        )
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.automation_network_details)
+        ).performScrollTo()
             .assertIsDisplayed()
 
         // Note: Description text may not be in semantic tree, so we just verify main elements exist
@@ -766,9 +770,7 @@ class QuickTileSettingsInstrumentedTest {
         // Scroll to Network Type Detection checkbox
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
 
-        val networkTypeInitiallyEnabled = composeTestRule.onAllNodesWithText(
-            context.getString(R.string.setting_dns_state_on_wifi)
-        ).fetchSemanticsNodes().isNotEmpty()
+        val networkTypeInitiallyEnabled = networkDetectionIsEnabled()
 
         if (networkTypeInitiallyEnabled) {
             composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
@@ -783,6 +785,8 @@ class QuickTileSettingsInstrumentedTest {
             .performClick()
         composeTestRule.waitForIdle()
 
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL).assertIsEnabled()
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_MOBILE_STATE_LABEL).assertIsEnabled()
         // Verify WiFi DNS state selector appears when enabled
         composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL)
             .performScrollTo()
@@ -799,54 +803,40 @@ class QuickTileSettingsInstrumentedTest {
             .performClick()
         composeTestRule.waitForIdle()
 
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL).assertIsNotEnabled()
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_MOBILE_STATE_LABEL).assertIsNotEnabled()
         Log.i(TAG, "Network Type Detection toggle works correctly")
     }
 
     @Test
     fun networkTypeDetection_dnsStateSelectorsShouldWork() {
-        // Navigate to DNS area
         composeTestRule.navigateToDnsAutomation(context)
-
-        Log.i(TAG, "Testing Network Type Detection DNS state selectors")
-
-        // Scroll to Network Type Detection section
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
-
         ensureNetworkTypeDetectionEnabled()
-
-        // Test WiFi DNS State selector
-        Log.i(TAG, "Testing WiFi DNS state selector")
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_wifi))
-
-        // Click the WiFi DNS state dropdown
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_dns_state_on_wifi))
-            .performScrollTo()
-        composeTestRule.waitForIdle()
-
-        // Verify the WiFi DNS state selector is displayed
-        composeTestRule.onNodeWithText(
-            context.getString(R.string.setting_dns_state_on_wifi),
-            substring = true
-        )
-            .assertIsDisplayed()
-
-        // Test Mobile Data DNS State selector
-        Log.i(TAG, "Testing Mobile Data DNS state selector")
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_mobile))
-
-        // Click the Mobile DNS state dropdown
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_dns_state_on_mobile))
-            .performScrollTo()
-        composeTestRule.waitForIdle()
-
-        // Verify the current selection shows "Auto" by default
-        composeTestRule.onNodeWithText(
-            context.getString(R.string.setting_dns_state_on_mobile),
-            substring = true
-        )
-            .assertIsDisplayed()
-
-        Log.i(TAG, "DNS state selectors displayed correctly")
+        val preferences = com.rbn.qtsettings.data.PreferencesManager.getInstance(context)
+        val oldWifi = preferences.getDnsStateOnWifi()
+        val oldWifiHost = preferences.getDnsHostnameOnWifi()
+        val oldMobile = preferences.getDnsStateOnMobile()
+        val oldMobileHost = preferences.getDnsHostnameOnMobile()
+        try {
+            composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL).performScrollTo().performClick()
+            composeTestRule.onNodeWithTag("automation_target_auto").performScrollTo().performClick()
+            composeTestRule.runOnIdle {
+                org.junit.Assert.assertEquals(com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO, preferences.getDnsStateOnWifi())
+                org.junit.Assert.assertNull(preferences.getDnsHostnameOnWifi())
+            }
+            composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_MOBILE_STATE_LABEL).performScrollTo().performClick()
+            composeTestRule.onNodeWithTag("automation_target_off").performScrollTo().performClick()
+            composeTestRule.runOnIdle {
+                org.junit.Assert.assertEquals(com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF, preferences.getDnsStateOnMobile())
+                org.junit.Assert.assertNull(preferences.getDnsHostnameOnMobile())
+            }
+            composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL).performScrollTo().performClick()
+            composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
+            org.junit.Assert.assertEquals(com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO, preferences.getDnsStateOnWifi())
+        } finally {
+            preferences.setDnsStateOnWifi(oldWifi); preferences.setDnsHostnameOnWifi(oldWifiHost)
+            preferences.setDnsStateOnMobile(oldMobile); preferences.setDnsHostnameOnMobile(oldMobileHost)
+        }
     }
 
     @Test
@@ -862,8 +852,9 @@ class QuickTileSettingsInstrumentedTest {
         ensureNetworkTypeDetectionEnabled()
 
         // Scroll to detection mode section
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_mode))
+        composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().assertIsDisplayed()
 
+        composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().performClick()
         // Verify tile-only mode is visible
         composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TILE_OPTION)
             .performScrollTo()
@@ -880,6 +871,7 @@ class QuickTileSettingsInstrumentedTest {
             composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION)
                 .performClick()
             composeTestRule.waitForIdle()
+            composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().performClick()
         } else {
             Log.w(
                 TAG,
@@ -907,9 +899,9 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
 
         // Click the info button
-        composeTestRule.onNodeWithContentDescription(
-            context.getString(R.string.network_type_info_title)
-        )
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.automation_network_details)
+        ).performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
 
@@ -949,14 +941,9 @@ class QuickTileSettingsInstrumentedTest {
         // Verify VPN Detection section is visible
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_vpn_detection_enabled))
 
-        // Check if VPN Detection is already enabled, if not enable it
-        // If VPN detection mode label doesn't exist, VPN detection is off
-        val vpnAlreadyEnabled = try {
-            composeTestRule.onAllNodesWithText(context.getString(R.string.setting_vpn_detection_mode))
-                .fetchSemanticsNodes().isNotEmpty()
-        } catch (_: Exception) {
-            false
-        }
+        // Read the actual switch state; mode rows remain visible while disabled.
+        val vpnAlreadyEnabled = composeTestRule.onNodeWithTag("vpn_detection_toggle")
+            .fetchSemanticsNode().config[SemanticsProperties.ToggleableState] == ToggleableState.On
 
         if (!vpnAlreadyEnabled) {
             Log.i(TAG, "Enabling VPN Detection")
@@ -977,8 +964,8 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
 
         // Verify Network Type Detection options are visible when enabled
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_wifi))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_mobile))
+        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_wifi))
+        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_mobile))
 
         Log.i(TAG, "Network Type Detection and VPN Detection coexist correctly")
     }
@@ -990,11 +977,7 @@ class QuickTileSettingsInstrumentedTest {
 
         Log.i(TAG, "Testing DNS state options in Network Type Detection")
 
-        // Enable Network Type Detection
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_network_type_detection_enabled))
-            .performClick()
-        composeTestRule.waitForIdle()
+        ensureNetworkTypeDetectionEnabled()
 
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
         composeTestRule.navigateToDnsProviders(context)
@@ -1023,15 +1006,17 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
         composeTestRule.navigateToDnsAutomation(context)
         // Scroll back to Network Type Detection section
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_wifi))
+        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_wifi))
 
-        // Verify WiFi DNS state label is displayed
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_dns_state_on_wifi))
-            .assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL).performClick()
+        composeTestRule.onNodeWithTag("automation_target_off").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithTag("automation_target_auto").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText(testHostname).performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
 
         // Verify Mobile DNS state label is displayed
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_mobile))
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_dns_state_on_mobile))
+        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_mobile))
+        composeTestRule.onNodeWithText(context.getString(R.string.automation_mobile))
             .assertIsDisplayed()
 
         composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
@@ -1058,13 +1043,11 @@ class QuickTileSettingsInstrumentedTest {
         Log.i(TAG, "DNS state options in Network Type Detection work correctly")
     }
 
+    private fun networkDetectionIsEnabled() = composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+        .fetchSemanticsNode().config[SemanticsProperties.ToggleableState] == ToggleableState.On
+
     private fun ensureNetworkTypeDetectionEnabled() {
-        val networkTypeAlreadyEnabled = try {
-            composeTestRule.onAllNodesWithText(context.getString(R.string.setting_dns_state_on_wifi))
-                .fetchSemanticsNodes().isNotEmpty()
-        } catch (_: Exception) {
-            false
-        }
+        val networkTypeAlreadyEnabled = networkDetectionIsEnabled()
 
         if (!networkTypeAlreadyEnabled) {
             Log.i(TAG, "Enabling Network Type Detection")

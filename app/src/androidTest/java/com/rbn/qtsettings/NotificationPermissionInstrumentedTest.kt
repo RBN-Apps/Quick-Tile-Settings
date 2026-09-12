@@ -6,9 +6,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -43,7 +44,7 @@ class NotificationPermissionInstrumentedTest {
         .around(composeTestRule)
 
     @Test
-    fun backgroundDetectionSelection_withoutNotificationPermission_showsExplanationDialog() {
+    fun backgroundDetectionSelection_offersNotificationsOnlyAfterExplicitTap() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         assumeTrue(!hasPostNotificationsPermission(context))
@@ -55,16 +56,20 @@ class NotificationPermissionInstrumentedTest {
             context.getString(R.string.setting_network_type_detection_enabled)
         )
 
-        ensureNetworkTypeDetectionEnabled(context)
-        composeTestRule.safeScrollToAndAssert(
-            context.getString(R.string.setting_network_type_detection_mode)
-        )
+        ensureNetworkTypeDetectionEnabled()
+        composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().assertIsDisplayed()
 
+        composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().performClick()
         composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION)
             .performScrollTo()
             .performClick()
         composeTestRule.waitForIdle()
 
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.notification_permission_background_message)
+        ).assertDoesNotExist()
+        composeTestRule.onNodeWithText(context.getString(R.string.automation_notification_title))
+            .performScrollTo().performClick()
         composeTestRule.onNodeWithText(
             context.getString(R.string.notification_permission_background_message)
         ).assertIsDisplayed()
@@ -74,13 +79,12 @@ class NotificationPermissionInstrumentedTest {
         ).performClick()
         composeTestRule.waitForIdle()
 
-        disableNetworkTypeDetectionIfEnabled(context)
+        disableNetworkTypeDetectionIfEnabled()
     }
 
-    private fun ensureNetworkTypeDetectionEnabled(context: Context) {
-        val networkTypeAlreadyEnabled = composeTestRule.onAllNodesWithText(
-            context.getString(R.string.setting_dns_state_on_wifi)
-        ).fetchSemanticsNodes().isNotEmpty()
+    private fun ensureNetworkTypeDetectionEnabled() {
+        val networkTypeAlreadyEnabled = composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+            .fetchSemanticsNode().config[SemanticsProperties.ToggleableState] == ToggleableState.On
 
         if (!networkTypeAlreadyEnabled) {
             composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
@@ -90,10 +94,9 @@ class NotificationPermissionInstrumentedTest {
         }
     }
 
-    private fun disableNetworkTypeDetectionIfEnabled(context: Context) {
-        val networkTypeEnabled = composeTestRule.onAllNodesWithText(
-            context.getString(R.string.setting_dns_state_on_wifi)
-        ).fetchSemanticsNodes().isNotEmpty()
+    private fun disableNetworkTypeDetectionIfEnabled() {
+        val networkTypeEnabled = composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+            .fetchSemanticsNode().config[SemanticsProperties.ToggleableState] == ToggleableState.On
 
         if (networkTypeEnabled) {
             composeTestRule.onNodeWithTag(TAG_NETWORK_TYPE_DETECTION_TOGGLE)

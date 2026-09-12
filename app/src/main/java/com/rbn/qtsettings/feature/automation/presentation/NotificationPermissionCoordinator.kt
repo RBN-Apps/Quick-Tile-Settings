@@ -32,22 +32,19 @@ internal class NotificationPermissionCoordinator(
 
     private var awaitingSettingsResult = false
 
-    fun setVpnDetectionMode(mode: String, context: Context?) {
+    fun setVpnDetectionMode(mode: String) {
         preferences.setVpnDetectionMode(mode)
         manageVpnMonitoring()
-        offerPermissionForBackgroundStatus(mode, context)
     }
 
-    fun setNetworkTypeDetectionMode(mode: String, context: Context?) {
+    fun setNetworkTypeDetectionMode(mode: String) {
         preferences.setNetworkTypeDetectionMode(mode)
         manageNetworkMonitoring(false)
-        offerPermissionForBackgroundStatus(mode, context)
     }
 
     fun setNetworkTypeDetectionEnabled(
         enabled: Boolean,
-        wifiNetworkRulesEnabled: Boolean,
-        context: Context?
+        wifiNetworkRulesEnabled: Boolean
     ) {
         if (enabled &&
             wifiNetworkRulesEnabled &&
@@ -59,12 +56,9 @@ internal class NotificationPermissionCoordinator(
 
         preferences.setNetworkTypeDetectionEnabled(enabled)
         manageNetworkMonitoring(false)
-        if (enabled && preferences.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION) {
-            offerPermissionForBackgroundStatus(BACKGROUND_DETECTION, context)
-        }
     }
 
-    fun setWifiNetworkRulesEnabled(enabled: Boolean, context: Context?) {
+    fun setWifiNetworkRulesEnabled(enabled: Boolean) {
         val previouslyEnabled = preferences.areWifiNetworkRulesEnabled()
         if (enabled &&
             preferences.isNetworkTypeDetectionEnabled() &&
@@ -78,12 +72,6 @@ internal class NotificationPermissionCoordinator(
         val locationForegroundTypeChanged =
             previouslyEnabled != preferences.areWifiNetworkRulesEnabled()
         manageNetworkMonitoring(locationForegroundTypeChanged)
-        if (enabled &&
-            preferences.isNetworkTypeDetectionEnabled() &&
-            preferences.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION
-        ) {
-            offerPermissionForBackgroundStatus(BACKGROUND_DETECTION, context)
-        }
     }
 
     fun shouldOfferPermissionForBackgroundStatus(context: Context): Boolean =
@@ -158,18 +146,6 @@ internal class NotificationPermissionCoordinator(
             _showPermissionSettingsDialog.value = true
         }
     }
-
-    private fun offerPermissionForBackgroundStatus(mode: String, context: Context?) {
-        if (shouldOfferPermission(mode, context)) {
-            showMissingPermission(fromBackup = false)
-        }
-    }
-
-    private fun shouldOfferPermission(mode: String, context: Context?): Boolean =
-        mode == BACKGROUND_DETECTION &&
-            context != null &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            !hasNotificationPermission(context)
 
     private fun hasNotificationPermission(context: Context): Boolean =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||

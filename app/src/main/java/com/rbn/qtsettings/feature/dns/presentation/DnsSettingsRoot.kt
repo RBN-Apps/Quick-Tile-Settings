@@ -3,8 +3,6 @@ package com.rbn.qtsettings.feature.dns.presentation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -21,7 +19,7 @@ fun DnsSettingsRoot(
     onShowPermissionHelp: () -> Unit,
     route: AppRoute,
     onOpen: (AppDestination) -> Unit,
-    automationContent: @Composable (List<DnsHostnameEntry>) -> Unit
+    automationContent: @Composable (AppRoute, List<DnsHostnameEntry>) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -30,9 +28,8 @@ fun DnsSettingsRoot(
             AppRoute.Dns -> DnsSettingsScreen(state, viewModel::onAction, onOpen)
             AppRoute.DnsProviders -> DnsProvidersScreen(state, viewModel::onAction, viewModel::reorder)
             AppRoute.DnsRevert -> DnsAutoRevertScreen(state, viewModel::onAction)
-            AppRoute.DnsAutomation -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                automationContent(state.settings.providers.map { it.toRowEntry() })
-            }
+            AppRoute.DnsAutomation, AppRoute.DnsWifiTarget, AppRoute.DnsMobileTarget, AppRoute.WifiRules, is AppRoute.WifiRule ->
+                automationContent(route, state.settings.providers.map { it.toRowEntry() })
             else -> error("Not a DNS destination")
         }
     }

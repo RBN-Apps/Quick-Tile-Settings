@@ -54,6 +54,10 @@ fun AppTopBar(
                         AppDestination.UsbActions -> stringResource(R.string.usb_menu_actions)
                         AppDestination.DnsProviders -> stringResource(R.string.dns_menu_providers)
                         AppDestination.DnsAutomation -> stringResource(R.string.dns_menu_automation)
+                        AppDestination.DnsWifiTarget -> stringResource(R.string.automation_wifi)
+                        AppDestination.DnsMobileTarget -> stringResource(R.string.automation_mobile)
+                        AppDestination.WifiRules -> stringResource(R.string.setting_wifi_network_rules_title)
+                        AppDestination.WifiRule -> stringResource(R.string.wifi_rule_title)
                         AppDestination.DnsRevert -> stringResource(R.string.usb_menu_revert)
                         AppDestination.UsbRevert -> stringResource(R.string.usb_menu_revert)
                         AppDestination.TileSettings ->

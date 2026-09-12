@@ -175,10 +175,6 @@
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">Автоматически отключать DNS при VPN-подключениях</string>
     <string name="setting_vpn_detection_mode">Режим обнаружения VPN:</string>
-    <string name="vpn_detection_tile_only_title">Обнаружение только плиткой</string>
-    <string name="vpn_detection_tile_only_description">Проверяет наличие VPN при открытии быстрых настроек. Бережнее расходует заряд, но обнаруживает VPN только при открытии панели. Если вы обычно переключаете VPN через шторку, этого достаточно.</string>
-    <string name="vpn_detection_background_title">Обнаружение фоновой службой</string>
-    <string name="vpn_detection_background_description">Постоянно отслеживает статус VPN. Обеспечивает мгновенную реакцию, но потребляет больше энергии и показывает постоянное уведомление для работы в фоне.</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">Мониторинг VPN</string>
@@ -205,13 +201,7 @@
     <string name="setting_network_type_detection_enabled">Авто-переключение DNS по типу сети</string>
     <string name="setting_network_type_detection_description">Автоматически меняет частный DNS при переключении между Wi-Fi и мобильными данными. Включите эту функцию также для настройки правил отдельных сетей Wi-Fi или точек доступа.</string>
     <string name="setting_network_type_detection_mode">Режим обнаружения сети:</string>
-    <string name="network_type_detection_tile_only_title">Обнаружение только плиткой</string>
-    <string name="network_type_detection_tile_only_description">Проверяет тип сети при открытии быстрых настроек. Экономит заряд, но обнаруживает смену сети только при открытии панели.</string>
-    <string name="network_type_detection_background_title">Обнаружение фоновой службой</string>
-    <string name="network_type_detection_background_description">Постоянно отслеживает смену типа сети. Мгновенная реакция при переключении сетей, но расходует больше заряда и требует уведомления.</string>
 
-    <string name="setting_dns_state_on_wifi">DNS через WiFi:</string>
-    <string name="setting_dns_state_on_mobile">DNS через мобильные данные:</string>
     <string name="setting_select_hostname">Выберите имя хоста…</string>
 
     <string name="dns_mode_off_label">Выкл.</string>
@@ -273,11 +263,8 @@
     <string name="shortcut_settings_remove_favorite_desc">Удалить %1$s из избранного</string>
     <string name="shortcut_settings_open_desc">Открыть настройки ярлыков</string>
     <!-- Правила DNS для сетей Wi-Fi -->
-    <string name="setting_dns_state_on_wifi_other_networks">DNS через Wi-Fi для всех остальных сетей:</string>
     <string name="setting_wifi_network_rules_title">Правила для сетей Wi-Fi</string>
-    <string name="setting_wifi_network_rules_description">Переопределяет стандартную настройку DNS через Wi-Fi для отдельных сетей или точек доступа (SSID/BSSID). Для применения нужны разрешение приложения управлять частным DNS и фоновое обнаружение. Уведомления необязательны и только показывают состояние.</string>
     <string name="wifi_rules_enabled">Использовать правила для отдельных сетей</string>
-    <string name="wifi_rules_enabled_description">Подходящие правила переопределяют настройку DNS через Wi-Fi для всех остальных распознанных сетей.</string>
     <string name="wifi_ssid_permission_title">Требуется точное местоположение</string>
     <string name="wifi_ssid_permission_description">Android считает имена Wi-Fi (SSID), идентификаторы точек доступа (BSSID) и результаты ближайших сетей информацией, связанной с местоположением. Для чтения требуется разрешение на точное местоположение. Функция не считывает координаты.</string>
     <string name="wifi_ssid_permission_docs_link">Документация Android о разрешении для SSID</string>
@@ -291,12 +278,6 @@
     <string name="wifi_rules_require_background_detection">Для правил сетей Wi-Fi требуется обнаружение фоновым сервисом. Отключите правила перед выбором обнаружения только через плитку.</string>
     <string name="wifi_rules_enabled_background_detection">Обнаружение фоновым сервисом включено, поскольку оно необходимо для правил отдельных сетей.</string>
     <string name="wifi_ssid_label">Имя сети (SSID)</string>
-    <string name="wifi_rules_title">Правила сети</string>
-    <string name="wifi_rules_empty">Правила сети не добавлены.</string>
-    <string name="wifi_rule_add_current">Использовать текущую подключённую сеть</string>
-    <string name="wifi_rule_choose_network">Выбрать ближайшую или недавнюю сеть</string>
-    <string name="wifi_rule_add_manual">Ввести SSID или BSSID вручную</string>
-    <string name="wifi_network_picker_title">Выбор сети Wi-Fi</string>
     <string name="wifi_network_current_title">Текущее подключение</string>
     <string name="wifi_network_nearby_title">Сети поблизости</string>
     <string name="wifi_network_history_title">Недавно обнаруженные сети</string>
@@ -304,8 +285,6 @@
     <string name="wifi_network_none_found">Недавние результаты Wi-Fi недоступны. Приложение не запускает новое сканирование; Android может предоставить сохранённые результаты.</string>
     <string name="wifi_network_refresh">Загрузить результаты снова</string>
     <string name="wifi_hidden_network">Скрытая сеть</string>
-    <string name="wifi_rule_add_title">Добавить правило сети</string>
-    <string name="wifi_rule_edit_title">Изменить правило сети</string>
     <string name="wifi_bssid_label">MAC-адрес точки доступа (BSSID, необязательно)</string>
     <string name="wifi_bssid_hint">Оставьте пустым, чтобы правило соответствовало всем точкам доступа с этим SSID.</string>
     <string name="wifi_rule_action_label">Действие для этой сети</string>
@@ -313,8 +292,6 @@
     <string name="wifi_rule_invalid_or_duplicate">Введите допустимый SSID или BSSID и убедитесь, что такое правило ещё не существует.</string>
     <string name="wifi_rule_delete_title">Удалить правило сети?</string>
     <string name="wifi_rule_delete_message">Удалить правило для «%1$s»?</string>
-    <string name="wifi_rule_edit_description">Изменить правило для %1$s</string>
-    <string name="wifi_rule_delete_description">Удалить правило для %1$s</string>
     <string name="wifi_permission_open_settings">Открыть настройки приложения</string>
     <string name="wifi_permission_blocked_description">Android больше не показывает запрос разрешения на геолокацию. Откройте настройки приложения, выберите Разрешения → Местоположение и разрешите точное местоположение.</string>
     <string name="wifi_boot_title">Продолжать автоматически после перезагрузки</string>

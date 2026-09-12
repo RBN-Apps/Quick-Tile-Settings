@@ -16,6 +16,7 @@ object AppShapes {
     )
     val button = CircleShape
     val textField = RoundedCornerShape(4.dp)
+    val searchField = RoundedCornerShape(16.dp)
     private val groupOuter = 20.dp
     private val groupInner = 4.dp
 

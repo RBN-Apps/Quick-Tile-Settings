@@ -14,6 +14,11 @@ sealed interface AppRoute : NavKey {
     @Serializable @SerialName("dns_revert") data object DnsRevert : AppRoute
     @Serializable @SerialName("dns_automation") data object DnsAutomation : AppRoute
     @Serializable @SerialName("dns_providers") data object DnsProviders : AppRoute
+    @Serializable @SerialName("dns_wifi_target") data object DnsWifiTarget : AppRoute
+    @Serializable @SerialName("dns_mobile_target") data object DnsMobileTarget : AppRoute
+    @Serializable @SerialName("wifi_rules") data object WifiRules : AppRoute
+    /** `ruleId == null` edits a new rule; an existing rule ID keeps its stored identity. */
+    @Serializable @SerialName("wifi_rule") data class WifiRule(val ruleId: String?) : AppRoute
     @Serializable @SerialName("usb_tile") data object UsbTile : AppRoute
     @Serializable @SerialName("usb_actions") data object UsbActions : AppRoute
     @Serializable @SerialName("usb_revert") data object UsbRevert : AppRoute
@@ -29,6 +34,10 @@ internal val AppNavigationSavedState = SavedStateConfiguration {
             subclass(AppRoute.DnsRevert.serializer())
             subclass(AppRoute.DnsAutomation.serializer())
             subclass(AppRoute.DnsProviders.serializer())
+            subclass(AppRoute.DnsWifiTarget.serializer())
+            subclass(AppRoute.DnsMobileTarget.serializer())
+            subclass(AppRoute.WifiRules.serializer())
+            subclass(AppRoute.WifiRule.serializer())
             subclass(AppRoute.UsbTile.serializer())
             subclass(AppRoute.UsbActions.serializer())
             subclass(AppRoute.UsbRevert.serializer())
@@ -46,6 +55,10 @@ internal val AppRoute.destination: AppDestination get() = when (this) {
     is AppRoute.Settings -> AppDestination.AppSettings
     AppRoute.DnsProviders -> AppDestination.DnsProviders
     AppRoute.DnsAutomation -> AppDestination.DnsAutomation
+    AppRoute.DnsWifiTarget -> AppDestination.DnsWifiTarget
+    AppRoute.DnsMobileTarget -> AppDestination.DnsMobileTarget
+    AppRoute.WifiRules -> AppDestination.WifiRules
+    is AppRoute.WifiRule -> AppDestination.WifiRule
     AppRoute.DnsRevert -> AppDestination.DnsRevert
     AppRoute.UsbTile -> AppDestination.UsbTile
     AppRoute.UsbActions -> AppDestination.UsbActions

@@ -186,12 +186,8 @@
     <string name="backup_restore_error">Backup-Wiederherstellung fehlgeschlagen: %1$s</string>
 
     <!-- VPN Detection Settings -->
-    <string name="setting_vpn_detection_enabled">DNS bei VPN-Verbindungen automatisch deaktivieren</string>
-    <string name="setting_vpn_detection_mode">VPN-Erkennungsmodus:</string>
-    <string name="vpn_detection_tile_only_title">Nur-Kachel-Erkennung</string>
-    <string name="vpn_detection_tile_only_description">Prüft auf VPN-Verbindungen beim Öffnen der Schnelleinstellungen. Batteriefreundlicher, aber erkennt VPN-Verbindungen, nur wenn Schnelleinstellungen geöffnet sind. Wenn du VPN sowieso über die Schnelleinstellungen deaktivierst und aktivierst, ist diese Option ausreichend.</string>
-    <string name="vpn_detection_background_title">Hintergrunddienst-Erkennung</string>
-    <string name="vpn_detection_background_description">Überwacht VPN-Status kontinuierlich. Sofortige Reaktion, verbraucht aber mehr Batterie und zeigt eine kontinuierliche Benachrichtigung, um aktiv zu bleiben.</string>
+    <string name="setting_vpn_detection_enabled">DNS bei VPN ausschalten</string>
+    <string name="setting_vpn_detection_mode">Erkennungsmodus</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">VPN-Überwachung</string>
@@ -215,61 +211,42 @@
     <string name="notification_permission_settings_button">Einstellungen öffnen</string>
 
     <!-- Network Type Detection Settings -->
-    <string name="setting_network_type_detection_enabled">DNS je nach Netzwerktyp automatisch umschalten</string>
+    <string name="setting_network_type_detection_enabled">DNS automatisch wechseln</string>
     <string name="setting_network_type_detection_description">Ändert Privates DNS automatisch beim Wechsel zwischen WLAN und mobilen Daten. Aktiviere dies auch, um Regeln für einzelne WLAN-Netzwerke oder Access Points einzurichten.</string>
-    <string name="setting_network_type_detection_mode">Netzwerkerkennungsmodus:</string>
-    <string name="network_type_detection_tile_only_title">Nur-Kachel-Erkennung</string>
-    <string name="network_type_detection_tile_only_description">Prüft den Netzwerktyp beim Öffnen der Schnelleinstellungen. Spart Akku, erkennt Netzwerkänderungen jedoch nur, wenn die Schnelleinstellungen geöffnet werden.</string>
-    <string name="network_type_detection_background_title">Erkennung über Hintergrunddienst</string>
-    <string name="network_type_detection_background_description">Überwacht Änderungen des Netzwerktyps durchgehend. Reagiert sofort beim Netzwerkwechsel, verbraucht jedoch mehr Akku und zeigt eine dauerhafte Benachrichtigung.</string>
+    <string name="setting_network_type_detection_mode">Erkennungsmodus</string>
 
-    <string name="setting_dns_state_on_wifi">DNS im WLAN:</string>
-    <string name="setting_dns_state_on_wifi_other_networks">WLAN-DNS für alle anderen Netzwerke:</string>
-    <string name="setting_dns_state_on_mobile">DNS bei mobilen Daten:</string>
     <string name="setting_select_hostname">Hostname auswählen…</string>
 
     <!-- WLAN-Netzwerkregeln -->
     <string name="setting_wifi_network_rules_title">WLAN-Netzwerkregeln</string>
-    <string name="setting_wifi_network_rules_description">Überschreibt die standardmäßige WLAN-DNS-Einstellung für bestimmte Netzwerke oder Access Points (SSID/BSSID). Zum Anwenden werden die Berechtigung der App zur Steuerung von Privatem DNS und die Hintergrunderkennung benötigt. Benachrichtigungszugriff ist optional und macht nur den Überwachungsstatus im Benachrichtigungsbereich sichtbar.</string>
     <string name="wifi_rules_enabled">Regeln pro Netzwerk verwenden</string>
-    <string name="wifi_rules_enabled_description">Passende Regeln überschreiben die WLAN-DNS-Einstellung für alle anderen erkannten Netzwerke.</string>
     <string name="wifi_ssid_permission_title">Genauer Standort erforderlich</string>
-    <string name="wifi_ssid_permission_description">Android stuft WLAN-Namen (SSIDs), Access-Point-Kennungen (BSSIDs) und WLAN-Ergebnisse aus der Umgebung als standortsensitive Informationen ein. Zum Lesen ist die Berechtigung „Genauer Standort“ erforderlich. Diese Funktion liest keine Standortkoordinaten.</string>
-    <string name="wifi_ssid_permission_docs_link">Android-Dokumentation zu standortsensitiven WLAN-Informationen</string>
+    <string name="wifi_ssid_permission_description">Genauen Standortzugriff erlauben, damit Android WLAN-Namen und Zugangspunkte bereitstellt. Die App liest keine Standortkoordinaten.</string>
+    <string name="wifi_ssid_permission_docs_link">Warum Android Standortzugriff verlangt</string>
     <string name="wifi_ssid_permission_grant">Zugriff ermöglichen</string>
     <string name="wifi_location_services_title">Standortdienste einschalten</string>
     <string name="wifi_location_services_description">Die Berechtigung ist erteilt, Android gibt die verbundene SSID/BSSID und letzte WLAN-Ergebnisse aber nur bei eingeschalteten Standortdiensten frei.</string>
     <string name="wifi_location_services_open">Standorteinstellungen öffnen</string>
-    <string name="wifi_ssid_manual_entry_notice">Du kannst eine Regel jetzt manuell eintragen, der automatische Abgleich benötigt diesen Zugriff aber weiterhin. Solange das aktuelle Netzwerk unbekannt ist, bleibt Privates DNS unverändert.</string>
+    <string name="wifi_ssid_manual_entry_notice">Regeln können bereits manuell gespeichert werden. Automatisches Zuordnen wartet auf die WLAN-Identität; privates DNS bleibt solange unverändert.</string>
     <string name="wifi_ssid_permission_denied">Zum Erkennen von WLAN-Netzwerken ist die Berechtigung für den genauen Standort erforderlich. Bis zur Freigabe bleibt Privates DNS unverändert.</string>
     <string name="wifi_location_services_disabled">Aktiviere die Android-Standortdienste, damit der Name des verbundenen WLANs erkannt werden kann. Solange die Netzwerkidentität nicht verfügbar ist, bleibt Privates DNS unverändert.</string>
     <string name="wifi_rules_require_background_detection">WLAN-Netzwerkregeln benötigen die Hintergrunddiensterkennung. Deaktiviere die Regeln, bevor du die reine Schnelleinstellungserkennung auswählst.</string>
     <string name="wifi_rules_enabled_background_detection">Die Hintergrunddiensterkennung wurde aktiviert, weil Regeln pro Netzwerk sie benötigen.</string>
     <string name="wifi_ssid_label">Netzwerkname (SSID)</string>
-    <string name="wifi_rules_title">Netzwerkregeln</string>
-    <string name="wifi_rules_empty">Keine Netzwerkregeln hinzugefügt.</string>
-    <string name="wifi_rule_add_current">Aktuell verbundenes Netzwerk verwenden</string>
-    <string name="wifi_rule_choose_network">Netzwerk aus Umgebung oder Verlauf wählen</string>
-    <string name="wifi_rule_add_manual">SSID oder BSSID manuell eingeben</string>
-    <string name="wifi_network_picker_title">WLAN-Netzwerk auswählen</string>
     <string name="wifi_network_current_title">Aktuell verbunden</string>
-    <string name="wifi_network_nearby_title">Netzwerke in der Nähe</string>
-    <string name="wifi_network_history_title">Zuletzt erkannte Netzwerke</string>
+    <string name="wifi_network_nearby_title">In der Nähe</string>
+    <string name="wifi_network_history_title">Zuletzt gesehen</string>
     <string name="wifi_network_scanning">Letzte von Android verfügbare WLAN-Ergebnisse werden geladen…</string>
     <string name="wifi_network_none_found">Keine letzten WLAN-Ergebnisse verfügbar. Die App startet keinen neuen Scan; Android kann zwischengespeicherte Ergebnisse liefern.</string>
     <string name="wifi_network_refresh">Ergebnisse neu laden</string>
     <string name="wifi_hidden_network">Verstecktes Netzwerk</string>
-    <string name="wifi_rule_add_title">Netzwerkregel hinzufügen</string>
-    <string name="wifi_rule_edit_title">Netzwerkregel bearbeiten</string>
-    <string name="wifi_bssid_label">MAC des Access Points (BSSID, optional)</string>
-    <string name="wifi_bssid_hint">Leer lassen, um alle Access Points mit dieser SSID abzugleichen.</string>
-    <string name="wifi_rule_action_label">Aktion für dieses Netzwerk</string>
+    <string name="wifi_bssid_label">BSSID (optional)</string>
+    <string name="wifi_bssid_hint">MAC-Adresse des Zugangspunkts. Leer lassen, um alle Zugangspunkte mit dieser SSID abzugleichen.</string>
+    <string name="wifi_rule_action_label">DNS-Ziel</string>
     <string name="wifi_rule_action_default">Standardmäßige WLAN-DNS-Einstellung verwenden</string>
     <string name="wifi_rule_invalid_or_duplicate">Gib eine gültige SSID oder BSSID ein und stelle sicher, dass dieselbe Regel nicht bereits existiert.</string>
     <string name="wifi_rule_delete_title">Netzwerkregel löschen?</string>
     <string name="wifi_rule_delete_message">Regel für „%1$s“ entfernen?</string>
-    <string name="wifi_rule_edit_description">Regel für %1$s bearbeiten</string>
-    <string name="wifi_rule_delete_description">Regel für %1$s löschen</string>
 
     <string name="dns_mode_off_label">Aus</string>
     <string name="dns_mode_auto_label">Auto</string>
@@ -338,7 +315,7 @@
     <string name="wifi_permission_open_settings">App-Einstellungen öffnen</string>
     <string name="wifi_permission_blocked_description">Android zeigt den Standort-Berechtigungsdialog nicht mehr an. Öffne die App-Einstellungen, wähle Berechtigungen → Standort und erlaube den Zugriff auf den genauen Standort.</string>
     <string name="wifi_boot_title">Nach einem Neustart automatisch fortsetzen</string>
-    <string name="wifi_boot_description">Damit WLAN-Regeln nach dem Neustart und Entsperren deines Telefons wieder greifen, öffne App-Einstellungen → Berechtigungen → Standort und wähle „Immer zulassen“ mit aktiviertem genauen Standort. So kann die App WLAN-Netzwerke im Hintergrund erkennen; Standortkoordinaten werden nicht gelesen. Das ist optional: Ohne diese Freigabe musst du die App nach jedem Neustart einmal öffnen.</string>
+    <string name="wifi_boot_description">Optional: In den App-Einstellungen → Berechtigungen → Standort „Immer zulassen“ wählen, damit WLAN-Regeln nach einem Neustart ohne vorherigen App-Start greifen. Standortkoordinaten werden nicht gelesen.</string>
     <string name="wifi_boot_ready">WLAN-Regeln werden nach dem Neustart und Entsperren automatisch fortgesetzt.</string>
     <string name="wifi_rule_use_detected_bssid">Erkannte BSSID übernehmen: %1$s</string>
     <string name="navigation_open">Navigation öffnen</string>
@@ -380,4 +357,52 @@
     <string name="dns_providers_empty">Keine Anbieter vorhanden. Füge einen Hostnamen hinzu, um ihn im Zyklus zu verwenden.</string>
     <string name="dns_revert_explanation">Nach einem Wechsel über die Kachel stellt der Timer den vorher aktiven DNS-Zustand wieder her. Ein erneutes Tippen auf die Kachel beendet den alten Timer und startet einen neuen Zyklus. Eine erfolgreiche direkte DNS-Aktion hat Vorrang vor einem älteren Timer. Der Timer läuft nur bei aktivierter Option und einer Verzögerung größer als null.</string>
     <string name="dns_delay_error">Gib eine ganze Zahl in Sekunden ein. Bei null oder negativen Werten startet kein Timer.</string>
+    <string name="automation_detection_mode">Erkennungsmodus</string>
+    <string name="automation_mode_tile">Bei sichtbarer Kachel</string>
+    <string name="automation_mode_background">Im Hintergrund</string>
+    <string name="automation_vpn_tile_description">VPN-Wechsel erkennen, während die Kachel für privates DNS in den Schnelleinstellungen sichtbar ist.</string>
+    <string name="automation_network_tile_description">Netzwerkwechsel erkennen, während die Kachel für privates DNS in den Schnelleinstellungen sichtbar ist.</string>
+    <string name="automation_background_description">Wechsel auch bei ausgeblendeter Kachel erkennen. Verwendet einen Vordergrunddienst; ab Android 13 ist der Zugriff auf Benachrichtigungen optional.</string>
+    <string name="automation_network_section">Netzwerkwechsel</string>
+    <string name="automation_network_summary">Getrennte DNS-Ziele für WLAN und mobile Daten verwenden.</string>
+    <string name="automation_wifi">DNS im WLAN</string>
+    <string name="automation_wifi_fallback">Standard für Netzwerke ohne passende Regel.</string>
+    <string name="automation_mobile">DNS bei mobilen Daten</string>
+    <string name="automation_network_details">So funktioniert der Netzwerkwechsel</string>
+    <string name="automation_vpn_section">VPN-Verbindungen</string>
+    <string name="automation_vpn_summary">Privates DNS während einer VPN-Verbindung ausschalten und danach wiederherstellen. Zum Auswählen des Erkennungsmodus aktivieren.</string>
+    <string name="automation_notification_title">Benachrichtigung zur Erkennung</string>
+    <string name="automation_notification_summary">Hintergrunderkennung ist ausgewählt. Benachrichtigungen erlauben, um ihren laufenden Status in der Benachrichtigungsleiste zu sehen.</string>
+    <string name="automation_rules_summary">Lege für einzelne WLANs eigene DNS-Einstellungen fest. Netzwerke ohne Regel verwenden den WLAN-Standard.</string>
+    <string name="automation_rules_requires_network">Aktiviere zuerst „DNS automatisch wechseln“ unter Automatisierung.</string>
+    <string name="automation_picker_access">Netzwerke in der Nähe sind ohne Standortzugriff und aktivierte Standortdienste nicht verfügbar. Zuletzt verwendete Netzwerke und die manuelle Eingabe bleiben nutzbar.</string>
+    <string name="automation_known_empty">Noch keine zuletzt verwendeten Netzwerke. SSID oder BSSID können manuell eingegeben werden.</string>
+    <string name="wifi_rule_add">Regel hinzufügen</string>
+    <string name="wifi_rules_empty_guidance">Noch keine Regeln. Füge ein WLAN hinzu und wähle, welche DNS-Einstellung dort gelten soll.</string>
+    <string name="wifi_rule_title">Netzwerkregel</string>
+    <string name="wifi_rules_list_title">Regeln</string>
+    <string name="wifi_rules_status_off">Aus</string>
+    <string name="wifi_rules_status_none">An, noch keine Regeln</string>
+    <plurals name="wifi_rules_count">
+        <item quantity="one">%d Regel</item>
+        <item quantity="other">%d Regeln</item>
+    </plurals>
+    <string name="wifi_rules_fallback_status">Netzwerke ohne Regel verwenden den WLAN-Standard: %1$s</string>
+    <string name="wifi_rules_access_section">Standortzugriff</string>
+    <string name="wifi_rule_network_section">Netzwerk</string>
+    <string name="wifi_rule_pick_section">Netzwerk auswählen</string>
+    <string name="wifi_rule_pick_summary">Tippe auf ein Netzwerk, um seinen Namen zu übernehmen.</string>
+    <string name="wifi_rule_action_summary">Gilt, solange dieses Netzwerk verbunden ist.</string>
+    <string name="wifi_rule_action_default_summary">Aktuell: %1$s</string>
+    <string name="wifi_rule_delete">Regel löschen</string>
+    <string name="wifi_rule_step_network">Schritt 1 von 2 · Netzwerk</string>
+    <string name="wifi_rule_step_target">Schritt 2 von 2 · DNS-Ziel</string>
+    <string name="wifi_rule_next">Weiter</string>
+    <string name="wifi_rule_previous">Zurück</string>
+    <string name="wifi_rule_search_networks">WLAN-Name oder BSSID suchen</string>
+    <string name="wifi_rule_search_targets">DNS-Name oder Hostname suchen</string>
+    <string name="wifi_rule_search_empty">Keine passenden Einträge.</string>
+    <string name="automation_notification_optional_summary">Optional: Den laufenden Erkennungsstatus in der Benachrichtigungsleiste anzeigen. Die Erkennung funktioniert auch ohne diese Freigabe.</string>
+    <string name="automation_notification_legacy_summary">Auf dieser Android-Version benötigt die Hintergrunderkennung eine dauerhafte Dienstbenachrichtigung. Ihre Anzeige lässt sich in den Android-Benachrichtigungseinstellungen verwalten.</string>
+    <string name="search_hide_keyboard">Suchen und Tastatur schließen</string>
 </resources>

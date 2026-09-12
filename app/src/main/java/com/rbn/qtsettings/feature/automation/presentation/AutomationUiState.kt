@@ -1,6 +1,6 @@
 package com.rbn.qtsettings.feature.automation.presentation
 
-/** Legacy rendering state; values retain the existing selector contract until #118. */
+/** Rendering snapshot; persisted modes and rule IDs retain their storage contract. */
 data class AutomationUiState(
     val vpnDetectionEnabled: Boolean,
     val vpnDetectionMode: String,
@@ -17,5 +17,6 @@ data class AutomationUiState(
     val wifiIdentityAccessState: com.rbn.qtsettings.data.WifiIdentityAccessState,
     val hasBackgroundLocationPermission: Boolean,
     val dnsStateOnMobile: String,
-    val dnsHostnameOnMobile: String?
+    val dnsHostnameOnMobile: String?,
+    val notificationsAllowed: Boolean = true
 )

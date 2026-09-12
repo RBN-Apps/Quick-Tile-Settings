@@ -29,6 +29,10 @@ class AppNavigation internal constructor(
         val route = when (destination) {
             AppDestination.DnsProviders -> if (area == AppArea.Dns) AppRoute.DnsProviders else return
             AppDestination.DnsAutomation -> if (area == AppArea.Dns) AppRoute.DnsAutomation else return
+            AppDestination.DnsWifiTarget -> if (area == AppArea.Dns) AppRoute.DnsWifiTarget else return
+            AppDestination.DnsMobileTarget -> if (area == AppArea.Dns) AppRoute.DnsMobileTarget else return
+            AppDestination.WifiRules -> if (area == AppArea.Dns) AppRoute.WifiRules else return
+            AppDestination.WifiRule -> if (area == AppArea.Dns) AppRoute.WifiRule(null) else return
             AppDestination.DnsRevert -> if (area == AppArea.Dns) AppRoute.DnsRevert else return
             AppDestination.TileSettings -> return
             AppDestination.ShortcutSettings -> AppRoute.Shortcuts(area)
@@ -37,6 +41,13 @@ class AppNavigation internal constructor(
             AppDestination.UsbActions -> if (area == AppArea.Usb) AppRoute.UsbActions else return
             AppDestination.UsbRevert -> if (area == AppArea.Usb) AppRoute.UsbRevert else return
         }
+        if (activeStack.last() != route) activeStack.add(route)
+    }
+
+    /** Opens the editor for a stored rule; [open] with [AppDestination.WifiRule] starts a new one. */
+    fun openWifiRule(ruleId: String) {
+        if (area != AppArea.Dns) return
+        val route = AppRoute.WifiRule(ruleId)
         if (activeStack.last() != route) activeStack.add(route)
     }
 

@@ -78,6 +78,9 @@ class AutomationViewModel(
     fun onWifiSsidPermissionResult(granted: Boolean) = wifi.onWifiSsidPermissionResult(granted)
     fun clearWifiSsidPermissionRequest() = wifi.clearWifiSsidPermissionRequest()
 
+    private val _notificationsAllowed = MutableStateFlow(true)
+    val notificationsAllowed = _notificationsAllowed.asStateFlow()
+
     private var applicationContext: Context? = null
     fun setApplicationContext(context: Context) {
         applicationContext = context.applicationContext
@@ -88,6 +91,7 @@ class AutomationViewModel(
     fun checkSystemStates(context: Context) {
         if (applicationContext == null) setApplicationContext(context)
         wifi.refreshSystemStates()
+        _notificationsAllowed.value = androidx.core.app.NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
     fun onBackupRestored(context: Context) {
         enforceBackgroundDetectionForWifiRules()
@@ -104,14 +108,13 @@ class AutomationViewModel(
     }
 
     override fun setVpnDetectionMode(mode: String) {
-        notificationPermissionCoordinator.setVpnDetectionMode(mode, getCurrentContext())
+        notificationPermissionCoordinator.setVpnDetectionMode(mode)
     }
 
     override fun setNetworkTypeDetectionEnabled(enabled: Boolean) {
         notificationPermissionCoordinator.setNetworkTypeDetectionEnabled(
             enabled = enabled,
-            wifiNetworkRulesEnabled = wifiNetworkRulesEnabled(),
-            context = getCurrentContext()
+            wifiNetworkRulesEnabled = wifiNetworkRulesEnabled()
         )
     }
 
@@ -124,7 +127,7 @@ class AutomationViewModel(
             return
         }
 
-        notificationPermissionCoordinator.setNetworkTypeDetectionMode(mode, getCurrentContext())
+        notificationPermissionCoordinator.setNetworkTypeDetectionMode(mode)
     }
 
     override fun setDnsStateOnWifi(state: String) {
@@ -138,7 +141,7 @@ class AutomationViewModel(
     }
 
     override fun setWifiNetworkRulesEnabled(enabled: Boolean) {
-        notificationPermissionCoordinator.setWifiNetworkRulesEnabled(enabled, getCurrentContext())
+        notificationPermissionCoordinator.setWifiNetworkRulesEnabled(enabled)
     }
 
     override fun addWifiNetworkRule(
@@ -214,6 +217,10 @@ class AutomationViewModel(
         _networkDetectionStatusMessage.value = null
     }
 
+    fun showOptionalNotificationExplanation() {
+        notificationPermissionCoordinator.showMissingPermission(fromBackup = false)
+    }
+
     fun clearNotificationPermissionRequest() {
         notificationPermissionCoordinator.clearPermissionRequest()
     }
@@ -236,6 +243,7 @@ class AutomationViewModel(
 
     fun onNotificationPermissionResult(granted: Boolean) {
         notificationPermissionCoordinator.onPermissionResult(granted)
+        getCurrentContext()?.let(::checkSystemStates)
     }
 
     fun refreshNotificationPermissionAfterSettings(context: Context) {

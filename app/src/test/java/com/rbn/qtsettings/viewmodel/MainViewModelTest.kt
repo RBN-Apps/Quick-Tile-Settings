@@ -196,7 +196,7 @@ class MainViewModelTest {
 
     @Test
     @Config(sdk = [33])
-    fun setWifiNetworkRulesEnabled_whenNotificationPermissionIsMissing_activatesImmediatelyAndOffersPermission() {
+    fun setWifiNetworkRulesEnabled_whenNotificationPermissionIsMissing_activatesImmediatelyWithoutPrompt() {
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
 
@@ -204,6 +204,23 @@ class MainViewModelTest {
 
         assertTrue(automation.wifiNetworkRulesEnabled.value)
         assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertFalse(automation.showNotificationPermissionExplanationDialog.value)
+    }
+
+    @Test
+    @Config(sdk = [33])
+    fun repeatedActivationDoesNotPrompt_butNotificationOptionStillDoes() {
+        repeat(3) {
+            automation.setNetworkTypeDetectionEnabled(true)
+            automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+            automation.setWifiNetworkRulesEnabled(true)
+            automation.setVpnDetectionMode(BACKGROUND_DETECTION)
+            assertFalse(automation.showNotificationPermissionExplanationDialog.value)
+            assertEquals(0, automation.requestNotificationPermission.value)
+            automation.setWifiNetworkRulesEnabled(false)
+            automation.setNetworkTypeDetectionEnabled(false)
+        }
+        automation.showOptionalNotificationExplanation()
         assertTrue(automation.showNotificationPermissionExplanationDialog.value)
     }
 
@@ -224,7 +241,7 @@ class MainViewModelTest {
     }
 
     @Test
-    @Config(sdk = [33])
+    @Config(sdk = [32, 33])
     fun backgroundNetworkDetection_withoutNotificationPermission_startsForegroundService() {
         val shadowApplication = shadowOf(context.applicationContext as Application)
         shadowApplication.grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
@@ -240,7 +257,7 @@ class MainViewModelTest {
             NetworkMonitoringService::class.java.name,
             startedService.component?.className
         )
-        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
+        assertFalse(automation.showNotificationPermissionExplanationDialog.value)
     }
 
     @Test
@@ -267,7 +284,7 @@ class MainViewModelTest {
 
         assertTrue(automation.networkTypeDetectionEnabled.value)
         assertTrue(automation.wifiNetworkRulesEnabled.value)
-        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
+        assertFalse(automation.showNotificationPermissionExplanationDialog.value)
 
         automation.continueWithoutNotificationPermission()
 
@@ -842,14 +859,14 @@ class MainViewModelTest {
 
     @Test
     @Config(sdk = [33])
-    fun setVpnDetectionMode_whenNotificationPermissionMissing_appliesImmediatelyAndOffersPermission() {
+    fun setVpnDetectionMode_whenNotificationPermissionMissing_appliesImmediatelyWithoutPrompt() {
         prefsManager.setVpnDetectionEnabled(true)
         prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
 
         automation.setVpnDetectionMode(BACKGROUND_DETECTION)
 
         assertEquals(BACKGROUND_DETECTION, automation.vpnDetectionMode.value)
-        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
+        assertFalse(automation.showNotificationPermissionExplanationDialog.value)
         assertFalse(automation.notificationPermissionExplanationFromBackup.value)
     }
 

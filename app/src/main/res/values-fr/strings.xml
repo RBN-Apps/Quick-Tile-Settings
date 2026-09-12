@@ -171,10 +171,6 @@
     <!--  VPN Detection Settings  -->
     <string name="setting_vpn_detection_enabled">Désactiver automatiquement le DNS sur les connexions VPN</string>
     <string name="setting_vpn_detection_mode">Mode de détection VPN :</string>
-    <string name="vpn_detection_tile_only_title">Détection via tuile uniquement</string>
-    <string name="vpn_detection_tile_only_description">Vérifie les connexions VPN lors de l\'ouverture des paramètres rapides. Plus économe en batterie, mais détecte les connexions VPN uniquement lorsque les paramètres rapides sont ouverts. Si vous activez ou désactivez généralement le VPN via les paramètres rapides de toute façon, cette option est suffisante.</string>
-    <string name="vpn_detection_background_title">Détection par service en arrière-plan</string>
-    <string name="vpn_detection_background_description">Surveille en continu l\'état du VPN. Fournit une réponse instantanée, mais utilise plus de batterie et affiche une notification persistante pour rester actif.</string>
 
     <!--  VPN Monitoring Service  -->
     <string name="vpn_monitoring_channel_name">Surveillance VPN</string>
@@ -201,12 +197,6 @@
     <string name="setting_network_type_detection_enabled">Basculer automatiquement le DNS selon le type de réseau</string>
     <string name="setting_network_type_detection_description">Modifie automatiquement le DNS privé lors du passage entre le Wi-Fi et les données mobiles. Activez cette option pour configurer aussi des règles par réseau Wi-Fi ou point d’accès.</string>
     <string name="setting_network_type_detection_mode">Mode de détection réseau :</string>
-    <string name="network_type_detection_tile_only_title">Détection via tuile uniquement</string>
-    <string name="network_type_detection_tile_only_description">Vérifie le type de réseau lors de l\'ouverture des paramètres rapides. Économe en batterie, mais détecte uniquement les changements de réseau lorsque les paramètres rapides sont ouverts.</string>
-    <string name="network_type_detection_background_title">Détection par service en arrière-plan</string>
-    <string name="network_type_detection_background_description">Surveille en continu les changements de type de réseau. Réponse instantanée lors du changement de réseau, mais utilise plus de batterie et affiche une notification persistante.</string>
-    <string name="setting_dns_state_on_wifi">DNS privé sur WiFi :</string>
-    <string name="setting_dns_state_on_mobile">DNS privé sur données mobiles :</string>
     <string name="setting_select_hostname">Sélectionner un nom d\'hôte…</string>
     <string name="dns_mode_off_label">Désactivé</string>
     <string name="dns_mode_auto_label">Auto</string>
@@ -266,11 +256,8 @@
     <string name="shortcut_settings_remove_favorite_desc">Retirer %1$s des favoris</string>
     <string name="shortcut_settings_open_desc">Ouvrir les paramètres de raccourcis</string>
     <!-- Règles DNS par réseau Wi-Fi -->
-    <string name="setting_dns_state_on_wifi_other_networks">DNS Wi-Fi pour tous les autres réseaux :</string>
     <string name="setting_wifi_network_rules_title">Règles des réseaux Wi-Fi</string>
-    <string name="setting_wifi_network_rules_description">Remplace le réglage DNS Wi-Fi par défaut pour certains réseaux ou points d’accès (SSID/BSSID). L’application des changements nécessite l’autorisation de contrôler le DNS privé et la détection en arrière-plan. Les notifications sont facultatives et n’affichent que l’état du suivi.</string>
     <string name="wifi_rules_enabled">Utiliser des règles par réseau</string>
-    <string name="wifi_rules_enabled_description">Les règles correspondantes remplacent le réglage DNS Wi-Fi de tous les autres réseaux identifiés.</string>
     <string name="wifi_ssid_permission_title">Localisation précise requise</string>
     <string name="wifi_ssid_permission_description">Android considère les noms Wi-Fi (SSID), les identifiants de points d’accès (BSSID) et les résultats Wi-Fi à proximité comme des informations liées à la localisation. L’autorisation de localisation précise est nécessaire pour les lire. Cette fonction ne lit aucune coordonnée.</string>
     <string name="wifi_ssid_permission_docs_link">Documentation Android sur les autorisations SSID</string>
@@ -284,12 +271,6 @@
     <string name="wifi_rules_require_background_detection">Les règles des réseaux Wi-Fi nécessitent la détection par service en arrière-plan. Désactivez les règles avant de sélectionner la détection par tuile uniquement.</string>
     <string name="wifi_rules_enabled_background_detection">La détection par service en arrière-plan a été activée car les règles par réseau en ont besoin.</string>
     <string name="wifi_ssid_label">Nom du réseau (SSID)</string>
-    <string name="wifi_rules_title">Règles réseau</string>
-    <string name="wifi_rules_empty">Aucune règle réseau ajoutée.</string>
-    <string name="wifi_rule_add_current">Utiliser le réseau actuellement connecté</string>
-    <string name="wifi_rule_choose_network">Choisir un réseau à proximité ou récent</string>
-    <string name="wifi_rule_add_manual">Saisir manuellement un SSID ou BSSID</string>
-    <string name="wifi_network_picker_title">Choisir un réseau Wi-Fi</string>
     <string name="wifi_network_current_title">Actuellement connecté</string>
     <string name="wifi_network_nearby_title">Réseaux à proximité</string>
     <string name="wifi_network_history_title">Réseaux vus récemment</string>
@@ -297,8 +278,6 @@
     <string name="wifi_network_none_found">Aucun résultat Wi-Fi récent n’est disponible. L’application ne lance pas de nouvelle analyse ; Android peut fournir des résultats en cache.</string>
     <string name="wifi_network_refresh">Recharger les résultats</string>
     <string name="wifi_hidden_network">Réseau masqué</string>
-    <string name="wifi_rule_add_title">Ajouter une règle réseau</string>
-    <string name="wifi_rule_edit_title">Modifier la règle réseau</string>
     <string name="wifi_bssid_label">Adresse MAC du point d’accès (BSSID, facultatif)</string>
     <string name="wifi_bssid_hint">Laissez vide pour faire correspondre tous les points d’accès portant ce SSID.</string>
     <string name="wifi_rule_action_label">Action pour ce réseau</string>
@@ -306,8 +285,6 @@
     <string name="wifi_rule_invalid_or_duplicate">Saisissez un SSID ou BSSID valide et vérifiez que la même règle n’existe pas déjà.</string>
     <string name="wifi_rule_delete_title">Supprimer la règle réseau ?</string>
     <string name="wifi_rule_delete_message">Supprimer la règle pour « %1$s » ?</string>
-    <string name="wifi_rule_edit_description">Modifier la règle pour %1$s</string>
-    <string name="wifi_rule_delete_description">Supprimer la règle pour %1$s</string>
     <string name="wifi_permission_open_settings">Ouvrir les paramètres de l’application</string>
     <string name="wifi_permission_blocked_description">Android n’affiche plus la demande d’autorisation de localisation. Ouvrez les paramètres de l’application, puis Autorisations → Position, et autorisez la position précise.</string>
     <string name="wifi_boot_title">Reprendre automatiquement après un redémarrage</string>

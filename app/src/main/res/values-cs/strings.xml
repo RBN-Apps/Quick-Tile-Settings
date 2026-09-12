@@ -188,10 +188,6 @@
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">Automaticky vypnout DNS při připojení k VPN</string>
     <string name="setting_vpn_detection_mode">Režim detekce VPN:</string>
-    <string name="vpn_detection_tile_only_title">Detekce jen při otevření dlaždic</string>
-    <string name="vpn_detection_tile_only_description">Kontroluje připojení VPN při otevření rychlého nastavení. Šetří baterii, ale detekuje připojení VPN pouze při otevření rychlého nastavení. Pokud obvykle VPN povolujete nebo zakazujete prostřednictvím rychlého nastavení, tato možnost je dostačující.</string>
-    <string name="vpn_detection_background_title">Detekce na pozadí</string>
-    <string name="vpn_detection_background_description">Neustále monitoruje stav VPN. Poskytuje okamžitou odpověď, ale spotřebovává více baterie a zobrazuje trvalé upozornění, abys zůstala VPN aktivní.</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">Sledování VPN</string>
@@ -218,13 +214,7 @@
     <string name="setting_network_type_detection_enabled">Automaticky přepínat DNS podle typu sítě</string>
     <string name="setting_network_type_detection_description">Automaticky mění soukromé DNS při přechodu mezi Wi-Fi a mobilními daty. Zapněte tuto možnost také pro nastavení pravidel jednotlivých sítí Wi-Fi nebo přístupových bodů.</string>
     <string name="setting_network_type_detection_mode">Režim detekce sítě:</string>
-    <string name="network_type_detection_tile_only_title">Pouze při otevření dlaždic</string>
-    <string name="network_type_detection_tile_only_description">Kontroluje typ sítě při otevření rychlého nastavení. Šetří baterii, ale detekuje změny sítě pouze při otevření rychlého nastavení.</string>
-    <string name="network_type_detection_background_title">Na pozadí</string>
-    <string name="network_type_detection_background_description">Neustále sleduje změny typu sítě. Reaguje okamžitě při přepnutí sítí, ale spotřebovává více baterie a také zobrazuje trvalé upozornění.</string>
 
-    <string name="setting_dns_state_on_wifi">DNS na Wi-Fi:</string>
-    <string name="setting_dns_state_on_mobile">DNS na mobilních datech:</string>
     <string name="setting_select_hostname">Vybrat hostname…</string>
 
     <string name="dns_mode_off_label">Vypnuto</string>
@@ -292,11 +282,8 @@
     <string name="quick_action_no_actions">Nejsou povolené žádné akce pro tuto dlaždici.</string>
     <string name="quick_action_open_app">Otevřít aplikaci</string>
     <!-- Pravidla DNS pro sítě Wi-Fi -->
-    <string name="setting_dns_state_on_wifi_other_networks">DNS přes Wi-Fi pro všechny ostatní sítě:</string>
     <string name="setting_wifi_network_rules_title">Pravidla sítí Wi-Fi</string>
-    <string name="setting_wifi_network_rules_description">Přepíše výchozí nastavení DNS přes Wi-Fi pro konkrétní sítě nebo přístupové body (SSID/BSSID). Změny vyžadují oprávnění aplikace ovládat soukromé DNS a detekci na pozadí. Oznámení jsou volitelná a pouze zobrazují stav sledování.</string>
     <string name="wifi_rules_enabled">Používat pravidla pro jednotlivé sítě</string>
-    <string name="wifi_rules_enabled_description">Odpovídající pravidla přepíší nastavení DNS přes Wi-Fi pro všechny ostatní rozpoznané sítě.</string>
     <string name="wifi_ssid_permission_title">Je vyžadována přesná poloha</string>
     <string name="wifi_ssid_permission_description">Android považuje názvy Wi-Fi (SSID), identifikátory přístupových bodů (BSSID) a výsledky okolních sítí za údaje související s polohou. K jejich čtení je nutné oprávnění k přesné poloze. Funkce nečte souřadnice polohy.</string>
     <string name="wifi_ssid_permission_docs_link">Dokumentace Androidu k oprávnění pro SSID</string>
@@ -310,12 +297,6 @@
     <string name="wifi_rules_require_background_detection">Pravidla sítí Wi-Fi vyžadují detekci službou na pozadí. Před výběrem detekce pouze pomocí dlaždice pravidla vypněte.</string>
     <string name="wifi_rules_enabled_background_detection">Detekce službou na pozadí byla zapnuta, protože ji pravidla pro jednotlivé sítě vyžadují.</string>
     <string name="wifi_ssid_label">Název sítě (SSID)</string>
-    <string name="wifi_rules_title">Pravidla sítě</string>
-    <string name="wifi_rules_empty">Nebyla přidána žádná pravidla sítě.</string>
-    <string name="wifi_rule_add_current">Použít právě připojenou síť</string>
-    <string name="wifi_rule_choose_network">Vybrat blízkou nebo nedávnou síť</string>
-    <string name="wifi_rule_add_manual">Zadat SSID nebo BSSID ručně</string>
-    <string name="wifi_network_picker_title">Vybrat síť Wi-Fi</string>
     <string name="wifi_network_current_title">Aktuálně připojeno</string>
     <string name="wifi_network_nearby_title">Sítě v okolí</string>
     <string name="wifi_network_history_title">Nedávno rozpoznané sítě</string>
@@ -323,8 +304,6 @@
     <string name="wifi_network_none_found">Nejsou dostupné žádné nedávné výsledky Wi-Fi. Aplikace nespouští nový sken; Android může poskytnout výsledky z mezipaměti.</string>
     <string name="wifi_network_refresh">Znovu načíst výsledky</string>
     <string name="wifi_hidden_network">Skrytá síť</string>
-    <string name="wifi_rule_add_title">Přidat pravidlo sítě</string>
-    <string name="wifi_rule_edit_title">Upravit pravidlo sítě</string>
     <string name="wifi_bssid_label">MAC adresa přístupového bodu (BSSID, volitelné)</string>
     <string name="wifi_bssid_hint">Ponechte prázdné, aby pravidlo odpovídalo všem přístupovým bodům s tímto SSID.</string>
     <string name="wifi_rule_action_label">Akce pro tuto síť</string>
@@ -332,8 +311,6 @@
     <string name="wifi_rule_invalid_or_duplicate">Zadejte platné SSID nebo BSSID a ověřte, že stejné pravidlo ještě neexistuje.</string>
     <string name="wifi_rule_delete_title">Odstranit pravidlo sítě?</string>
     <string name="wifi_rule_delete_message">Odstranit pravidlo pro „%1$s“?</string>
-    <string name="wifi_rule_edit_description">Upravit pravidlo pro %1$s</string>
-    <string name="wifi_rule_delete_description">Odstranit pravidlo pro %1$s</string>
     <string name="wifi_permission_open_settings">Otevřít nastavení aplikace</string>
     <string name="wifi_permission_blocked_description">Android již nezobrazuje dialog oprávnění k poloze. Otevři nastavení aplikace, zvol Oprávnění → Poloha a povol přesnou polohu.</string>
     <string name="wifi_boot_title">Automaticky pokračovat po restartu</string>

@@ -15,7 +15,10 @@ import kotlinx.serialization.PolymorphicSerializer
 fun verifyMinifiedNavigationRestore() {
     val serializer = NavBackStackSerializer(PolymorphicSerializer(NavKey::class))
     val original = NavBackStack<NavKey>(
-        AppRoute.Dns, AppRoute.DnsProviders, AppRoute.DnsAutomation, AppRoute.DnsRevert, AppRoute.Usb, AppRoute.UsbTile, AppRoute.UsbActions, AppRoute.UsbRevert,
+        AppRoute.Dns, AppRoute.DnsWifiTarget, AppRoute.DnsMobileTarget,
+        AppRoute.WifiRules, AppRoute.WifiRule(null), AppRoute.WifiRule("saved-rule"),
+        AppRoute.DnsProviders, AppRoute.DnsAutomation, AppRoute.DnsRevert,
+        AppRoute.Usb, AppRoute.UsbTile, AppRoute.UsbActions, AppRoute.UsbRevert,
         AppRoute.Shortcuts(AppArea.Dns), AppRoute.Shortcuts(AppArea.Usb),
         AppRoute.Settings(AppArea.Dns), AppRoute.Settings(AppArea.Usb)
     )
