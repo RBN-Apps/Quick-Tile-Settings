@@ -197,7 +197,6 @@
     <string name="vpn_monitoring_status_disconnected">VPN getrennt - Private DNS wiederhergestellt</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_settings_description">Einstellungen öffnen</string>
     <string name="notification_permission_background_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
     <string name="notification_permission_background_message">Die Hintergrunderkennung funktioniert bereits ohne Benachrichtigungsberechtigung. Erlaube sie, wenn der laufende Überwachungsstatus im Benachrichtigungsbereich sichtbar bleiben soll; andernfalls zeigt Android den Dienst nur im Bereich „Aktive Apps“ an.</string>
     <string name="notification_permission_import_title">Benachrichtigungen für die Hintergrunderkennung erlauben?</string>
@@ -406,4 +405,8 @@
     <string name="automation_notification_legacy_summary">Auf dieser Android-Version benötigt die Hintergrunderkennung eine dauerhafte Dienstbenachrichtigung. Ihre Anzeige lässt sich in den Android-Benachrichtigungseinstellungen verwalten.</string>
     <string name="search_hide_keyboard">Suchen und Tastatur schließen</string>
     <string name="shortcut_settings_pinned_details">Angeheftete Shortcuts erklärt</string>
+    <string name="backup_export_summary">Aktuelle Einstellungen als JSON-Datei sichern.</string>
+    <string name="backup_restore_summary">Backup-Datei auswählen und das Ersetzen der Einstellungen bestätigen.</string>
+    <string name="developer_options_enabled_status">Entwickleroptionen sind aktiviert</string>
+    <string name="developer_options_disabled_status">Entwickleroptionen sind deaktiviert</string>
 </resources>

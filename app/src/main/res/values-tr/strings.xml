@@ -184,7 +184,6 @@
     <string name="vpn_monitoring_status_disconnected">VPN bağlantısı kesildi - Özel DNS geri yüklendi</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_settings_description">Ayarları aç</string>
     <string name="notification_permission_background_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
     <string name="notification_permission_background_message">Arka plan algılama bildirim izni olmadan da çalışır. Sürekli izleme durumunu bildirim alanında görmek istiyorsanız izin verin; aksi halde Android hizmeti yalnızca etkin uygulamalar arasında gösterir.</string>
     <string name="notification_permission_import_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>

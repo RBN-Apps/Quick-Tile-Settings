@@ -124,13 +124,17 @@ fun AppRoot(
         overlay = overlay,
         viewModel = viewModel,
         onDismiss = {
-            if (overlay == AppOverlay.PermissionHelp && !hasPermission) viewModel.setHelpShown(true)
-            overlay = AppOverlay.None
+            if (overlay == AppOverlay.AdbInstructions) overlay = AppOverlay.PermissionHelp
+            else {
+                if (overlay == AppOverlay.PermissionHelp && !hasPermission) viewModel.setHelpShown(true)
+                overlay = AppOverlay.None
+            }
         },
         onShowPermissionHelp = showPermissionHelp,
+        onShowAdbInstructions = { overlay = AppOverlay.AdbInstructions },
         onOpenAdbSettings = onOpenAdbSettings,
         onRequestShizukuPermission = onRequestShizukuPermission
     )
     DnsDialogsRoot(dnsViewModel)
-    NotificationDialogsRoot(automationViewModel)
+    NotificationDialogsRoot(automationViewModel, visible = overlay == AppOverlay.None)
 }

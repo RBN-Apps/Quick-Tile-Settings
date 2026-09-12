@@ -30,6 +30,13 @@ class AppSettingsBackupInstrumentedTest {
                 openSettings()
                 scenario.onActivity { ViewModelProvider(it)[AppSettingsViewModel::class.java].selectRestore("content://test/not-imported") }
                 text(R.string.backup_restore_confirm_title).assertIsDisplayed()
+                if (InstrumentationRegistry.getArguments().getString("settingsScreenshots") == "true") {
+                    val image = instrumentation.uiAutomation.takeScreenshot()
+                    File(context.getExternalFilesDir(null), "restore-confirmation.png").outputStream().use {
+                        image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+                    }
+                    image.recycle()
+                }
                 scenario.recreate()
                 text(R.string.backup_restore_confirm_title).assertIsDisplayed()
                 text(R.string.dialog_cancel).performClick()

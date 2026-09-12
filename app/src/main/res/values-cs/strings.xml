@@ -197,7 +197,6 @@
     <string name="vpn_monitoring_status_disconnected">VPN odpojena – DNS obnoveno</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_settings_description">Otevřít nastavení</string>
     <string name="notification_permission_background_title">Povolit oznámení pro detekci na pozadí?</string>
     <string name="notification_permission_background_message">Detekce na pozadí funguje i bez oprávnění k oznámením. Povolte je, pokud chcete průběžný stav sledování zobrazovat v oznamovací oblasti; jinak Android zobrazí službu pouze mezi aktivními aplikacemi.</string>
     <string name="notification_permission_import_title">Povolit oznámení pro detekci na pozadí?</string>

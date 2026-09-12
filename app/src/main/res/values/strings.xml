@@ -204,7 +204,6 @@
     <string name="vpn_monitoring_status_disconnected">VPN disconnected - Private DNS restored</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_settings_description">Open settings</string>
     <string name="notification_permission_background_title">Allow notifications for background detection?</string>
     <string name="notification_permission_background_message">Background detection already works without notification permission. Allow it if you want the ongoing monitoring status to remain visible in the notification drawer; otherwise Android shows the service only in its active apps area.</string>
     <string name="notification_permission_import_title">Allow notifications for background detection?</string>
@@ -414,4 +413,8 @@
     <string name="automation_notification_legacy_summary">Background detection requires an ongoing service notification on this Android version. Manage its visibility in Android notification settings.</string>
     <string name="search_hide_keyboard">Search and hide keyboard</string>
     <string name="shortcut_settings_pinned_details">How pinned shortcuts work</string>
+    <string name="backup_export_summary">Save the current settings to a JSON file.</string>
+    <string name="backup_restore_summary">Choose a backup file and confirm before replacing settings.</string>
+    <string name="developer_options_enabled_status">Developer options are enabled</string>
+    <string name="developer_options_disabled_status">Developer options are disabled</string>
 </resources>

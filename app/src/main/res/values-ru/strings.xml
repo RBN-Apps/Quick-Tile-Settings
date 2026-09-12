@@ -184,7 +184,6 @@
     <string name="vpn_monitoring_status_disconnected">VPN отключен — Частный DNS восстановлен</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
     <string name="notification_permission_background_title">Разрешить уведомления для фонового обнаружения?</string>
     <string name="notification_permission_background_message">Фоновое обнаружение уже работает без разрешения на уведомления. Разрешите их, чтобы постоянно видеть состояние мониторинга в панели уведомлений; иначе Android покажет службу только среди активных приложений.</string>
     <string name="notification_permission_import_title">Разрешить уведомления для фонового обнаружения?</string>

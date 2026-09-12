@@ -180,7 +180,6 @@
     <string name="vpn_monitoring_status_disconnected">VPN déconnecté - DNS privé restauré</string>
 
     <!--  Notification Permission Dialog  -->
-    <string name="notification_permission_dialog_settings_description">Ouvrir les paramètres</string>
     <string name="notification_permission_background_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
     <string name="notification_permission_background_message">La détection en arrière-plan fonctionne déjà sans autorisation de notification. Autorisez-la pour afficher l’état permanent dans le volet des notifications ; sinon Android affiche le service uniquement parmi les applications actives.</string>
     <string name="notification_permission_import_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
