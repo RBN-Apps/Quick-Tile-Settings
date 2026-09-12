@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.feature.usb.presentation
+package com.rbn.qtsettings.core.designsystem
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -10,14 +10,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.window.DialogProperties
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.core.designsystem.AppDialog
-import com.rbn.qtsettings.core.designsystem.AppTextField
 
 /** Entry-owned draft survives recreation and only reaches settings after confirmation. */
 @Composable
-internal fun UsbRevertDelayDialog(seconds: Int, onDismiss: () -> Unit, onSave: (Int) -> Unit) {
+fun RevertDelayDialog(
+    seconds: Int,
+    onDismiss: () -> Unit,
+    positiveOnly: Boolean = true,
+    invalidValueMessage: String? = null,
+    onSave: (Int) -> Unit
+) {
     var draft by rememberSaveable { mutableStateOf(seconds.toString()) }
-    val value = draft.toIntOrNull()?.takeIf { it > 0 }
+    val value = draft.toIntOrNull()?.takeIf { !positiveOnly || it > 0 }
     AppDialog(
         title = stringResource(R.string.setting_auto_revert_delay),
         onDismissRequest = onDismiss, confirmLabel = stringResource(R.string.usb_apply),
@@ -30,7 +34,7 @@ internal fun UsbRevertDelayDialog(seconds: Int, onDismiss: () -> Unit, onSave: (
         AppTextField(
             value = draft, onValueChange = { draft = it },
             label = stringResource(R.string.usb_seconds_label),
-            errorText = if (value == null) stringResource(R.string.usb_delay_error) else null,
+            errorText = if (value == null) invalidValueMessage ?: stringResource(R.string.usb_delay_error) else null,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true
         )
     }

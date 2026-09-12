@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -31,6 +32,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.rbn.qtsettings.core.designsystem.theme.AppShapes
+import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.DnsListSortMode
 import kotlinx.coroutines.Job
@@ -48,7 +51,8 @@ internal fun DnsHostnameList(
     onSetActive: (DnsHostnameEntry) -> Unit,
     onEdit: (DnsHostnameEntry) -> Unit,
     onDelete: (DnsHostnameEntry?) -> Unit,
-    onInfo: (DnsHostnameEntry) -> Unit
+    onInfo: (DnsHostnameEntry) -> Unit,
+    canActivate: Boolean = true
 ) {
     val visualEntries = remember {
         androidx.compose.runtime.mutableStateListOf<DnsHostnameEntry>().apply {
@@ -67,6 +71,7 @@ internal fun DnsHostnameList(
     val defaultRowHeightPx = with(density) {
         DnsHostnameRowHeight.toPx()
     }
+    val rowGapPx = with(density) { AppSpacing.groupGap.roundToPx() }
     val autoScrollEdgePx = with(density) { 72.dp.toPx() }
     val autoScrollStepPx = with(density) { 10.dp.toPx() }
 
@@ -170,7 +175,7 @@ internal fun DnsHostnameList(
                     targetValue = if (isLifted) {
                         MaterialTheme.colorScheme.surfaceContainerHigh
                     } else {
-                        MaterialTheme.colorScheme.surfaceContainerLow
+                        MaterialTheme.colorScheme.surfaceContainerHighest
                     },
                     animationSpec = tween(durationMillis = if (isLifted) 100 else 120),
                     label = "dnsDragContainer"
@@ -179,6 +184,7 @@ internal fun DnsHostnameList(
 
                 DnsHostnameRow(
                     entry = entry,
+                    canActivate = canActivate,
                     isActive = activeDnsHostname?.trim()
                         ?.equals(entry.hostname.trim(), ignoreCase = true) == true,
                     isDragged = isLifted,
@@ -196,7 +202,7 @@ internal fun DnsHostnameList(
                     onMoveDown = {
                         if (moveEntry(entry.id, index + 1)) commitVisualOrder()
                     },
-                    onMeasured = { height -> itemHeightsPx[entry.id] = height },
+                    onMeasured = { height -> itemHeightsPx[entry.id] = height + rowGapPx },
                     onDragStart = { pointerY ->
                         settleJob?.cancel()
                         draggedEntryId = entry.id
@@ -254,6 +260,7 @@ internal fun DnsHostnameList(
                         restorePublishedEntries()
                     },
                     modifier = Modifier
+                        .padding(bottom = AppSpacing.groupGap)
                         .then(
                             if (ownsTranslation) {
                                 Modifier
@@ -281,6 +288,8 @@ internal fun DnsHostnameList(
                                     .background(draggedContainerColor)
                             } else {
                                 Modifier
+                                    .clip(AppShapes.groupItem(index, visualEntries.size))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                             }
                         )
                 )

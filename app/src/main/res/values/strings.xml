@@ -129,7 +129,7 @@
     <string name="off_state">Off</string>
     <string name="auto_state">Auto</string>
 
-    <string name="dns_select_hostnames_for_cycle">Select hostnames to include in tile cycle:</string>
+    <string name="dns_select_hostnames_for_cycle">DNS providers</string>
     <string name="dns_sort_content_description">Choose DNS list sorting</string>
     <string name="dns_sort_manual">Manual</string>
     <string name="dns_sort_alphabetical">Alphabetical (A–Z)</string>
@@ -376,4 +376,16 @@
     <string name="usb_tile_cycle_title">Tile cycle</string>
     <string name="usb_tile_cycle_explanation">Every tile tap switches to the next selected state.</string>
     <string name="usb_state_active">Currently active</string>
+    <string name="dns_menu_providers">Providers &amp; tile</string>
+    <string name="dns_menu_providers_summary">Manage providers and choose the states your tile cycles through.</string>
+    <string name="dns_menu_automation">Automation</string>
+    <string name="dns_menu_automation_summary">Control DNS for Wi-Fi, mobile networks and VPN connections.</string>
+    <string name="dns_menu_revert_summary">Restore the previous DNS setting after a delay.</string>
+    <string name="dns_status_unavailable">Status unavailable</string>
+    <string name="dns_status_summary">Current system setting. Cycle selection does not change the active DNS setting.</string>
+    <string name="dns_cycle_title">Tile cycle</string>
+    <string name="dns_cycle_explanation">Select the states and providers to cycle through when tapping the tile. Use the activation action to apply a state immediately.</string>
+    <string name="dns_providers_empty">No providers available. Add a hostname to include it in the cycle.</string>
+    <string name="dns_revert_explanation">After a tile change, the timer restores the DNS state that was active beforehand. A new tile tap cancels the pending timer and starts a new cycle. A successful direct DNS action supersedes an older timer. A timer only runs when enabled and the delay is greater than zero.</string>
+    <string name="dns_delay_error">Enter a whole number of seconds. Zero or negative values do not start a timer.</string>
 </resources>

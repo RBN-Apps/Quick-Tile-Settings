@@ -2,8 +2,8 @@ package com.rbn.qtsettings.ui.composables.dns
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -34,14 +34,16 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
+
+internal val DnsHostnameRowHeight = 76.dp
 
 @Composable
 fun DnsHostnameRow(
@@ -63,7 +65,8 @@ fun DnsHostnameRow(
     onDrag: (Float) -> Unit,
     onDragStopped: () -> Unit,
     onDragCancelled: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    canActivate: Boolean = true
 ) {
     var rowCenterY by remember(entry.id) { mutableFloatStateOf(0f) }
     val moveUpLabel = stringResource(R.string.dns_move_up)
@@ -92,59 +95,57 @@ fun DnsHostnameRow(
             .onGloballyPositioned { coordinates ->
                 rowCenterY = coordinates.boundsInWindow().center.y
             }
-            .clickable { onSelectionChanged(!entry.isSelectedForCycle) }
+
     ) {
-        Checkbox(
-            checked = entry.isSelectedForCycle,
-            onCheckedChange = onSelectionChanged
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = entry.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = if (entry.isPredefined) FontWeight.SemiBold else FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false)
-                )
-                if (isActive) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = stringResource(R.string.dns_active),
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp)
+        Row(
+            Modifier.weight(1f).toggleable(value = entry.isSelectedForCycle, role = Role.Checkbox,
+                onValueChange = onSelectionChanged).padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = entry.name,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = if (entry.isPredefined) FontWeight.SemiBold else FontWeight.Normal,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    if (isActive) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = stringResource(R.string.dns_active),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (!entry.isPredefined) {
+                        Badge(
+                            containerColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                alpha = 0.12f
+                            ),
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            Text(
+                                text = stringResource(R.string.dns_custom_entry_badge),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                    Text(
+                        text = entry.hostname,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (!entry.isPredefined) {
-                    Badge(
-                        containerColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                            alpha = 0.12f
-                        ),
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ) {
-                        Text(
-                            text = stringResource(R.string.dns_custom_entry_badge),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Medium,
-                            maxLines = 1
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(6.dp))
-                }
-                Text(
-                    text = entry.hostname,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-            }
+
+            Checkbox(checked = entry.isSelectedForCycle, onCheckedChange = null)
         }
 
         if (reorderEnabled) {
@@ -186,6 +187,6 @@ fun DnsHostnameRow(
             )
         }
 
-        DnsHostnameActionsMenu(entry, isActive, onSetActiveClicked, onInfoClicked, onEditClicked, onDeleteClicked)
+        DnsHostnameActionsMenu(entry, isActive, onSetActiveClicked, onInfoClicked, onEditClicked, onDeleteClicked, canActivate)
     }
 }

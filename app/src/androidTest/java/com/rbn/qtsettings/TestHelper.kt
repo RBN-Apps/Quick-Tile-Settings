@@ -115,3 +115,13 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.n
         .performClick()
     waitForIdle()
 }
+
+fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToDnsProviders(context: Context) {
+    navigateToDnsArea(context)
+    onNodeWithText(context.getString(R.string.dns_menu_providers)).performScrollTo().performClick()
+}
+
+fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToDnsAutomation(context: Context) {
+    navigateToDnsArea(context)
+    onNodeWithText(context.getString(R.string.dns_menu_automation)).performScrollTo().performClick()
+}

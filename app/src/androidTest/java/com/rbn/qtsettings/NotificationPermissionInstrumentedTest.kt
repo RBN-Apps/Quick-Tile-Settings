@@ -50,7 +50,7 @@ class NotificationPermissionInstrumentedTest {
 
         composeTestRule.waitForIdle()
         composeTestRule.dismissInitialDialogsIfPresent(context)
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
         composeTestRule.safeScrollToAndAssert(
             context.getString(R.string.setting_network_type_detection_enabled)
         )

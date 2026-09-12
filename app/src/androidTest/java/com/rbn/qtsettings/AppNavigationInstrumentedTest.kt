@@ -26,10 +26,10 @@ import com.rbn.qtsettings.app.navigation.AppNavigationContent
 import com.rbn.qtsettings.app.navigation.AppRoute
 import com.rbn.qtsettings.app.navigation.rememberAppNavigation
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
+import java.util.concurrent.atomic.AtomicInteger
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.atomic.AtomicInteger
 
 class AppNavigationInstrumentedTest {
     @get:Rule val compose = createComposeRule()
@@ -49,6 +49,9 @@ class AppNavigationInstrumentedTest {
                     Column {
                         Text(when (route) {
                             AppRoute.Dns -> "DNS root"
+                            AppRoute.DnsProviders -> "DNS providers"
+                            AppRoute.DnsAutomation -> "DNS automation"
+                            AppRoute.DnsRevert -> "DNS revert"
                             AppRoute.Usb -> "USB root"
                             AppRoute.UsbTile -> "USB tile settings"
                             AppRoute.UsbActions -> "USB actions"

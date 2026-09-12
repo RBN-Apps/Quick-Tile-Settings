@@ -154,8 +154,9 @@ class QuickTileSettingsInstrumentedTest {
         // Verify DNS settings title
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
 
+        composeTestRule.onNodeWithText(context.getString(R.string.dns_menu_providers)).performScrollTo().performClick()
         // Verify tile cycles description
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_desc_tile_cycles))
+        composeTestRule.onNodeWithText(context.getString(R.string.dns_cycle_explanation))
             .assertIsDisplayed()
 
         // Verify DNS state options exist
@@ -275,7 +276,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun dnsProviderInfoButtons_shouldOpenInfoDialogs() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsProviders(context)
 
         // Test info buttons for predefined DNS providers
         val predefinedProviders = listOf(
@@ -344,7 +345,7 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun dnsOffAndAutoRows_shouldOfferSetActiveAction() {
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsProviders(context)
 
         listOf(
             context.getString(R.string.dns_state_off),
@@ -377,7 +378,7 @@ class QuickTileSettingsInstrumentedTest {
 
     @Test
     fun dnsSortingMenu_shouldExposeManualReorderingWithoutAddingRowActions() {
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsProviders(context)
 
         composeTestRule.onNodeWithTag("dns_sort_menu_button")
             .performScrollTo()
@@ -423,7 +424,7 @@ class QuickTileSettingsInstrumentedTest {
         try {
             assertTrue(preferencesManager.reorderDnsHostnames(controlledOrder))
 
-            composeTestRule.navigateToDnsArea(context)
+            composeTestRule.navigateToDnsProviders(context)
             composeTestRule.waitForIdle()
 
             val adGuardHandle = composeTestRule.onNodeWithContentDescription(
@@ -566,7 +567,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun customDnsHostname_shouldSupportFullCRUD() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsProviders(context)
 
         val testRunId = System.nanoTime().toString()
         val customHostname = "Test Custom DNS $testRunId"
@@ -674,7 +675,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun dnsSettings_shouldHandleCheckboxInteractions() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsProviders(context)
 
         Log.i(TAG, "Testing DNS checkbox interactions")
 
@@ -688,20 +689,25 @@ class QuickTileSettingsInstrumentedTest {
             .performClick()
         composeTestRule.waitForIdle()
 
+        // Test predefined DNS provider checkbox (uncheck AdGuard DNS)
+        composeTestRule.onNodeWithText("AdGuard DNS")
+            .performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
+        composeTestRule.navigateToDnsAutomation(context)
         // Test VPN Detection checkbox
         composeTestRule.onNodeWithText(context.getString(R.string.setting_vpn_detection_enabled))
             .performClick()
         composeTestRule.waitForIdle()
 
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_revert)).performScrollTo().performClick()
         // Test Auto-Revert checkbox
         composeTestRule.onNodeWithText(context.getString(R.string.setting_enable_auto_revert))
             .performClick()
         composeTestRule.waitForIdle()
 
-        // Test predefined DNS provider checkbox (uncheck AdGuard DNS)
-        composeTestRule.onNodeWithText("AdGuard DNS")
-            .performClick()
-        composeTestRule.waitForIdle()
     }
 
     @Test
@@ -733,7 +739,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun networkTypeDetection_shouldShowInDnsSettings() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
 
         Log.i(TAG, "Testing Network Type Detection visibility in DNS settings")
 
@@ -753,7 +759,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun networkTypeDetection_shouldHandleEnableDisableToggle() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
 
         Log.i(TAG, "Testing Network Type Detection enable/disable toggle")
 
@@ -799,7 +805,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun networkTypeDetection_dnsStateSelectorsShouldWork() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
 
         Log.i(TAG, "Testing Network Type Detection DNS state selectors")
 
@@ -846,7 +852,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun networkTypeDetection_detectionModeShouldBeSelectable() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
 
         Log.i(TAG, "Testing Network Type Detection mode selection")
 
@@ -893,7 +899,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun networkTypeInfoDialog_shouldDisplayAndDismiss() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
 
         Log.i(TAG, "Testing Network Type Detection info dialog")
 
@@ -936,7 +942,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun networkTypeDetection_shouldCoexistWithVpnDetection() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
 
         Log.i(TAG, "Testing Network Type Detection and VPN Detection coexistence")
 
@@ -980,7 +986,7 @@ class QuickTileSettingsInstrumentedTest {
     @Test
     fun networkTypeDetection_shouldShowAllDnsStateOptions() {
         // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
+        composeTestRule.navigateToDnsAutomation(context)
 
         Log.i(TAG, "Testing DNS state options in Network Type Detection")
 
@@ -990,6 +996,8 @@ class QuickTileSettingsInstrumentedTest {
             .performClick()
         composeTestRule.waitForIdle()
 
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
+        composeTestRule.navigateToDnsProviders(context)
         // Add a custom DNS hostname first to test hostname option
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.dns_add_custom_hostname_button))
         composeTestRule.onNodeWithText(context.getString(R.string.dns_add_custom_hostname_button))
@@ -1012,6 +1020,8 @@ class QuickTileSettingsInstrumentedTest {
         // Verify custom hostname is added
         composeTestRule.safeScrollToAndAssert(testHostname)
 
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
+        composeTestRule.navigateToDnsAutomation(context)
         // Scroll back to Network Type Detection section
         composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_dns_state_on_wifi))
 
@@ -1024,6 +1034,8 @@ class QuickTileSettingsInstrumentedTest {
         composeTestRule.onNodeWithText(context.getString(R.string.setting_dns_state_on_mobile))
             .assertIsDisplayed()
 
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
+        composeTestRule.navigateToDnsProviders(context)
         // Clean up: delete the test hostname
         try {
             composeTestRule.onNodeWithContentDescription(

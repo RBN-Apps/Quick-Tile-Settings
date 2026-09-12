@@ -52,6 +52,9 @@ fun AppTopBar(
 
                         AppDestination.UsbTile -> stringResource(R.string.usb_menu_tile)
                         AppDestination.UsbActions -> stringResource(R.string.usb_menu_actions)
+                        AppDestination.DnsProviders -> stringResource(R.string.dns_menu_providers)
+                        AppDestination.DnsAutomation -> stringResource(R.string.dns_menu_automation)
+                        AppDestination.DnsRevert -> stringResource(R.string.usb_menu_revert)
                         AppDestination.UsbRevert -> stringResource(R.string.usb_menu_revert)
                         AppDestination.TileSettings ->
                             stringResource(R.string.app_name)

@@ -2,7 +2,6 @@ package com.rbn.qtsettings.ui.composables.dns
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
@@ -23,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 
@@ -34,7 +32,8 @@ internal fun DnsHostnameActionsMenu(
     onSetActiveClicked: () -> Unit,
     onInfoClicked: () -> Unit,
     onEditClicked: () -> Unit,
-    onDeleteClicked: () -> Unit
+    onDeleteClicked: () -> Unit,
+    canActivate: Boolean = true
 ) {
     var actionsExpanded by remember(entry.id) { mutableStateOf(false) }
     Box {
@@ -67,7 +66,7 @@ internal fun DnsHostnameActionsMenu(
                 leadingIcon = {
                     Icon(Icons.Outlined.CheckCircle, contentDescription = null)
                 },
-                enabled = !isActive && entry.hostname.isNotBlank(),
+                enabled = canActivate && !isActive && entry.hostname.isNotBlank(),
                 onClick = {
                     actionsExpanded = false
                     onSetActiveClicked()

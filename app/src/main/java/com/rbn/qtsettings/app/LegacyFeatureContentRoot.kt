@@ -28,6 +28,6 @@ fun LegacyFeatureContentRoot(
             modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize()
         )
         AppRoute.Usb, AppRoute.UsbTile, AppRoute.UsbActions, AppRoute.UsbRevert -> error("USB has its own feature root")
-        AppRoute.Dns -> error("DNS has its own feature root")
+        AppRoute.Dns, AppRoute.DnsProviders, AppRoute.DnsAutomation, AppRoute.DnsRevert -> error("DNS has its own feature root")
     }
 }

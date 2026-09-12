@@ -124,7 +124,7 @@
     <string name="off_state">Aus</string>
     <string name="auto_state">Auto</string>
 
-    <string name="dns_select_hostnames_for_cycle">Hostnamen für den Kachel-Zyklus auswählen:</string>
+    <string name="dns_select_hostnames_for_cycle">DNS-Anbieter</string>
     <string name="dns_sort_content_description">Sortierung der DNS-Liste auswählen</string>
     <string name="dns_sort_manual">Manuell</string>
     <string name="dns_sort_alphabetical">Alphabetisch (A–Z)</string>
@@ -368,4 +368,16 @@
     <string name="usb_tile_cycle_title">Kachel-Zyklus</string>
     <string name="usb_tile_cycle_explanation">Jedes Tippen auf die Kachel wechselt zum nächsten ausgewählten Zustand.</string>
     <string name="usb_state_active">Derzeit aktiv</string>
+    <string name="dns_menu_providers">Anbieter &amp; Kachel</string>
+    <string name="dns_menu_providers_summary">Anbieter verwalten und Zustände für den Kachelzyklus auswählen.</string>
+    <string name="dns_menu_automation">Automatisierung</string>
+    <string name="dns_menu_automation_summary">DNS für WLAN, Mobilfunk und VPN-Verbindungen steuern.</string>
+    <string name="dns_menu_revert_summary">Nach einer festgelegten Zeit zur vorherigen DNS-Einstellung zurückkehren.</string>
+    <string name="dns_status_unavailable">Status nicht verfügbar</string>
+    <string name="dns_status_summary">Aktuelle Systemeinstellung. Die Zyklusauswahl ändert den aktiven DNS-Zustand nicht.</string>
+    <string name="dns_cycle_title">Kachelzyklus</string>
+    <string name="dns_cycle_explanation">Wähle die Zustände und Anbieter, die beim Tippen auf die Kachel durchlaufen werden. Über die Aktivierungsaktion kannst du einen Zustand direkt setzen.</string>
+    <string name="dns_providers_empty">Keine Anbieter vorhanden. Füge einen Hostnamen hinzu, um ihn im Zyklus zu verwenden.</string>
+    <string name="dns_revert_explanation">Nach einem Wechsel über die Kachel stellt der Timer den vorher aktiven DNS-Zustand wieder her. Ein erneutes Tippen auf die Kachel beendet den alten Timer und startet einen neuen Zyklus. Eine erfolgreiche direkte DNS-Aktion hat Vorrang vor einem älteren Timer. Der Timer läuft nur bei aktivierter Option und einer Verzögerung größer als null.</string>
+    <string name="dns_delay_error">Gib eine ganze Zahl in Sekunden ein. Bei null oder negativen Werten startet kein Timer.</string>
 </resources>

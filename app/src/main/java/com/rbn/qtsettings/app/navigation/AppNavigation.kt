@@ -27,6 +27,9 @@ class AppNavigation internal constructor(
 
     fun open(destination: AppDestination) {
         val route = when (destination) {
+            AppDestination.DnsProviders -> if (area == AppArea.Dns) AppRoute.DnsProviders else return
+            AppDestination.DnsAutomation -> if (area == AppArea.Dns) AppRoute.DnsAutomation else return
+            AppDestination.DnsRevert -> if (area == AppArea.Dns) AppRoute.DnsRevert else return
             AppDestination.TileSettings -> return
             AppDestination.ShortcutSettings -> AppRoute.Shortcuts(area)
             AppDestination.AppSettings -> AppRoute.Settings(area)

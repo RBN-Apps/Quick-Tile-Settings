@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.rbn.qtsettings.R
+import com.rbn.qtsettings.core.designsystem.RevertDelayDialog
 import com.rbn.qtsettings.core.designsystem.SettingsGroup
 import com.rbn.qtsettings.core.designsystem.SettingsNavigationRow
 import com.rbn.qtsettings.core.designsystem.SettingsSwitchRow
@@ -68,7 +69,7 @@ fun UsbAutoRevertScreen(state: UsbSettingsState, onAction: (UsbSettingsAction) -
             )
         }
     }
-    if (editing) UsbRevertDelayDialog(state.settings.autoRevertDelaySeconds, { editing = false }) {
+    if (editing) RevertDelayDialog(state.settings.autoRevertDelaySeconds, { editing = false }) {
         onAction(UsbSettingsAction.AutoRevertDelaySeconds(it))
         editing = false
     }

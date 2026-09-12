@@ -87,8 +87,9 @@ fun AppRoot(
             if (route == AppRoute.Usb || route == AppRoute.UsbTile ||
                 route == AppRoute.UsbActions || route == AppRoute.UsbRevert) {
                 UsbSettingsRoot(usbViewModel, showPermissionHelp, route, navigation::open)
-            } else if (route == AppRoute.Dns) {
-                DnsSettingsRoot(dnsViewModel, showPermissionHelp) { providers ->
+            } else if (route == AppRoute.Dns || route == AppRoute.DnsProviders ||
+                route == AppRoute.DnsAutomation || route == AppRoute.DnsRevert) {
+                DnsSettingsRoot(dnsViewModel, showPermissionHelp, route, navigation::open) { providers ->
                     LegacyDnsAutomationRoot(viewModel, providers)
                 }
             } else LegacyFeatureContentRoot(route, viewModel)
