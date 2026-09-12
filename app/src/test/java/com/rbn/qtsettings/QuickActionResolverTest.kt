@@ -6,6 +6,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.feature.shortcuts.presentation.QuickActionKind
+import com.rbn.qtsettings.feature.shortcuts.presentation.QuickActionResolver
+import com.rbn.qtsettings.feature.shortcuts.presentation.TileType
 import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
 import org.junit.After
@@ -100,18 +103,18 @@ class QuickActionResolverTest {
         val cloudflare = prefsManager.dnsHostnames.value.first { it.id == "cloudflare_default" }
         prefsManager.updateDnsHostnameEntry(cloudflare.copy(isSelectedForCycle = false))
 
-        val actions = QuickActionResolver.buildQuickActions(context, prefsManager, TileType.DNS)
+        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dnsStore.read(), prefsManager.usbStore.read(), TileType.DNS)
 
         assertTrue(actions.any { it.kind == QuickActionKind.DnsOff })
         assertFalse(actions.any { it.kind == QuickActionKind.DnsAuto })
         assertTrue(
             actions.any {
-                (it.kind as? QuickActionKind.DnsHostname)?.entry?.hostname == "dns.adguard.com"
+                (it.kind as? QuickActionKind.DnsHostname)?.entry?.target?.value == "dns.adguard.com"
             }
         )
         assertFalse(
             actions.any {
-                (it.kind as? QuickActionKind.DnsHostname)?.entry?.hostname == "one.one.one.one"
+                (it.kind as? QuickActionKind.DnsHostname)?.entry?.target?.value == "one.one.one.one"
             }
         )
         assertFalse(actions.any { it.kind is QuickActionKind.UsbDebugging })
@@ -122,7 +125,7 @@ class QuickActionResolverTest {
         prefsManager.setUsbToggleEnable(false)
         prefsManager.setUsbToggleDisable(true)
 
-        val actions = QuickActionResolver.buildQuickActions(context, prefsManager, TileType.USB)
+        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dnsStore.read(), prefsManager.usbStore.read(), TileType.USB)
 
         assertFalse(actions.any { it.kind == QuickActionKind.DnsOff })
         assertFalse(actions.any { it.kind == QuickActionKind.DnsAuto })
@@ -133,7 +136,7 @@ class QuickActionResolverTest {
 
     @Test
     fun buildQuickActions_allFallback_includesDnsAndUsbActions() {
-        val actions = QuickActionResolver.buildQuickActions(context, prefsManager, TileType.ALL)
+        val actions = QuickActionResolver.buildQuickActions(context, prefsManager.dnsStore.read(), prefsManager.usbStore.read(), TileType.ALL)
 
         assertTrue(actions.any { it.kind == QuickActionKind.DnsOff })
         assertTrue(actions.any { it.kind == QuickActionKind.DnsAuto })

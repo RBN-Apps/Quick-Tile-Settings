@@ -12,7 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.rbn.qtsettings.data.PreferencesManager
-import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -43,7 +43,7 @@ class ShortcutSettingsInstrumentedTest {
                 .filter { !it.isPredefined }
                 .forEach { prefsManager.deleteCustomDnsHostname(it.id) }
             val allAvailableIds =
-                ShortcutUtils.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
+                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
             prefsManager.setAllowPinnedShortcutsWhenDisabled(false)
             allAvailableIds.forEach { prefsManager.setShortcutExposureEnabled(it, false) }
             allAvailableIds.forEach { prefsManager.setShortcutFavorite(it, false) }
@@ -59,7 +59,7 @@ class ShortcutSettingsInstrumentedTest {
                 .filter { !it.isPredefined }
                 .forEach { prefsManager.deleteCustomDnsHostname(it.id) }
             val allAvailableIds =
-                ShortcutUtils.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
+                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
             prefsManager.setAllowPinnedShortcutsWhenDisabled(false)
             allAvailableIds.forEach { prefsManager.setShortcutExposureEnabled(it, false) }
             allAvailableIds.forEach { prefsManager.setShortcutFavorite(it, false) }
@@ -101,18 +101,31 @@ class ShortcutSettingsInstrumentedTest {
         Log.i(TAG, "Back button returns to the main screen")
     }
 
+    @Test
+    fun pinnedWarning_survivesRecreation_cancelDoesNotEnableFallback() {
+        composeTestRule.navigateToShortcutSettings(context)
+        composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_allow_pinned_when_disabled))
+            .performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_allow_pinned_warning_title))
+            .assertIsDisplayed()
+        composeTestRule.activityRule.scenario.recreate()
+        composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_allow_pinned_warning_title))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.dialog_cancel)).performClick()
+        assertFalse(PreferencesManager.getInstance(context).shortcutStore.state.value.allowPinnedWhenDisabled)
+        composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_title)).assertIsDisplayed()
+    }
+
     // === Screen content ===
 
     @Test
     fun shortcutSettings_shouldShowActiveShortcutCountIndicator() {
         composeTestRule.navigateToShortcutSettings(context)
 
-        composeTestRule.waitUntil(timeoutMillis = 3_000) {
-            composeTestRule.onAllNodesWithText("Active shortcuts", substring = true)
-                .fetchSemanticsNodes().isNotEmpty()
-        }
-        composeTestRule.onNodeWithText("Active shortcuts", substring = true)
-            .assertIsDisplayed()
+        val configuration = PreferencesManager.getInstance(context).shortcutStore.state.value
+        val countLabel = context.getString(R.string.shortcut_settings_limit,
+            configuration.enabledIds.size, configuration.maxCount)
+        composeTestRule.onNodeWithText(countLabel).assertIsDisplayed()
 
         Log.i(TAG, "Active shortcut count indicator is visible")
     }
@@ -162,7 +175,7 @@ class ShortcutSettingsInstrumentedTest {
 
     @Test
     fun shortcutSettings_disablingShortcut_shouldDecreaseActiveCount() {
-        val dnsOffId = ShortcutUtils.SHORTCUT_ID_DNS_OFF
+        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
 
         // Pre-condition: ensure DNS Off is enabled so disabling it decreases the count
@@ -191,7 +204,7 @@ class ShortcutSettingsInstrumentedTest {
 
     @Test
     fun shortcutSettings_enablingShortcut_shouldIncreaseActiveCount() {
-        val dnsOffId = ShortcutUtils.SHORTCUT_ID_DNS_OFF
+        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
 
         // Pre-condition: ensure DNS Off is disabled so enabling it increases the count
@@ -240,7 +253,7 @@ class ShortcutSettingsInstrumentedTest {
         ensureEnoughShortcutsForLimit(maxCount)
 
         val prefsManager = PreferencesManager.getInstance(context)
-        val allOrderedIds = ShortcutUtils.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
+        val allOrderedIds = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
         val idToTitle = buildIdToTitleMap()
 
         check(allOrderedIds.size > maxCount) {
@@ -307,7 +320,7 @@ class ShortcutSettingsInstrumentedTest {
         ensureEnoughShortcutsForLimit(maxCount)
 
         val prefsManager = PreferencesManager.getInstance(context)
-        val allOrderedIds = ShortcutUtils.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
+        val allOrderedIds = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
 
         check(allOrderedIds.size > maxCount) {
             "Expected more than $maxCount shortcuts after adding custom entries, " +
@@ -346,7 +359,7 @@ class ShortcutSettingsInstrumentedTest {
 
     @Test
     fun shortcutSettings_enablingShortcut_shouldPublishToShortcutManager() {
-        val dnsOffId = ShortcutUtils.SHORTCUT_ID_DNS_OFF
+        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
         val prefsManager = PreferencesManager.getInstance(context)
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
@@ -390,7 +403,7 @@ class ShortcutSettingsInstrumentedTest {
 
     @Test
     fun shortcutSettings_disablingShortcut_shouldRemoveFromShortcutManager() {
-        val dnsOffId = ShortcutUtils.SHORTCUT_ID_DNS_OFF
+        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
         val prefsManager = PreferencesManager.getInstance(context)
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
@@ -429,20 +442,20 @@ class ShortcutSettingsInstrumentedTest {
 
         // Enable three shortcuts in a deliberately non-canonical order to verify ordering
         val targetIds = listOf(
-            ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,   // built-in index 4
-            ShortcutUtils.SHORTCUT_ID_DNS_OFF,      // built-in index 0
-            ShortcutUtils.SHORTCUT_ID_DNS_AUTO      // built-in index 1
+            ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,   // built-in index 4
+            ShortcutCatalog.SHORTCUT_ID_DNS_OFF,      // built-in index 0
+            ShortcutCatalog.SHORTCUT_ID_DNS_AUTO      // built-in index 1
         )
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             val allAvailable =
-                ShortcutUtils.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
+                ShortcutCatalog.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
             allAvailable.forEach { id -> prefsManager.setShortcutExposureEnabled(id, false) }
             targetIds.forEach { id -> prefsManager.setShortcutExposureEnabled(id, true) }
         }
         composeTestRule.waitForIdle()
 
-        // The canonical order from ShortcutUtils must be reflected in the published shortcuts
-        val expectedOrder = ShortcutUtils.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
+        // The canonical order from ShortcutCatalog must be reflected in the published shortcuts
+        val expectedOrder = ShortcutCatalog.getOrderedShortcutIds(prefsManager.dnsHostnames.value)
             .filter { targetIds.contains(it) }
 
         val publishedIds = shortcutManager?.dynamicShortcuts
@@ -450,7 +463,7 @@ class ShortcutSettingsInstrumentedTest {
             ?.map { it.id } ?: emptyList()
 
         assertEquals(
-            "Published shortcuts must follow the order defined by ShortcutUtils.getOrderedShortcutIds()",
+            "Published shortcuts must follow the order defined by ShortcutCatalog.getOrderedShortcutIds()",
             expectedOrder,
             publishedIds
         )
@@ -495,32 +508,32 @@ class ShortcutSettingsInstrumentedTest {
         val prefsManager = PreferencesManager.getInstance(context)
         return buildMap {
             put(
-                ShortcutUtils.SHORTCUT_ID_DNS_OFF,
+                ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
                 context.getString(R.string.shortcut_dns_off_short)
             )
             put(
-                ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
+                ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
                 context.getString(R.string.shortcut_dns_auto_short)
             )
             put(
-                ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
+                ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
                 context.getString(R.string.shortcut_dns_adguard_short)
             )
             put(
-                ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE,
+                ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE,
                 context.getString(R.string.shortcut_dns_cloudflare_short)
             )
             put(
-                ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
+                ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
                 context.getString(R.string.shortcut_dns_quad9_short)
             )
-            put(ShortcutUtils.SHORTCUT_ID_USB_ON, context.getString(R.string.shortcut_usb_on_short))
+            put(ShortcutCatalog.SHORTCUT_ID_USB_ON, context.getString(R.string.shortcut_usb_on_short))
             put(
-                ShortcutUtils.SHORTCUT_ID_USB_OFF,
+                ShortcutCatalog.SHORTCUT_ID_USB_OFF,
                 context.getString(R.string.shortcut_usb_off_short)
             )
             prefsManager.dnsHostnames.value.filter { !it.isPredefined }.forEach { entry ->
-                put(ShortcutUtils.getShortcutIdForDnsEntry(entry), entry.name)
+                put(ShortcutCatalog.getShortcutIdForDnsEntry(entry), entry.name)
             }
         }
     }

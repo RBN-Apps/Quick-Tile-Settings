@@ -1,11 +1,11 @@
 package com.rbn.qtsettings.data
 
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
-import com.rbn.qtsettings.utils.ShortcutUtils
 import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 
 internal data class ValidatedSettingsBackup(
@@ -33,7 +33,7 @@ internal class SettingsBackupValidator(
         val restoredSortMode = DnsListSortMode.fromPersistedValue(dns.sortMode)
         val effectiveRestoredHostnames = DnsHostnamePolicy.sort(restoredHostnames, restoredSortMode)
         val availableHostnames = restoredHostnames.map { it.hostname }.toSet()
-        val availableShortcutIds = ShortcutUtils.getAvailableShortcutIds(restoredHostnames)
+        val availableShortcutIds = ShortcutCatalog.getAvailableShortcutIds(restoredHostnames)
         val favoriteShortcutIds = normalizeFavoriteShortcutIds(
             favoriteShortcutIds = shortcuts.favoriteShortcutIds,
             enabledShortcutIds = shortcuts.enabledShortcutIds,
@@ -95,7 +95,7 @@ internal class SettingsBackupValidator(
         restoredHostnames: List<DnsHostnameEntry>
     ): Set<String> {
         val migratedIds = normalizeShortcutIdSet(shortcutIds)
-        return ShortcutUtils.getOrderedShortcutIds(restoredHostnames, favoriteShortcutIds)
+        return ShortcutCatalog.getOrderedShortcutIds(restoredHostnames, favoriteShortcutIds)
             .filter { it in migratedIds && it in availableShortcutIds }
             .take(shortcutMaxCount)
             .toSet()
@@ -109,15 +109,15 @@ internal class SettingsBackupValidator(
     ): Set<String> {
         val migratedFavorites = normalizeShortcutIdSet(favoriteShortcutIds)
         val migratedEnabled = normalizeShortcutIdSet(enabledShortcutIds)
-        return ShortcutUtils.getOrderedShortcutIds(restoredHostnames)
+        return ShortcutCatalog.getOrderedShortcutIds(restoredHostnames)
             .filter { it in migratedFavorites && it in migratedEnabled && it in availableShortcutIds }
-            .take(ShortcutUtils.MAX_FAVORITE_SHORTCUTS)
+            .take(ShortcutCatalog.MAX_FAVORITE_SHORTCUTS)
             .toSet()
     }
 
     private fun normalizeShortcutIdSet(shortcutIds: Set<String>?): Set<String> {
         @Suppress("SENSELESS_COMPARISON")
-        return ShortcutUtils.migrateLegacyShortcutIds(
+        return ShortcutCatalog.migrateLegacyShortcutIds(
             shortcutIds.orEmpty()
                 .mapNotNull { shortcutId ->
                     if (shortcutId == null || shortcutId.isBlank()) null else shortcutId

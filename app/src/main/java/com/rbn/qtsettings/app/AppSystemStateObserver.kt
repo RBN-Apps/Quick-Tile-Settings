@@ -32,7 +32,6 @@ class AppSystemStateObserver(
         automation.checkSystemStates(applicationContext)
         automation.initializeVpnMonitoring()
         automation.initializeNetworkMonitoring()
-        viewModel.refreshShortcutConfiguration()
     }
 
     override fun onResume(owner: LifecycleOwner) {

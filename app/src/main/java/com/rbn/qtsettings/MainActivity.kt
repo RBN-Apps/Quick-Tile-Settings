@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         // Recreation restores Navigation 3's stacks, not the original tile intent.
         if (savedInstanceState == null) externalArea = intent.resolveTileArea()
+        (application as QuickTileSettingsApplication).container.shortcutSettingsStore.refreshShortcutConfiguration()
         val permissions = AppPermissionBinding(this, viewModel, automationViewModel)
         lifecycle.addObserver(AppSystemStateObserver(applicationContext, viewModel, automationViewModel))
         lifecycle.addObserver(permissions)
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
                     usbViewModel = usbViewModel,
                     dnsViewModel = dnsViewModel,
                     automationViewModel = automationViewModel,
+                    shortcutViewModelFactory = (application as QuickTileSettingsApplication).container.shortcutViewModelFactory,
                     externalArea = externalArea,
                     onExternalAreaConsumed = { externalArea = null },
                     onOpenAdbSettings = { startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) },

@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.utils
+package com.rbn.qtsettings.platform.shortcuts
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,8 @@ import android.util.Log
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.ShortcutActionActivity
 import com.rbn.qtsettings.data.DnsHostnameEntry
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutPublisher
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_ADGUARD
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_AUTO
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_CLOUDFLARE
@@ -20,74 +22,54 @@ import com.rbn.qtsettings.utils.Constants.ACTION_USB_OFF
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_ON
 import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
 
-object ShortcutUtils {
-    private const val TAG = "ShortcutUtils"
-
-    const val MAX_FAVORITE_SHORTCUTS = 4
-
-    const val SHORTCUT_ID_DNS_OFF = "dyn_dns_off"
-    const val SHORTCUT_ID_DNS_AUTO = "dyn_dns_auto"
-    const val SHORTCUT_ID_DNS_ADGUARD = "dyn_dns_adguard"
-    const val SHORTCUT_ID_DNS_CLOUDFLARE = "dyn_dns_cloudflare"
-    const val SHORTCUT_ID_DNS_QUAD9 = "dyn_dns_quad9"
-    const val SHORTCUT_ID_USB_ON = "dyn_usb_on"
-    const val SHORTCUT_ID_USB_OFF = "dyn_usb_off"
-
-    private val legacyShortcutIdMap = mapOf(
-        "dns_off" to SHORTCUT_ID_DNS_OFF,
-        "dns_auto" to SHORTCUT_ID_DNS_AUTO,
-        "dns_adguard" to SHORTCUT_ID_DNS_ADGUARD,
-        "dns_cloudflare" to SHORTCUT_ID_DNS_CLOUDFLARE,
-        "dns_quad9" to SHORTCUT_ID_DNS_QUAD9,
-        "usb_on" to SHORTCUT_ID_USB_ON,
-        "usb_off" to SHORTCUT_ID_USB_OFF
-    )
-
+class AndroidShortcutPublisher(context: Context) : ShortcutPublisher {
+    private val context = context.applicationContext
+    private val TAG = "ShortcutPublisher"
     private val builtInShortcutDefinitions = listOf(
         BuiltInShortcutDefinition(
-            id = SHORTCUT_ID_DNS_OFF,
+            id = ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
             action = ACTION_DNS_OFF,
             iconRes = R.drawable.ic_shortcut_dns_off,
             shortLabelRes = R.string.shortcut_dns_off_short,
             longLabelRes = R.string.shortcut_dns_off_long
         ),
         BuiltInShortcutDefinition(
-            id = SHORTCUT_ID_DNS_AUTO,
+            id = ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
             action = ACTION_DNS_AUTO,
             iconRes = R.drawable.ic_shortcut_dns_auto,
             shortLabelRes = R.string.shortcut_dns_auto_short,
             longLabelRes = R.string.shortcut_dns_auto_long
         ),
         BuiltInShortcutDefinition(
-            id = SHORTCUT_ID_DNS_ADGUARD,
+            id = ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
             action = ACTION_DNS_ADGUARD,
             iconRes = R.drawable.ic_shortcut_adguard,
             shortLabelRes = R.string.shortcut_dns_adguard_short,
             longLabelRes = R.string.shortcut_dns_adguard_long
         ),
         BuiltInShortcutDefinition(
-            id = SHORTCUT_ID_DNS_CLOUDFLARE,
+            id = ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE,
             action = ACTION_DNS_CLOUDFLARE,
             iconRes = R.drawable.ic_shortcut_cloudflare,
             shortLabelRes = R.string.shortcut_dns_cloudflare_short,
             longLabelRes = R.string.shortcut_dns_cloudflare_long
         ),
         BuiltInShortcutDefinition(
-            id = SHORTCUT_ID_DNS_QUAD9,
+            id = ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
             action = ACTION_DNS_QUAD9,
             iconRes = R.drawable.ic_shortcut_quad9,
             shortLabelRes = R.string.shortcut_dns_quad9_short,
             longLabelRes = R.string.shortcut_dns_quad9_long
         ),
         BuiltInShortcutDefinition(
-            id = SHORTCUT_ID_USB_ON,
+            id = ShortcutCatalog.SHORTCUT_ID_USB_ON,
             action = ACTION_USB_ON,
             iconRes = R.drawable.ic_shortcut_usb_on,
             shortLabelRes = R.string.shortcut_usb_on_short,
             longLabelRes = R.string.shortcut_usb_on_long
         ),
         BuiltInShortcutDefinition(
-            id = SHORTCUT_ID_USB_OFF,
+            id = ShortcutCatalog.SHORTCUT_ID_USB_OFF,
             action = ACTION_USB_OFF,
             iconRes = R.drawable.ic_shortcut_usb_off,
             shortLabelRes = R.string.shortcut_usb_off_short,
@@ -95,73 +77,19 @@ object ShortcutUtils {
         )
     )
 
-    private val builtInShortcutIds = builtInShortcutDefinitions.map { it.id }.toSet()
-    private val predefinedDnsShortcutIdMap = mapOf(
-        "adguard_default" to SHORTCUT_ID_DNS_ADGUARD,
-        "cloudflare_default" to SHORTCUT_ID_DNS_CLOUDFLARE,
-        "quad9_default" to SHORTCUT_ID_DNS_QUAD9
-    )
-
-    fun getShortcutIdForDnsEntry(entry: DnsHostnameEntry): String {
-        if (entry.isPredefined) {
-            return predefinedDnsShortcutIdMap[entry.id] ?: createCustomDnsShortcutId(entry.id)
-        }
-        return createCustomDnsShortcutId(entry.id)
-    }
-
-    fun getAvailableShortcutIds(hostnames: List<DnsHostnameEntry>): Set<String> {
-        val availableDnsIds = hostnames.map { getShortcutIdForDnsEntry(it) }
-        return builtInShortcutIds + availableDnsIds
-    }
-
-    fun migrateLegacyShortcutIds(shortcutIds: Set<String>): Set<String> {
-        return shortcutIds.map { shortcutId -> legacyShortcutIdMap[shortcutId] ?: shortcutId }
-            .toSet()
-    }
-
-    fun getOrderedShortcutIds(
-        hostnames: List<DnsHostnameEntry>,
-        favoriteShortcutIds: Set<String> = emptySet()
-    ): List<String> {
-        val predefinedDnsIds = listOf(
-            SHORTCUT_ID_DNS_ADGUARD,
-            SHORTCUT_ID_DNS_CLOUDFLARE,
-            SHORTCUT_ID_DNS_QUAD9
-        )
-        val orderedDnsIds = hostnames.map { getShortcutIdForDnsEntry(it) }
-        val missingPredefinedDnsIds = predefinedDnsIds.filterNot(orderedDnsIds::contains)
-        val canonicalOrder = (
-            listOf(
-                SHORTCUT_ID_DNS_OFF,
-                SHORTCUT_ID_DNS_AUTO
-            ) + orderedDnsIds + missingPredefinedDnsIds + listOf(
-                SHORTCUT_ID_USB_ON,
-                SHORTCUT_ID_USB_OFF
-            )
-        ).distinct()
-        if (favoriteShortcutIds.isEmpty()) {
-            return canonicalOrder
-        }
-
-        val favoritesFirst = canonicalOrder.filter { favoriteShortcutIds.contains(it) }
-        val remaining = canonicalOrder.filterNot { favoriteShortcutIds.contains(it) }
-        return favoritesFirst + remaining
-    }
-
-    fun getMaxShortcutCount(context: Context): Int {
+    override fun maxCount(): Int {
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
-            ?: return builtInShortcutIds.size
+            ?: return 7
         return shortcutManager.maxShortcutCountPerActivity.coerceAtLeast(1)
     }
 
-    fun updateExposedShortcuts(
-        context: Context,
+    override fun publish(
         dnsHostnames: List<DnsHostnameEntry>,
         enabledShortcutIds: Set<String>,
         favoriteShortcutIds: Set<String>
     ) {
         val shortcutManager = context.getSystemService(ShortcutManager::class.java) ?: return
-        val availableShortcutIds = getAvailableShortcutIds(dnsHostnames)
+        val availableShortcutIds = ShortcutCatalog.getAvailableShortcutIds(dnsHostnames)
         val effectiveEnabledIds = enabledShortcutIds.intersect(availableShortcutIds)
         val effectiveFavoriteIds = favoriteShortcutIds.intersect(availableShortcutIds)
         val builtInShortcutsById = builtInShortcutDefinitions
@@ -170,10 +98,10 @@ object ShortcutUtils {
 
         val customShortcutsById = dnsHostnames
             .filter { !it.isPredefined }
-            .filter { effectiveEnabledIds.contains(getShortcutIdForDnsEntry(it)) }
-            .associateBy { getShortcutIdForDnsEntry(it) }
+            .filter { effectiveEnabledIds.contains(ShortcutCatalog.getShortcutIdForDnsEntry(it)) }
+            .associateBy { ShortcutCatalog.getShortcutIdForDnsEntry(it) }
 
-        val orderedEnabledShortcutIds = getOrderedShortcutIds(
+        val orderedEnabledShortcutIds = ShortcutCatalog.getOrderedShortcutIds(
             hostnames = dnsHostnames,
             favoriteShortcutIds = effectiveFavoriteIds
         )
@@ -229,7 +157,7 @@ object ShortcutUtils {
                 e
             )
             val customOnly =
-                orderedShortcutInfos.filter { it.id.startsWith(CUSTOM_DNS_SHORTCUT_PREFIX) }
+                orderedShortcutInfos.filter { it.id.startsWith(ShortcutCatalog.CUSTOM_DNS_SHORTCUT_PREFIX) }
             try {
                 publishDynamicShortcuts(
                     context = context,
@@ -269,9 +197,6 @@ object ShortcutUtils {
         }
     }
 
-    private fun createCustomDnsShortcutId(entryId: String): String =
-        "$CUSTOM_DNS_SHORTCUT_PREFIX$entryId"
-
     private data class BuiltInShortcutDefinition(
         val id: String,
         val action: String,
@@ -280,5 +205,4 @@ object ShortcutUtils {
         val longLabelRes: Int
     )
 
-    private const val CUSTOM_DNS_SHORTCUT_PREFIX = "dns_custom_"
 }

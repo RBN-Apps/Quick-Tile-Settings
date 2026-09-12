@@ -18,17 +18,11 @@ import rikka.shizuku.Shizuku
 
 class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() {
 
-    val dnsHostnames = prefsManager.dnsHostnames
 
     // Settings/backup bridge until #121: the app supplies the independent automation owner.
     var onAutomationBackupRestored: (Context) -> Unit = {}
 
     val helpShown = prefsManager.helpShown
-
-    val shortcutMaxCount = prefsManager.shortcutMaxCount
-    val enabledShortcutIds = prefsManager.enabledShortcutIds
-    val favoriteShortcutIds = prefsManager.favoriteShortcutIds
-    val allowPinnedShortcutsWhenDisabled = prefsManager.allowPinnedShortcutsWhenDisabled
 
     private val _hasWriteSecureSettings = MutableStateFlow(false)
     val hasWriteSecureSettings = _hasWriteSecureSettings.asStateFlow()
@@ -50,14 +44,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     private val _backupStatusMessage = MutableStateFlow<String?>(null)
     val backupStatusMessage = _backupStatusMessage.asStateFlow()
-
-    fun setShortcutExposureEnabled(shortcutId: String, enabled: Boolean): Boolean =
-        prefsManager.setShortcutExposureEnabled(shortcutId, enabled)
-    fun setShortcutFavorite(shortcutId: String, favorite: Boolean): Boolean =
-        prefsManager.setShortcutFavorite(shortcutId, favorite)
-    fun setAllowPinnedShortcutsWhenDisabled(enabled: Boolean) =
-        prefsManager.setAllowPinnedShortcutsWhenDisabled(enabled)
-    fun refreshShortcutConfiguration() = prefsManager.refreshShortcutConfiguration()
 
     fun exportBackup(context: Context, uri: Uri) {
         val appContext = context.applicationContext

@@ -10,6 +10,7 @@ import com.rbn.qtsettings.feature.automation.domain.VpnAutomation
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.feature.dns.domain.DnsActions
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
+import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSettingsViewModel
 import com.rbn.qtsettings.feature.usb.domain.UsbActions
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
 import com.rbn.qtsettings.platform.automation.AndroidVpnAutomationGateway
@@ -52,6 +53,16 @@ class AppContainer(context: Context) {
             return AutomationViewModel(
                 preferences.automationStore,
                 ::AndroidWifiDiscoverySource
+            ) as T
+        }
+    }
+    val shortcutSettingsStore get() = preferences.shortcutStore
+    val shortcutViewModelFactory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            require(modelClass == ShortcutSettingsViewModel::class.java)
+            @Suppress("UNCHECKED_CAST")
+            return ShortcutSettingsViewModel(
+                shortcutSettingsStore, dnsSettingsStore.dnsHostnames, extras.createSavedStateHandle()
             ) as T
         }
     }

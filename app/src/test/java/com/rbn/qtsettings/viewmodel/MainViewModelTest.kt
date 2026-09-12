@@ -12,13 +12,13 @@ import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.SettingsBackup
 import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
-import com.rbn.qtsettings.utils.ShortcutUtils
 import java.time.Instant
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -67,9 +67,9 @@ class MainViewModelTest {
 
     @Test
     fun shortcutSettings_whenFreshlyInitialized_thenNoShortcutsEnabledAndPinnedFallbackDisabled() {
-        assertTrue(viewModel.enabledShortcutIds.value.isEmpty())
-        assertTrue(viewModel.favoriteShortcutIds.value.isEmpty())
-        assertFalse(viewModel.allowPinnedShortcutsWhenDisabled.value)
+        assertTrue(prefsManager.shortcutStore.enabledShortcutIds.value.isEmpty())
+        assertTrue(prefsManager.shortcutStore.favoriteShortcutIds.value.isEmpty())
+        assertFalse(prefsManager.shortcutStore.allowPinnedShortcutsWhenDisabled.value)
     }
 
     @Test
@@ -445,14 +445,14 @@ class MainViewModelTest {
             prefsManager.dnsHostnames.value.first { !it.isPredefined && it.name == "New DNS" }
         val shortcutId = "dns_custom_${created.id}"
 
-        assertFalse(viewModel.enabledShortcutIds.value.contains(shortcutId))
+        assertFalse(prefsManager.shortcutStore.enabledShortcutIds.value.contains(shortcutId))
     }
 
     @Test
     fun setAllowPinnedShortcutsWhenDisabled_whenCalled_thenUpdatesFlow() {
-        viewModel.setAllowPinnedShortcutsWhenDisabled(true)
+        prefsManager.shortcutStore.setAllowPinnedShortcutsWhenDisabled(true)
 
-        assertTrue(viewModel.allowPinnedShortcutsWhenDisabled.value)
+        assertTrue(prefsManager.shortcutStore.allowPinnedShortcutsWhenDisabled.value)
     }
 
     @Test
@@ -496,16 +496,16 @@ class MainViewModelTest {
         prefsManager.setUsbRequireUnlock(true)
 
         val customShortcutId = "dns_custom_${customEntry.id}"
-        assertTrue(viewModel.setShortcutExposureEnabled(customShortcutId, true))
-        assertTrue(viewModel.setShortcutFavorite(customShortcutId, true))
-        viewModel.setAllowPinnedShortcutsWhenDisabled(true)
+        assertTrue(prefsManager.shortcutStore.setShortcutExposureEnabled(customShortcutId, true))
+        assertTrue(prefsManager.shortcutStore.setShortcutFavorite(customShortcutId, true))
+        prefsManager.shortcutStore.setAllowPinnedShortcutsWhenDisabled(true)
 
         val backupJson = prefsManager.exportSettingsBackupJson()
 
         prefsManager.setDnsToggleOff(true)
         prefsManager.deleteCustomDnsHostname(customEntry.id)
         prefsManager.setUsbToggleEnable(true)
-        viewModel.setAllowPinnedShortcutsWhenDisabled(false)
+        prefsManager.shortcutStore.setAllowPinnedShortcutsWhenDisabled(false)
 
         prefsManager.restoreSettingsBackupJson(backupJson)
 
@@ -530,9 +530,9 @@ class MainViewModelTest {
         assertEquals(33, prefsManager.usbStore.state.value.autoRevertDelaySeconds)
         assertTrue(prefsManager.usbStore.state.value.requireUnlock)
 
-        assertTrue(viewModel.enabledShortcutIds.value.contains(customShortcutId))
-        assertTrue(viewModel.favoriteShortcutIds.value.contains(customShortcutId))
-        assertTrue(viewModel.allowPinnedShortcutsWhenDisabled.value)
+        assertTrue(prefsManager.shortcutStore.enabledShortcutIds.value.contains(customShortcutId))
+        assertTrue(prefsManager.shortcutStore.favoriteShortcutIds.value.contains(customShortcutId))
+        assertTrue(prefsManager.shortcutStore.allowPinnedShortcutsWhenDisabled.value)
     }
 
     @Test
@@ -610,8 +610,8 @@ class MainViewModelTest {
         assertNull(automation.dnsHostnameOnWifi.value)
         assertEquals(DNS_MODE_ON, automation.dnsStateOnMobile.value)
         assertEquals("good.example.com", automation.dnsHostnameOnMobile.value)
-        assertTrue(viewModel.enabledShortcutIds.value.contains("dns_custom_good"))
-        assertFalse(viewModel.enabledShortcutIds.value.contains("unknown_future_shortcut"))
+        assertTrue(prefsManager.shortcutStore.enabledShortcutIds.value.contains("dns_custom_good"))
+        assertFalse(prefsManager.shortcutStore.enabledShortcutIds.value.contains("unknown_future_shortcut"))
     }
 
     @Test
@@ -680,8 +680,8 @@ class MainViewModelTest {
         assertNull(prefsManager.dnsHostnames.value.firstOrNull { it.id == "null_name" })
         assertNull(prefsManager.dnsHostnames.value.firstOrNull { it.name == "Null ID" })
         assertNull(prefsManager.dnsHostnames.value.firstOrNull { it.id == "null_hostname" })
-        assertEquals(setOf(ShortcutUtils.SHORTCUT_ID_DNS_OFF), viewModel.enabledShortcutIds.value)
-        assertEquals(setOf(ShortcutUtils.SHORTCUT_ID_DNS_OFF), viewModel.favoriteShortcutIds.value)
+        assertEquals(setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF), prefsManager.shortcutStore.enabledShortcutIds.value)
+        assertEquals(setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF), prefsManager.shortcutStore.favoriteShortcutIds.value)
     }
 
     @Test
@@ -700,13 +700,13 @@ class MainViewModelTest {
             """.trimIndent()
         }
         val enabledShortcutIds = listOf(
-            ShortcutUtils.SHORTCUT_ID_DNS_OFF,
-            ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
-            ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
-            ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE,
-            ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
-            ShortcutUtils.SHORTCUT_ID_USB_ON,
-            ShortcutUtils.SHORTCUT_ID_USB_OFF
+            ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
+            ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
+            ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
+            ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE,
+            ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
+            ShortcutCatalog.SHORTCUT_ID_USB_ON,
+            ShortcutCatalog.SHORTCUT_ID_USB_OFF
         ) + (1..(maxShortcutCount + 3)).map { "dns_custom_custom_$it" }
         val backupJson = """
             {
@@ -751,13 +751,13 @@ class MainViewModelTest {
 
         prefsManager.restoreSettingsBackupJson(backupJson)
 
-        assertEquals(maxShortcutCount, viewModel.enabledShortcutIds.value.size)
-        assertTrue(viewModel.enabledShortcutIds.value.all { shortcutId ->
+        assertEquals(maxShortcutCount, prefsManager.shortcutStore.enabledShortcutIds.value.size)
+        assertTrue(prefsManager.shortcutStore.enabledShortcutIds.value.all { shortcutId ->
             prefsManager.canExecuteShortcutId(shortcutId)
         })
         if (shortcutManager != null) {
             assertEquals(
-                viewModel.enabledShortcutIds.value,
+                prefsManager.shortcutStore.enabledShortcutIds.value,
                 shortcutManager.dynamicShortcuts.map { it.id }.toSet()
             )
             assertEquals(maxShortcutCount, shortcutManager.dynamicShortcuts.size)

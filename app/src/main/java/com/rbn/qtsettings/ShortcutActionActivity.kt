@@ -4,7 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.feature.shortcuts.data.ShortcutSettingsStore
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_ADGUARD
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_AUTO
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_CLOUDFLARE
@@ -17,7 +18,6 @@ import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
 import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.ShortcutUtils
 import com.rbn.qtsettings.utils.SystemQuickActionResult
 import com.rbn.qtsettings.utils.SystemQuickActions
 
@@ -32,7 +32,7 @@ class ShortcutActionActivity : ComponentActivity() {
 
     private fun handleAction(action: String?) {
         if (action == null) return
-        val prefsManager = PreferencesManager.getInstance(this)
+        val shortcutSettings = (application as QuickTileSettingsApplication).container.shortcutSettingsStore
 
         if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
             Toast.makeText(this, R.string.shortcut_toast_permission_missing, Toast.LENGTH_LONG)
@@ -45,7 +45,7 @@ class ShortcutActionActivity : ComponentActivity() {
 
         when (action) {
             ACTION_DNS_OFF -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_OFF)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_OFF)) return
                 val message = if (SystemQuickActions.setDnsMode(this, DNS_MODE_OFF) == SystemQuickActionResult.SUCCESS) {
                     R.string.shortcut_toast_dns_off
                 } else {
@@ -55,14 +55,14 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_DNS_AUTO -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_AUTO)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_AUTO)) return
                 val result = SystemQuickActions.setDnsMode(this, DNS_MODE_AUTO)
                 Toast.makeText(this, if (result == SystemQuickActionResult.SUCCESS)
                     R.string.shortcut_toast_dns_auto else R.string.shortcut_toast_action_failed, Toast.LENGTH_SHORT).show()
             }
 
             ACTION_DNS_ADGUARD -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD)) return
                 setDnsHostname(
                     hostname = "dns.adguard.com",
                     displayName = getString(R.string.shortcut_dns_adguard_short)
@@ -71,8 +71,8 @@ class ShortcutActionActivity : ComponentActivity() {
 
             ACTION_DNS_CLOUDFLARE -> {
                 if (!isShortcutAllowed(
-                        prefsManager,
-                        ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE
+                        shortcutSettings,
+                        ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE
                     )
                 ) return
                 setDnsHostname(
@@ -82,7 +82,7 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_DNS_QUAD9 -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_QUAD9)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9)) return
                 setDnsHostname(
                     hostname = "dns.quad9.net",
                     displayName = getString(R.string.shortcut_dns_quad9_short)
@@ -90,7 +90,7 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_DNS_CUSTOM -> {
-                val entry = prefsManager.resolveCustomDnsShortcutEntry(
+                val entry = shortcutSettings.resolveCustomDnsShortcutEntry(
                     intent?.getStringExtra(EXTRA_DNS_ENTRY_ID)
                 )
                 if (entry == null) {
@@ -106,22 +106,22 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_USB_ON -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_USB_ON)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_USB_ON)) return
                 handleUsbDebuggingAction(enable = true)
             }
 
             ACTION_USB_OFF -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_USB_OFF)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_USB_OFF)) return
                 handleUsbDebuggingAction(enable = false)
             }
         }
     }
 
     private fun isShortcutAllowed(
-        prefsManager: PreferencesManager,
+        shortcutSettings: ShortcutSettingsStore,
         shortcutId: String
     ): Boolean {
-        if (prefsManager.canExecuteShortcutId(shortcutId)) {
+        if (shortcutSettings.canExecuteShortcutId(shortcutId)) {
             return true
         }
 

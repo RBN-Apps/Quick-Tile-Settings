@@ -1,5 +1,9 @@
 package com.rbn.qtsettings.app
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,9 +12,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,6 +31,7 @@ import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
+import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
 import com.rbn.qtsettings.viewmodel.MainViewModel
@@ -35,6 +43,7 @@ fun AppRoot(
     usbViewModel: UsbSettingsViewModel,
     dnsViewModel: DnsSettingsViewModel,
     automationViewModel: AutomationViewModel,
+    shortcutViewModelFactory: ViewModelProvider.Factory,
     externalArea: AppArea?,
     onExternalAreaConsumed: () -> Unit,
     onOpenAdbSettings: () -> Unit,
@@ -102,6 +111,9 @@ fun AppRoot(
                     AutomationRoot(automationViewModel, providers, automationRoute,
                         onOpen = navigation::open, onEditRule = navigation::openWifiRule, onBack = navigation::back)
                 }
+            } else if (route is AppRoute.Shortcuts) {
+                ShortcutSettingsRoot(shortcutViewModelFactory,
+                    Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(horizontal = 16.dp))
             } else LegacyFeatureContentRoot(route, viewModel)
         }
     }

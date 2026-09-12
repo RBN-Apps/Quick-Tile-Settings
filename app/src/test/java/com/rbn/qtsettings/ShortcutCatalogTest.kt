@@ -1,13 +1,13 @@
 package com.rbn.qtsettings
 
 import com.rbn.qtsettings.data.DnsHostnameEntry
-import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class ShortcutUtilsTest {
+class ShortcutCatalogTest {
 
     // === getShortcutIdForDnsEntry ===
 
@@ -20,8 +20,8 @@ class ShortcutUtilsTest {
             isPredefined = true
         )
         assertEquals(
-            ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
-            ShortcutUtils.getShortcutIdForDnsEntry(entry)
+            ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
+            ShortcutCatalog.getShortcutIdForDnsEntry(entry)
         )
     }
 
@@ -34,8 +34,8 @@ class ShortcutUtilsTest {
             isPredefined = true
         )
         assertEquals(
-            ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE,
-            ShortcutUtils.getShortcutIdForDnsEntry(entry)
+            ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE,
+            ShortcutCatalog.getShortcutIdForDnsEntry(entry)
         )
     }
 
@@ -48,8 +48,8 @@ class ShortcutUtilsTest {
             isPredefined = true
         )
         assertEquals(
-            ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
-            ShortcutUtils.getShortcutIdForDnsEntry(entry)
+            ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
+            ShortcutCatalog.getShortcutIdForDnsEntry(entry)
         )
     }
 
@@ -62,7 +62,7 @@ class ShortcutUtilsTest {
             hostname = "unknown.example.com",
             isPredefined = true
         )
-        assertEquals("dns_custom_$uuid", ShortcutUtils.getShortcutIdForDnsEntry(entry))
+        assertEquals("dns_custom_$uuid", ShortcutCatalog.getShortcutIdForDnsEntry(entry))
     }
 
     @Test
@@ -74,7 +74,7 @@ class ShortcutUtilsTest {
             hostname = "my.dns.com",
             isPredefined = false
         )
-        assertEquals("dns_custom_$uuid", ShortcutUtils.getShortcutIdForDnsEntry(entry))
+        assertEquals("dns_custom_$uuid", ShortcutCatalog.getShortcutIdForDnsEntry(entry))
     }
 
     // === migrateLegacyShortcutIds ===
@@ -91,41 +91,41 @@ class ShortcutUtilsTest {
             "usb_off"
         )
         val expected = setOf(
-            ShortcutUtils.SHORTCUT_ID_DNS_OFF,
-            ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
-            ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
-            ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE,
-            ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
-            ShortcutUtils.SHORTCUT_ID_USB_ON,
-            ShortcutUtils.SHORTCUT_ID_USB_OFF
+            ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
+            ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
+            ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
+            ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE,
+            ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
+            ShortcutCatalog.SHORTCUT_ID_USB_ON,
+            ShortcutCatalog.SHORTCUT_ID_USB_OFF
         )
-        assertEquals(expected, ShortcutUtils.migrateLegacyShortcutIds(legacyIds))
+        assertEquals(expected, ShortcutCatalog.migrateLegacyShortcutIds(legacyIds))
     }
 
     @Test
     fun migrateLegacyShortcutIds_alreadyNewFormatIds_returnedUnchanged() {
-        val newIds = setOf(ShortcutUtils.SHORTCUT_ID_DNS_OFF, ShortcutUtils.SHORTCUT_ID_USB_ON)
-        assertEquals(newIds, ShortcutUtils.migrateLegacyShortcutIds(newIds))
+        val newIds = setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF, ShortcutCatalog.SHORTCUT_ID_USB_ON)
+        assertEquals(newIds, ShortcutCatalog.migrateLegacyShortcutIds(newIds))
     }
 
     @Test
     fun migrateLegacyShortcutIds_unknownIds_returnedUnchanged() {
         val unknownIds = setOf("custom_something", "dns_custom_abc123")
-        assertEquals(unknownIds, ShortcutUtils.migrateLegacyShortcutIds(unknownIds))
+        assertEquals(unknownIds, ShortcutCatalog.migrateLegacyShortcutIds(unknownIds))
     }
 
     @Test
     fun migrateLegacyShortcutIds_mixedInput_convertsOnlyLegacyIds() {
-        val mixed = setOf("dns_off", ShortcutUtils.SHORTCUT_ID_USB_ON, "dns_custom_abc")
-        val result = ShortcutUtils.migrateLegacyShortcutIds(mixed)
+        val mixed = setOf("dns_off", ShortcutCatalog.SHORTCUT_ID_USB_ON, "dns_custom_abc")
+        val result = ShortcutCatalog.migrateLegacyShortcutIds(mixed)
 
         assertTrue(
             "Legacy 'dns_off' must be migrated",
-            result.contains(ShortcutUtils.SHORTCUT_ID_DNS_OFF)
+            result.contains(ShortcutCatalog.SHORTCUT_ID_DNS_OFF)
         )
         assertTrue(
             "New-format USB On must be preserved",
-            result.contains(ShortcutUtils.SHORTCUT_ID_USB_ON)
+            result.contains(ShortcutCatalog.SHORTCUT_ID_USB_ON)
         )
         assertTrue("Custom ID must be preserved unchanged", result.contains("dns_custom_abc"))
         assertFalse("Legacy 'dns_off' must not remain in result", result.contains("dns_off"))
@@ -133,22 +133,22 @@ class ShortcutUtilsTest {
 
     @Test
     fun migrateLegacyShortcutIds_emptySet_returnsEmptySet() {
-        assertTrue(ShortcutUtils.migrateLegacyShortcutIds(emptySet()).isEmpty())
+        assertTrue(ShortcutCatalog.migrateLegacyShortcutIds(emptySet()).isEmpty())
     }
 
     // === getAvailableShortcutIds ===
 
     @Test
     fun getAvailableShortcutIds_emptyHostnames_containsAllSevenBuiltIns() {
-        val result = ShortcutUtils.getAvailableShortcutIds(emptyList())
+        val result = ShortcutCatalog.getAvailableShortcutIds(emptyList())
         val expected = setOf(
-            ShortcutUtils.SHORTCUT_ID_DNS_OFF,
-            ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
-            ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
-            ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE,
-            ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
-            ShortcutUtils.SHORTCUT_ID_USB_ON,
-            ShortcutUtils.SHORTCUT_ID_USB_OFF
+            ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
+            ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
+            ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
+            ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE,
+            ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
+            ShortcutCatalog.SHORTCUT_ID_USB_ON,
+            ShortcutCatalog.SHORTCUT_ID_USB_OFF
         )
         assertEquals(expected, result)
     }
@@ -170,7 +170,7 @@ class ShortcutUtilsTest {
                 isPredefined = true
             )
         )
-        val result = ShortcutUtils.getAvailableShortcutIds(predefined)
+        val result = ShortcutCatalog.getAvailableShortcutIds(predefined)
         assertEquals("Predefined entries must not grow the ID set beyond 7", 7, result.size)
     }
 
@@ -185,7 +185,7 @@ class ShortcutUtilsTest {
                 isPredefined = false
             )
         )
-        val result = ShortcutUtils.getAvailableShortcutIds(custom)
+        val result = ShortcutCatalog.getAvailableShortcutIds(custom)
 
         assertEquals("Expected 8 IDs (7 built-in + 1 custom)", 8, result.size)
         assertTrue(
@@ -204,7 +204,7 @@ class ShortcutUtilsTest {
                 isPredefined = false
             )
         }
-        val result = ShortcutUtils.getAvailableShortcutIds(customs)
+        val result = ShortcutCatalog.getAvailableShortcutIds(customs)
 
         assertEquals("Expected 10 IDs (7 built-in + 3 custom)", 10, result.size)
         customs.forEach { entry ->
@@ -219,15 +219,15 @@ class ShortcutUtilsTest {
 
     @Test
     fun getOrderedShortcutIds_emptyHostnames_returnsBuiltInsInCorrectOrder() {
-        val result = ShortcutUtils.getOrderedShortcutIds(emptyList())
+        val result = ShortcutCatalog.getOrderedShortcutIds(emptyList())
         val expectedOrder = listOf(
-            ShortcutUtils.SHORTCUT_ID_DNS_OFF,
-            ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
-            ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
-            ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE,
-            ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
-            ShortcutUtils.SHORTCUT_ID_USB_ON,
-            ShortcutUtils.SHORTCUT_ID_USB_OFF
+            ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
+            ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
+            ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
+            ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE,
+            ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
+            ShortcutCatalog.SHORTCUT_ID_USB_ON,
+            ShortcutCatalog.SHORTCUT_ID_USB_OFF
         )
         assertEquals(expectedOrder, result)
     }
@@ -240,11 +240,11 @@ class ShortcutUtilsTest {
             hostname = "my.dns.com",
             isPredefined = false
         )
-        val result = ShortcutUtils.getOrderedShortcutIds(listOf(custom))
+        val result = ShortcutCatalog.getOrderedShortcutIds(listOf(custom))
 
-        val dnsAutoIndex = result.indexOf(ShortcutUtils.SHORTCUT_ID_DNS_AUTO)
+        val dnsAutoIndex = result.indexOf(ShortcutCatalog.SHORTCUT_ID_DNS_AUTO)
         val customIndex = result.indexOf("dns_custom_abc")
-        val adGuardIndex = result.indexOf(ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD)
+        val adGuardIndex = result.indexOf(ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD)
 
         assertTrue(
             "Custom entry must follow the fixed DNS modes",
@@ -276,7 +276,7 @@ class ShortcutUtilsTest {
                 isPredefined = false
             )
         )
-        val result = ShortcutUtils.getOrderedShortcutIds(customs)
+        val result = ShortcutCatalog.getOrderedShortcutIds(customs)
         val customPart = result.filter { it.startsWith("dns_custom_") }
 
         assertEquals(
@@ -300,16 +300,16 @@ class ShortcutUtilsTest {
             )
         )
 
-        val orderedDnsEntries = ShortcutUtils.getOrderedShortcutIds(entries)
+        val orderedDnsEntries = ShortcutCatalog.getOrderedShortcutIds(entries)
             .drop(2)
             .take(4)
 
         assertEquals(
             listOf(
                 "dns_custom_custom",
-                ShortcutUtils.SHORTCUT_ID_DNS_QUAD9,
-                ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD,
-                ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE
+                ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9,
+                ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD,
+                ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE
             ),
             orderedDnsEntries
         )
@@ -326,12 +326,12 @@ class ShortcutUtilsTest {
                 isPredefined = true
             )
         )
-        val result = ShortcutUtils.getOrderedShortcutIds(predefined)
+        val result = ShortcutCatalog.getOrderedShortcutIds(predefined)
 
         assertEquals(
             "Predefined entries must not duplicate built-in IDs",
             1,
-            result.count { it == ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD }
+            result.count { it == ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD }
         )
         assertEquals("Total must still be 7", 7, result.size)
     }
@@ -354,17 +354,17 @@ class ShortcutUtilsTest {
         )
         val favorites = setOf(
             "dns_custom_custom-z",
-            ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
-            ShortcutUtils.SHORTCUT_ID_USB_OFF
+            ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
+            ShortcutCatalog.SHORTCUT_ID_USB_OFF
         )
 
-        val result = ShortcutUtils.getOrderedShortcutIds(custom, favorites)
+        val result = ShortcutCatalog.getOrderedShortcutIds(custom, favorites)
 
         assertEquals(
             listOf(
-                ShortcutUtils.SHORTCUT_ID_DNS_AUTO,
+                ShortcutCatalog.SHORTCUT_ID_DNS_AUTO,
                 "dns_custom_custom-z",
-                ShortcutUtils.SHORTCUT_ID_USB_OFF
+                ShortcutCatalog.SHORTCUT_ID_USB_OFF
             ),
             result.take(3)
         )
@@ -372,12 +372,12 @@ class ShortcutUtilsTest {
 
     @Test
     fun getOrderedShortcutIds_withUnknownFavoriteIds_ignoresUnknownIds() {
-        val result = ShortcutUtils.getOrderedShortcutIds(
+        val result = ShortcutCatalog.getOrderedShortcutIds(
             hostnames = emptyList(),
-            favoriteShortcutIds = setOf("unknown_shortcut_id", ShortcutUtils.SHORTCUT_ID_DNS_AUTO)
+            favoriteShortcutIds = setOf("unknown_shortcut_id", ShortcutCatalog.SHORTCUT_ID_DNS_AUTO)
         )
 
-        assertEquals(ShortcutUtils.SHORTCUT_ID_DNS_AUTO, result.first())
+        assertEquals(ShortcutCatalog.SHORTCUT_ID_DNS_AUTO, result.first())
         assertFalse(result.contains("unknown_shortcut_id"))
     }
 }

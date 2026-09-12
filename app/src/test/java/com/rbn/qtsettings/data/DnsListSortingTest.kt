@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -311,7 +311,7 @@ class DnsListSortingTest {
             customEntry(id = "a", name = "Alpha", hostname = "a.example.com")
         )
 
-        val customShortcutIds = ShortcutUtils.getOrderedShortcutIds(entries)
+        val customShortcutIds = ShortcutCatalog.getOrderedShortcutIds(entries)
             .filter { it.startsWith("dns_custom_") }
 
         assertEquals(listOf("dns_custom_z", "dns_custom_a"), customShortcutIds)
