@@ -4,24 +4,18 @@ import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.pm.ShortcutManager
-import android.provider.Settings
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.SettingsBackup
 import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.services.NetworkMonitoringService
-import com.rbn.qtsettings.utils.Constants.ADB_ENABLED
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
-import com.rbn.qtsettings.utils.Constants.DEVELOPMENT_SETTINGS_ENABLED
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
 import java.time.Instant
@@ -68,125 +62,10 @@ class MainViewModelTest {
     }
 
     @Test
-    fun startAddingNewHostname_whenCalled_thenShowsDialogAndClearsEditingEntry() {
-        val existing = DnsHostnameEntry(id = "edit", name = "Edit Me", hostname = "dns.edit")
-        viewModel.startEditingHostname(existing)
-
-        viewModel.startAddingNewHostname()
-
-        assertTrue(viewModel.showHostnameEditDialog.value)
-        assertNull(viewModel.editingHostname.value)
-    }
-
-    @Test
-    fun startEditingAndDismissHostname_whenCalled_thenDialogStateIsManagedCorrectly() {
-        val entry = DnsHostnameEntry(id = "host-1", name = "Host", hostname = "dns.host")
-
-        viewModel.startEditingHostname(entry)
-        assertTrue(viewModel.showHostnameEditDialog.value)
-        assertEquals(entry, viewModel.editingHostname.value)
-
-        viewModel.dismissHostnameEditDialog()
-        assertFalse(viewModel.showHostnameEditDialog.value)
-        assertNull(viewModel.editingHostname.value)
-    }
-
-    @Test
-    fun setHostnamePendingDeletion_whenCalled_thenFlowIsUpdated() {
-        val entry = DnsHostnameEntry(id = "delete", name = "Delete", hostname = "dns.delete")
-
-        viewModel.setHostnamePendingDeletion(entry)
-
-        assertEquals(entry, viewModel.hostnamePendingDeletion.value)
-    }
-
-    @Test
-    fun refreshSystemQuickActionStates_whenGlobalSettingsChange_updatesDnsAndDeveloperOptionsSnapshots() {
-        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
-        Settings.Global.putString(
-            context.contentResolver,
-            PRIVATE_DNS_SPECIFIER,
-            "dns.example.com"
-        )
-        Settings.Global.putInt(context.contentResolver, DEVELOPMENT_SETTINGS_ENABLED, 1)
-        Settings.Global.putInt(context.contentResolver, ADB_ENABLED, 1)
-
-        viewModel.refreshSystemQuickActionStates(context)
-
-        assertEquals("dns.example.com", viewModel.activeDnsHostname.value)
-        assertTrue(viewModel.developerOptionsEnabled.value)
-
-        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_OFF)
-        Settings.Global.putInt(context.contentResolver, ADB_ENABLED, 0)
-        viewModel.refreshSystemQuickActionStates(context)
-
-        assertNull(viewModel.activeDnsHostname.value)
-        assertEquals(DNS_MODE_OFF, viewModel.activeDnsMode.value)
-    }
-
-    @Test
-    fun setDnsMode_whenInvokedForOffAndAuto_updatesSystemStateAndStatusMessage() {
-        shadowOf(context as Application)
-            .grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
-        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
-        Settings.Global.putString(
-            context.contentResolver,
-            PRIVATE_DNS_SPECIFIER,
-            "dns.example.com"
-        )
-
-        viewModel.setDnsMode(context, DNS_MODE_AUTO)
-
-        assertEquals(DNS_MODE_AUTO, viewModel.activeDnsMode.value)
-        assertNull(viewModel.activeDnsHostname.value)
-        assertEquals(
-            context.getString(R.string.shortcut_toast_dns_auto),
-            viewModel.quickActionStatusMessage.value
-        )
-
-        viewModel.setDnsMode(context, DNS_MODE_OFF)
-
-        assertEquals(DNS_MODE_OFF, viewModel.activeDnsMode.value)
-        assertEquals(
-            context.getString(R.string.shortcut_toast_dns_off),
-            viewModel.quickActionStatusMessage.value
-        )
-
-        viewModel.clearQuickActionStatusMessage()
-        assertNull(viewModel.quickActionStatusMessage.value)
-    }
-
-    @Test
     fun shortcutSettings_whenFreshlyInitialized_thenNoShortcutsEnabledAndPinnedFallbackDisabled() {
         assertTrue(viewModel.enabledShortcutIds.value.isEmpty())
         assertTrue(viewModel.favoriteShortcutIds.value.isEmpty())
         assertFalse(viewModel.allowPinnedShortcutsWhenDisabled.value)
-    }
-
-    @Test
-    fun updateDnsHostnameEntrySelection_whenEntryExists_thenSelectionIsUpdated() {
-        val targetId = "adguard_default"
-        val before = prefsManager.dnsHostnames.value.first { it.id == targetId }
-        assertTrue(before.isSelectedForCycle)
-
-        viewModel.updateDnsHostnameEntrySelection(targetId, false)
-
-        val after = prefsManager.dnsHostnames.value.first { it.id == targetId }
-        assertFalse(after.isSelectedForCycle)
-    }
-
-    @Test
-    fun editCustomDnsHostname_whenCustomEntryExists_thenNameAndHostnameAreUpdated() {
-        viewModel.addCustomDnsHostname("Old Name", "old.example.com")
-        val created =
-            prefsManager.dnsHostnames.value.first { !it.isPredefined && it.name == "Old Name" }
-
-        viewModel.editCustomDnsHostname(created.id, "New Name", "new.example.com")
-
-        val updated = prefsManager.dnsHostnames.value.firstOrNull { it.id == created.id }
-        assertNotNull(updated)
-        assertEquals("New Name", updated?.name)
-        assertEquals("new.example.com", updated?.hostname)
     }
 
     @Test
@@ -539,7 +418,7 @@ class MainViewModelTest {
 
     @Test
     fun addCustomDnsHostname_whenCalled_thenCustomShortcutRemainsDisabledByDefault() {
-        viewModel.addCustomDnsHostname("New DNS", "new.example.com")
+        prefsManager.addCustomDnsHostname("New DNS", "new.example.com")
 
         val created =
             prefsManager.dnsHostnames.value.first { !it.isPredefined && it.name == "New DNS" }
@@ -571,15 +450,15 @@ class MainViewModelTest {
 
     @Test
     fun backupExportAndRestore_whenSettingsChanged_thenRestoresAllBackedUpValues() {
-        viewModel.setDnsToggleOff(false)
-        viewModel.setDnsToggleAuto(true)
-        viewModel.addCustomDnsHostname("Backup DNS", "backup.example.com")
+        prefsManager.setDnsToggleOff(false)
+        prefsManager.setDnsToggleAuto(true)
+        prefsManager.addCustomDnsHostname("Backup DNS", "backup.example.com")
         val customEntry =
             prefsManager.dnsHostnames.value.first { !it.isPredefined && it.name == "Backup DNS" }
-        viewModel.updateDnsHostnameEntrySelection(customEntry.id, false)
-        viewModel.setDnsEnableAutoRevert(true)
-        viewModel.setDnsAutoRevertDelaySeconds(42)
-        viewModel.setDnsRequireUnlock(true)
+        prefsManager.dnsStore.setSelected(customEntry.id, false)
+        prefsManager.setDnsEnableAutoRevert(true)
+        prefsManager.setDnsAutoRevertDelaySeconds(42)
+        prefsManager.setDnsRequireUnlock(true)
         viewModel.setVpnDetectionEnabled(true)
         viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION)
         viewModel.setNetworkTypeDetectionEnabled(true)
@@ -602,8 +481,8 @@ class MainViewModelTest {
 
         val backupJson = prefsManager.exportSettingsBackupJson()
 
-        viewModel.setDnsToggleOff(true)
-        viewModel.deleteCustomDnsHostname(customEntry.id)
+        prefsManager.setDnsToggleOff(true)
+        prefsManager.deleteCustomDnsHostname(customEntry.id)
         prefsManager.setUsbToggleEnable(true)
         viewModel.setAllowPinnedShortcutsWhenDisabled(false)
 
@@ -615,10 +494,10 @@ class MainViewModelTest {
         assertEquals("Backup DNS", restoredCustomEntry?.name)
         assertEquals("backup.example.com", restoredCustomEntry?.hostname)
         assertFalse(restoredCustomEntry?.isSelectedForCycle ?: true)
-        assertFalse(viewModel.dnsToggleOff.value)
-        assertTrue(viewModel.dnsEnableAutoRevert.value)
-        assertEquals(42, viewModel.dnsAutoRevertDelaySeconds.value)
-        assertTrue(viewModel.dnsRequireUnlock.value)
+        assertFalse(prefsManager.dnsToggleOff.value)
+        assertTrue(prefsManager.dnsEnableAutoRevert.value)
+        assertEquals(42, prefsManager.dnsAutoRevertDelaySeconds.value)
+        assertTrue(prefsManager.dnsRequireUnlock.value)
         assertTrue(viewModel.networkTypeDetectionEnabled.value)
         assertEquals(DNS_MODE_ON, viewModel.dnsStateOnWifi.value)
         assertEquals("backup.example.com", viewModel.dnsHostnameOnWifi.value)
@@ -702,7 +581,7 @@ class MainViewModelTest {
         assertEquals("Good DNS", restoredGood?.name)
         assertEquals("good.example.com", restoredGood?.hostname)
 
-        assertEquals(1, viewModel.dnsAutoRevertDelaySeconds.value)
+        assertEquals(1, prefsManager.dnsAutoRevertDelaySeconds.value)
         assertEquals(86_400, prefsManager.usbStore.state.value.autoRevertDelaySeconds)
         assertEquals(TILE_ONLY_DETECTION, viewModel.vpnDetectionMode.value)
         assertEquals(TILE_ONLY_DETECTION, viewModel.networkTypeDetectionMode.value)

@@ -19,9 +19,12 @@ import com.rbn.qtsettings.app.navigation.AppNavigationContent
 import com.rbn.qtsettings.app.navigation.AppRoute
 import com.rbn.qtsettings.app.navigation.rememberAppNavigation
 import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
+import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsRoot
+import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
+import com.rbn.qtsettings.ui.composables.dns.LegacyDnsAutomationRoot
 import com.rbn.qtsettings.viewmodel.MainViewModel
 
 /** Composition root for the Activity-scoped legacy feature owner and the app shell. */
@@ -29,6 +32,7 @@ import com.rbn.qtsettings.viewmodel.MainViewModel
 fun AppRoot(
     viewModel: MainViewModel,
     usbViewModel: UsbSettingsViewModel,
+    dnsViewModel: DnsSettingsViewModel,
     externalArea: AppArea?,
     onExternalAreaConsumed: () -> Unit,
     onOpenAdbSettings: () -> Unit,
@@ -61,6 +65,14 @@ fun AppRoot(
             usbViewModel.events.collect { snackbar.showSnackbar(resources.getString(it)) }
         }
     }
+    LaunchedEffect(dnsViewModel, lifecycle, resources) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            dnsViewModel.events.collect { message ->
+                snackbar.showSnackbar(if (message.argument == null) resources.getString(message.resource)
+                    else resources.getString(message.resource, message.argument))
+            }
+        }
+    }
     AppScaffold(
         area = navigation.area,
         onSelectArea = navigation::selectArea,
@@ -75,7 +87,11 @@ fun AppRoot(
             if (route == AppRoute.Usb || route == AppRoute.UsbTile ||
                 route == AppRoute.UsbActions || route == AppRoute.UsbRevert) {
                 UsbSettingsRoot(usbViewModel, showPermissionHelp, route, navigation::open)
-            } else LegacyFeatureContentRoot(route, viewModel, showPermissionHelp)
+            } else if (route == AppRoute.Dns) {
+                DnsSettingsRoot(dnsViewModel, showPermissionHelp) { providers ->
+                    LegacyDnsAutomationRoot(viewModel, providers)
+                }
+            } else LegacyFeatureContentRoot(route, viewModel)
         }
     }
     AppGlobalDialogsRoot(
@@ -89,6 +105,6 @@ fun AppRoot(
         onOpenAdbSettings = onOpenAdbSettings,
         onRequestShizukuPermission = onRequestShizukuPermission
     )
-    DnsDialogsRoot(viewModel)
+    DnsDialogsRoot(dnsViewModel)
     NotificationDialogsRoot(viewModel)
 }

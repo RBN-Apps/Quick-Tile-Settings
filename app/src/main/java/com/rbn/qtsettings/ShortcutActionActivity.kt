@@ -2,7 +2,6 @@ package com.rbn.qtsettings
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.rbn.qtsettings.data.PreferencesManager
@@ -15,15 +14,12 @@ import com.rbn.qtsettings.utils.Constants.ACTION_DNS_QUAD9
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_OFF
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_ON
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.utils.ShortcutUtils
 import com.rbn.qtsettings.utils.SystemQuickActionResult
 import com.rbn.qtsettings.utils.SystemQuickActions
-import com.rbn.qtsettings.utils.VpnDetectionUtils
 
 class ShortcutActionActivity : ComponentActivity() {
 
@@ -50,7 +46,7 @@ class ShortcutActionActivity : ComponentActivity() {
         when (action) {
             ACTION_DNS_OFF -> {
                 if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_OFF)) return
-                val message = if (VpnDetectionUtils.setPrivateDnsOff(this)) {
+                val message = if (SystemQuickActions.setDnsMode(this, DNS_MODE_OFF) == SystemQuickActionResult.SUCCESS) {
                     R.string.shortcut_toast_dns_off
                 } else {
                     R.string.shortcut_toast_action_failed
@@ -60,8 +56,9 @@ class ShortcutActionActivity : ComponentActivity() {
 
             ACTION_DNS_AUTO -> {
                 if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_AUTO)) return
-                VpnDetectionUtils.restorePrivateDns(this, DNS_MODE_AUTO)
-                Toast.makeText(this, R.string.shortcut_toast_dns_auto, Toast.LENGTH_SHORT).show()
+                val result = SystemQuickActions.setDnsMode(this, DNS_MODE_AUTO)
+                Toast.makeText(this, if (result == SystemQuickActionResult.SUCCESS)
+                    R.string.shortcut_toast_dns_auto else R.string.shortcut_toast_action_failed, Toast.LENGTH_SHORT).show()
             }
 
             ACTION_DNS_ADGUARD -> {
@@ -133,11 +130,11 @@ class ShortcutActionActivity : ComponentActivity() {
     }
 
     private fun setDnsHostname(hostname: String, displayName: String) {
-        Settings.Global.putString(contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
-        Settings.Global.putString(contentResolver, PRIVATE_DNS_SPECIFIER, hostname)
+        val result = SystemQuickActions.setActiveDns(this, hostname)
         Toast.makeText(
             this,
-            getString(R.string.shortcut_toast_dns_hostname, displayName),
+            if (result == SystemQuickActionResult.SUCCESS) getString(R.string.shortcut_toast_dns_hostname, displayName)
+            else getString(R.string.shortcut_toast_action_failed),
             Toast.LENGTH_SHORT
         ).show()
     }

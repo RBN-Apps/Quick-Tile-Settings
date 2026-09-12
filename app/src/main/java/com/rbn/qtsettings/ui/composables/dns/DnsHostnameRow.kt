@@ -4,7 +4,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,25 +14,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,7 +32,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
@@ -76,7 +65,6 @@ fun DnsHostnameRow(
     onDragCancelled: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var actionsExpanded by remember(entry.id) { mutableStateOf(false) }
     var rowCenterY by remember(entry.id) { mutableFloatStateOf(0f) }
     val moveUpLabel = stringResource(R.string.dns_move_up)
     val moveDownLabel = stringResource(R.string.dns_move_down)
@@ -198,94 +186,6 @@ fun DnsHostnameRow(
             )
         }
 
-        Box {
-            IconButton(
-                onClick = { actionsExpanded = true }
-            ) {
-                Icon(
-                    Icons.Filled.MoreVert,
-                    contentDescription = stringResource(
-                        R.string.dns_entry_actions,
-                        entry.name,
-                        entry.hostname
-                    )
-                )
-            }
-            DropdownMenu(
-                expanded = actionsExpanded,
-                onDismissRequest = { actionsExpanded = false }
-            ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            if (isActive) {
-                                stringResource(R.string.dns_active)
-                            } else {
-                                stringResource(R.string.dns_set_active)
-                            }
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(Icons.Outlined.CheckCircle, contentDescription = null)
-                    },
-                    enabled = !isActive && entry.hostname.isNotBlank(),
-                    onClick = {
-                        actionsExpanded = false
-                        onSetActiveClicked()
-                    }
-                )
-
-                if (entry.isPredefined && entry.descriptionResId != null) {
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.button_info_dns, entry.name)) },
-                        leadingIcon = {
-                            Icon(Icons.Outlined.Info, contentDescription = null)
-                        },
-                        onClick = {
-                            actionsExpanded = false
-                            onInfoClicked()
-                        }
-                    )
-                } else if (!entry.isPredefined) {
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.button_edit)) },
-                        leadingIcon = {
-                            Icon(Icons.Filled.Edit, contentDescription = null)
-                        },
-                        onClick = {
-                            actionsExpanded = false
-                            onEditClicked()
-                        },
-                        modifier = Modifier.testTag(
-                            "dns_edit_button_${entry.hostname}_${entry.name}"
-                        )
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                stringResource(R.string.button_delete),
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        onClick = {
-                            actionsExpanded = false
-                            onDeleteClicked()
-                        },
-                        modifier = Modifier.testTag(
-                            "dns_delete_button_${entry.hostname}_${entry.name}"
-                        )
-                    )
-                }
-            }
-        }
+        DnsHostnameActionsMenu(entry, isActive, onSetActiveClicked, onInfoClicked, onEditClicked, onDeleteClicked)
     }
 }

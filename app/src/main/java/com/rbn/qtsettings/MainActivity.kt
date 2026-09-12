@@ -16,7 +16,9 @@ import com.rbn.qtsettings.app.AppSystemStateObserver
 import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.app.navigation.resolveTileArea
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
+import com.rbn.qtsettings.platform.dns.DnsSystemStateObserver
 import com.rbn.qtsettings.platform.usb.UsbSystemStateObserver
 import com.rbn.qtsettings.viewmodel.MainViewModel
 
@@ -27,6 +29,9 @@ class MainActivity : ComponentActivity() {
     }
     private val usbViewModel: UsbSettingsViewModel by viewModels {
         (application as QuickTileSettingsApplication).container.usbViewModelFactory
+    }
+    private val dnsViewModel: DnsSettingsViewModel by viewModels {
+        (application as QuickTileSettingsApplication).container.dnsViewModelFactory
     }
     private var externalArea by mutableStateOf<AppArea?>(null)
 
@@ -39,11 +44,13 @@ class MainActivity : ComponentActivity() {
         lifecycle.addObserver(AppSystemStateObserver(applicationContext, viewModel))
         lifecycle.addObserver(permissions)
         lifecycle.addObserver(UsbSystemStateObserver(applicationContext, usbViewModel))
+        lifecycle.addObserver(DnsSystemStateObserver(applicationContext, dnsViewModel))
         setContent {
             QuickTileSettingsTheme {
                 AppRoot(
                     viewModel = viewModel,
                     usbViewModel = usbViewModel,
+                    dnsViewModel = dnsViewModel,
                     externalArea = externalArea,
                     onExternalAreaConsumed = { externalArea = null },
                     onOpenAdbSettings = { startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) },

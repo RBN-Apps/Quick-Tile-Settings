@@ -1,16 +1,16 @@
 package com.rbn.qtsettings.utils
 
 import android.content.Context
-import android.provider.Settings
-import android.util.Log
+import com.rbn.qtsettings.feature.dns.data.toPersisted
+import com.rbn.qtsettings.feature.dns.domain.DnsActionResult
+import com.rbn.qtsettings.feature.dns.domain.DnsActions
+import com.rbn.qtsettings.feature.dns.domain.DnsTarget
 import com.rbn.qtsettings.feature.usb.domain.UsbActionResult
 import com.rbn.qtsettings.feature.usb.domain.UsbActions
+import com.rbn.qtsettings.platform.dns.AndroidDnsSystemGateway
 import com.rbn.qtsettings.platform.usb.AndroidUsbSystemGateway
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
 
 enum class SystemQuickActionResult {
     SUCCESS,
@@ -22,71 +22,20 @@ enum class SystemQuickActionResult {
 
 /** Executes privileged actions initiated directly from the app UI. */
 object SystemQuickActions {
-    private const val TAG = "SystemQuickActions"
+    private fun dnsActions(context: Context) = DnsActions(AndroidDnsSystemGateway(context))
 
-    fun setActiveDns(context: Context, hostname: String): SystemQuickActionResult {
-        if (!PermissionUtils.hasWriteSecureSettingsPermission(context)) {
-            return SystemQuickActionResult.PERMISSION_MISSING
-        }
+    fun setActiveDns(context: Context, hostname: String): SystemQuickActionResult =
+        dnsActions(context).set(DnsTarget.Hostname(hostname)).toQuickActionResult()
 
-        val normalizedHostname = hostname.trim()
-        if (!DnsHostnameValidator.isValid(normalizedHostname)) {
-            return SystemQuickActionResult.INVALID_DNS_HOSTNAME
-        }
-
-        val resolver = context.contentResolver
-        var previousMode: String? = null
-        var previousSpecifier: String? = null
-        var previousStateCaptured = false
-        return try {
-            previousMode = Settings.Global.getString(resolver, PRIVATE_DNS_MODE)
-            previousSpecifier = Settings.Global.getString(resolver, PRIVATE_DNS_SPECIFIER)
-            previousStateCaptured = true
-
-            val specifierSaved = Settings.Global.putString(
-                resolver,
-                PRIVATE_DNS_SPECIFIER,
-                normalizedHostname
-            )
-            if (!specifierSaved) {
-                SystemQuickActionResult.FAILED
-            } else if (Settings.Global.putString(resolver, PRIVATE_DNS_MODE, DNS_MODE_ON)) {
-                AutoRevertCoordinator.invalidateDnsAutoRevert(context)
-                SystemQuickActionResult.SUCCESS
-            } else {
-                restoreDnsState(resolver, previousMode, previousSpecifier)
-                SystemQuickActionResult.FAILED
-            }
-        } catch (error: Exception) {
-            Log.e(TAG, "Unable to activate Private DNS", error)
-            if (previousStateCaptured) {
-                restoreDnsState(resolver, previousMode, previousSpecifier)
-            }
-            SystemQuickActionResult.FAILED
-        }
-    }
-
-    /** Activates the modeless Private DNS states ("off" or "opportunistic"). */
     fun setDnsMode(context: Context, mode: String): SystemQuickActionResult {
-        if (!PermissionUtils.hasWriteSecureSettingsPermission(context)) {
-            return SystemQuickActionResult.PERMISSION_MISSING
+        val actions = dnsActions(context)
+        if (!actions.hasPermission()) return SystemQuickActionResult.PERMISSION_MISSING
+        val target = when (mode) {
+            DNS_MODE_OFF -> DnsTarget.Off
+            DNS_MODE_AUTO -> DnsTarget.Automatic
+            else -> return SystemQuickActionResult.FAILED
         }
-        if (mode != DNS_MODE_OFF && mode != DNS_MODE_AUTO) {
-            return SystemQuickActionResult.FAILED
-        }
-
-        val resolver = context.contentResolver
-        return try {
-            if (Settings.Global.putString(resolver, PRIVATE_DNS_MODE, mode)) {
-                AutoRevertCoordinator.invalidateDnsAutoRevert(context)
-                SystemQuickActionResult.SUCCESS
-            } else {
-                SystemQuickActionResult.FAILED
-            }
-        } catch (error: Exception) {
-            Log.e(TAG, "Unable to change Private DNS mode", error)
-            SystemQuickActionResult.FAILED
-        }
+        return actions.set(target).toQuickActionResult()
     }
 
     fun setUsbDebuggingEnabled(
@@ -100,30 +49,10 @@ object SystemQuickActions {
         ).set(enabled, toggleDeveloperOptions, toggleWirelessDebugging).toQuickActionResult()
     }
 
-    private fun restoreDnsState(
-        resolver: android.content.ContentResolver,
-        mode: String?,
-        specifier: String?
-    ) {
-        runCatching {
-            Settings.Global.putString(resolver, PRIVATE_DNS_SPECIFIER, specifier)
-            Settings.Global.putString(resolver, PRIVATE_DNS_MODE, mode)
-        }.onFailure { error -> Log.e(TAG, "Unable to restore Private DNS state", error) }
-    }
+    fun getActiveDnsHostname(context: Context): String? =
+        (dnsActions(context).read() as? DnsTarget.Hostname)?.value
 
-    fun getActiveDnsHostname(context: Context): String? = runCatching {
-        val mode = Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE)
-        if (mode == DNS_MODE_ON) {
-            Settings.Global.getString(context.contentResolver, PRIVATE_DNS_SPECIFIER)
-                ?.takeIf { it.isNotBlank() }
-        } else {
-            null
-        }
-    }.getOrNull()
-
-    fun getActiveDnsMode(context: Context): String? = runCatching {
-        Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE)
-    }.getOrNull()
+    fun getActiveDnsMode(context: Context): String? = dnsActions(context).read()?.toPersisted()?.mode
 
     fun isUsbDebuggingEnabled(context: Context): Boolean = runCatching {
         AndroidUsbSystemGateway(context).read().active
@@ -134,5 +63,12 @@ private fun UsbActionResult.toQuickActionResult(): SystemQuickActionResult = whe
     UsbActionResult.Success -> SystemQuickActionResult.SUCCESS
     UsbActionResult.PermissionMissing -> SystemQuickActionResult.PERMISSION_MISSING
     UsbActionResult.DeveloperOptionsDisabled -> SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED
+    else -> SystemQuickActionResult.FAILED
+}
+
+private fun DnsActionResult.toQuickActionResult(): SystemQuickActionResult = when (this) {
+    DnsActionResult.Success -> SystemQuickActionResult.SUCCESS
+    DnsActionResult.PermissionMissing -> SystemQuickActionResult.PERMISSION_MISSING
+    DnsActionResult.InvalidHostname -> SystemQuickActionResult.INVALID_DNS_HOSTNAME
     else -> SystemQuickActionResult.FAILED
 }

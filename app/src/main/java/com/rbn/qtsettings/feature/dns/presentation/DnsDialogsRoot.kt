@@ -3,36 +3,23 @@ package com.rbn.qtsettings.feature.dns.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rbn.qtsettings.ui.composables.dns.DnsHostnameEditDialog
 import com.rbn.qtsettings.ui.composables.dns.ConfirmDeleteDialog
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.ui.composables.dns.DnsHostnameEditForm
 
-/** Legacy MainViewModel binding; the feature owner is extracted in #115. */
 @Composable
-fun DnsDialogsRoot(viewModel: MainViewModel) {
-    val editingHostname by viewModel.editingHostname.collectAsStateWithLifecycle()
-    if (viewModel.showHostnameEditDialog.collectAsStateWithLifecycle().value) {
-        DnsHostnameEditDialog(
-            entry = editingHostname,
-            onDismiss = { viewModel.dismissHostnameEditDialog() },
-            onSave = { id, name, hostVal ->
-                if (id == null) {
-                    viewModel.addCustomDnsHostname(name, hostVal)
-                } else {
-                    viewModel.editCustomDnsHostname(id, name, hostVal)
-                }
-            }
+fun DnsDialogsRoot(viewModel: DnsSettingsViewModel) {
+    val editor by viewModel.editor.collectAsStateWithLifecycle()
+    if (editor.visible) DnsHostnameEditForm(
+        editor, viewModel::editName, viewModel::editHostname,
+        viewModel::dismissEditor, viewModel::saveEditor
+    )
+    val pendingId by viewModel.pendingDeletion.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    state.settings.providers.find { it.id == pendingId }?.let { provider ->
+        ConfirmDeleteDialog(
+            hostnameEntry = provider.toRowEntry(),
+            onDismiss = { viewModel.onAction(DnsSettingsAction.Delete(null)) },
+            onConfirm = viewModel::confirmDeletion
         )
     }
-
-    val hostnamePendingDeletion by viewModel.hostnamePendingDeletion.collectAsStateWithLifecycle()
-    hostnamePendingDeletion?.let { entry ->
-        ConfirmDeleteDialog(
-            hostnameEntry = entry,
-            onDismiss = { viewModel.setHostnamePendingDeletion(null) }
-        ) {
-            viewModel.deleteCustomDnsHostname(entry.id)
-        }
-    }
-
 }

@@ -44,6 +44,13 @@ class SystemQuickActionsTest {
     }
 
     @Test
+    fun blankSystemHostnameDoesNotAppearAsAnActiveProvider() {
+        Settings.Global.putString(application.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
+        Settings.Global.putString(application.contentResolver, PRIVATE_DNS_SPECIFIER, "")
+        assertNull(SystemQuickActions.getActiveDnsHostname(application))
+    }
+
+    @Test
     fun setActiveDns_withPermission_setsHostnameModeAndSpecifier() {
         val autoRevertGeneration = AutoRevertCoordinator.dnsGeneration(application)
         val result = SystemQuickActions.setActiveDns(application, "dns.example.com")

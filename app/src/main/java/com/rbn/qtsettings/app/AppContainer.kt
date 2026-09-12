@@ -3,9 +3,14 @@ package com.rbn.qtsettings.app
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.feature.dns.domain.DnsActions
+import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.usb.domain.UsbActions
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
+import com.rbn.qtsettings.platform.dns.AndroidDnsSystemGateway
 import com.rbn.qtsettings.platform.usb.AndroidUsbSystemGateway
 import com.rbn.qtsettings.viewmodel.ViewModelFactory
 
@@ -22,6 +27,15 @@ class AppContainer(context: Context) {
             require(modelClass == UsbSettingsViewModel::class.java)
             @Suppress("UNCHECKED_CAST")
             return UsbSettingsViewModel(usbSettingsStore, usbActions) as T
+        }
+    }
+    val dnsSettingsStore get() = preferences.dnsStore
+    val dnsActions by lazy { DnsActions(AndroidDnsSystemGateway(applicationContext)) }
+    val dnsViewModelFactory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            require(modelClass == DnsSettingsViewModel::class.java)
+            @Suppress("UNCHECKED_CAST")
+            return DnsSettingsViewModel(dnsSettingsStore, dnsActions, extras.createSavedStateHandle()) as T
         }
     }
     val mainViewModelFactory: ViewModelFactory by lazy { ViewModelFactory(preferences) }

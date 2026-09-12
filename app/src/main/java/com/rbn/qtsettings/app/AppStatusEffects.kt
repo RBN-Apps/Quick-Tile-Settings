@@ -24,14 +24,6 @@ fun AppStatusEffects(viewModel: MainViewModel, snackbarHostState: SnackbarHostSt
                 }
             }
             launch {
-                viewModel.quickActionStatusMessage.collect { message ->
-                    if (message != null) {
-                        viewModel.clearQuickActionStatusMessage()
-                        snackbarHostState.showSnackbar(message)
-                    }
-                }
-            }
-            launch {
                 viewModel.networkDetectionStatusMessage.collect { message ->
                     if (message != null) {
                         viewModel.clearNetworkDetectionStatusMessage()

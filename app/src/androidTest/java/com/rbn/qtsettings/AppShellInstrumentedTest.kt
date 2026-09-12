@@ -20,6 +20,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.services.PrivateDnsTileService
@@ -104,6 +106,7 @@ class AppShellInstrumentedTest {
 
     @Test fun globalDestinationAndAreaSurviveRecreationAndRotation_withOneFeatureOwner() {
         launch()
+        rotateTo(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, Configuration.ORIENTATION_PORTRAIT)
         compose.selectNavigationArea(context, AppArea.Usb)
         icon(R.string.shortcut_settings_open_desc).performClick()
         lateinit var owner: MainViewModel
@@ -112,16 +115,40 @@ class AppShellInstrumentedTest {
         text(R.string.shortcut_settings_title).assertIsDisplayed()
         scenario.onActivity {
             assertSame(owner, ViewModelProvider(it)[MainViewModel::class.java])
-            it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
-        compose.waitUntil(10_000) { context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
-        try {
-            text(R.string.shortcut_settings_title).assertIsDisplayed()
-            systemBack()
-            compose.assertNavigationAreaSelected(context, AppArea.Usb)
-        } finally {
-            scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED }
+        rotateTo(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, Configuration.ORIENTATION_LANDSCAPE)
+        scenario.onActivity {
+            assertSame(owner, ViewModelProvider(it)[MainViewModel::class.java])
         }
+        text(R.string.shortcut_settings_title).assertIsDisplayed()
+        systemBack()
+        compose.assertNavigationAreaSelected(context, AppArea.Usb)
+        // @After closes the Activity (and its orientation request). Calling onActivity in a
+        // finally block would mask a failed Back assertion if Back unexpectedly finished it.
+    }
+
+    private fun rotateTo(requestedOrientation: Int, expectedOrientation: Int) {
+        lateinit var previous: MainActivity
+        scenario.onActivity { previous = it }
+        val alreadyOriented = compose.runOnUiThread {
+            previous.resources.configuration.orientation == expectedOrientation
+        }
+        scenario.onActivity { it.requestedOrientation = requestedOrientation }
+        compose.waitUntil(10_000) {
+            compose.runOnUiThread {
+                ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+                    .filterIsInstance<MainActivity>()
+                    .any { activity ->
+                        (alreadyOriented || activity !== previous) &&
+                            activity.resources.configuration.orientation == expectedOrientation &&
+                            activity.window.decorView.hasWindowFocus()
+                    }
+            }
+        }
+        // Application resources can change while the old Activity/Compose tree is still alive.
+        // Wait for the replacement first, then drain its composition and Back registration.
+        compose.waitForIdle()
+        compose.waitForAppWindowFocus()
     }
 
     @Test fun coldTileEntryIsNotReappliedAfterResumeOrRecreation() {

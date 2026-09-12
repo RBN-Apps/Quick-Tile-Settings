@@ -7,8 +7,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.data.DnsHostnameEntry
-import com.rbn.qtsettings.data.DnsListSortMode
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.WifiDnsRule
 import com.rbn.qtsettings.data.WifiIdentityAccessState
@@ -16,13 +14,10 @@ import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.services.VpnMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
 import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.SystemQuickActionResult
-import com.rbn.qtsettings.utils.SystemQuickActions
 import com.rbn.qtsettings.utils.WifiNetworkDiscovery
 import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 import kotlinx.coroutines.Dispatchers
@@ -34,12 +29,7 @@ import rikka.shizuku.Shizuku
 
 class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() {
 
-    val dnsToggleOff = prefsManager.dnsToggleOff
-    val dnsToggleAuto = prefsManager.dnsToggleAuto
     val dnsHostnames = prefsManager.dnsHostnames
-    val dnsListSortMode = prefsManager.dnsListSortMode
-    val dnsEnableAutoRevert = prefsManager.dnsEnableAutoRevert
-    val dnsAutoRevertDelaySeconds = prefsManager.dnsAutoRevertDelaySeconds
 
     val vpnDetectionEnabled = prefsManager.vpnDetectionEnabled
     val vpnDetectionMode = prefsManager.vpnDetectionMode
@@ -54,8 +44,6 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val dnsStateOnMobile = prefsManager.dnsStateOnMobile
     val dnsHostnameOnMobile = prefsManager.dnsHostnameOnMobile
 
-    val dnsRequireUnlock = prefsManager.dnsRequireUnlock
-
     val helpShown = prefsManager.helpShown
 
     val shortcutMaxCount = prefsManager.shortcutMaxCount
@@ -63,23 +51,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     val favoriteShortcutIds = prefsManager.favoriteShortcutIds
     val allowPinnedShortcutsWhenDisabled = prefsManager.allowPinnedShortcutsWhenDisabled
 
-    private val _showHostnameEditDialog = MutableStateFlow(false)
-    val showHostnameEditDialog = _showHostnameEditDialog.asStateFlow()
-
-    private val _editingHostname = MutableStateFlow<DnsHostnameEntry?>(null)
-    val editingHostname = _editingHostname.asStateFlow()
-
-    private val _hostnamePendingDeletion = MutableStateFlow<DnsHostnameEntry?>(null)
-    val hostnamePendingDeletion = _hostnamePendingDeletion.asStateFlow()
-
     private val _hasWriteSecureSettings = MutableStateFlow(false)
     val hasWriteSecureSettings = _hasWriteSecureSettings.asStateFlow()
-
-    private val _activeDnsHostname = MutableStateFlow<String?>(null)
-    val activeDnsHostname = _activeDnsHostname.asStateFlow()
-
-    private val _activeDnsMode = MutableStateFlow<String?>(null)
-    val activeDnsMode = _activeDnsMode.asStateFlow()
 
     private val _developerOptionsEnabled = MutableStateFlow(false)
     val developerOptionsEnabled = _developerOptionsEnabled.asStateFlow()
@@ -136,21 +109,8 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
     private val _backupStatusMessage = MutableStateFlow<String?>(null)
     val backupStatusMessage = _backupStatusMessage.asStateFlow()
 
-    private val _quickActionStatusMessage = MutableStateFlow<String?>(null)
-    val quickActionStatusMessage = _quickActionStatusMessage.asStateFlow()
-
     private val _networkDetectionStatusMessage = MutableStateFlow<String?>(null)
     val networkDetectionStatusMessage = _networkDetectionStatusMessage.asStateFlow()
-
-    fun setDnsToggleOff(enabled: Boolean) = prefsManager.setDnsToggleOff(enabled)
-    fun setDnsToggleAuto(enabled: Boolean) = prefsManager.setDnsToggleAuto(enabled)
-    fun setDnsListSortMode(mode: DnsListSortMode) = prefsManager.setDnsListSortMode(mode)
-    fun reorderDnsHostnames(orderedIds: List<String>): Boolean =
-        prefsManager.reorderDnsHostnames(orderedIds)
-    fun setDnsEnableAutoRevert(enabled: Boolean) = prefsManager.setDnsEnableAutoRevert(enabled)
-    fun setDnsAutoRevertDelaySeconds(delay: Int) = prefsManager.setDnsAutoRevertDelaySeconds(delay)
-
-    fun setDnsRequireUnlock(enabled: Boolean) = prefsManager.setDnsRequireUnlock(enabled)
 
     fun setVpnDetectionEnabled(enabled: Boolean) {
         prefsManager.setVpnDetectionEnabled(enabled)
@@ -393,94 +353,7 @@ class MainViewModel(private val prefsManager: PreferencesManager) : ViewModel() 
 
     fun setHelpShown(shown: Boolean) = prefsManager.setHelpShown(shown)
 
-    fun updateDnsHostnameEntrySelection(id: String, isSelected: Boolean) {
-        val entry = dnsHostnames.value.find { it.id == id }
-        entry?.let {
-            prefsManager.updateDnsHostnameEntry(it.copy(isSelectedForCycle = isSelected))
-        }
-    }
-
-    fun addCustomDnsHostname(name: String, hostnameValue: String) {
-        prefsManager.addCustomDnsHostname(name, hostnameValue)
-    }
-
-    fun editCustomDnsHostname(id: String, newName: String, newHostnameValue: String) {
-        val entry = dnsHostnames.value.find { it.id == id && !it.isPredefined }
-        entry?.let {
-            prefsManager.updateDnsHostnameEntry(
-                it.copy(
-                    name = newName,
-                    hostname = newHostnameValue
-                )
-            )
-        }
-    }
-
-    fun deleteCustomDnsHostname(id: String) {
-        prefsManager.deleteCustomDnsHostname(id)
-    }
-
-    fun startAddingNewHostname() {
-        _editingHostname.value = null; _showHostnameEditDialog.value = true
-    }
-
-    fun startEditingHostname(entry: DnsHostnameEntry) {
-        _editingHostname.value = entry; _showHostnameEditDialog.value = true
-    }
-
-    fun dismissHostnameEditDialog() {
-        _showHostnameEditDialog.value = false; _editingHostname.value = null
-    }
-
-    fun setHostnamePendingDeletion(entry: DnsHostnameEntry?) {
-        _hostnamePendingDeletion.value = entry
-    }
-
-    fun setActiveDns(context: Context, entry: DnsHostnameEntry) {
-        val appContext = context.applicationContext
-        val result = SystemQuickActions.setActiveDns(appContext, entry.hostname)
-        _quickActionStatusMessage.value = when (result) {
-            SystemQuickActionResult.SUCCESS ->
-                appContext.getString(R.string.shortcut_toast_dns_hostname, entry.name)
-            SystemQuickActionResult.PERMISSION_MISSING ->
-                appContext.getString(R.string.toast_permission_not_granted_adb)
-            SystemQuickActionResult.INVALID_DNS_HOSTNAME ->
-                appContext.getString(R.string.error_hostname_value_invalid)
-            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED,
-            SystemQuickActionResult.FAILED ->
-                appContext.getString(R.string.toast_error_saving_settings)
-        }
-        refreshSystemQuickActionStates(appContext)
-    }
-
-    fun setDnsMode(context: Context, mode: String) {
-        val appContext = context.applicationContext
-        val result = SystemQuickActions.setDnsMode(appContext, mode)
-        _quickActionStatusMessage.value = when (result) {
-            SystemQuickActionResult.SUCCESS -> appContext.getString(
-                if (mode == DNS_MODE_OFF) {
-                    R.string.shortcut_toast_dns_off
-                } else {
-                    R.string.shortcut_toast_dns_auto
-                }
-            )
-            SystemQuickActionResult.PERMISSION_MISSING ->
-                appContext.getString(R.string.toast_permission_not_granted_adb)
-            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED,
-            SystemQuickActionResult.INVALID_DNS_HOSTNAME,
-            SystemQuickActionResult.FAILED ->
-                appContext.getString(R.string.toast_error_saving_settings)
-        }
-        refreshSystemQuickActionStates(appContext)
-    }
-
-    fun clearQuickActionStatusMessage() {
-        _quickActionStatusMessage.value = null
-    }
-
     fun refreshSystemQuickActionStates(context: Context) {
-        _activeDnsHostname.value = SystemQuickActions.getActiveDnsHostname(context)
-        _activeDnsMode.value = SystemQuickActions.getActiveDnsMode(context)
         _developerOptionsEnabled.value = PermissionUtils.isDeveloperOptionsEnabled(context)
     }
 

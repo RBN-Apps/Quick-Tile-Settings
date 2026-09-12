@@ -37,8 +37,6 @@ class AppSystemStateObserver(context: Context, private val viewModel: MainViewMo
     override fun onStart(owner: LifecycleOwner) {
         if (!observingQuickActionSettings) {
             listOf(
-                Constants.PRIVATE_DNS_MODE,
-                Constants.PRIVATE_DNS_SPECIFIER,
                 Constants.ADB_ENABLED,
                 Constants.DEVELOPMENT_SETTINGS_ENABLED
             ).forEach { settingName ->

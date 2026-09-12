@@ -1,8 +1,5 @@
 package com.rbn.qtsettings.ui.composables.dns
 
-import android.content.Context
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -14,27 +11,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,57 +36,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.ui.composables.WifiNetworkRulesSection
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.data.DnsListSortMode
+import com.rbn.qtsettings.feature.dns.domain.DnsTarget
+import com.rbn.qtsettings.feature.dns.presentation.*
 import com.rbn.qtsettings.ui.composables.shared.CheckboxItem
-import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
-import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
-import com.rbn.qtsettings.viewmodel.MainViewModel
 
 @Composable
-fun DnsSettingsCard(viewModel: MainViewModel) {
-    val context = LocalContext.current
-    val dnsToggleOff by viewModel.dnsToggleOff.collectAsState()
-    val dnsToggleAuto by viewModel.dnsToggleAuto.collectAsState()
-    val dnsHostnames by viewModel.dnsHostnames.collectAsState()
-    val dnsListSortMode by viewModel.dnsListSortMode.collectAsState()
-    val activeDnsHostname by viewModel.activeDnsHostname.collectAsState()
-    val activeDnsMode by viewModel.activeDnsMode.collectAsState()
-    val enableAutoRevert by viewModel.dnsEnableAutoRevert.collectAsState()
-    val autoRevertDelay by viewModel.dnsAutoRevertDelaySeconds.collectAsState()
-    val dnsRequireUnlock by viewModel.dnsRequireUnlock.collectAsState()
-    val vpnDetectionEnabled by viewModel.vpnDetectionEnabled.collectAsState()
-    val vpnDetectionMode by viewModel.vpnDetectionMode.collectAsState()
-    val networkTypeDetectionEnabled by viewModel.networkTypeDetectionEnabled.collectAsState()
-    val networkTypeDetectionMode by viewModel.networkTypeDetectionMode.collectAsState()
-    val dnsStateOnWifi by viewModel.dnsStateOnWifi.collectAsState()
-    val dnsHostnameOnWifi by viewModel.dnsHostnameOnWifi.collectAsState()
-    val wifiNetworkRulesEnabled by viewModel.wifiNetworkRulesEnabled.collectAsState()
-    val wifiNetworkRules by viewModel.wifiNetworkRules.collectAsState()
-    val knownWifiNetworks by viewModel.knownWifiNetworks.collectAsState()
-    val currentWifiNetwork by viewModel.currentWifiNetwork.collectAsState()
-    val scannedWifiNetworks by viewModel.scannedWifiNetworks.collectAsState()
-    val isWifiResultsLoading by viewModel.isWifiResultsLoading.collectAsState()
-    val wifiIdentityAccessState by viewModel.wifiIdentityAccessState.collectAsState()
-    val hasBackgroundLocationPermission by viewModel.hasBackgroundLocationPermission.collectAsState()
-    val dnsStateOnMobile by viewModel.dnsStateOnMobile.collectAsState()
-    val dnsHostnameOnMobile by viewModel.dnsHostnameOnMobile.collectAsState()
+fun DnsSettingsCard(
+    state: DnsSettingsState,
+    onAction: (DnsSettingsAction) -> Unit,
+    onReorder: (List<String>) -> Boolean,
+    automationContent: @Composable () -> Unit
+) {
+    val dnsToggleOff = state.settings.toggleOff
+    val dnsToggleAuto = state.settings.toggleAuto
+    val dnsHostnames = state.settings.providers.map { it.toRowEntry() }
+    val dnsListSortMode = if (state.settings.manualOrder) DnsListSortMode.MANUAL else DnsListSortMode.ALPHABETICAL
+    val activeDnsHostname = (state.active as? DnsTarget.Hostname)?.value
+    val enableAutoRevert = state.settings.enableAutoRevert
+    val autoRevertDelay = state.settings.autoRevertDelaySeconds
+    val dnsRequireUnlock = state.settings.requireUnlock
     val showDnsInfoDialogFor = remember { mutableStateOf<DnsHostnameEntry?>(null) }
-    val showNetworkTypeInfoDialog = remember { mutableStateOf(false) }
     val dnsScrollState = rememberScrollState()
     var dnsScrollViewport by remember { mutableStateOf<Rect?>(null) }
-
 
     Card(
         modifier = Modifier
@@ -126,22 +95,22 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
             ) {
                 DnsModeRow(
                     checked = dnsToggleOff,
-                    onCheckedChange = { viewModel.setDnsToggleOff(it) },
+                    onCheckedChange = { onAction(DnsSettingsAction.ToggleOff(it)) },
                     label = stringResource(R.string.dns_state_off),
-                    isActive = activeDnsMode == DNS_MODE_OFF,
-                    onSetActiveClicked = { viewModel.setDnsMode(context, DNS_MODE_OFF) }
+                    isActive = state.active == DnsTarget.Off,
+                    onSetActiveClicked = { onAction(DnsSettingsAction.Activate(DnsTarget.Off)) }
                 )
                 DnsModeRow(
                     checked = dnsToggleAuto,
-                    onCheckedChange = { viewModel.setDnsToggleAuto(it) },
+                    onCheckedChange = { onAction(DnsSettingsAction.ToggleAuto(it)) },
                     label = stringResource(R.string.dns_state_auto),
-                    isActive = activeDnsMode == DNS_MODE_AUTO,
-                    onSetActiveClicked = { viewModel.setDnsMode(context, DNS_MODE_AUTO) }
+                    isActive = state.active == DnsTarget.Automatic,
+                    onSetActiveClicked = { onAction(DnsSettingsAction.Activate(DnsTarget.Automatic)) }
                 )
 
                 DnsListHeader(
                     sortMode = dnsListSortMode,
-                    onSortModeSelected = viewModel::setDnsListSortMode,
+                    onSortModeSelected = { onAction(DnsSettingsAction.ManualOrder(it == DnsListSortMode.MANUAL)) },
                     modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
                 )
 
@@ -160,16 +129,16 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                     activeDnsHostname = activeDnsHostname,
                     scrollState = dnsScrollState,
                     scrollViewport = dnsScrollViewport,
-                    onSelectionChanged = viewModel::updateDnsHostnameEntrySelection,
-                    onOrderCommitted = viewModel::reorderDnsHostnames,
-                    onSetActive = { entry -> viewModel.setActiveDns(context, entry) },
-                    onEdit = viewModel::startEditingHostname,
-                    onDelete = viewModel::setHostnamePendingDeletion,
+                    onSelectionChanged = { id, selected -> onAction(DnsSettingsAction.Selected(id, selected)) },
+                    onOrderCommitted = onReorder,
+                    onSetActive = { entry -> onAction(DnsSettingsAction.Activate(DnsTarget.Hostname(entry.hostname), entry.name)) },
+                    onEdit = { onAction(DnsSettingsAction.Edit(it.id)) },
+                    onDelete = { onAction(DnsSettingsAction.Delete(it?.id)) },
                     onInfo = { entry -> showDnsInfoDialogFor.value = entry }
                 )
 
                 OutlinedButton(
-                    onClick = { viewModel.startAddingNewHostname() },
+                    onClick = { onAction(DnsSettingsAction.Edit(null)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
@@ -198,308 +167,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // VPN Detection Section
-                val interactionSourceVpnDetection = remember { MutableInteractionSource() }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(
-                            interactionSource = interactionSourceVpnDetection,
-                            indication = null,
-                            onClick = { viewModel.setVpnDetectionEnabled(!vpnDetectionEnabled) }
-                        )
-                ) {
-                    Checkbox(
-                        checked = vpnDetectionEnabled,
-                        onCheckedChange = { viewModel.setVpnDetectionEnabled(it) }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.setting_vpn_detection_enabled),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-
-                if (vpnDetectionEnabled) {
-                    Text(
-                        text = stringResource(R.string.setting_vpn_detection_mode),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(
-                                selected = vpnDetectionMode == TILE_ONLY_DETECTION,
-                                onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
-                            )
-                            .padding(vertical = 4.dp)
-                    ) {
-                        RadioButton(
-                            selected = vpnDetectionMode == TILE_ONLY_DETECTION,
-                            onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.vpn_detection_tile_only_title),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = stringResource(R.string.vpn_detection_tile_only_description),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(
-                                selected = vpnDetectionMode == BACKGROUND_DETECTION,
-                                onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
-                            )
-                            .padding(vertical = 4.dp)
-                    ) {
-                        RadioButton(
-                            selected = vpnDetectionMode == BACKGROUND_DETECTION,
-                            onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.vpn_detection_background_title),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = stringResource(R.string.vpn_detection_background_description),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Network Type Detection Section
-                val interactionSourceNetworkDetection = remember { MutableInteractionSource() }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag("network_type_detection_toggle")
-                            .clickable(
-                                interactionSource = interactionSourceNetworkDetection,
-                                indication = null,
-                                onClick = { viewModel.setNetworkTypeDetectionEnabled(!networkTypeDetectionEnabled) }
-                            )
-                    ) {
-                        Checkbox(
-                            checked = networkTypeDetectionEnabled,
-                            onCheckedChange = { viewModel.setNetworkTypeDetectionEnabled(it) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(R.string.setting_network_type_detection_enabled),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-                    IconButton(onClick = { showNetworkTypeInfoDialog.value = true }) {
-                        Icon(
-                            Icons.Outlined.Info,
-                            contentDescription = stringResource(R.string.network_type_info_title)
-                        )
-                    }
-                }
-
-                Text(
-                    text = stringResource(R.string.setting_network_type_detection_description),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 40.dp, top = 4.dp, bottom = 12.dp)
-                )
-
-                if (networkTypeDetectionEnabled) {
-                    // WiFi DNS State
-                    Text(
-                        text = stringResource(
-                            if (wifiNetworkRulesEnabled) {
-                                R.string.setting_dns_state_on_wifi_other_networks
-                            } else {
-                                R.string.setting_dns_state_on_wifi
-                            }
-                        ),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .padding(start = 16.dp, bottom = 8.dp)
-                            .testTag("network_type_detection_wifi_state_label")
-                    )
-                    DnsStateSelector(
-                        dnsState = dnsStateOnWifi,
-                        dnsHostname = dnsHostnameOnWifi,
-                        dnsHostnames = dnsHostnames,
-                        onDnsStateChange = { state, hostname ->
-                            viewModel.setDnsStateOnWifi(state)
-                            if (state == DNS_MODE_ON) {
-                                viewModel.setDnsHostnameOnWifi(hostname)
-                            } else {
-                                viewModel.setDnsHostnameOnWifi(null)
-                            }
-                        },
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    WifiNetworkRulesSection(
-                        enabled = wifiNetworkRulesEnabled,
-                        rules = wifiNetworkRules,
-                        dnsHostnames = dnsHostnames,
-                        currentNetwork = currentWifiNetwork,
-                        scannedNetworks = scannedWifiNetworks,
-                        knownNetworks = knownWifiNetworks,
-                        isLoadingNetworks = isWifiResultsLoading,
-                        wifiIdentityAccessState = wifiIdentityAccessState,
-                        onEnabledChange = viewModel::setWifiNetworkRulesEnabled,
-                        onAddRule = viewModel::addWifiNetworkRule,
-                        onUpdateRule = viewModel::updateWifiNetworkRule,
-                        onDeleteRule = viewModel::deleteWifiNetworkRule,
-                        onRefreshNetworks = viewModel::refreshWifiNetworks,
-                        onRequestPermission = viewModel::launchWifiSsidPermissionRequest,
-                        onOpenLocationSettings = { openLocationSettings(context) },
-                        hasBackgroundLocationPermission = hasBackgroundLocationPermission,
-                        onOpenAppPermissionSettings = { PermissionUtils.openAppPermissionSettings(context) },
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Mobile Data DNS State
-                    Text(
-                        text = stringResource(R.string.setting_dns_state_on_mobile),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .padding(start = 16.dp, bottom = 8.dp)
-                            .testTag("network_type_detection_mobile_state_label")
-                    )
-                    DnsStateSelector(
-                        dnsState = dnsStateOnMobile,
-                        dnsHostname = dnsHostnameOnMobile,
-                        dnsHostnames = dnsHostnames,
-                        onDnsStateChange = { state, hostname ->
-                            viewModel.setDnsStateOnMobile(state)
-                            if (state == DNS_MODE_ON) {
-                                viewModel.setDnsHostnameOnMobile(hostname)
-                            } else {
-                                viewModel.setDnsHostnameOnMobile(null)
-                            }
-                        },
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Detection Mode Selection
-                    val tileOnlyDetectionAvailable = !wifiNetworkRulesEnabled
-                    Text(
-                        text = stringResource(R.string.setting_network_type_detection_mode),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("network_type_detection_tile_only_option")
-                            .selectable(
-                                selected = networkTypeDetectionMode == TILE_ONLY_DETECTION,
-                                enabled = tileOnlyDetectionAvailable,
-                                onClick = {
-                                    viewModel.setNetworkTypeDetectionMode(
-                                        TILE_ONLY_DETECTION
-                                    )
-                                }
-                            )
-                            .padding(vertical = 4.dp)
-                    ) {
-                        RadioButton(
-                            selected = networkTypeDetectionMode == TILE_ONLY_DETECTION,
-                            enabled = tileOnlyDetectionAvailable,
-                            onClick = { viewModel.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.network_type_detection_tile_only_title),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = stringResource(R.string.network_type_detection_tile_only_description),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            if (!tileOnlyDetectionAvailable) {
-                                Text(
-                                    text = stringResource(
-                                        R.string.wifi_rules_require_background_detection
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("network_type_detection_background_option")
-                            .selectable(
-                                selected = networkTypeDetectionMode == BACKGROUND_DETECTION,
-                                onClick = {
-                                    viewModel.setNetworkTypeDetectionMode(
-                                        BACKGROUND_DETECTION
-                                    )
-                                }
-                            )
-                            .padding(vertical = 4.dp)
-                    ) {
-                        RadioButton(
-                            selected = networkTypeDetectionMode == BACKGROUND_DETECTION,
-                            onClick = { viewModel.setNetworkTypeDetectionMode(BACKGROUND_DETECTION) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.network_type_detection_background_title),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = stringResource(R.string.network_type_detection_background_description),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
+                automationContent()
 
                 // Auto-Revert Section
                 val interactionSourceAutoRevert = remember { MutableInteractionSource() }
@@ -510,12 +178,12 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         .clickable(
                             interactionSource = interactionSourceAutoRevert,
                             indication = null,
-                            onClick = { viewModel.setDnsEnableAutoRevert(!enableAutoRevert) }
+                            onClick = { onAction(DnsSettingsAction.EnableAutoRevert(!enableAutoRevert)) }
                         )
                 ) {
                     Checkbox(
                         checked = enableAutoRevert,
-                        onCheckedChange = { viewModel.setDnsEnableAutoRevert(it) }
+                        onCheckedChange = { onAction(DnsSettingsAction.EnableAutoRevert(it)) }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -523,7 +191,6 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
-
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -541,8 +208,8 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                         value = autoRevertDelay.toString(),
                         onValueChange = { value ->
                             val newDelay =
-                                value.toIntOrNull() ?: viewModel.dnsAutoRevertDelaySeconds.value
-                            viewModel.setDnsAutoRevertDelaySeconds(newDelay)
+                                value.toIntOrNull() ?: autoRevertDelay
+                            onAction(DnsSettingsAction.RevertDelay(newDelay))
                         },
                         modifier = Modifier.width(80.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -558,7 +225,7 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
                 // Require Unlock Section
                 CheckboxItem(
                     checked = dnsRequireUnlock,
-                    onCheckedChange = { viewModel.setDnsRequireUnlock(it) },
+                    onCheckedChange = { onAction(DnsSettingsAction.RequireUnlock(it)) },
                     label = stringResource(R.string.setting_require_unlock),
                     summary = stringResource(R.string.setting_require_unlock_desc)
                 )
@@ -574,15 +241,4 @@ fun DnsSettingsCard(viewModel: MainViewModel) {
         }
     }
 
-    if (showNetworkTypeInfoDialog.value) {
-        NetworkTypeInfoDialog(
-            onDismissRequest = { showNetworkTypeInfoDialog.value = false }
-        )
-    }
-}
-
-private fun openLocationSettings(context: Context) {
-    val locationSettings = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-    runCatching { context.startActivity(locationSettings) }
-        .onFailure { context.startActivity(Intent(Settings.ACTION_SETTINGS)) }
 }
