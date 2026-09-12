@@ -17,7 +17,7 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.WifiIdentityAccessState
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 
@@ -26,7 +26,7 @@ import rikka.shizuku.Shizuku
  */
 class AppPermissionBinding(
     private val activity: ComponentActivity,
-    private val viewModel: MainViewModel,
+    private val viewModel: AppPermissionViewModel,
     private val automation: AutomationViewModel
 ) : DefaultLifecycleObserver {
     private val notificationPermissionLauncher = activity.registerForActivityResult(
@@ -74,12 +74,8 @@ class AppPermissionBinding(
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.permissionGrantStatus.collect { message ->
-                        message?.let {
-                            Toast.makeText(activity.applicationContext, it, Toast.LENGTH_LONG).show()
-                            viewModel.clearPermissionGrantStatus()
-                            viewModel.checkSystemStates(activity.applicationContext)
-                        }
+                    viewModel.events.collect { message ->
+                        Toast.makeText(activity.applicationContext, message.resolve(activity.resources), Toast.LENGTH_LONG).show()
                     }
                 }
 
@@ -95,6 +91,7 @@ class AppPermissionBinding(
                 launch {
                     automation.requestNotificationPermission.collect { requestCounter ->
                         if (requestCounter > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            automation.clearNotificationPermissionRequest()
                             val hasPermission = ContextCompat.checkSelfPermission(
                                 activity,
                                 Manifest.permission.POST_NOTIFICATIONS
@@ -139,20 +136,7 @@ class AppPermissionBinding(
     private val shizukuPermissionResultListener =
         Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
             if (requestCode == PermissionUtils.SHIZUKU_PERMISSION_REQUEST_CODE) {
-                if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(
-                        activity,
-                        activity.getString(R.string.shizuku_permission_granted_to_app),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    viewModel.checkSystemStates(activity)
-                } else {
-                    Toast.makeText(
-                        activity,
-                        activity.getString(R.string.shizuku_permission_denied_to_app),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                viewModel.onShizukuPermissionResult(grantResult == PackageManager.PERMISSION_GRANTED)
             }
         }
 

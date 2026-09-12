@@ -1,27 +1,12 @@
 package com.rbn.qtsettings.data
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.core.content.edit
-import com.google.gson.Gson
-import com.rbn.qtsettings.feature.dns.data.DnsSettingsStore
-import com.rbn.qtsettings.feature.shortcuts.data.ShortcutSettingsStore
-import com.rbn.qtsettings.feature.usb.data.UsbSettingsStore
-import com.rbn.qtsettings.feature.usb.domain.UsbSettings
-import com.rbn.qtsettings.platform.shortcuts.AndroidShortcutPublisher
-import java.time.Instant
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.rbn.qtsettings.app.AppStores
 
-class PreferencesManager private constructor(context: Context) {
+/** Temporary source-compatibility delegates for callers migrated in #123. No state or policy. */
+class PreferencesManager internal constructor(private val stores: AppStores) {
 
-    private val appContext: Context = context.applicationContext
-    private val gson = Gson()
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("qt_settings_prefs", Context.MODE_PRIVATE)
-    // Compatibility facade for platform callers, shortcuts and backup; audit removal in #119/#121/#123.
-    val dnsStore = DnsSettingsStore(sharedPreferences)
+    val dnsStore get() = stores.dns
     val dnsToggleOff get() = dnsStore.dnsToggleOff
     val dnsToggleAuto get() = dnsStore.dnsToggleAuto
     val dnsListSortMode get() = dnsStore.dnsListSortMode
@@ -30,9 +15,9 @@ class PreferencesManager private constructor(context: Context) {
     val dnsAutoRevertDelaySeconds get() = dnsStore.dnsAutoRevertDelaySeconds
     val dnsRequireUnlock get() = dnsStore.dnsRequireUnlock
 
-    val usbStore = UsbSettingsStore(sharedPreferences)
+    val usbStore get() = stores.usb
 
-    val automationStore = com.rbn.qtsettings.feature.automation.data.AutomationSettingsStore(sharedPreferences)
+    val automationStore get() = stores.automation
     val vpnDetectionEnabled get() = automationStore.vpnDetectionEnabled
     val vpnDetectionMode get() = automationStore.vpnDetectionMode
     val networkTypeDetectionEnabled get() = automationStore.networkTypeDetectionEnabled
@@ -45,22 +30,14 @@ class PreferencesManager private constructor(context: Context) {
     val dnsStateOnMobile get() = automationStore.dnsStateOnMobile
     val dnsHostnameOnMobile get() = automationStore.dnsHostnameOnMobile
 
-    // Security Settings
-    // Help Shown
-    private val _helpShown = MutableStateFlow(sharedPreferences.getBoolean(KEY_HELP_SHOWN, false))
-    val helpShown: StateFlow<Boolean> = _helpShown.asStateFlow()
-
-    val shortcutStore = ShortcutSettingsStore(
-        sharedPreferences, dnsStore.dnsHostnames,
-        AndroidShortcutPublisher(appContext)
-    )
+    val helpShown get() = stores.app.helpShown
+    val shortcutStore get() = stores.shortcuts
     // Compatibility accessors for backup/platform callers until #121/#123.
     val shortcutMaxCount get() = shortcutStore.shortcutMaxCount
     val enabledShortcutIds get() = shortcutStore.enabledShortcutIds
     val favoriteShortcutIds get() = shortcutStore.favoriteShortcutIds
     val allowPinnedShortcutsWhenDisabled get() = shortcutStore.allowPinnedShortcutsWhenDisabled
 
-    init { dnsStore.onProvidersChanged = shortcutStore::reconcileProviders }
 
     fun setDnsToggleOff(enabled: Boolean) = dnsStore.setDnsToggleOff(enabled)
 
@@ -88,10 +65,7 @@ class PreferencesManager private constructor(context: Context) {
 
     fun setUsbRequireUnlock(value: Boolean) = usbStore.setRequireUnlock(value)
 
-    fun setHelpShown(shown: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_HELP_SHOWN, shown) }
-        _helpShown.value = shown
-    }
+    fun setHelpShown(shown: Boolean) = stores.app.setHelpShown(shown)
 
     fun setAllowPinnedShortcutsWhenDisabled(enabled: Boolean) = shortcutStore.setAllowPinnedShortcutsWhenDisabled(enabled)
 
@@ -123,91 +97,9 @@ class PreferencesManager private constructor(context: Context) {
     fun getDnsStateOnMobile(): String = automationStore.getDnsStateOnMobile()
     fun getDnsHostnameOnMobile(): String? = automationStore.getDnsHostnameOnMobile()
 
-    fun exportSettingsBackupJson(): String {
-        val exportedAtEpochMillis = System.currentTimeMillis()
-        return gson.toJson(
-            SettingsBackup(
-                exportedAtEpochMillis = exportedAtEpochMillis,
-                exportedAtIso8601 = Instant.ofEpochMilli(exportedAtEpochMillis).toString(),
-                dns = DnsSettingsBackup(
-                    toggleOff = dnsToggleOff.value,
-                    toggleAuto = dnsToggleAuto.value,
-                    hostnames = dnsStore.manualEntries(),
-                    sortMode = dnsListSortMode.value.persistedValue,
-                    enableAutoRevert = dnsEnableAutoRevert.value,
-                    autoRevertDelaySeconds = dnsAutoRevertDelaySeconds.value,
-                    requireUnlock = dnsRequireUnlock.value,
-                    vpnDetectionEnabled = vpnDetectionEnabled.value,
-                    vpnDetectionMode = vpnDetectionMode.value,
-                    networkTypeDetectionEnabled = networkTypeDetectionEnabled.value,
-                    networkTypeDetectionMode = networkTypeDetectionMode.value,
-                    dnsStateOnWifi = dnsStateOnWifi.value,
-                    dnsHostnameOnWifi = dnsHostnameOnWifi.value,
-                    wifiNetworkRulesEnabled = wifiNetworkRulesEnabled.value,
-                    wifiNetworkRules = wifiNetworkRules.value,
-                    knownWifiNetworks = knownWifiNetworks.value,
-                    dnsStateOnMobile = dnsStateOnMobile.value,
-                    dnsHostnameOnMobile = dnsHostnameOnMobile.value
-                ),
-                usb = UsbSettingsBackup(
-                    toggleEnable = usbStore.state.value.toggleEnable,
-                    toggleDisable = usbStore.state.value.toggleDisable,
-                    alsoHideDevOptions = usbStore.state.value.alsoHideDevOptions,
-                    alsoDisableWirelessDebugging = usbStore.state.value.alsoDisableWirelessDebugging,
-                    enableAutoRevert = usbStore.state.value.enableAutoRevert,
-                    autoRevertDelaySeconds = usbStore.state.value.autoRevertDelaySeconds,
-                    requireUnlock = usbStore.state.value.requireUnlock
-                ),
-                shortcuts = ShortcutSettingsBackup(
-                    enabledShortcutIds = enabledShortcutIds.value,
-                    favoriteShortcutIds = favoriteShortcutIds.value,
-                    allowPinnedShortcutsWhenDisabled = allowPinnedShortcutsWhenDisabled.value
-                )
-            )
-        )
-    }
+    fun exportSettingsBackupJson(): String = stores.backup.exportSettingsBackupJson()
 
-    fun restoreSettingsBackupJson(json: String) {
-        val backup = try {
-            SettingsBackupJsonParser(gson).parse(json)
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Invalid backup file", e)
-        }
-
-        if (backup.schemaVersion != SettingsBackup.CURRENT_SCHEMA_VERSION) {
-            throw IllegalArgumentException("Unsupported backup version: ${backup.schemaVersion}")
-        }
-
-        val validatedBackup = SettingsBackupValidator(shortcutMaxCount.value).validate(backup)
-        val dns = validatedBackup.dns
-        val usb = validatedBackup.usb
-        val shortcuts = validatedBackup.shortcuts
-
-        sharedPreferences.edit {
-            dnsStore.writeTo(this, dns)
-            automationStore.writeTo(this, dns)
-            shortcutStore.writeTo(this, shortcuts)
-
-            usbStore.writeTo(this, UsbSettings(
-                usb.toggleEnable, usb.toggleDisable, usb.alsoHideDevOptions,
-                usb.alsoDisableWirelessDebugging, usb.enableAutoRevert,
-                usb.autoRevertDelaySeconds, usb.requireUnlock
-            ))
-        }
-
-        usbStore.refresh()
-        dnsStore.refresh()
-        automationStore.refresh()
-
-        shortcutStore.restore(shortcuts)
-    }
-
-    /**
-     * Reads the persisted DNS hostname list, upgrading entries that were written by a minified
-     * release before [DnsHostnameEntry] had stable Gson field names. Without that upgrade the
-     * obfuscated keys match no field, Gson hands back all-null entries and
-     * [DnsHostnamePolicy.reconcile] drops every custom hostname the user added.
-     */
+    fun restoreSettingsBackupJson(json: String) = stores.backup.restoreSettingsBackupJson(json)
 
     fun updateDnsHostnameEntry(updatedEntry: DnsHostnameEntry) = dnsStore.updateDnsHostnameEntry(updatedEntry)
 
@@ -254,7 +146,6 @@ class PreferencesManager private constructor(context: Context) {
 
     companion object {
 
-        private const val KEY_HELP_SHOWN = "help_shown_v1"
 
         const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
         const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
@@ -264,13 +155,7 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT =
             "wireless_debugging_previous_state_for_revert"
 
-        @Volatile
-        private var INSTANCE: PreferencesManager? = null
-
-        fun getInstance(context: Context): PreferencesManager {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: PreferencesManager(context.applicationContext).also { INSTANCE = it }
-            }
-        }
+        fun getInstance(context: Context): PreferencesManager =
+            AppStores.getInstance(context).legacyPreferences
     }
 }

@@ -236,7 +236,7 @@ class TileActionCharacterizationTest {
             "auto_revert_coordination").forEach { name ->
             application.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
         }
-        PreferencesManager::class.java.getDeclaredField("INSTANCE").apply {
+        com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE").apply {
             isAccessible = true
             set(null, null)
         }

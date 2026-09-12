@@ -363,7 +363,7 @@ class DnsListSortingTest {
     }
 
     private fun resetPreferencesManagerSingleton() {
-        val instanceField = PreferencesManager::class.java.getDeclaredField("INSTANCE")
+        val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)
     }

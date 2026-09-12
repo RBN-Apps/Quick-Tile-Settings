@@ -12,7 +12,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.ui.composables.permission.PermissionGrantDialog
 import com.rbn.qtsettings.ui.composables.settings.AboutDialog
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
+import com.rbn.qtsettings.feature.permissions.domain.GrantMethod
 
 internal enum class AppOverlay { None, PermissionHelp, About }
 
@@ -20,7 +21,7 @@ internal enum class AppOverlay { None, PermissionHelp, About }
 @Composable
 internal fun AppGlobalDialogsRoot(
     overlay: AppOverlay,
-    viewModel: MainViewModel,
+    viewModel: AppPermissionViewModel,
     onDismiss: () -> Unit,
     onShowPermissionHelp: () -> Unit,
     onOpenAdbSettings: () -> Unit,
@@ -32,9 +33,7 @@ internal fun AppGlobalDialogsRoot(
         AppOverlay.None -> Unit
         AppOverlay.About -> AboutDialog(onDismiss, onShowPermissionHelp)
         AppOverlay.PermissionHelp -> {
-            val shizukuAvailable by viewModel.isShizukuAvailable.collectAsStateWithLifecycle()
-            val shizukuPermission by viewModel.appHasShizukuPermission.collectAsStateWithLifecycle()
-            val rooted by viewModel.isDeviceRooted.collectAsStateWithLifecycle()
+            val permissions by viewModel.state.collectAsStateWithLifecycle()
             PermissionGrantDialog(
                 onDismissRequest = onDismiss,
                 onOpenDeveloperOptions = onOpenAdbSettings,
@@ -43,12 +42,12 @@ internal fun AppGlobalDialogsRoot(
                     clipboard.setPrimaryClip(ClipData.newPlainText("ADB Command", text))
                     Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
                 },
-                onGrantWithShizuku = { viewModel.grantWriteSecureSettingsViaShizuku(context) },
-                onGrantWithRoot = { viewModel.grantWriteSecureSettingsViaRoot(context) },
+                onGrantWithShizuku = { viewModel.grant(GrantMethod.Shizuku) },
+                onGrantWithRoot = { viewModel.grant(GrantMethod.Root) },
                 onRequestShizukuPermission = onRequestShizukuPermission,
-                isShizukuAvailable = shizukuAvailable,
-                appHasShizukuPermission = shizukuPermission,
-                isDeviceRooted = rooted
+                isShizukuAvailable = permissions.shizukuAvailable,
+                appHasShizukuPermission = permissions.shizukuPermissionGranted,
+                isDeviceRooted = permissions.rooted
             )
         }
     }

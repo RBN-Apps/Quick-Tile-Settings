@@ -36,12 +36,11 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-class MainViewModelTest {
+class SettingsAutomationIntegrationTest {
 
     private lateinit var context: Context
     private lateinit var prefsManager: PreferencesManager
     private lateinit var automation: AutomationViewModel
-    private lateinit var viewModel: MainViewModel
 
     @Before
     fun setUp() {
@@ -49,9 +48,7 @@ class MainViewModelTest {
         resetPreferencesManagerSingleton()
         clearPreferences()
         prefsManager = PreferencesManager.getInstance(context)
-        viewModel = MainViewModel(prefsManager)
         automation = AutomationViewModel(prefsManager.automationStore, { com.rbn.qtsettings.platform.automation.AndroidWifiDiscoverySource(it) })
-        viewModel.onAutomationBackupRestored = automation::onBackupRestored
         automation.setApplicationContext(context)
     }
 
@@ -889,8 +886,35 @@ class MainViewModelTest {
             .commit()
     }
 
+    @Test
+    @Config(sdk = [33])
+    fun backupRestore_reconcilesMonitoringAndSettingsReturnWithoutRepeatingExplanation() {
+        shadowOf(context.applicationContext as Application).grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
+        shadowOf(context.applicationContext as Application).denyPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        prefsManager.setNetworkTypeDetectionEnabled(true)
+        prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        val backup = prefsManager.exportSettingsBackupJson()
+        prefsManager.setNetworkTypeDetectionEnabled(false)
+        prefsManager.restoreSettingsBackupJson(backup)
+        shadowOf(context.applicationContext as Application).clearStartedServices()
+        automation.onBackupRestored(context)
+        shadowOf(android.os.Looper.getMainLooper()).idle()
+        assertEquals(com.rbn.qtsettings.services.NetworkMonitoringService::class.java.name,
+            shadowOf(context.applicationContext as Application).nextStartedService.component?.className)
+        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
+        automation.requestNotificationPermissionFromExplanation()
+        automation.onNotificationPermissionPermanentlyDenied()
+        automation.openNotificationPermissionSettings()
+        shadowOf(context.applicationContext as Application).grantPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        automation.refreshNotificationPermissionAfterSettings(context)
+        automation.refreshNotificationPermissionAfterSettings(context)
+        assertFalse(automation.showNotificationPermissionExplanationDialog.value)
+        assertFalse(automation.showNotificationPermissionSettingsDialog.value)
+        assertEquals(0, automation.requestNotificationPermission.value)
+    }
+
     private fun resetPreferencesManagerSingleton() {
-        val instanceField = PreferencesManager::class.java.getDeclaredField("INSTANCE")
+        val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)
     }

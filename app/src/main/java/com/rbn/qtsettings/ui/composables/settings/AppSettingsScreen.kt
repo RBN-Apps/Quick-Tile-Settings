@@ -1,8 +1,5 @@
 package com.rbn.qtsettings.ui.composables.settings
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,43 +17,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.core.designsystem.AppButton
 import com.rbn.qtsettings.core.designsystem.AppButtonStyle
-import com.rbn.qtsettings.viewmodel.MainViewModel
 
 @Composable
 fun AppSettingsScreen(
-    viewModel: MainViewModel,
+    pendingRestore: String?,
+    onExport: () -> Unit,
+    onChooseRestore: () -> Unit,
+    onConfirmRestore: () -> Unit,
+    onCancelRestore: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    var pendingRestoreUri by remember { mutableStateOf<Uri?>(null) }
-
-    val exportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("application/json"),
-        onResult = { uri ->
-            if (uri != null) {
-                viewModel.exportBackup(context, uri)
-            }
-        }
-    )
-
-    val restoreLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-        onResult = { uri -> pendingRestoreUri = uri }
-    )
-
     Column(
         modifier = modifier
             .padding(top = 8.dp)
@@ -87,7 +63,7 @@ fun AppSettingsScreen(
                     text = stringResource(R.string.backup_export_button),
                     icon = Icons.Outlined.FileDownload,
                     style = AppButtonStyle.Secondary,
-                    onClick = { exportLauncher.launch(createBackupFilename()) },
+                    onClick = onExport,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -95,17 +71,16 @@ fun AppSettingsScreen(
                     text = stringResource(R.string.backup_restore_button),
                     icon = Icons.Outlined.Restore,
                     style = AppButtonStyle.Secondary,
-                    onClick = { restoreLauncher.launch(arrayOf("application/json", "text/json", "*/*")) },
+                    onClick = onChooseRestore,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
     }
 
-    val restoreUri = pendingRestoreUri
-    if (restoreUri != null) {
+    if (pendingRestore != null) {
         AlertDialog(
-            onDismissRequest = { pendingRestoreUri = null },
+            onDismissRequest = onCancelRestore,
             containerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             textContentColor = MaterialTheme.colorScheme.onSurface,
@@ -113,27 +88,16 @@ fun AppSettingsScreen(
             text = { Text(text = stringResource(R.string.backup_restore_confirm_message)) },
             confirmButton = {
                 TextButton(
-                    onClick = {
-                        pendingRestoreUri = null
-                        viewModel.restoreBackup(context, restoreUri)
-                    }
+                    onClick = onConfirmRestore
                 ) {
                     Text(text = stringResource(R.string.backup_restore_confirm_button))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { pendingRestoreUri = null }) {
+                TextButton(onClick = onCancelRestore) {
                     Text(text = stringResource(R.string.dialog_cancel))
                 }
             }
         )
     }
 }
-
-private fun createBackupFilename(): String {
-    val timestamp = LocalDateTime.now().format(BACKUP_FILENAME_TIMESTAMP_FORMAT)
-    return "quick-tile-settings-backup-$timestamp.json"
-}
-
-private val BACKUP_FILENAME_TIMESTAMP_FORMAT: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmss")

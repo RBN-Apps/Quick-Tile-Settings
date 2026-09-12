@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -32,12 +31,15 @@ import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
 import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
+import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
+import com.rbn.qtsettings.feature.settings.presentation.AppSettingsRoot
 
-/** Composition root for the Activity-scoped legacy feature owner and the app shell. */
+/** Binds feature owners to the app shell and Navigation 3 destinations. */
 @Composable
 fun AppRoot(
-    viewModel: MainViewModel,
+    viewModel: AppPermissionViewModel,
+    settingsViewModel: AppSettingsViewModel,
     usbViewModel: UsbSettingsViewModel,
     dnsViewModel: DnsSettingsViewModel,
     automationViewModel: AutomationViewModel,
@@ -47,16 +49,17 @@ fun AppRoot(
     onOpenAdbSettings: () -> Unit,
     onRequestShizukuPermission: () -> Unit
 ) {
-    val context = LocalContext.current
     var overlay by rememberSaveable { mutableStateOf(AppOverlay.None) }
-    val hasPermission by viewModel.hasWriteSecureSettings.collectAsStateWithLifecycle()
+    val permissionState by viewModel.state.collectAsStateWithLifecycle()
+    val initialized by viewModel.initialized.collectAsStateWithLifecycle()
+    val hasPermission = permissionState.hasWriteSecureSettings
     val helpShown by viewModel.helpShown.collectAsStateWithLifecycle()
     val showPermissionHelp = {
         overlay = AppOverlay.PermissionHelp
-        viewModel.checkSystemStates(context)
+        viewModel.refresh()
     }
-    LaunchedEffect(hasPermission, helpShown) {
-        if (!hasPermission && !helpShown) showPermissionHelp()
+    LaunchedEffect(initialized, hasPermission, helpShown) {
+        if (initialized && !hasPermission && !helpShown) showPermissionHelp()
     }
     val navigation = rememberAppNavigation(externalArea ?: AppArea.Dns)
     LaunchedEffect(externalArea) {
@@ -66,7 +69,7 @@ fun AppRoot(
         }
     }
     val snackbar = remember { SnackbarHostState() }
-    AppStatusEffects(viewModel, automationViewModel, snackbar)
+    AppStatusEffects(settingsViewModel, automationViewModel, snackbar)
     val resources = LocalResources.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(usbViewModel, lifecycle, resources) {
@@ -112,7 +115,9 @@ fun AppRoot(
             } else if (route is AppRoute.Shortcuts) {
                 ShortcutSettingsRoot(shortcutViewModelFactory,
                     Modifier.fillMaxSize().padding(horizontal = 16.dp))
-            } else LegacyFeatureContentRoot(route, viewModel)
+            } else if (route is AppRoute.Settings) {
+                AppSettingsRoot(settingsViewModel, Modifier.padding(horizontal = 16.dp).fillMaxSize())
+            }
         }
     }
     AppGlobalDialogsRoot(

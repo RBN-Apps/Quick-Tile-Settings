@@ -26,7 +26,7 @@ import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
@@ -109,16 +109,16 @@ class AppShellInstrumentedTest {
         rotateTo(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, Configuration.ORIENTATION_PORTRAIT)
         compose.selectNavigationArea(context, AppArea.Usb)
         icon(R.string.shortcut_settings_open_desc).performClick()
-        lateinit var owner: MainViewModel
-        scenario.onActivity { owner = ViewModelProvider(it)[MainViewModel::class.java] }
+        lateinit var owner: AppPermissionViewModel
+        scenario.onActivity { owner = ViewModelProvider(it)[AppPermissionViewModel::class.java] }
         scenario.recreate()
         text(R.string.shortcut_settings_title).assertIsDisplayed()
         scenario.onActivity {
-            assertSame(owner, ViewModelProvider(it)[MainViewModel::class.java])
+            assertSame(owner, ViewModelProvider(it)[AppPermissionViewModel::class.java])
         }
         rotateTo(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, Configuration.ORIENTATION_LANDSCAPE)
         scenario.onActivity {
-            assertSame(owner, ViewModelProvider(it)[MainViewModel::class.java])
+            assertSame(owner, ViewModelProvider(it)[AppPermissionViewModel::class.java])
         }
         text(R.string.shortcut_settings_title).assertIsDisplayed()
         systemBack()

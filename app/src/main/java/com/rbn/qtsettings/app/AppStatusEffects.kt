@@ -7,21 +7,20 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
+import androidx.compose.ui.platform.LocalResources
 import kotlinx.coroutines.launch
 
 /** Bind pending legacy messages only while the UI is started; acknowledge before display. */
 @Composable
-fun AppStatusEffects(viewModel: MainViewModel, automation: AutomationViewModel, snackbarHostState: SnackbarHostState) {
+fun AppStatusEffects(viewModel: AppSettingsViewModel, automation: AutomationViewModel, snackbarHostState: SnackbarHostState) {
+    val resources = LocalResources.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    LaunchedEffect(viewModel, automation, snackbarHostState, lifecycle) {
+    LaunchedEffect(viewModel, automation, snackbarHostState, lifecycle, resources) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             launch {
-                viewModel.backupStatusMessage.collect { message ->
-                    if (message != null) {
-                        viewModel.clearBackupStatusMessage()
-                        snackbarHostState.showSnackbar(message)
-                    }
+                viewModel.events.collect { message ->
+                    snackbarHostState.showSnackbar(message.resolve(resources))
                 }
             }
             launch {

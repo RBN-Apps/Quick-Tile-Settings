@@ -9,33 +9,32 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.utils.Constants
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 
 /** Lifecycle adapter for current system snapshots; monitoring policy belongs to AutomationViewModel. */
 class AppSystemStateObserver(
     context: Context,
-    private val viewModel: MainViewModel,
+    private val viewModel: AppPermissionViewModel,
     private val automation: AutomationViewModel
 ) : DefaultLifecycleObserver {
     private val applicationContext = context.applicationContext
     private var observingQuickActionSettings = false
     private val quickActionSettingsObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
         override fun onChange(selfChange: Boolean) {
-            viewModel.refreshSystemQuickActionStates(applicationContext)
+            viewModel.refresh()
         }
     }
 
     override fun onCreate(owner: LifecycleOwner) {
-        viewModel.setApplicationContext(applicationContext)
         automation.setApplicationContext(applicationContext)
-        viewModel.checkSystemStates(applicationContext)
+        viewModel.refresh()
         automation.checkSystemStates(applicationContext)
         automation.initializeVpnMonitoring()
         automation.initializeNetworkMonitoring()
     }
 
     override fun onResume(owner: LifecycleOwner) {
-        viewModel.checkSystemStates(applicationContext)
+        viewModel.refresh()
         automation.checkSystemStates(applicationContext)
         automation.refreshNotificationPermissionAfterSettings(applicationContext)
         automation.initializeNetworkMonitoring()
@@ -55,7 +54,7 @@ class AppSystemStateObserver(
             }
             observingQuickActionSettings = true
         }
-        viewModel.refreshSystemQuickActionStates(applicationContext)
+        viewModel.refresh()
     }
 
     override fun onStop(owner: LifecycleOwner) {

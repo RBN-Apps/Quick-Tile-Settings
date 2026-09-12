@@ -21,12 +21,13 @@ import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
 import com.rbn.qtsettings.platform.dns.DnsSystemStateObserver
 import com.rbn.qtsettings.platform.usb.UsbSystemStateObserver
-import com.rbn.qtsettings.viewmodel.MainViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
+import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
 
 /** Stable Android entry point. App setup belongs here; feature behavior does not. */
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels {
-        (application as QuickTileSettingsApplication).container.mainViewModelFactory
+    private val viewModel: AppPermissionViewModel by viewModels {
+        (application as QuickTileSettingsApplication).container.permissionViewModelFactory
     }
     private val usbViewModel: UsbSettingsViewModel by viewModels {
         (application as QuickTileSettingsApplication).container.usbViewModelFactory
@@ -36,6 +37,13 @@ class MainActivity : ComponentActivity() {
     }
     private val automationViewModel: AutomationViewModel by viewModels {
         (application as QuickTileSettingsApplication).container.automationViewModelFactory
+    }
+    private val settingsViewModel: AppSettingsViewModel by viewModels {
+        val context = applicationContext
+        val automation = automationViewModel
+        (application as QuickTileSettingsApplication).container.settingsViewModelFactory {
+            automation.onBackupRestored(context)
+        }
     }
     private var externalArea by mutableStateOf<AppArea?>(null)
 
@@ -50,11 +58,11 @@ class MainActivity : ComponentActivity() {
         lifecycle.addObserver(permissions)
         lifecycle.addObserver(UsbSystemStateObserver(applicationContext, usbViewModel))
         lifecycle.addObserver(DnsSystemStateObserver(applicationContext, dnsViewModel))
-        viewModel.onAutomationBackupRestored = automationViewModel::onBackupRestored
         setContent {
             QuickTileSettingsTheme {
                 AppRoot(
                     viewModel = viewModel,
+                    settingsViewModel = settingsViewModel,
                     usbViewModel = usbViewModel,
                     dnsViewModel = dnsViewModel,
                     automationViewModel = automationViewModel,

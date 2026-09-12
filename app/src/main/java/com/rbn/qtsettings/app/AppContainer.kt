@@ -17,18 +17,22 @@ import com.rbn.qtsettings.platform.automation.AndroidVpnAutomationGateway
 import com.rbn.qtsettings.platform.automation.AndroidWifiDiscoverySource
 import com.rbn.qtsettings.platform.dns.AndroidDnsSystemGateway
 import com.rbn.qtsettings.platform.usb.AndroidUsbSystemGateway
-import com.rbn.qtsettings.viewmodel.ViewModelFactory
+import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
+import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
+import com.rbn.qtsettings.platform.permissions.AndroidPermissionGateway
+import com.rbn.qtsettings.platform.backup.AndroidBackupDocuments
 
 /** Application-scoped composition root. Never retain an Activity here.
- * Legacy preferences/factory are adapters until the feature extractions (#113–#121).
+ * AppStores is also shared by legacy platform callers until #123.
  */
 class AppContainer(context: Context) {
     private val applicationContext = context.applicationContext
-    val preferences: PreferencesManager by lazy { PreferencesManager.getInstance(applicationContext) }
+    val stores: AppStores by lazy { AppStores.getInstance(applicationContext) }
+    val preferences: PreferencesManager get() = stores.legacyPreferences
     val vpnAutomation by lazy {
         VpnAutomation(AndroidVpnAutomationGateway(applicationContext))
     }
-    val usbSettingsStore get() = preferences.usbStore
+    val usbSettingsStore get() = stores.usb
     val usbActions by lazy { UsbActions(AndroidUsbSystemGateway(applicationContext)) }
     val usbViewModelFactory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -37,7 +41,7 @@ class AppContainer(context: Context) {
             return UsbSettingsViewModel(usbSettingsStore, usbActions) as T
         }
     }
-    val dnsSettingsStore get() = preferences.dnsStore
+    val dnsSettingsStore get() = stores.dns
     val dnsActions by lazy { DnsActions(AndroidDnsSystemGateway(applicationContext)) }
     val dnsViewModelFactory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
@@ -51,12 +55,12 @@ class AppContainer(context: Context) {
             require(modelClass == AutomationViewModel::class.java)
             @Suppress("UNCHECKED_CAST")
             return AutomationViewModel(
-                preferences.automationStore,
+                stores.automation,
                 ::AndroidWifiDiscoverySource
             ) as T
         }
     }
-    val shortcutSettingsStore get() = preferences.shortcutStore
+    val shortcutSettingsStore get() = stores.shortcuts
     val shortcutViewModelFactory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             require(modelClass == ShortcutSettingsViewModel::class.java)
@@ -66,5 +70,19 @@ class AppContainer(context: Context) {
             ) as T
         }
     }
-    val mainViewModelFactory: ViewModelFactory by lazy { ViewModelFactory(preferences) }
+    val permissionViewModelFactory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            require(modelClass == AppPermissionViewModel::class.java)
+            @Suppress("UNCHECKED_CAST")
+            return AppPermissionViewModel(stores.app, AndroidPermissionGateway(applicationContext)) as T
+        }
+    }
+    fun settingsViewModelFactory(onBackupRestored: () -> Unit) = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            require(modelClass == AppSettingsViewModel::class.java)
+            @Suppress("UNCHECKED_CAST")
+            return AppSettingsViewModel(AndroidBackupDocuments(applicationContext, stores.backup),
+                extras.createSavedStateHandle(), onBackupRestored) as T
+        }
+    }
 }
