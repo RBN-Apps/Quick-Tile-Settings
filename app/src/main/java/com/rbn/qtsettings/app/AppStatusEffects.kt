@@ -6,14 +6,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 /** Bind pending legacy messages only while the UI is started; acknowledge before display. */
 @Composable
-fun AppStatusEffects(viewModel: MainViewModel, snackbarHostState: SnackbarHostState) {
+fun AppStatusEffects(viewModel: MainViewModel, automation: AutomationViewModel, snackbarHostState: SnackbarHostState) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    LaunchedEffect(viewModel, snackbarHostState, lifecycle) {
+    LaunchedEffect(viewModel, automation, snackbarHostState, lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             launch {
                 viewModel.backupStatusMessage.collect { message ->
@@ -24,9 +25,9 @@ fun AppStatusEffects(viewModel: MainViewModel, snackbarHostState: SnackbarHostSt
                 }
             }
             launch {
-                viewModel.networkDetectionStatusMessage.collect { message ->
+                automation.networkDetectionStatusMessage.collect { message ->
                     if (message != null) {
-                        viewModel.clearNetworkDetectionStatusMessage()
+                        automation.clearNetworkDetectionStatusMessage()
                         snackbarHostState.showSnackbar(message)
                     }
                 }

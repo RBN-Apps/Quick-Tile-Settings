@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.WifiIdentityAccessState
+import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.utils.PermissionUtils
 import com.rbn.qtsettings.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
@@ -25,7 +26,8 @@ import rikka.shizuku.Shizuku
  */
 class AppPermissionBinding(
     private val activity: ComponentActivity,
-    private val viewModel: MainViewModel
+    private val viewModel: MainViewModel,
+    private val automation: AutomationViewModel
 ) : DefaultLifecycleObserver {
     private val notificationPermissionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -39,13 +41,13 @@ class AppPermissionBinding(
 
             if (!shouldShowRationale) {
                 // Permission is permanently denied, show settings dialog
-                viewModel.onNotificationPermissionPermanentlyDenied()
+                automation.onNotificationPermissionPermanentlyDenied()
             } else {
                 // Permission denied but not permanently
-                viewModel.onNotificationPermissionResult(false)
+                automation.onNotificationPermissionResult(false)
             }
         } else {
-            viewModel.onNotificationPermissionResult(isGranted)
+            automation.onNotificationPermissionResult(isGranted)
         }
     }
 
@@ -64,7 +66,7 @@ class AppPermissionBinding(
                 activity, Manifest.permission.ACCESS_FINE_LOCATION
             )
         )
-        viewModel.onWifiSsidPermissionResult(preciseLocationGranted)
+        automation.onWifiSsidPermissionResult(preciseLocationGranted)
     }
 
     override fun onCreate(owner: LifecycleOwner) {
@@ -82,7 +84,16 @@ class AppPermissionBinding(
                 }
 
                 launch {
-                    viewModel.requestNotificationPermission.collect { requestCounter ->
+                    automation.permissionGrantStatus.collect { message ->
+                        if (message != null) {
+                            Toast.makeText(activity.applicationContext, message, Toast.LENGTH_LONG).show()
+                            automation.clearPermissionGrantStatus()
+                            automation.checkSystemStates(activity.applicationContext)
+                        }
+                    }
+                }
+                launch {
+                    automation.requestNotificationPermission.collect { requestCounter ->
                         if (requestCounter > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             val hasPermission = ContextCompat.checkSelfPermission(
                                 activity,
@@ -92,16 +103,16 @@ class AppPermissionBinding(
                             if (!hasPermission) {
                                 notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                             } else {
-                                viewModel.onNotificationPermissionResult(true)
+                                automation.onNotificationPermissionResult(true)
                             }
                         }
                     }
                 }
 
                 launch {
-                    viewModel.requestWifiSsidPermission.collect { requestCounter ->
+                    automation.requestWifiSsidPermission.collect { requestCounter ->
                         if (requestCounter > 0) {
-                            viewModel.clearWifiSsidPermissionRequest()
+                            automation.clearWifiSsidPermissionRequest()
                             if (PermissionUtils.getWifiIdentityAccessState(activity) ==
                                 WifiIdentityAccessState.PRECISE_LOCATION_PERMISSION_BLOCKED
                             ) {

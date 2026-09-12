@@ -1,16 +1,16 @@
-package com.rbn.qtsettings.viewmodel
+package com.rbn.qtsettings.feature.automation.presentation
 
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.feature.automation.domain.AutomationSettingsSource
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class NotificationPermissionCoordinator(
-    private val preferences: PreferencesManager,
+    private val preferences: AutomationSettingsSource,
     private val manageVpnMonitoring: () -> Unit,
     private val manageNetworkMonitoring: (restartService: Boolean) -> Unit,
     private val notifyWifiRulesRequireBackgroundDetection: () -> Unit

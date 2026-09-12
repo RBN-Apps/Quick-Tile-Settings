@@ -5,9 +5,11 @@ import android.util.Log
 import com.rbn.qtsettings.data.DetectedNetworkState
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.PrivateDnsTarget
-import com.rbn.qtsettings.data.WifiNetworkIdentity
-import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_MOBILE
-import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
+import com.rbn.qtsettings.feature.automation.data.readSettings
+import com.rbn.qtsettings.feature.automation.data.toAutomationNetwork
+import com.rbn.qtsettings.feature.automation.domain.AutomationPolicy
+import com.rbn.qtsettings.feature.automation.domain.AutomationSettingsSource
+import com.rbn.qtsettings.feature.dns.data.toPersisted
 
 object NetworkDnsAutomation {
     private const val TAG = "NetworkDnsAutomation"
@@ -16,27 +18,13 @@ object NetworkDnsAutomation {
         preferencesManager: PreferencesManager,
         networkState: DetectedNetworkState
     ): PrivateDnsTarget? {
-        return when (networkState.networkType) {
-            NETWORK_TYPE_WIFI -> WifiNetworkRuleUtils.resolveDnsTarget(
-                rulesEnabled = preferencesManager.areWifiNetworkRulesEnabled(),
-                rules = preferencesManager.getWifiNetworkRules(),
-                currentNetwork = WifiNetworkIdentity(
-                    ssid = networkState.wifiSsid,
-                    bssid = networkState.wifiBssid
-                ),
-                defaultTarget = PrivateDnsTarget(
-                    mode = preferencesManager.getDnsStateOnWifi(),
-                    hostname = preferencesManager.getDnsHostnameOnWifi()
-                )
-            )
+        return resolveTarget(preferencesManager.automationStore, networkState)
+    }
 
-            NETWORK_TYPE_MOBILE -> PrivateDnsTarget(
-                mode = preferencesManager.getDnsStateOnMobile(),
-                hostname = preferencesManager.getDnsHostnameOnMobile()
-            )
-
-            else -> null
-        }
+    fun resolveTarget(settings: AutomationSettingsSource, networkState: DetectedNetworkState): PrivateDnsTarget? {
+        return AutomationPolicy.networkTarget(
+            settings.readSettings(), networkState.toAutomationNetwork()
+        )?.toPersisted()
     }
 
     fun apply(
@@ -44,7 +32,11 @@ object NetworkDnsAutomation {
         preferencesManager: PreferencesManager,
         networkState: DetectedNetworkState
     ): Boolean {
-        val target = resolveTarget(preferencesManager, networkState) ?: run {
+        return apply(context, preferencesManager.automationStore, networkState)
+    }
+
+    fun apply(context: Context, settings: AutomationSettingsSource, networkState: DetectedNetworkState): Boolean {
+        val target = resolveTarget(settings, networkState) ?: run {
             Log.d(TAG, "No safe DNS target for the current network; DNS settings unchanged")
             return false
         }

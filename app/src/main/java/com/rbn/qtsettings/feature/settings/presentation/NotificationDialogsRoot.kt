@@ -3,14 +3,14 @@ package com.rbn.qtsettings.feature.settings.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionExplanationDialog
 import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionFallbackDialog
 import com.rbn.qtsettings.ui.composables.settings.NotificationPermissionSettingsDialog
-import com.rbn.qtsettings.viewmodel.MainViewModel
 
-/** Legacy permission-owner binding, replaced by the settings extraction in #121/#122. */
+/** Automation permission-owner binding, replaced by the settings extraction in #121/#122. */
 @Composable
-fun NotificationDialogsRoot(viewModel: MainViewModel) {
+fun NotificationDialogsRoot(viewModel: AutomationViewModel) {
     val showNotificationPermissionExplanationDialog by
         viewModel.showNotificationPermissionExplanationDialog.collectAsStateWithLifecycle()
     val notificationPermissionExplanationFromBackup by

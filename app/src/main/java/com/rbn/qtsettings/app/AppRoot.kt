@@ -18,13 +18,14 @@ import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.app.navigation.AppNavigationContent
 import com.rbn.qtsettings.app.navigation.AppRoute
 import com.rbn.qtsettings.app.navigation.rememberAppNavigation
+import com.rbn.qtsettings.feature.automation.presentation.AutomationRoot
+import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
-import com.rbn.qtsettings.ui.composables.dns.LegacyDnsAutomationRoot
 import com.rbn.qtsettings.viewmodel.MainViewModel
 
 /** Composition root for the Activity-scoped legacy feature owner and the app shell. */
@@ -33,6 +34,7 @@ fun AppRoot(
     viewModel: MainViewModel,
     usbViewModel: UsbSettingsViewModel,
     dnsViewModel: DnsSettingsViewModel,
+    automationViewModel: AutomationViewModel,
     externalArea: AppArea?,
     onExternalAreaConsumed: () -> Unit,
     onOpenAdbSettings: () -> Unit,
@@ -57,7 +59,7 @@ fun AppRoot(
         }
     }
     val snackbar = remember { SnackbarHostState() }
-    AppStatusEffects(viewModel, snackbar)
+    AppStatusEffects(viewModel, automationViewModel, snackbar)
     val resources = LocalResources.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(usbViewModel, lifecycle, resources) {
@@ -90,7 +92,7 @@ fun AppRoot(
             } else if (route == AppRoute.Dns || route == AppRoute.DnsProviders ||
                 route == AppRoute.DnsAutomation || route == AppRoute.DnsRevert) {
                 DnsSettingsRoot(dnsViewModel, showPermissionHelp, route, navigation::open) { providers ->
-                    LegacyDnsAutomationRoot(viewModel, providers)
+                    AutomationRoot(automationViewModel, providers)
                 }
             } else LegacyFeatureContentRoot(route, viewModel)
         }
@@ -107,5 +109,5 @@ fun AppRoot(
         onRequestShizukuPermission = onRequestShizukuPermission
     )
     DnsDialogsRoot(dnsViewModel)
-    NotificationDialogsRoot(viewModel)
+    NotificationDialogsRoot(automationViewModel)
 }

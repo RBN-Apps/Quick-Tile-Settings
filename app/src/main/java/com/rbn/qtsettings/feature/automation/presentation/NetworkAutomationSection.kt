@@ -1,4 +1,4 @@
-package com.rbn.qtsettings.ui.composables.dns
+package com.rbn.qtsettings.feature.automation.presentation
 
 import android.content.Context
 import android.content.Intent
@@ -23,138 +23,42 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.ui.composables.WifiNetworkRulesSection
+import com.rbn.qtsettings.ui.composables.dns.DnsStateSelector
+import com.rbn.qtsettings.ui.composables.dns.NetworkTypeInfoDialog
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
 import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.viewmodel.MainViewModel
 
-/** Temporary automation binding, migrated in #117. No provider mutations live here. */
 @Composable
-fun LegacyDnsAutomationRoot(viewModel: MainViewModel, dnsHostnames: List<DnsHostnameEntry>) {
+internal fun NetworkAutomationSection(state: AutomationUiState, viewModel: AutomationUiActions, dnsHostnames: List<DnsHostnameEntry>) {
+    val networkTypeDetectionEnabled = state.networkTypeDetectionEnabled
+    val networkTypeDetectionMode = state.networkTypeDetectionMode
+    val dnsStateOnWifi = state.dnsStateOnWifi
+    val dnsHostnameOnWifi = state.dnsHostnameOnWifi
+    val wifiNetworkRulesEnabled = state.wifiNetworkRulesEnabled
+    val wifiNetworkRules = state.wifiNetworkRules
+    val knownWifiNetworks = state.knownWifiNetworks
+    val currentWifiNetwork = state.currentWifiNetwork
+    val scannedWifiNetworks = state.scannedWifiNetworks
+    val isWifiResultsLoading = state.isWifiResultsLoading
+    val wifiIdentityAccessState = state.wifiIdentityAccessState
+    val hasBackgroundLocationPermission = state.hasBackgroundLocationPermission
+    val dnsStateOnMobile = state.dnsStateOnMobile
+    val dnsHostnameOnMobile = state.dnsHostnameOnMobile
     val context = LocalContext.current
-    val vpnDetectionEnabled by viewModel.vpnDetectionEnabled.collectAsStateWithLifecycle()
-    val vpnDetectionMode by viewModel.vpnDetectionMode.collectAsStateWithLifecycle()
-    val networkTypeDetectionEnabled by viewModel.networkTypeDetectionEnabled.collectAsStateWithLifecycle()
-    val networkTypeDetectionMode by viewModel.networkTypeDetectionMode.collectAsStateWithLifecycle()
-    val dnsStateOnWifi by viewModel.dnsStateOnWifi.collectAsStateWithLifecycle()
-    val dnsHostnameOnWifi by viewModel.dnsHostnameOnWifi.collectAsStateWithLifecycle()
-    val wifiNetworkRulesEnabled by viewModel.wifiNetworkRulesEnabled.collectAsStateWithLifecycle()
-    val wifiNetworkRules by viewModel.wifiNetworkRules.collectAsStateWithLifecycle()
-    val knownWifiNetworks by viewModel.knownWifiNetworks.collectAsStateWithLifecycle()
-    val currentWifiNetwork by viewModel.currentWifiNetwork.collectAsStateWithLifecycle()
-    val scannedWifiNetworks by viewModel.scannedWifiNetworks.collectAsStateWithLifecycle()
-    val isWifiResultsLoading by viewModel.isWifiResultsLoading.collectAsStateWithLifecycle()
-    val wifiIdentityAccessState by viewModel.wifiIdentityAccessState.collectAsStateWithLifecycle()
-    val hasBackgroundLocationPermission by viewModel.hasBackgroundLocationPermission.collectAsStateWithLifecycle()
-    val dnsStateOnMobile by viewModel.dnsStateOnMobile.collectAsStateWithLifecycle()
-    val dnsHostnameOnMobile by viewModel.dnsHostnameOnMobile.collectAsStateWithLifecycle()
     val showNetworkTypeInfoDialog = remember { mutableStateOf(false) }
-    // VPN Detection Section
-    val interactionSourceVpnDetection = remember { MutableInteractionSource() }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = interactionSourceVpnDetection,
-                indication = null,
-                onClick = { viewModel.setVpnDetectionEnabled(!vpnDetectionEnabled) }
-            )
-    ) {
-        Checkbox(
-            checked = vpnDetectionEnabled,
-            onCheckedChange = { viewModel.setVpnDetectionEnabled(it) }
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = stringResource(R.string.setting_vpn_detection_enabled),
-            style = MaterialTheme.typography.titleMedium,
-        )
-    }
-
-    if (vpnDetectionEnabled) {
-        Text(
-            text = stringResource(R.string.setting_vpn_detection_mode),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectable(
-                    selected = vpnDetectionMode == TILE_ONLY_DETECTION,
-                    onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
-                )
-                .padding(vertical = 4.dp)
-        ) {
-            RadioButton(
-                selected = vpnDetectionMode == TILE_ONLY_DETECTION,
-                onClick = { viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION) }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = stringResource(R.string.vpn_detection_tile_only_title),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = stringResource(R.string.vpn_detection_tile_only_description),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectable(
-                    selected = vpnDetectionMode == BACKGROUND_DETECTION,
-                    onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
-                )
-                .padding(vertical = 4.dp)
-        ) {
-            RadioButton(
-                selected = vpnDetectionMode == BACKGROUND_DETECTION,
-                onClick = { viewModel.setVpnDetectionMode(BACKGROUND_DETECTION) }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = stringResource(R.string.vpn_detection_background_title),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = stringResource(R.string.vpn_detection_background_description),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-
-    Spacer(modifier = Modifier.height(16.dp))
-    HorizontalDivider()
-    Spacer(modifier = Modifier.height(16.dp))
-
     // Network Type Detection Section
     val interactionSourceNetworkDetection = remember { MutableInteractionSource() }
     Row(

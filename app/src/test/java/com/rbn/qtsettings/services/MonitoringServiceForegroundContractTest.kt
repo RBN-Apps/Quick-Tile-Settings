@@ -15,11 +15,14 @@ import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.WifiDnsRule
 import com.rbn.qtsettings.receivers.BootCompletedReceiver
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
+import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_NONE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
 import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
+import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
+import java.time.Duration
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -37,7 +40,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowNetwork
 import org.robolectric.shadows.ShadowNetworkCapabilities
 import org.robolectric.shadows.ShadowWifiInfo
-import java.time.Duration
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
@@ -112,30 +114,28 @@ class MonitoringServiceForegroundContractTest {
         preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
         val controller = Robolectric.buildService(NetworkMonitoringService::class.java).create()
         val service = controller.get()
-        val serviceJobField = NetworkMonitoringService::class.java
-            .getDeclaredField("serviceJob")
-            .apply { isAccessible = true }
+        val connectivity = context.getSystemService(ConnectivityManager::class.java)
 
         service.onStartCommand(
             Intent(context, service::class.java).putExtra("reapply_policy", false),
             0,
             201
         )
-        val initialJob = serviceJobField.get(service)
+        val initialJob = shadowOf(connectivity).networkCallbacks.single()
 
         service.onStartCommand(
             Intent(context, service::class.java).putExtra("reapply_policy", false),
             0,
             202
         )
-        assertSame(initialJob, serviceJobField.get(service))
+        assertSame(initialJob, shadowOf(connectivity).networkCallbacks.single())
 
         service.onStartCommand(
             Intent(context, service::class.java).putExtra("reapply_policy", true),
             0,
             203
         )
-        assertNotSame(initialJob, serviceJobField.get(service))
+        assertNotSame(initialJob, shadowOf(connectivity).networkCallbacks.single())
         controller.destroy()
     }
 
@@ -163,8 +163,7 @@ class MonitoringServiceForegroundContractTest {
         try {
             service.onStartCommand(startIntent, 0, 301)
             assertTrue(service.foregroundServiceType and ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION != 0)
-            val callback = NetworkMonitoringService::class.java.getDeclaredField("networkCallback")
-                .apply { isAccessible = true }.get(service) as ConnectivityManager.NetworkCallback
+            val callback = shadowOf(context.getSystemService(ConnectivityManager::class.java)).networkCallbacks.single()
             val wifiInfo = ShadowWifiInfo.newInstance()
             shadowOf(wifiInfo).setSSID("Campus")
             shadowOf(wifiInfo).setBSSID("AA:BB:CC:DD:EE:FF")
@@ -268,6 +267,72 @@ class MonitoringServiceForegroundContractTest {
             .edit()
             .clear()
             .commit()
+    }
+
+    @Test
+    fun obsoleteNetworkCallbacks_cannotUndoManualDnsAfterRestartOrDestroy() {
+        shadowOf(context as Application).grantPermissions(android.Manifest.permission.WRITE_SECURE_SETTINGS)
+        preferencesManager.setNetworkTypeDetectionEnabled(true)
+        preferencesManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        preferencesManager.setDnsStateOnWifi(DNS_MODE_OFF)
+        val connectivity = context.getSystemService(ConnectivityManager::class.java)
+        shadowOf(connectivity).setNetworkCapabilities(requireNotNull(connectivity.activeNetwork), ShadowNetworkCapabilities.newInstance())
+        val controller = Robolectric.buildService(NetworkMonitoringService::class.java).create()
+        val service = controller.get()
+        try {
+            service.onStartCommand(Intent(context, service::class.java), 0, 501)
+            val obsolete = shadowOf(connectivity).networkCallbacks.single()
+            service.onStartCommand(Intent(context, service::class.java), 0, 502)
+            val current = shadowOf(connectivity).networkCallbacks.single()
+            assertNotSame(obsolete, current)
+            Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
+            val wifi = ShadowNetworkCapabilities.newInstance()
+            shadowOf(wifi).addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            shadowOf(wifi).addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            obsolete.onCapabilitiesChanged(ShadowNetwork.newInstance(501), wifi)
+            shadowOf(Looper.getMainLooper()).idle()
+            assertEquals(DNS_MODE_ON, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+
+            assertEquals(NETWORK_TYPE_NONE, NetworkTypeDetectionUtils.getCurrentNetworkType(context, preferTrackedWifi = true))
+            current.onCapabilitiesChanged(ShadowNetwork.newInstance(502), wifi)
+            shadowOf(Looper.getMainLooper()).idle()
+            assertEquals(DNS_MODE_OFF, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+            controller.destroy()
+            assertTrue(shadowOf(connectivity).networkCallbacks.isEmpty())
+            Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
+            current.onLost(ShadowNetwork.newInstance(502))
+            current.onCapabilitiesChanged(ShadowNetwork.newInstance(503), wifi)
+            shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(4))
+            assertEquals(DNS_MODE_ON, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+        } finally {
+            controller.destroy()
+        }
+    }
+
+    @Test
+    fun pendingVpnDisconnect_isCancelledWhenServiceIsDestroyed() {
+        shadowOf(context as Application).grantPermissions(android.Manifest.permission.WRITE_SECURE_SETTINGS)
+        preferencesManager.setVpnDetectionEnabled(true)
+        preferencesManager.setVpnDetectionMode(BACKGROUND_DETECTION)
+        val connectivity = context.getSystemService(ConnectivityManager::class.java)
+        val network = requireNotNull(connectivity.activeNetwork)
+        val capabilities = ShadowNetworkCapabilities.newInstance()
+        shadowOf(capabilities).addTransportType(NetworkCapabilities.TRANSPORT_VPN)
+        shadowOf(connectivity).setNetworkCapabilities(network, capabilities)
+        Settings.Global.putString(context.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_AUTO)
+        val controller = Robolectric.buildService(VpnMonitoringService::class.java).create()
+        controller.get().onStartCommand(Intent(context, VpnMonitoringService::class.java), 0, 601)
+        val callback = shadowOf(connectivity).networkCallbacks.single()
+        assertEquals(DNS_MODE_OFF, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+        shadowOf(capabilities).removeTransportType(NetworkCapabilities.TRANSPORT_VPN)
+        callback.onLost(network)
+        shadowOf(Looper.getMainLooper()).idle()
+        controller.destroy()
+        assertTrue(shadowOf(connectivity).networkCallbacks.isEmpty())
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(4))
+        assertEquals(DNS_MODE_OFF, Settings.Global.getString(context.contentResolver, PRIVATE_DNS_MODE))
+        assertEquals(DNS_MODE_AUTO, context.getSharedPreferences("vpn_detection_shared_state", Context.MODE_PRIVATE)
+            .getString("vpn_previous_dns_mode", null))
     }
 
     private fun resetPreferencesManagerSingleton() {

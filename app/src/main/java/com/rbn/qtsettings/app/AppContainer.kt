@@ -6,10 +6,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.feature.automation.domain.VpnAutomation
+import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.feature.dns.domain.DnsActions
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.usb.domain.UsbActions
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
+import com.rbn.qtsettings.platform.automation.AndroidVpnAutomationGateway
+import com.rbn.qtsettings.platform.automation.AndroidWifiDiscoverySource
 import com.rbn.qtsettings.platform.dns.AndroidDnsSystemGateway
 import com.rbn.qtsettings.platform.usb.AndroidUsbSystemGateway
 import com.rbn.qtsettings.viewmodel.ViewModelFactory
@@ -20,6 +24,9 @@ import com.rbn.qtsettings.viewmodel.ViewModelFactory
 class AppContainer(context: Context) {
     private val applicationContext = context.applicationContext
     val preferences: PreferencesManager by lazy { PreferencesManager.getInstance(applicationContext) }
+    val vpnAutomation by lazy {
+        VpnAutomation(AndroidVpnAutomationGateway(applicationContext))
+    }
     val usbSettingsStore get() = preferences.usbStore
     val usbActions by lazy { UsbActions(AndroidUsbSystemGateway(applicationContext)) }
     val usbViewModelFactory = object : ViewModelProvider.Factory {
@@ -36,6 +43,16 @@ class AppContainer(context: Context) {
             require(modelClass == DnsSettingsViewModel::class.java)
             @Suppress("UNCHECKED_CAST")
             return DnsSettingsViewModel(dnsSettingsStore, dnsActions, extras.createSavedStateHandle()) as T
+        }
+    }
+    val automationViewModelFactory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            require(modelClass == AutomationViewModel::class.java)
+            @Suppress("UNCHECKED_CAST")
+            return AutomationViewModel(
+                preferences.automationStore,
+                ::AndroidWifiDiscoverySource
+            ) as T
         }
     }
     val mainViewModelFactory: ViewModelFactory by lazy { ViewModelFactory(preferences) }

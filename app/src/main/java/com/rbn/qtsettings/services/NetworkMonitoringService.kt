@@ -8,7 +8,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -16,26 +15,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.rbn.qtsettings.MainActivity
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.data.DetectedNetworkState
 import com.rbn.qtsettings.data.PreferencesManager
-import com.rbn.qtsettings.data.WifiNetworkIdentity
+import com.rbn.qtsettings.feature.automation.domain.AutomationSettingsSource
+import com.rbn.qtsettings.platform.automation.NetworkMonitor
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_MOBILE
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_NONE
 import com.rbn.qtsettings.utils.Constants.NETWORK_TYPE_WIFI
-import com.rbn.qtsettings.utils.NetworkDnsAutomation
-import com.rbn.qtsettings.utils.NetworkTypeDetectionUtils
 import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.VpnDetectionUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 class NetworkMonitoringService : Service() {
 
@@ -59,20 +46,13 @@ class NetworkMonitoringService : Service() {
         }
     }
 
-    private lateinit var prefsManager: PreferencesManager
-    private var networkCallback: ConnectivityManager.NetworkCallback? = null
-    private var serviceJob: Job? = null
-    private var wifiIdentityFallbackJob: Job? = null
-    private var currentNetworkState = DetectedNetworkState()
-    private var monitorWifiSsid = false
-    private var initialNetworkInventoryPending = false
-    private var forceNextResolvedState = false
-    private var vpnOverrideWasActive = false
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-
+    private lateinit var prefsManager: AutomationSettingsSource
+    private lateinit var monitor: NetworkMonitor
+    private val currentNetworkState get() = monitor.currentNetworkState
     override fun onCreate() {
         super.onCreate()
-        prefsManager = PreferencesManager.getInstance(applicationContext)
+        prefsManager = PreferencesManager.getInstance(applicationContext).automationStore
+        monitor = NetworkMonitor(this, prefsManager, ::updateNotification)
         createNotificationChannel()
         Log.d(TAG, "Network monitoring service created")
     }
@@ -98,168 +78,17 @@ class NetworkMonitoringService : Service() {
         startForegroundForCurrentConfiguration()
         val desiredMonitorWifiSsid = prefsManager.areWifiNetworkRulesEnabled()
         val shouldRestartMonitoring =
-            serviceJob?.isActive != true ||
+            !monitor.running ||
                 intent?.getBooleanExtra(EXTRA_REAPPLY_POLICY, true) != false ||
-                desiredMonitorWifiSsid != monitorWifiSsid
+                desiredMonitorWifiSsid != monitor.monitorWifiSsid
         if (shouldRestartMonitoring) {
-            startNetworkMonitoring()
+            monitor.startNetworkMonitoring()
         } else {
-            if (monitorWifiSsid &&
-                currentNetworkState.networkType == NETWORK_TYPE_WIFI &&
-                currentNetworkState.wifiSsid == null && currentNetworkState.wifiBssid == null
-            ) {
-                // Returning from permission settings (or opening the app after a boot without
-                // background location) can make previously redacted WifiInfo readable. Request
-                // a fresh inventory without resetting policy state or overriding manual DNS.
-                initialNetworkInventoryPending = true
-                networkCallback?.let {
-                    NetworkTypeDetectionUtils.unregisterNetworkTypeCallback(this, it)
-                }
-                registerNetworkCallback()
-            }
-            updateNotification()
+            monitor.refreshRedactedIdentity()
         }
 
         Log.d(TAG, "Network monitoring service started")
         return START_STICKY
-    }
-
-    private fun startNetworkMonitoring() {
-        stopNetworkMonitoring()
-        monitorWifiSsid = prefsManager.areWifiNetworkRulesEnabled()
-        initialNetworkInventoryPending = monitorWifiSsid
-        forceNextResolvedState = true
-        registerNetworkCallback()
-
-        val detectedState = NetworkTypeDetectionUtils.getCurrentNetworkState(
-            context = this,
-            includeWifiSsid = monitorWifiSsid
-        )
-        handleNetworkStateChange(detectedState)
-
-        serviceJob = serviceScope.launch {
-            while (isActive) {
-                try {
-                    delay(CHECK_INTERVAL_MS.milliseconds)
-                    checkNetworkState()
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error in periodic network type check", e)
-                    delay(CHECK_INTERVAL_MS.milliseconds)
-                }
-            }
-        }
-    }
-
-    private fun registerNetworkCallback() {
-        try {
-            networkCallback = NetworkTypeDetectionUtils.createNetworkStateCallback(
-                context = this,
-                includeWifiSsid = monitorWifiSsid,
-                onNetworkStateChanged = { newNetworkState ->
-                    serviceScope.launch {
-                        handleNetworkStateChange(newNetworkState)
-                    }
-                }
-            )
-
-            networkCallback?.let { callback ->
-                NetworkTypeDetectionUtils.registerNetworkTypeCallback(this, callback)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error registering network callback", e)
-        }
-    }
-
-    private fun checkNetworkState() {
-        handleNetworkStateChange(
-            NetworkTypeDetectionUtils.getCurrentNetworkState(
-                context = this,
-                includeWifiSsid = monitorWifiSsid
-            )
-        )
-    }
-
-    private fun handleNetworkStateChange(
-        newNetworkState: DetectedNetworkState,
-        force: Boolean = false
-    ) {
-        val vpnOverrideActive =
-            prefsManager.isVpnDetectionEnabled() && VpnDetectionUtils.isVpnActive(this)
-        val vpnOverrideChanged = vpnOverrideActive != vpnOverrideWasActive
-        if (initialNetworkInventoryPending && !force) {
-            if (newNetworkState.networkType == NETWORK_TYPE_WIFI &&
-                newNetworkState.wifiSsid != null
-            ) {
-                initialNetworkInventoryPending = false
-            } else {
-                scheduleWifiIdentityFallback()
-                return
-            }
-        }
-        initialNetworkInventoryPending = false
-
-        if (monitorWifiSsid &&
-            !force &&
-            newNetworkState.networkType == NETWORK_TYPE_WIFI &&
-            newNetworkState.wifiSsid == null
-        ) {
-            if (newNetworkState != currentNetworkState || vpnOverrideChanged) {
-                scheduleWifiIdentityFallback()
-            }
-            return
-        }
-        wifiIdentityFallbackJob?.cancel()
-        wifiIdentityFallbackJob = null
-
-        val applyForced = force || forceNextResolvedState
-        forceNextResolvedState = false
-        if (!applyForced && newNetworkState == currentNetworkState && !vpnOverrideChanged) return
-
-        val oldNetworkState = currentNetworkState
-        currentNetworkState = newNetworkState
-        vpnOverrideWasActive = vpnOverrideActive
-
-        if (newNetworkState.networkType == NETWORK_TYPE_WIFI) {
-            prefsManager.recordKnownWifiNetwork(
-                WifiNetworkIdentity(
-                    ssid = newNetworkState.wifiSsid,
-                    bssid = newNetworkState.wifiBssid
-                )
-            )
-        }
-
-        Log.i(
-            TAG,
-            "Network state changed from ${oldNetworkState.networkType} to " +
-                    "${newNetworkState.networkType}; Wi-Fi identity available=" +
-                    (newNetworkState.wifiSsid != null)
-        )
-
-        if (vpnOverrideActive) {
-            Log.d(TAG, "VPN is active and VPN detection is enabled, skipping DNS change")
-            updateNotification()
-            return
-        }
-
-        NetworkDnsAutomation.apply(this, prefsManager, newNetworkState)
-
-        updateNotification()
-    }
-
-    private fun scheduleWifiIdentityFallback() {
-        if (wifiIdentityFallbackJob?.isActive == true) return
-        Log.d(TAG, "Waiting briefly for location-aware Wi-Fi capabilities")
-        wifiIdentityFallbackJob = serviceScope.launch {
-            delay(CHECK_INTERVAL_MS.milliseconds)
-            wifiIdentityFallbackJob = null
-            handleNetworkStateChange(
-                NetworkTypeDetectionUtils.getCurrentNetworkState(
-                    context = this@NetworkMonitoringService,
-                    includeWifiSsid = true
-                ),
-                force = true
-            )
-        }
     }
 
     private fun startForegroundForCurrentConfiguration() {
@@ -354,23 +183,9 @@ class NetworkMonitoringService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopNetworkMonitoring()
-        serviceScope.cancel()
+        monitor.close()
 
         Log.d(TAG, "Network monitoring service destroyed")
-    }
-
-    private fun stopNetworkMonitoring() {
-        serviceJob?.cancel()
-        serviceJob = null
-        wifiIdentityFallbackJob?.cancel()
-        wifiIdentityFallbackJob = null
-        initialNetworkInventoryPending = false
-        forceNextResolvedState = false
-        networkCallback?.let { callback ->
-            NetworkTypeDetectionUtils.unregisterNetworkTypeCallback(this, callback)
-        }
-        networkCallback = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

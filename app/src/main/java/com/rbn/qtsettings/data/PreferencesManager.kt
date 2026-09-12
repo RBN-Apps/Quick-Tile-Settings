@@ -2,18 +2,12 @@ package com.rbn.qtsettings.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rbn.qtsettings.feature.dns.data.DnsSettingsStore
 import com.rbn.qtsettings.feature.usb.data.UsbSettingsStore
 import com.rbn.qtsettings.feature.usb.domain.UsbSettings
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
-import com.rbn.qtsettings.utils.Constants.TILE_ONLY_DETECTION
 import com.rbn.qtsettings.utils.ShortcutUtils
-import com.rbn.qtsettings.utils.WifiNetworkRuleUtils
 import java.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +19,7 @@ class PreferencesManager private constructor(context: Context) {
     private val gson = Gson()
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("qt_settings_prefs", Context.MODE_PRIVATE)
-    // Compatibility facade for automation, shortcuts and backup until #117/#119/#121.
+    // Compatibility facade for platform callers, shortcuts and backup; audit removal in #119/#121/#123.
     val dnsStore = DnsSettingsStore(sharedPreferences)
     val dnsToggleOff get() = dnsStore.dnsToggleOff
     val dnsToggleAuto get() = dnsStore.dnsToggleAuto
@@ -34,67 +28,21 @@ class PreferencesManager private constructor(context: Context) {
     val dnsEnableAutoRevert get() = dnsStore.dnsEnableAutoRevert
     val dnsAutoRevertDelaySeconds get() = dnsStore.dnsAutoRevertDelaySeconds
     val dnsRequireUnlock get() = dnsStore.dnsRequireUnlock
-    private val wifiDnsRuleListType = object : TypeToken<List<WifiDnsRule>>() {}.type
-    private val knownWifiNetworkListType = object : TypeToken<List<KnownWifiNetwork>>() {}.type
 
     val usbStore = UsbSettingsStore(sharedPreferences)
 
-    // VPN Detection Settings
-    private val _vpnDetectionEnabled =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_VPN_DETECTION_ENABLED, false))
-    val vpnDetectionEnabled: StateFlow<Boolean> = _vpnDetectionEnabled.asStateFlow()
-
-    private val _vpnDetectionMode =
-        MutableStateFlow(
-            sharedPreferences.getString(KEY_VPN_DETECTION_MODE, TILE_ONLY_DETECTION)
-                ?: TILE_ONLY_DETECTION
-        )
-    val vpnDetectionMode: StateFlow<String> = _vpnDetectionMode.asStateFlow()
-
-    // Network Type Detection Settings
-    private val _networkTypeDetectionEnabled =
-        MutableStateFlow(sharedPreferences.getBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, false))
-    val networkTypeDetectionEnabled: StateFlow<Boolean> = _networkTypeDetectionEnabled.asStateFlow()
-
-    private val _networkTypeDetectionMode =
-        MutableStateFlow(
-            sharedPreferences.getString(KEY_NETWORK_TYPE_DETECTION_MODE, TILE_ONLY_DETECTION)
-                ?: TILE_ONLY_DETECTION
-        )
-    val networkTypeDetectionMode: StateFlow<String> = _networkTypeDetectionMode.asStateFlow()
-
-    private val _dnsStateOnWifi =
-        MutableStateFlow(
-            sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, DNS_MODE_OFF)
-                ?: DNS_MODE_OFF
-        )
-    val dnsStateOnWifi: StateFlow<String> = _dnsStateOnWifi.asStateFlow()
-
-    private val _dnsHostnameOnWifi =
-        MutableStateFlow(sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_WIFI, null))
-    val dnsHostnameOnWifi: StateFlow<String?> = _dnsHostnameOnWifi.asStateFlow()
-
-    private val _wifiNetworkRulesEnabled = MutableStateFlow(
-        sharedPreferences.getBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, false)
-    )
-    val wifiNetworkRulesEnabled: StateFlow<Boolean> = _wifiNetworkRulesEnabled.asStateFlow()
-
-    private val _wifiNetworkRules = MutableStateFlow(loadWifiNetworkRules())
-    val wifiNetworkRules: StateFlow<List<WifiDnsRule>> = _wifiNetworkRules.asStateFlow()
-
-    private val _knownWifiNetworks = MutableStateFlow(loadKnownWifiNetworks())
-    val knownWifiNetworks: StateFlow<List<KnownWifiNetwork>> = _knownWifiNetworks.asStateFlow()
-
-    private val _dnsStateOnMobile =
-        MutableStateFlow(
-            sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, DNS_MODE_AUTO)
-                ?: DNS_MODE_AUTO
-        )
-    val dnsStateOnMobile: StateFlow<String> = _dnsStateOnMobile.asStateFlow()
-
-    private val _dnsHostnameOnMobile =
-        MutableStateFlow(sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_MOBILE, null))
-    val dnsHostnameOnMobile: StateFlow<String?> = _dnsHostnameOnMobile.asStateFlow()
+    val automationStore = com.rbn.qtsettings.feature.automation.data.AutomationSettingsStore(sharedPreferences)
+    val vpnDetectionEnabled get() = automationStore.vpnDetectionEnabled
+    val vpnDetectionMode get() = automationStore.vpnDetectionMode
+    val networkTypeDetectionEnabled get() = automationStore.networkTypeDetectionEnabled
+    val networkTypeDetectionMode get() = automationStore.networkTypeDetectionMode
+    val dnsStateOnWifi get() = automationStore.dnsStateOnWifi
+    val dnsHostnameOnWifi get() = automationStore.dnsHostnameOnWifi
+    val wifiNetworkRulesEnabled get() = automationStore.wifiNetworkRulesEnabled
+    val wifiNetworkRules get() = automationStore.wifiNetworkRules
+    val knownWifiNetworks get() = automationStore.knownWifiNetworks
+    val dnsStateOnMobile get() = automationStore.dnsStateOnMobile
+    val dnsHostnameOnMobile get() = automationStore.dnsHostnameOnMobile
 
     // Security Settings
     // Help Shown
@@ -161,127 +109,33 @@ class PreferencesManager private constructor(context: Context) {
         _allowPinnedShortcutsWhenDisabled.value = enabled
     }
 
-    fun setVpnDetectionEnabled(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_VPN_DETECTION_ENABLED, enabled) }
-        _vpnDetectionEnabled.value = enabled
-    }
-
-    fun setVpnDetectionMode(mode: String) {
-        sharedPreferences.edit { putString(KEY_VPN_DETECTION_MODE, mode) }
-        _vpnDetectionMode.value = mode
-    }
-
-    fun setNetworkTypeDetectionEnabled(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, enabled) }
-        _networkTypeDetectionEnabled.value = enabled
-    }
-
-    fun setNetworkTypeDetectionMode(mode: String) {
-        sharedPreferences.edit { putString(KEY_NETWORK_TYPE_DETECTION_MODE, mode) }
-        _networkTypeDetectionMode.value = mode
-    }
-
-    fun setDnsStateOnWifi(state: String) {
-        sharedPreferences.edit { putString(KEY_DNS_STATE_ON_WIFI, state) }
-        _dnsStateOnWifi.value = state
-    }
-
-    fun setDnsHostnameOnWifi(hostname: String?) {
-        sharedPreferences.edit { putString(KEY_DNS_HOSTNAME_ON_WIFI, hostname) }
-        _dnsHostnameOnWifi.value = hostname
-    }
-
-    fun setWifiNetworkRulesEnabled(enabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, enabled) }
-        _wifiNetworkRulesEnabled.value = enabled
-    }
-
-    fun addWifiNetworkRule(rule: WifiDnsRule): Boolean {
-        val normalizedRule = WifiNetworkRuleUtils.normalizeRule(rule) ?: return false
-        if (_wifiNetworkRules.value.any { WifiNetworkRuleUtils.hasSameMatcher(it, normalizedRule) }) {
-            return false
-        }
-        saveWifiNetworkRules(_wifiNetworkRules.value + normalizedRule)
-        return true
-    }
-
-    fun updateWifiNetworkRule(rule: WifiDnsRule): Boolean {
-        val normalizedRule = WifiNetworkRuleUtils.normalizeRule(rule) ?: return false
-        val existingRules = _wifiNetworkRules.value
-        if (existingRules.none { it.id == normalizedRule.id } ||
-            existingRules.any {
-                it.id != normalizedRule.id &&
-                        WifiNetworkRuleUtils.hasSameMatcher(it, normalizedRule)
-            }
-        ) {
-            return false
-        }
-        saveWifiNetworkRules(
-            existingRules.map { if (it.id == normalizedRule.id) normalizedRule else it }
-        )
-        return true
-    }
-
-    fun deleteWifiNetworkRule(ruleId: String) {
-        saveWifiNetworkRules(_wifiNetworkRules.value.filterNot { it.id == ruleId })
-    }
-
+    fun setVpnDetectionEnabled(enabled: Boolean): Unit = automationStore.setVpnDetectionEnabled(enabled)
+    fun setVpnDetectionMode(mode: String): Unit = automationStore.setVpnDetectionMode(mode)
+    fun setNetworkTypeDetectionEnabled(enabled: Boolean): Unit = automationStore.setNetworkTypeDetectionEnabled(enabled)
+    fun setNetworkTypeDetectionMode(mode: String): Unit = automationStore.setNetworkTypeDetectionMode(mode)
+    fun setDnsStateOnWifi(state: String): Unit = automationStore.setDnsStateOnWifi(state)
+    fun setDnsHostnameOnWifi(hostname: String?): Unit = automationStore.setDnsHostnameOnWifi(hostname)
+    fun setWifiNetworkRulesEnabled(enabled: Boolean): Unit = automationStore.setWifiNetworkRulesEnabled(enabled)
+    fun addWifiNetworkRule(rule: WifiDnsRule): Boolean = automationStore.addWifiNetworkRule(rule)
+    fun updateWifiNetworkRule(rule: WifiDnsRule): Boolean = automationStore.updateWifiNetworkRule(rule)
+    fun deleteWifiNetworkRule(ruleId: String): Unit = automationStore.deleteWifiNetworkRule(ruleId)
     fun recordKnownWifiNetwork(
         identity: WifiNetworkIdentity,
         seenAtEpochMillis: Long = System.currentTimeMillis()
-    ) {
-        val normalized = WifiNetworkRuleUtils.normalizeIdentity(identity) ?: return
-        val updatedEntry = KnownWifiNetwork(
-            ssid = normalized.ssid,
-            bssid = normalized.bssid,
-            lastSeenEpochMillis = seenAtEpochMillis
-        )
-        val updated = buildList {
-            add(updatedEntry)
-            addAll(
-                _knownWifiNetworks.value.filterNot {
-                    it.ssid == updatedEntry.ssid && it.bssid == updatedEntry.bssid
-                }
-            )
-        }.sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
-            .take(MAX_KNOWN_WIFI_NETWORKS)
-        saveKnownWifiNetworks(updated)
-    }
-
-    private fun saveWifiNetworkRules(rules: List<WifiDnsRule>) {
-        val normalizedRules = rules.mapNotNull(WifiNetworkRuleUtils::normalizeRule)
-            .distinctBy { "${it.ssid.orEmpty()}|${it.bssid.orEmpty()}" }
-            .distinctBy(WifiDnsRule::id)
-            .take(MAX_WIFI_NETWORK_RULES)
-        sharedPreferences.edit {
-            putString(KEY_WIFI_NETWORK_RULES, gson.toJson(normalizedRules))
-        }
-        _wifiNetworkRules.value = normalizedRules
-    }
-
-    private fun saveKnownWifiNetworks(networks: List<KnownWifiNetwork>) {
-        val normalizedNetworks = networks.mapNotNull { network ->
-            WifiNetworkRuleUtils.normalizeIdentity(network.identity)?.let { identity ->
-                network.copy(ssid = identity.ssid, bssid = identity.bssid)
-            }
-        }.distinctBy { "${it.ssid.orEmpty()}|${it.bssid.orEmpty()}" }
-            .sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
-            .take(MAX_KNOWN_WIFI_NETWORKS)
-        sharedPreferences.edit {
-            putString(KEY_KNOWN_WIFI_NETWORKS, gson.toJson(normalizedNetworks))
-        }
-        _knownWifiNetworks.value = normalizedNetworks
-    }
-
-    fun setDnsStateOnMobile(state: String) {
-        sharedPreferences.edit { putString(KEY_DNS_STATE_ON_MOBILE, state) }
-        _dnsStateOnMobile.value = state
-    }
-
-    fun setDnsHostnameOnMobile(hostname: String?) {
-        sharedPreferences.edit { putString(KEY_DNS_HOSTNAME_ON_MOBILE, hostname) }
-        _dnsHostnameOnMobile.value = hostname
-    }
+    ): Unit = automationStore.recordKnownWifiNetwork(identity, seenAtEpochMillis)
+    fun setDnsStateOnMobile(state: String): Unit = automationStore.setDnsStateOnMobile(state)
+    fun setDnsHostnameOnMobile(hostname: String?): Unit = automationStore.setDnsHostnameOnMobile(hostname)
+    fun isVpnDetectionEnabled(): Boolean = automationStore.isVpnDetectionEnabled()
+    fun getVpnDetectionMode(): String = automationStore.getVpnDetectionMode()
+    fun isNetworkTypeDetectionEnabled(): Boolean = automationStore.isNetworkTypeDetectionEnabled()
+    fun getNetworkTypeDetectionMode(): String = automationStore.getNetworkTypeDetectionMode()
+    fun getDnsStateOnWifi(): String = automationStore.getDnsStateOnWifi()
+    fun getDnsHostnameOnWifi(): String? = automationStore.getDnsHostnameOnWifi()
+    fun areWifiNetworkRulesEnabled(): Boolean = automationStore.areWifiNetworkRulesEnabled()
+    fun getWifiNetworkRules(): List<WifiDnsRule> = automationStore.getWifiNetworkRules()
+    fun getKnownWifiNetworks(): List<KnownWifiNetwork> = automationStore.getKnownWifiNetworks()
+    fun getDnsStateOnMobile(): String = automationStore.getDnsStateOnMobile()
+    fun getDnsHostnameOnMobile(): String? = automationStore.getDnsHostnameOnMobile()
 
     fun exportSettingsBackupJson(): String {
         val exportedAtEpochMillis = System.currentTimeMillis()
@@ -297,17 +151,17 @@ class PreferencesManager private constructor(context: Context) {
                     enableAutoRevert = dnsEnableAutoRevert.value,
                     autoRevertDelaySeconds = dnsAutoRevertDelaySeconds.value,
                     requireUnlock = dnsRequireUnlock.value,
-                    vpnDetectionEnabled = _vpnDetectionEnabled.value,
-                    vpnDetectionMode = _vpnDetectionMode.value,
-                    networkTypeDetectionEnabled = _networkTypeDetectionEnabled.value,
-                    networkTypeDetectionMode = _networkTypeDetectionMode.value,
-                    dnsStateOnWifi = _dnsStateOnWifi.value,
-                    dnsHostnameOnWifi = _dnsHostnameOnWifi.value,
-                    wifiNetworkRulesEnabled = _wifiNetworkRulesEnabled.value,
-                    wifiNetworkRules = _wifiNetworkRules.value,
-                    knownWifiNetworks = _knownWifiNetworks.value,
-                    dnsStateOnMobile = _dnsStateOnMobile.value,
-                    dnsHostnameOnMobile = _dnsHostnameOnMobile.value
+                    vpnDetectionEnabled = vpnDetectionEnabled.value,
+                    vpnDetectionMode = vpnDetectionMode.value,
+                    networkTypeDetectionEnabled = networkTypeDetectionEnabled.value,
+                    networkTypeDetectionMode = networkTypeDetectionMode.value,
+                    dnsStateOnWifi = dnsStateOnWifi.value,
+                    dnsHostnameOnWifi = dnsHostnameOnWifi.value,
+                    wifiNetworkRulesEnabled = wifiNetworkRulesEnabled.value,
+                    wifiNetworkRules = wifiNetworkRules.value,
+                    knownWifiNetworks = knownWifiNetworks.value,
+                    dnsStateOnMobile = dnsStateOnMobile.value,
+                    dnsHostnameOnMobile = dnsHostnameOnMobile.value
                 ),
                 usb = UsbSettingsBackup(
                     toggleEnable = usbStore.state.value.toggleEnable,
@@ -345,17 +199,7 @@ class PreferencesManager private constructor(context: Context) {
 
         sharedPreferences.edit {
             dnsStore.writeTo(this, dns)
-            putBoolean(KEY_VPN_DETECTION_ENABLED, dns.vpnDetectionEnabled)
-            putString(KEY_VPN_DETECTION_MODE, dns.vpnDetectionMode)
-            putBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, dns.networkTypeDetectionEnabled)
-            putString(KEY_NETWORK_TYPE_DETECTION_MODE, dns.networkTypeDetectionMode)
-            putString(KEY_DNS_STATE_ON_WIFI, dns.dnsStateOnWifi)
-            putString(KEY_DNS_HOSTNAME_ON_WIFI, dns.dnsHostnameOnWifi)
-            putBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, dns.wifiNetworkRulesEnabled)
-            putString(KEY_WIFI_NETWORK_RULES, gson.toJson(dns.wifiNetworkRules))
-            putString(KEY_KNOWN_WIFI_NETWORKS, gson.toJson(dns.knownWifiNetworks))
-            putString(KEY_DNS_STATE_ON_MOBILE, dns.dnsStateOnMobile)
-            putString(KEY_DNS_HOSTNAME_ON_MOBILE, dns.dnsHostnameOnMobile)
+            automationStore.writeTo(this, dns)
 
             usbStore.writeTo(this, UsbSettings(
                 usb.toggleEnable, usb.toggleDisable, usb.alsoHideDevOptions,
@@ -371,17 +215,7 @@ class PreferencesManager private constructor(context: Context) {
 
         usbStore.refresh()
         dnsStore.refresh()
-        _vpnDetectionEnabled.value = dns.vpnDetectionEnabled
-        _vpnDetectionMode.value = dns.vpnDetectionMode
-        _networkTypeDetectionEnabled.value = dns.networkTypeDetectionEnabled
-        _networkTypeDetectionMode.value = dns.networkTypeDetectionMode
-        _dnsStateOnWifi.value = dns.dnsStateOnWifi
-        _dnsHostnameOnWifi.value = dns.dnsHostnameOnWifi
-        _wifiNetworkRulesEnabled.value = dns.wifiNetworkRulesEnabled
-        _wifiNetworkRules.value = dns.wifiNetworkRules
-        _knownWifiNetworks.value = dns.knownWifiNetworks
-        _dnsStateOnMobile.value = dns.dnsStateOnMobile
-        _dnsHostnameOnMobile.value = dns.dnsHostnameOnMobile
+        automationStore.refresh()
 
         _enabledShortcutIds.value = ShortcutUtils.migrateLegacyShortcutIds(
             shortcuts.enabledShortcutIds
@@ -394,35 +228,6 @@ class PreferencesManager private constructor(context: Context) {
         synchronizeEnabledShortcutsWithAvailableShortcuts()
         synchronizeFavoriteShortcutsWithAvailableShortcuts()
         updateExposedShortcuts()
-    }
-
-    private fun loadWifiNetworkRules(): List<WifiDnsRule> {
-        return try {
-            gson.fromJson<List<WifiDnsRule>>(
-                sharedPreferences.getString(KEY_WIFI_NETWORK_RULES, null),
-                wifiDnsRuleListType
-            ).orEmpty().mapNotNull(WifiNetworkRuleUtils::normalizeRule)
-        } catch (e: Exception) {
-            Log.e("PreferencesManager", "Error loading Wi-Fi DNS rules", e)
-            emptyList()
-        }
-    }
-
-    private fun loadKnownWifiNetworks(): List<KnownWifiNetwork> {
-        return try {
-            gson.fromJson<List<KnownWifiNetwork>>(
-                sharedPreferences.getString(KEY_KNOWN_WIFI_NETWORKS, null),
-                knownWifiNetworkListType
-            ).orEmpty().mapNotNull { network ->
-                WifiNetworkRuleUtils.normalizeIdentity(network.identity)?.let { identity ->
-                    network.copy(ssid = identity.ssid, bssid = identity.bssid)
-                }
-            }.sortedByDescending(KnownWifiNetwork::lastSeenEpochMillis)
-                .take(MAX_KNOWN_WIFI_NETWORKS)
-        } catch (e: Exception) {
-            Log.e("PreferencesManager", "Error loading known Wi-Fi networks", e)
-            emptyList()
-        }
     }
 
     /**
@@ -649,57 +454,10 @@ class PreferencesManager private constructor(context: Context) {
 
     fun isUsbRequireUnlockEnabled(): Boolean = usbStore.read().requireUnlock
 
-    fun isVpnDetectionEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_VPN_DETECTION_ENABLED, false)
-
-    fun getVpnDetectionMode(): String =
-        sharedPreferences.getString(KEY_VPN_DETECTION_MODE, TILE_ONLY_DETECTION)
-            ?: TILE_ONLY_DETECTION
-
-    fun isNetworkTypeDetectionEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_NETWORK_TYPE_DETECTION_ENABLED, false)
-
-    fun getNetworkTypeDetectionMode(): String =
-        sharedPreferences.getString(KEY_NETWORK_TYPE_DETECTION_MODE, TILE_ONLY_DETECTION)
-            ?: TILE_ONLY_DETECTION
-
-    fun getDnsStateOnWifi(): String =
-        sharedPreferences.getString(KEY_DNS_STATE_ON_WIFI, DNS_MODE_OFF)
-            ?: DNS_MODE_OFF
-
-    fun getDnsHostnameOnWifi(): String? =
-        sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_WIFI, null)
-
-    fun areWifiNetworkRulesEnabled(): Boolean =
-        sharedPreferences.getBoolean(KEY_WIFI_NETWORK_RULES_ENABLED, false)
-
-    fun getWifiNetworkRules(): List<WifiDnsRule> = _wifiNetworkRules.value
-
-    fun getKnownWifiNetworks(): List<KnownWifiNetwork> = _knownWifiNetworks.value
-
-    fun getDnsStateOnMobile(): String =
-        sharedPreferences.getString(KEY_DNS_STATE_ON_MOBILE, DNS_MODE_AUTO)
-            ?: DNS_MODE_AUTO
-
-    fun getDnsHostnameOnMobile(): String? =
-        sharedPreferences.getString(KEY_DNS_HOSTNAME_ON_MOBILE, null)
-
     companion object {
 
         private const val KEY_HELP_SHOWN = "help_shown_v1"
 
-        private const val KEY_VPN_DETECTION_ENABLED = "vpn_detection_enabled"
-        private const val KEY_VPN_DETECTION_MODE = "vpn_detection_mode"
-
-        private const val KEY_NETWORK_TYPE_DETECTION_ENABLED = "network_type_detection_enabled"
-        private const val KEY_NETWORK_TYPE_DETECTION_MODE = "network_type_detection_mode"
-        private const val KEY_DNS_STATE_ON_WIFI = "dns_state_on_wifi"
-        private const val KEY_DNS_HOSTNAME_ON_WIFI = "dns_hostname_on_wifi"
-        private const val KEY_WIFI_NETWORK_RULES_ENABLED = "wifi_network_rules_enabled_v1"
-        private const val KEY_WIFI_NETWORK_RULES = "wifi_network_dns_rules_v1"
-        private const val KEY_KNOWN_WIFI_NETWORKS = "known_wifi_networks_v1"
-        private const val KEY_DNS_STATE_ON_MOBILE = "dns_state_on_mobile"
-        private const val KEY_DNS_HOSTNAME_ON_MOBILE = "dns_hostname_on_mobile"
         private const val KEY_ENABLED_SHORTCUT_IDS = "enabled_shortcut_ids_v1"
         private const val KEY_FAVORITE_SHORTCUT_IDS = "favorite_shortcut_ids_v1"
         private const val KEY_ALLOW_PINNED_SHORTCUTS_WHEN_DISABLED =
@@ -711,9 +469,6 @@ class PreferencesManager private constructor(context: Context) {
             "dev_options_previous_state_for_revert"
         const val KEY_WIRELESS_DEBUGGING_PREVIOUS_STATE_FOR_REVERT =
             "wireless_debugging_previous_state_for_revert"
-
-        private const val MAX_WIFI_NETWORK_RULES = 250
-        private const val MAX_KNOWN_WIFI_NETWORKS = 100
 
         @Volatile
         private var INSTANCE: PreferencesManager? = null

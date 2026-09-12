@@ -14,6 +14,7 @@ import android.service.quicksettings.TileService
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.edit
+import com.rbn.qtsettings.QuickTileSettingsApplication
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DetectedNetworkState
 import com.rbn.qtsettings.data.PreferencesManager
@@ -47,6 +48,7 @@ class PrivateDnsTileService : TileService() {
     private var isVpnConnected = false
     private var vpnMonitorTimer: CountDownTimer? = null
     private var currentNetworkState = DetectedNetworkState()
+    @Volatile private var networkGeneration = 0L
     private var networkTypeCallback: ConnectivityManager.NetworkCallback? = null
     private var networkTypeMonitorTimer: CountDownTimer? = null
     private var monitorWifiSsid = false
@@ -95,138 +97,33 @@ class PrivateDnsTileService : TileService() {
         }
     }
 
+    private val vpnAutomation get() = (application as QuickTileSettingsApplication).container.vpnAutomation
+
     private fun initializeVpnState() {
         if (!prefsManager.isVpnDetectionEnabled()) {
-            clearVpnPreviousState()
+            vpnAutomation.clear()
             isVpnConnected = false
             return
         }
-
-        val detectionMode = prefsManager.getVpnDetectionMode()
-        if (detectionMode != TILE_ONLY_DETECTION) {
+        if (prefsManager.getVpnDetectionMode() != TILE_ONLY_DETECTION) {
             isVpnConnected = VpnDetectionUtils.isVpnActive(this)
             return
         }
-
-        if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
-            return
-        }
-
+        if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) return
         isVpnConnected = VpnDetectionUtils.isVpnActive(this)
-
-        if (isVpnConnected) {
-            val existingVpnState = getVpnPreviousState()
-            if (existingVpnState == null) {
-                val currentMode = VpnDetectionUtils.getCurrentPrivateDnsMode(this)
-                if (currentMode == DNS_MODE_OFF) {
-                    Log.w(
-                        "PrivateDnsTile",
-                        "VPN is active with DNS off, but no saved state found. Cannot restore original DNS settings."
-                    )
-                } else {
-                    onVpnConnected()
-                }
-            }
-        } else {
-            val existingVpnState = getVpnPreviousState()
-            if (existingVpnState != null) {
-                onVpnDisconnected()
-            }
-        }
+        vpnAutomation.initialize(isVpnConnected, ::applyCurrentNetworkPolicy)
     }
 
-    private fun onVpnConnected() {
-        try {
-            val currentMode = VpnDetectionUtils.getCurrentPrivateDnsMode(this)
-            val currentHostname = VpnDetectionUtils.getCurrentPrivateDnsHostname(this)
-
-            if (currentMode != DNS_MODE_OFF) {
-                if (VpnDetectionUtils.setPrivateDnsOff(this)) {
-                    saveVpnPreviousState(currentMode, currentHostname)
-                    Log.i("PrivateDnsTile", "VPN detected: Set Private DNS to off")
-                } else {
-                    Log.w("PrivateDnsTile", "VPN detected: Failed to disable Private DNS")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("PrivateDnsTile", "Error handling VPN connection", e)
-        }
-    }
-
+    private fun onVpnConnected() = vpnAutomation.connected()
     private fun onVpnDisconnected() {
-        try {
-            val previousState = getVpnPreviousState()
-            if (previousState == null) {
-                applyCurrentNetworkPolicy()
-                return
-            }
-            val (previousMode, previousHostname) = previousState
-
-            val networkPolicyApplied = applyCurrentNetworkPolicy()
-            val restored = networkPolicyApplied ||
-                VpnDetectionUtils.restorePrivateDns(this, previousMode, previousHostname)
-            if (restored) {
-                clearVpnPreviousState()
-            }
-
-            Log.i(
-                "PrivateDnsTile",
-                if (networkPolicyApplied) {
-                    "VPN disconnected: Applied current network DNS policy"
-                } else if (restored) {
-                    "VPN disconnected: Restored Private DNS to $previousMode"
-                } else {
-                    "VPN disconnected: DNS restoration failed; keeping saved state"
-                }
-            )
-        } catch (e: Exception) {
-            Log.e("PrivateDnsTile", "Error handling VPN disconnection", e)
-        }
+        vpnAutomation.disconnected(::applyCurrentNetworkPolicy, applyWithoutSavedState = true)
     }
 
     private fun applyCurrentNetworkPolicy(): Boolean {
         if (!prefsManager.isNetworkTypeDetectionEnabled()) return false
-        val includeWifiIdentity =
-            prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION &&
-                prefsManager.areWifiNetworkRulesEnabled()
-        val detectedNetworkState = NetworkTypeDetectionUtils.getCurrentNetworkState(
-            context = this,
-            includeWifiSsid = includeWifiIdentity
-        )
-        return NetworkDnsAutomation.apply(this, prefsManager, detectedNetworkState)
-    }
-
-    private fun saveVpnPreviousState(mode: String, hostname: String?) {
-        val sharedVpnPrefs = applicationContext.getSharedPreferences(
-            "vpn_detection_shared_state",
-            MODE_PRIVATE
-        )
-        sharedVpnPrefs.edit {
-            putString("vpn_previous_dns_mode", mode)
-            putString("vpn_previous_dns_hostname", hostname)
-        }
-    }
-
-    private fun getVpnPreviousState(): Pair<String, String?>? {
-        val sharedVpnPrefs = applicationContext.getSharedPreferences(
-            "vpn_detection_shared_state",
-            MODE_PRIVATE
-        )
-        val mode = sharedVpnPrefs.getString("vpn_previous_dns_mode", null)
-        return mode?.let {
-            Pair(it, sharedVpnPrefs.getString("vpn_previous_dns_hostname", null))
-        }
-    }
-
-    private fun clearVpnPreviousState() {
-        val sharedVpnPrefs = applicationContext.getSharedPreferences(
-            "vpn_detection_shared_state",
-            MODE_PRIVATE
-        )
-        sharedVpnPrefs.edit {
-            remove("vpn_previous_dns_mode")
-            remove("vpn_previous_dns_hostname")
-        }
+        val includeWifiIdentity = prefsManager.getNetworkTypeDetectionMode() == BACKGROUND_DETECTION && prefsManager.areWifiNetworkRulesEnabled()
+        return NetworkDnsAutomation.apply(this, prefsManager.automationStore,
+            NetworkTypeDetectionUtils.getCurrentNetworkState(this, includeWifiIdentity))
     }
 
     private fun startVpnMonitoring() {
@@ -571,13 +468,15 @@ class PrivateDnsTileService : TileService() {
 
         stopNetworkTypeMonitoring()
         monitorWifiSsid = false
+        val registeredGeneration = networkGeneration
         val mainHandler = Handler(Looper.getMainLooper())
         networkTypeCallback = NetworkTypeDetectionUtils.createNetworkStateCallback(
             context = this,
             includeWifiSsid = monitorWifiSsid,
+            isCurrent = { registeredGeneration == networkGeneration },
             onNetworkStateChanged = { detectedNetworkState ->
                 mainHandler.post {
-                    applyNetworkStateIfChanged(detectedNetworkState)
+                    if (registeredGeneration == networkGeneration) applyNetworkStateIfChanged(detectedNetworkState)
                 }
             }
         )
@@ -603,6 +502,7 @@ class PrivateDnsTileService : TileService() {
     }
 
     private fun stopNetworkTypeMonitoring() {
+        networkGeneration++
         networkTypeCallback?.let { callback ->
             NetworkTypeDetectionUtils.unregisterNetworkTypeCallback(this, callback)
         }

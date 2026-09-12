@@ -323,11 +323,13 @@ object NetworkTypeDetectionUtils {
     fun createNetworkStateCallback(
         context: Context,
         includeWifiSsid: Boolean = true,
+        isCurrent: () -> Boolean = { true },
         onNetworkStateChanged: (DetectedNetworkState) -> Unit
     ): ConnectivityManager.NetworkCallback {
         val callbackEvents = NetworkStateCallbackEvents(
             context = context,
             includeWifiSsid = includeWifiSsid,
+            isCurrent = isCurrent,
             onNetworkStateChanged = onNetworkStateChanged
         )
         return if (includeWifiSsid && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -361,6 +363,7 @@ object NetworkTypeDetectionUtils {
     private class NetworkStateCallbackEvents(
         private val context: Context,
         private val includeWifiSsid: Boolean,
+        private val isCurrent: () -> Boolean,
         private val onNetworkStateChanged: (DetectedNetworkState) -> Unit
     ) {
         private var lastNetworkState: DetectedNetworkState? = null
@@ -369,11 +372,13 @@ object NetworkTypeDetectionUtils {
             network: Network,
             networkCapabilities: NetworkCapabilities
         ) {
+            if (!isCurrent()) return
             rememberNetworkCapabilities(network, networkCapabilities)
             publishIfChanged()
         }
 
         fun onLost(network: Network) {
+            if (!isCurrent()) return
             forgetNetwork(network)
             publishIfChanged()
         }

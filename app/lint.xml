@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- Retain the verified adaptive launcher resource configuration. After the previous
+         relocation, packaged APKs contained only bitmap icons. Any future relocation must
+         verify both adaptive icons and their monochrome layers in Debug and R8 Release APKs. -->
+    <issue id="ObsoleteSdkInt">
+        <ignore path="src/main/res/mipmap-anydpi-v26" />
+    </issue>
+</lint>

@@ -11,6 +11,7 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.data.SettingsBackup
 import com.rbn.qtsettings.data.WifiNetworkIdentity
+import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.services.NetworkMonitoringService
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
@@ -39,6 +40,7 @@ class MainViewModelTest {
 
     private lateinit var context: Context
     private lateinit var prefsManager: PreferencesManager
+    private lateinit var automation: AutomationViewModel
     private lateinit var viewModel: MainViewModel
 
     @Before
@@ -48,7 +50,9 @@ class MainViewModelTest {
         clearPreferences()
         prefsManager = PreferencesManager.getInstance(context)
         viewModel = MainViewModel(prefsManager)
-        viewModel.setApplicationContext(context)
+        automation = AutomationViewModel(prefsManager.automationStore, { com.rbn.qtsettings.platform.automation.AndroidWifiDiscoverySource(it) })
+        viewModel.onAutomationBackupRestored = automation::onBackupRestored
+        automation.setApplicationContext(context)
     }
 
     @After
@@ -70,10 +74,10 @@ class MainViewModelTest {
 
     @Test
     fun wifiNetworkRules_explicitRuleCrudPersistsAcrossPreferencesManagerRecreation() {
-        viewModel.setWifiNetworkRulesEnabled(true)
+        automation.setWifiNetworkRulesEnabled(true)
 
         assertTrue(
-            viewModel.addWifiNetworkRule(
+            automation.addWifiNetworkRule(
                 ssid = "Campus",
                 bssid = "aa:bb:cc:dd:ee:ff",
                 actionMode = DNS_MODE_ON,
@@ -81,7 +85,7 @@ class MainViewModelTest {
             )
         )
         assertFalse(
-            viewModel.addWifiNetworkRule(
+            automation.addWifiNetworkRule(
                 ssid = "Campus",
                 bssid = "AA:BB:CC:DD:EE:FF",
                 actionMode = DNS_MODE_OFF,
@@ -89,10 +93,10 @@ class MainViewModelTest {
             )
         )
 
-        val created = viewModel.wifiNetworkRules.value.single()
+        val created = automation.wifiNetworkRules.value.single()
         assertEquals("AA:BB:CC:DD:EE:FF", created.bssid)
         assertTrue(
-            viewModel.updateWifiNetworkRule(
+            automation.updateWifiNetworkRule(
                 id = created.id,
                 ssid = "Campus WiFi",
                 bssid = null,
@@ -156,10 +160,10 @@ class MainViewModelTest {
         prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
         prefsManager.setWifiNetworkRulesEnabled(true)
 
-        viewModel.setNetworkTypeDetectionEnabled(true)
+        automation.setNetworkTypeDetectionEnabled(true)
 
-        assertTrue(viewModel.networkTypeDetectionEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
+        assertTrue(automation.networkTypeDetectionEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
     }
 
     @Test
@@ -168,19 +172,19 @@ class MainViewModelTest {
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
 
-        viewModel.setWifiNetworkRulesEnabled(true)
+        automation.setWifiNetworkRulesEnabled(true)
 
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
         assertEquals(
             context.getString(R.string.wifi_rules_enabled_background_detection),
-            viewModel.networkDetectionStatusMessage.value
+            automation.networkDetectionStatusMessage.value
         )
     }
 
     @Test
     fun setNetworkTypeDetectionMode_whenWifiRulesAreActive_rejectsTileOnly() {
-        val contextFreeViewModel = MainViewModel(prefsManager)
+        val contextFreeViewModel = AutomationViewModel(prefsManager.automationStore, { com.rbn.qtsettings.platform.automation.AndroidWifiDiscoverySource(it) })
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
         prefsManager.setWifiNetworkRulesEnabled(true)
@@ -196,11 +200,11 @@ class MainViewModelTest {
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
 
-        viewModel.setWifiNetworkRulesEnabled(true)
+        automation.setWifiNetworkRulesEnabled(true)
 
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertTrue(viewModel.showNotificationPermissionExplanationDialog.value)
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
     }
 
     @Test
@@ -211,11 +215,11 @@ class MainViewModelTest {
         val shadowApplication = shadowOf(context.applicationContext as Application)
         shadowApplication.clearStartedServices()
 
-        viewModel.setWifiNetworkRulesEnabled(true)
-        viewModel.onNotificationPermissionResult(granted = true)
+        automation.setWifiNetworkRulesEnabled(true)
+        automation.onNotificationPermissionResult(granted = true)
 
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
         assertNull(shadowApplication.peekNextStartedService())
     }
 
@@ -229,14 +233,14 @@ class MainViewModelTest {
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
 
-        viewModel.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
+        automation.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
 
         val startedService = shadowApplication.peekNextStartedService()
         assertEquals(
             NetworkMonitoringService::class.java.name,
             startedService.component?.className
         )
-        assertTrue(viewModel.showNotificationPermissionExplanationDialog.value)
+        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
     }
 
     @Test
@@ -244,12 +248,12 @@ class MainViewModelTest {
     fun continueWithoutNotifications_whenWifiRulesWereEnabled_keepsRulesAndBackgroundDetection() {
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
-        viewModel.setWifiNetworkRulesEnabled(true)
-        viewModel.continueWithoutNotificationPermission()
+        automation.setWifiNetworkRulesEnabled(true)
+        automation.continueWithoutNotificationPermission()
 
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertFalse(viewModel.showNotificationPermissionExplanationDialog.value)
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertFalse(automation.showNotificationPermissionExplanationDialog.value)
     }
 
     @Test
@@ -259,48 +263,48 @@ class MainViewModelTest {
         prefsManager.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
         prefsManager.setWifiNetworkRulesEnabled(true)
 
-        viewModel.setNetworkTypeDetectionEnabled(true)
+        automation.setNetworkTypeDetectionEnabled(true)
 
-        assertTrue(viewModel.networkTypeDetectionEnabled.value)
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
-        assertTrue(viewModel.showNotificationPermissionExplanationDialog.value)
+        assertTrue(automation.networkTypeDetectionEnabled.value)
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
+        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
 
-        viewModel.continueWithoutNotificationPermission()
+        automation.continueWithoutNotificationPermission()
 
-        assertTrue(viewModel.networkTypeDetectionEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
+        assertTrue(automation.networkTypeDetectionEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
     }
 
     @Test
     fun wifiNetworkRules_backupExportAndRestore_roundTripsEnabledStateAndRules() {
-        viewModel.setWifiNetworkRulesEnabled(true)
-        assertTrue(viewModel.addWifiNetworkRule("Home", null, "default", null))
-        assertTrue(viewModel.addWifiNetworkRule("Büro", null, "default", null))
+        automation.setWifiNetworkRulesEnabled(true)
+        assertTrue(automation.addWifiNetworkRule("Home", null, "default", null))
+        assertTrue(automation.addWifiNetworkRule("Büro", null, "default", null))
         val backupJson = prefsManager.exportSettingsBackupJson()
         val exportedBackup = Gson().fromJson(backupJson, SettingsBackup::class.java)
 
         assertTrue(exportedBackup.dns?.wifiNetworkRulesEnabled == true)
 
-        viewModel.setWifiNetworkRulesEnabled(false)
-        viewModel.wifiNetworkRules.value.forEach { viewModel.deleteWifiNetworkRule(it.id) }
-        assertTrue(viewModel.addWifiNetworkRule("Temporary", null, DNS_MODE_OFF, null))
+        automation.setWifiNetworkRulesEnabled(false)
+        automation.wifiNetworkRules.value.forEach { automation.deleteWifiNetworkRule(it.id) }
+        assertTrue(automation.addWifiNetworkRule("Temporary", null, DNS_MODE_OFF, null))
 
         prefsManager.restoreSettingsBackupJson(backupJson)
 
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
         assertEquals(
             setOf("Home", "Büro"),
-            viewModel.wifiNetworkRules.value.mapNotNull { it.ssid }.toSet()
+            automation.wifiNetworkRules.value.mapNotNull { it.ssid }.toSet()
         )
         assertTrue(prefsManager.areWifiNetworkRulesEnabled())
     }
 
     @Test
     fun wifiNetworkRules_backupRoundTripsExplicitActionsAndHistory() {
-        viewModel.setWifiNetworkRulesEnabled(true)
+        automation.setWifiNetworkRulesEnabled(true)
         assertTrue(
-            viewModel.addWifiNetworkRule(
+            automation.addWifiNetworkRule(
                 ssid = "Campus",
                 bssid = "AA:BB:CC:DD:EE:FF",
                 actionMode = DNS_MODE_ON,
@@ -313,21 +317,21 @@ class MainViewModelTest {
         )
         val backupJson = prefsManager.exportSettingsBackupJson()
 
-        viewModel.deleteWifiNetworkRule(viewModel.wifiNetworkRules.value.single().id)
+        automation.deleteWifiNetworkRule(automation.wifiNetworkRules.value.single().id)
         prefsManager.restoreSettingsBackupJson(backupJson)
 
-        val restoredRule = viewModel.wifiNetworkRules.value.single()
+        val restoredRule = automation.wifiNetworkRules.value.single()
         assertEquals("Campus", restoredRule.ssid)
         assertEquals("AA:BB:CC:DD:EE:FF", restoredRule.bssid)
         assertEquals(DNS_MODE_ON, restoredRule.actionMode)
         assertEquals("dns.google", restoredRule.dnsHostname)
-        assertEquals(1234, viewModel.knownWifiNetworks.value.single().lastSeenEpochMillis)
+        assertEquals(1234, automation.knownWifiNetworks.value.single().lastSeenEpochMillis)
     }
 
     @Test
     fun wifiNetworkRules_restoreOldBackupWithoutRuleFields_usesDisabledAndEmptyDefaults() {
-        viewModel.setWifiNetworkRulesEnabled(true)
-        assertTrue(viewModel.addWifiNetworkRule("Existing", null, "default", null))
+        automation.setWifiNetworkRulesEnabled(true)
+        assertTrue(automation.addWifiNetworkRule("Existing", null, "default", null))
         val oldBackupJson = """
             {
               "schemaVersion": 1,
@@ -367,15 +371,15 @@ class MainViewModelTest {
 
         prefsManager.restoreSettingsBackupJson(oldBackupJson)
 
-        assertFalse(viewModel.wifiNetworkRulesEnabled.value)
-        assertTrue(viewModel.wifiNetworkRules.value.isEmpty())
+        assertFalse(automation.wifiNetworkRulesEnabled.value)
+        assertTrue(automation.wifiNetworkRules.value.isEmpty())
         assertFalse(prefsManager.areWifiNetworkRulesEnabled())
     }
 
     @Test
     fun wifiNetworkRules_restoreBackupWithOnlyInvalidRules_doesNotInventFallbackRules() {
-        viewModel.setWifiNetworkRulesEnabled(true)
-        assertTrue(viewModel.addWifiNetworkRule("Existing", null, "default", null))
+        automation.setWifiNetworkRulesEnabled(true)
+        assertTrue(automation.addWifiNetworkRule("Existing", null, "default", null))
         val backup = Gson().fromJson(
             prefsManager.exportSettingsBackupJson(),
             JsonObject::class.java
@@ -394,14 +398,14 @@ class MainViewModelTest {
 
         prefsManager.restoreSettingsBackupJson(Gson().toJson(backup))
 
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
-        assertTrue(viewModel.wifiNetworkRules.value.isEmpty())
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
+        assertTrue(automation.wifiNetworkRules.value.isEmpty())
     }
 
     @Test
     fun wifiNetworkRules_restoreBackupWithMissingRules_usesEmptyDefault() {
-        viewModel.setWifiNetworkRulesEnabled(true)
-        assertTrue(viewModel.addWifiNetworkRule("Existing", null, DNS_MODE_OFF, null))
+        automation.setWifiNetworkRulesEnabled(true)
+        assertTrue(automation.addWifiNetworkRule("Existing", null, DNS_MODE_OFF, null))
         val backup = Gson().fromJson(
             prefsManager.exportSettingsBackupJson(),
             JsonObject::class.java
@@ -412,8 +416,8 @@ class MainViewModelTest {
 
         prefsManager.restoreSettingsBackupJson(Gson().toJson(backup))
 
-        assertTrue(viewModel.wifiNetworkRulesEnabled.value)
-        assertTrue(viewModel.wifiNetworkRules.value.isEmpty())
+        assertTrue(automation.wifiNetworkRulesEnabled.value)
+        assertTrue(automation.wifiNetworkRules.value.isEmpty())
     }
 
     @Test
@@ -459,12 +463,12 @@ class MainViewModelTest {
         prefsManager.setDnsEnableAutoRevert(true)
         prefsManager.setDnsAutoRevertDelaySeconds(42)
         prefsManager.setDnsRequireUnlock(true)
-        viewModel.setVpnDetectionEnabled(true)
-        viewModel.setVpnDetectionMode(TILE_ONLY_DETECTION)
-        viewModel.setNetworkTypeDetectionEnabled(true)
-        viewModel.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
-        viewModel.setDnsStateOnWifi(DNS_MODE_ON)
-        viewModel.setDnsHostnameOnWifi(customEntry.hostname)
+        automation.setVpnDetectionEnabled(true)
+        automation.setVpnDetectionMode(TILE_ONLY_DETECTION)
+        automation.setNetworkTypeDetectionEnabled(true)
+        automation.setNetworkTypeDetectionMode(TILE_ONLY_DETECTION)
+        automation.setDnsStateOnWifi(DNS_MODE_ON)
+        automation.setDnsHostnameOnWifi(customEntry.hostname)
 
         prefsManager.setUsbToggleEnable(false)
         prefsManager.setUsbToggleDisable(true)
@@ -498,9 +502,9 @@ class MainViewModelTest {
         assertTrue(prefsManager.dnsEnableAutoRevert.value)
         assertEquals(42, prefsManager.dnsAutoRevertDelaySeconds.value)
         assertTrue(prefsManager.dnsRequireUnlock.value)
-        assertTrue(viewModel.networkTypeDetectionEnabled.value)
-        assertEquals(DNS_MODE_ON, viewModel.dnsStateOnWifi.value)
-        assertEquals("backup.example.com", viewModel.dnsHostnameOnWifi.value)
+        assertTrue(automation.networkTypeDetectionEnabled.value)
+        assertEquals(DNS_MODE_ON, automation.dnsStateOnWifi.value)
+        assertEquals("backup.example.com", automation.dnsHostnameOnWifi.value)
 
         assertFalse(prefsManager.usbStore.state.value.toggleEnable)
         assertTrue(prefsManager.usbStore.state.value.alsoHideDevOptions)
@@ -583,12 +587,12 @@ class MainViewModelTest {
 
         assertEquals(1, prefsManager.dnsAutoRevertDelaySeconds.value)
         assertEquals(86_400, prefsManager.usbStore.state.value.autoRevertDelaySeconds)
-        assertEquals(TILE_ONLY_DETECTION, viewModel.vpnDetectionMode.value)
-        assertEquals(TILE_ONLY_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertEquals(DNS_MODE_OFF, viewModel.dnsStateOnWifi.value)
-        assertNull(viewModel.dnsHostnameOnWifi.value)
-        assertEquals(DNS_MODE_ON, viewModel.dnsStateOnMobile.value)
-        assertEquals("good.example.com", viewModel.dnsHostnameOnMobile.value)
+        assertEquals(TILE_ONLY_DETECTION, automation.vpnDetectionMode.value)
+        assertEquals(TILE_ONLY_DETECTION, automation.networkTypeDetectionMode.value)
+        assertEquals(DNS_MODE_OFF, automation.dnsStateOnWifi.value)
+        assertNull(automation.dnsHostnameOnWifi.value)
+        assertEquals(DNS_MODE_ON, automation.dnsStateOnMobile.value)
+        assertEquals("good.example.com", automation.dnsHostnameOnMobile.value)
         assertTrue(viewModel.enabledShortcutIds.value.contains("dns_custom_good"))
         assertFalse(viewModel.enabledShortcutIds.value.contains("unknown_future_shortcut"))
     }
@@ -761,7 +765,7 @@ class MainViewModelTest {
             prefsManager.restoreSettingsBackupJson(missingCoreSectionJson)
         }
 
-        assertEquals(DNS_MODE_AUTO, viewModel.dnsStateOnMobile.value)
+        assertEquals(DNS_MODE_AUTO, automation.dnsStateOnMobile.value)
     }
 
     @Test
@@ -771,11 +775,11 @@ class MainViewModelTest {
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
 
-        viewModel.onNotificationPermissionResult(false)
+        automation.onNotificationPermissionResult(false)
 
-        assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertTrue(viewModel.showNotificationPermissionFallbackDialog.value)
+        assertEquals(BACKGROUND_DETECTION, automation.vpnDetectionMode.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertTrue(automation.showNotificationPermissionFallbackDialog.value)
     }
 
     @Test
@@ -785,12 +789,12 @@ class MainViewModelTest {
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
 
-        viewModel.onNotificationPermissionPermanentlyDenied()
+        automation.onNotificationPermissionPermanentlyDenied()
 
-        assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertFalse(viewModel.showNotificationPermissionFallbackDialog.value)
-        assertTrue(viewModel.showNotificationPermissionSettingsDialog.value)
+        assertEquals(BACKGROUND_DETECTION, automation.vpnDetectionMode.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertFalse(automation.showNotificationPermissionFallbackDialog.value)
+        assertTrue(automation.showNotificationPermissionSettingsDialog.value)
     }
 
     @Test
@@ -799,14 +803,14 @@ class MainViewModelTest {
         prefsManager.setVpnDetectionMode(BACKGROUND_DETECTION)
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
-        viewModel.onNotificationPermissionResult(false)
+        automation.onNotificationPermissionResult(false)
 
-        viewModel.continueWithoutNotificationPermission()
+        automation.continueWithoutNotificationPermission()
 
-        assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertFalse(viewModel.showNotificationPermissionFallbackDialog.value)
-        assertFalse(viewModel.showNotificationPermissionSettingsDialog.value)
+        assertEquals(BACKGROUND_DETECTION, automation.vpnDetectionMode.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertFalse(automation.showNotificationPermissionFallbackDialog.value)
+        assertFalse(automation.showNotificationPermissionSettingsDialog.value)
     }
 
     @Test
@@ -814,11 +818,11 @@ class MainViewModelTest {
         prefsManager.setVpnDetectionEnabled(true)
         prefsManager.setVpnDetectionMode(BACKGROUND_DETECTION)
 
-        viewModel.onNotificationPermissionPermanentlyDenied()
+        automation.onNotificationPermissionPermanentlyDenied()
 
         assertEquals(BACKGROUND_DETECTION, prefsManager.getVpnDetectionMode())
-        assertFalse(viewModel.showNotificationPermissionFallbackDialog.value)
-        assertTrue(viewModel.showNotificationPermissionSettingsDialog.value)
+        assertFalse(automation.showNotificationPermissionFallbackDialog.value)
+        assertTrue(automation.showNotificationPermissionSettingsDialog.value)
     }
 
     @Test
@@ -827,13 +831,13 @@ class MainViewModelTest {
         prefsManager.setVpnDetectionMode(BACKGROUND_DETECTION)
         prefsManager.setNetworkTypeDetectionEnabled(true)
         prefsManager.setNetworkTypeDetectionMode(BACKGROUND_DETECTION)
-        viewModel.onNotificationPermissionPermanentlyDenied()
+        automation.onNotificationPermissionPermanentlyDenied()
 
-        viewModel.openNotificationPermissionSettings()
+        automation.openNotificationPermissionSettings()
 
-        assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
-        assertEquals(BACKGROUND_DETECTION, viewModel.networkTypeDetectionMode.value)
-        assertFalse(viewModel.showNotificationPermissionSettingsDialog.value)
+        assertEquals(BACKGROUND_DETECTION, automation.vpnDetectionMode.value)
+        assertEquals(BACKGROUND_DETECTION, automation.networkTypeDetectionMode.value)
+        assertFalse(automation.showNotificationPermissionSettingsDialog.value)
     }
 
     @Test
@@ -842,11 +846,11 @@ class MainViewModelTest {
         prefsManager.setVpnDetectionEnabled(true)
         prefsManager.setVpnDetectionMode(TILE_ONLY_DETECTION)
 
-        viewModel.setVpnDetectionMode(BACKGROUND_DETECTION)
+        automation.setVpnDetectionMode(BACKGROUND_DETECTION)
 
-        assertEquals(BACKGROUND_DETECTION, viewModel.vpnDetectionMode.value)
-        assertTrue(viewModel.showNotificationPermissionExplanationDialog.value)
-        assertFalse(viewModel.notificationPermissionExplanationFromBackup.value)
+        assertEquals(BACKGROUND_DETECTION, automation.vpnDetectionMode.value)
+        assertTrue(automation.showNotificationPermissionExplanationDialog.value)
+        assertFalse(automation.notificationPermissionExplanationFromBackup.value)
     }
 
     @Test
@@ -854,11 +858,11 @@ class MainViewModelTest {
         prefsManager.setVpnDetectionEnabled(true)
         prefsManager.setVpnDetectionMode(BACKGROUND_DETECTION)
 
-        viewModel.onNotificationPermissionResult(granted = false)
+        automation.onNotificationPermissionResult(granted = false)
 
         assertEquals(BACKGROUND_DETECTION, prefsManager.getVpnDetectionMode())
-        assertTrue(viewModel.showNotificationPermissionFallbackDialog.value)
-        assertNull(viewModel.permissionGrantStatus.value)
+        assertTrue(automation.showNotificationPermissionFallbackDialog.value)
+        assertNull(automation.permissionGrantStatus.value)
     }
 
     private fun clearPreferences() {

@@ -16,6 +16,7 @@ import com.rbn.qtsettings.app.AppSystemStateObserver
 import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.app.navigation.resolveTileArea
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
+import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
 import com.rbn.qtsettings.platform.dns.DnsSystemStateObserver
@@ -33,6 +34,9 @@ class MainActivity : ComponentActivity() {
     private val dnsViewModel: DnsSettingsViewModel by viewModels {
         (application as QuickTileSettingsApplication).container.dnsViewModelFactory
     }
+    private val automationViewModel: AutomationViewModel by viewModels {
+        (application as QuickTileSettingsApplication).container.automationViewModelFactory
+    }
     private var externalArea by mutableStateOf<AppArea?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,17 +44,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         // Recreation restores Navigation 3's stacks, not the original tile intent.
         if (savedInstanceState == null) externalArea = intent.resolveTileArea()
-        val permissions = AppPermissionBinding(this, viewModel)
-        lifecycle.addObserver(AppSystemStateObserver(applicationContext, viewModel))
+        val permissions = AppPermissionBinding(this, viewModel, automationViewModel)
+        lifecycle.addObserver(AppSystemStateObserver(applicationContext, viewModel, automationViewModel))
         lifecycle.addObserver(permissions)
         lifecycle.addObserver(UsbSystemStateObserver(applicationContext, usbViewModel))
         lifecycle.addObserver(DnsSystemStateObserver(applicationContext, dnsViewModel))
+        viewModel.onAutomationBackupRestored = automationViewModel::onBackupRestored
         setContent {
             QuickTileSettingsTheme {
                 AppRoot(
                     viewModel = viewModel,
                     usbViewModel = usbViewModel,
                     dnsViewModel = dnsViewModel,
+                    automationViewModel = automationViewModel,
                     externalArea = externalArea,
                     onExternalAreaConsumed = { externalArea = null },
                     onOpenAdbSettings = { startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) },
