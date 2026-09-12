@@ -413,4 +413,5 @@
     <string name="automation_notification_optional_summary">Optional: show the ongoing monitoring status in the notification shade. Detection also works without this permission.</string>
     <string name="automation_notification_legacy_summary">Background detection requires an ongoing service notification on this Android version. Manage its visibility in Android notification settings.</string>
     <string name="search_hide_keyboard">Search and hide keyboard</string>
+    <string name="shortcut_settings_pinned_details">How pinned shortcuts work</string>
 </resources>

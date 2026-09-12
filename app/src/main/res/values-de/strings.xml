@@ -405,4 +405,5 @@
     <string name="automation_notification_optional_summary">Optional: Den laufenden Erkennungsstatus in der Benachrichtigungsleiste anzeigen. Die Erkennung funktioniert auch ohne diese Freigabe.</string>
     <string name="automation_notification_legacy_summary">Auf dieser Android-Version benötigt die Hintergrunderkennung eine dauerhafte Dienstbenachrichtigung. Ihre Anzeige lässt sich in den Android-Benachrichtigungseinstellungen verwalten.</string>
     <string name="search_hide_keyboard">Suchen und Tastatur schließen</string>
+    <string name="shortcut_settings_pinned_details">Angeheftete Shortcuts erklärt</string>
 </resources>

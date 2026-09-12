@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
 
 @Composable
@@ -24,6 +25,7 @@ internal fun SettingsRowContent(
     enabled: Boolean,
     modifier: Modifier,
     status: String? = null,
+    iconPainter: Painter? = null,
     titleBadge: (@Composable () -> Unit)? = null,
     trailing: @Composable () -> Unit
 ) {
@@ -37,6 +39,10 @@ internal fun SettingsRowContent(
     ) {
         if (icon != null) {
             Icon(icon, contentDescription = null, modifier = Modifier.size(AppSpacing.iconSize),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha))
+        }
+        if (icon == null && iconPainter != null) {
+            Icon(iconPainter, contentDescription = null, modifier = Modifier.size(AppSpacing.iconSize),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha))
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(AppSpacing.textGap)) {

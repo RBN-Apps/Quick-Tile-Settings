@@ -1,9 +1,7 @@
 package com.rbn.qtsettings.app
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -113,7 +111,7 @@ fun AppRoot(
                 }
             } else if (route is AppRoute.Shortcuts) {
                 ShortcutSettingsRoot(shortcutViewModelFactory,
-                    Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(horizontal = 16.dp))
+                    Modifier.fillMaxSize().padding(horizontal = 16.dp))
             } else LegacyFeatureContentRoot(route, viewModel)
         }
     }
