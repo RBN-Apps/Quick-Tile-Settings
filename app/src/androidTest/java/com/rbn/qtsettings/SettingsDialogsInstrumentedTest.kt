@@ -4,8 +4,9 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
-import com.rbn.qtsettings.feature.permissions.presentation.AdbInstructionDialog
-import com.rbn.qtsettings.feature.permissions.presentation.PermissionGrantDialog
+import com.rbn.qtsettings.feature.permissions.presentation.*
+import com.rbn.qtsettings.feature.permissions.domain.PermissionSnapshot
+import com.rbn.qtsettings.platform.permissions.adbPermissionGrantCommand
 import com.rbn.qtsettings.feature.settings.presentation.NotificationPermissionSettingsDialog
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -16,22 +17,18 @@ class SettingsDialogsInstrumentedTest {
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     private fun text(id: Int) = compose.onNodeWithText(context.getString(id))
 
-    @Test fun adbCommands_copyExactValues_atLargeFont_withCloseAlwaysVisible() {
+    @Test fun adbCommands_copyExactValues_atLargeFont() {
         val copied = mutableListOf<String>()
-        var dismissed = 0
         compose.setContent {
             DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(1.5f)) {
-                QuickTileSettingsTheme { AdbInstructionDialog({ dismissed++ }, copied::add) }
+                QuickTileSettingsTheme { AdbInstructionsScreen(adbPermissionGrantCommand(context.packageName), copied::add) }
             }
         }
-        text(R.string.dialog_close).assertIsDisplayed()
         text(R.string.button_copy_grant_command).performScrollTo().performClick()
         text(R.string.button_copy_install_command).performScrollTo().performClick()
-        text(R.string.dialog_close).assertIsDisplayed().performClick()
         compose.runOnIdle {
             assertEquals(listOf("adb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS",
                 context.getString(R.string.adb_command_install_g)), copied)
-            assertEquals(1, dismissed)
         }
     }
 
@@ -42,8 +39,8 @@ class SettingsDialogsInstrumentedTest {
         var developer = 0
         compose.setContent {
             QuickTileSettingsTheme {
-                PermissionGrantDialog({}, { developer++ }, { adb++ }, { shizuku++ }, { root++ },
-                    { error("Already authorized Shizuku must not request permission again") }, true, true, true, true)
+                PermissionSettingsScreen(PermissionSnapshot(shizukuAvailable = true, shizukuPermissionGranted = true, rooted = true, developerOptionsEnabled = true), true, PermissionOperation(), null, {}, { adb++ }, { developer++ },
+                    { error("Already authorized Shizuku must not request permission again") }, { shizuku++ }, { root++ }, {})
             }
         }
         text(R.string.button_grant_with_root).performScrollTo().performClick()
@@ -51,6 +48,31 @@ class SettingsDialogsInstrumentedTest {
         text(R.string.button_show_adb_instructions).performScrollTo().performClick()
         text(R.string.button_open_developer_options).performScrollTo().performClick()
         compose.runOnIdle { assertEquals(listOf(1, 1, 1, 1), listOf(root, shizuku, adb, developer)) }
+    }
+
+    @Test fun loadingFailureBusyAndGrantedStates_disablePrivilegedActions() {
+        val operation = androidx.compose.runtime.mutableStateOf(PermissionOperation(checking = true))
+        val granted = androidx.compose.runtime.mutableStateOf(false)
+        compose.setContent {
+            QuickTileSettingsTheme {
+                PermissionSettingsScreen(PermissionSnapshot(hasWriteSecureSettings = granted.value,
+                    shizukuAvailable = true, shizukuPermissionGranted = true, rooted = true),
+                    true, operation.value, null, {}, {}, {}, {}, {}, {}, {})
+            }
+        }
+        for (state in listOf(PermissionOperation(checking = true), PermissionOperation(checkFailed = true),
+            PermissionOperation(granting = true))) {
+            compose.runOnIdle { operation.value = state }
+            text(R.string.button_grant_with_root).performScrollTo().assertIsNotEnabled()
+            text(R.string.button_grant_with_shizuku).performScrollTo().assertIsNotEnabled()
+        }
+        compose.runOnIdle { operation.value = PermissionOperation(); granted.value = true }
+        text(R.string.button_grant_with_root).performScrollTo().assertIsNotEnabled()
+        text(R.string.button_grant_with_shizuku).performScrollTo().assertIsNotEnabled()
+        text(R.string.permission_is_granted).performScrollTo().assertIsDisplayed()
+        compose.runOnIdle { granted.value = false }
+        text(R.string.button_grant_with_root).performScrollTo().assertIsEnabled()
+        text(R.string.button_grant_with_shizuku).performScrollTo().assertIsEnabled()
     }
 
     @Test fun notificationSettings_largeFont_keepsBothActions_andDoesNotOpenSettingsOnDismiss() {

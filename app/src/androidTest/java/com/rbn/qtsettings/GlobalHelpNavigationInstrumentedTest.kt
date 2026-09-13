@@ -16,7 +16,7 @@ class GlobalHelpNavigationInstrumentedTest {
     private val context get() = instrumentation.targetContext
     private fun text(id: Int) = compose.onNodeWithText(context.getString(id))
 
-    @Test fun adbReplacesHelp_recreationAndBackReturnThroughOneDialogToSamePage() {
+    @Test fun adbPage_recreationAndBackReturnThroughSetupToCaller() {
         val store = AppStores.getInstance(context).app
         val oldHelp = store.helpShown.value
         store.setHelpShown(true)
@@ -27,13 +27,13 @@ class GlobalHelpNavigationInstrumentedTest {
                 text(R.string.menu_permission_help).performClick()
                 text(R.string.button_show_adb_instructions).performScrollTo().performClick()
                 text(R.string.adb_instructions_title).assertIsDisplayed()
-                text(R.string.permission_grant_dialog_title).assertDoesNotExist()
-                compose.onAllNodes(isDialog()).assertCountEquals(1)
+                text(R.string.menu_permission_help).assertDoesNotExist()
+                compose.onAllNodes(isDialog()).assertCountEquals(0)
                 scenario.recreate()
                 text(R.string.adb_instructions_title).assertIsDisplayed()
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-                text(R.string.permission_grant_dialog_title).assertIsDisplayed()
-                compose.onAllNodes(isDialog()).assertCountEquals(1)
+                text(R.string.menu_permission_help).assertIsDisplayed()
+                compose.onAllNodes(isDialog()).assertCountEquals(0)
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
                 compose.onNodeWithContentDescription(context.getString(R.string.app_menu_desc)).assertIsDisplayed()
                 compose.onAllNodes(isDialog()).assertCountEquals(0)

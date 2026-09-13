@@ -5,7 +5,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
-import com.rbn.qtsettings.feature.settings.presentation.*
+import com.rbn.qtsettings.feature.permissions.domain.PermissionSnapshot
+import com.rbn.qtsettings.platform.permissions.adbPermissionGrantCommand
 import com.rbn.qtsettings.feature.permissions.presentation.*
 
 @Preview(locale = "en", showBackground = true)
@@ -26,20 +27,20 @@ private fun RestoreConfirmationPreview() {
 @Preview(locale = "de", uiMode = Configuration.UI_MODE_NIGHT_YES, fontScale = 1.3f)
 @Composable
 private fun PermissionHelpPreview() {
-    QuickTileSettingsTheme { PermissionGrantDialog({}, {}, {}, {}, {}, {}, false, false, false) }
+    QuickTileSettingsTheme { PermissionSettingsScreen(PermissionSnapshot(), true, PermissionOperation(), null, {}, {}, {}, {}, {}, {}, {}) }
 }
 
 @Preview(locale = "de", widthDp = 640, heightDp = 360, fontScale = 1.3f)
 @Composable
 private fun AvailablePermissionMethodsPreview() {
-    QuickTileSettingsTheme { PermissionGrantDialog({}, {}, {}, {}, {}, {}, true, true, true, true) }
+    QuickTileSettingsTheme { PermissionSettingsScreen(PermissionSnapshot(shizukuAvailable = true, shizukuPermissionGranted = true, rooted = true), true, PermissionOperation(), null, {}, {}, {}, {}, {}, {}, {}) }
 }
 
 @Preview(locale = "en")
 @Preview(locale = "de", uiMode = Configuration.UI_MODE_NIGHT_YES, fontScale = 1.3f)
 @Composable
 private fun AdbInstructionsPreview() {
-    QuickTileSettingsTheme { AdbInstructionDialog({}, {}) }
+    QuickTileSettingsTheme { AdbInstructionsScreen(adbPermissionGrantCommand("com.rbn.qtsettings"), {}) }
 }
 
 @Preview(locale = "en")

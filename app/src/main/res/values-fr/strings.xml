@@ -39,9 +39,6 @@
     <string name="toast_command_copied">Commande copiée !</string>
 
     <!--  Permission Grant Dialog  -->
-    <string name="permission_grant_dialog_title">Permission requise</string>
-    <string name="permission_grant_dialog_intro">Pour modifier les paramètres système comme le DNS privé et le débogage USB, cette application nécessite la permission spéciale WRITE_SECURE_SETTINGS. Veuillez choisir une méthode ci-dessous pour l\'accorder :</string>
-    <string name="help_dialog_after_grant">Après avoir accordé la permission spéciale, redémarrez l\'application ou rouvrez le panneau des paramètres rapides.</string>
     <string name="app_menu_desc">Ouvrir le menu de l\'application</string>
     <string name="navigate_back_desc">Retour</string>
     <string name="menu_settings">Paramètres</string>
@@ -51,23 +48,17 @@
     <string name="dialog_close">Fermer</string>
 
     <!--  ADB Method  -->
-    <string name="permission_method_adb_title">Méthode %1$d : ADB (Android Debug Bridge) %2$s</string>
     <string name="permission_method_adb_desc">Il s\'agit de la méthode standard et nécessite un ordinateur avec l\'utilitaire ADB.</string>
     <string name="button_show_adb_instructions">Afficher les instructions</string>
     <string name="adb_instructions_title">Instructions ADB</string>
-    <string name="adb_instructions_intro">Connectez votre appareil à un ordinateur avec ADB. Assurez-vous que les options développeur et le débogage USB sont activés sur votre appareil.</string>
-    <string name="help_dialog_method_1_title">Option A : Accorder à l\'installation existante</string>
     <string name="help_dialog_how_to_grant_via_adb">Exécutez la commande suivante dans votre terminal :</string>
     <string name="button_copy_grant_command">Copier la commande</string>
-    <string name="help_dialog_method_2_title">Option B : Réinstaller avec la permission spéciale</string>
-    <string name="help_dialog_how_to_install_via_adb">Désinstallez d\'abord la version actuelle, puis utilisez cette commande (remplacez chemin/vers/votre/app.apk par le chemin APK réel) :</string>
     <string name="button_copy_install_command">Copier la commande d\'installation</string>
     <string name="help_dialog_apk_path_note">(Note : Vous avez besoin du fichier APK pour la commande d\'installation. Si vous avez compilé l\'application vous-même, il se trouve généralement dans app/build/outputs/apk/debug/ ou app/build/outputs/apk/release/. Vous pouvez également télécharger la dernière version depuis GitHub.)</string>
     <string name="github_releases_link_text">Télécharger la dernière version depuis GitHub</string>
     <string name="adb_command_install_g">adb install -g -r chemin/vers/votre/app.apk</string>
 
     <!--  Shizuku Method  -->
-    <string name="permission_method_shizuku_title">Méthode %1$d : Shizuku %2$s</string>
     <string name="shizuku_ready_to_grant_desc">Shizuku est disponible et cette application a la permission de l\'utiliser. Vous pouvez essayer d\'accorder WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
@@ -84,8 +75,6 @@
 
 
     <!--  Root Method  -->
-    <string name="permission_method_root_title">Méthode %1$d : Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Votre appareil est rooté. Vous pouvez essayer d\'accorder WRITE_SECURE_SETTINGS en utilisant les privilèges root.</string>
     <string name="device_not_rooted_detailed">Votre appareil ne semble pas être rooté ou l\'accès root n\'a pas été accordé. Cette méthode n\'est pas disponible.</string>
     <string name="button_grant_with_root">Accorder via Root</string>
     <string name="device_not_rooted">L\'appareil n\'est pas rooté.</string>
@@ -141,7 +130,6 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one ou 1.1.1.1) est connu pour sa haute vitesse et son accent sur la confidentialité. Il ne filtre pas le contenu et promet de ne pas enregistrer les données utilisateur. Idéal pour les utilisateurs privilégiant la confidentialité et les performances.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) bloque les publicités, les traqueurs et les domaines malveillants connus directement au niveau DNS. Cela offre une expérience de navigation plus propre et plus sûre. Bon pour les utilisateurs qui souhaitent réduire les publicités et protéger leur vie privée.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) se concentre sur la sécurité en bloquant les domaines associés aux logiciels malveillants, au phishing et aux botnets. Cela renforce la protection contre les menaces en ligne. Convient aux utilisateurs pour qui la sécurité Internet est une priorité absolue.</string>
-    <string name="recommended_for_you">(Recommandé pour vous)</string>
 
     <!--  About Dialog  -->
     <string name="about_version">Version %1$s</string>

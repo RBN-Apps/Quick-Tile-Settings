@@ -41,9 +41,6 @@
 
 
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">Требуется разрешение</string>
-    <string name="permission_grant_dialog_intro">Для изменения системных настроек, таких как Частный DNS и Отладка по USB, этому приложению требуется специальное разрешение WRITE_SECURE_SETTINGS. Пожалуйста, выберите метод ниже, чтобы предоставить его:</string>
-    <string name="help_dialog_after_grant">После предоставления разрешения перезапустите приложение или заново откройте QuickTile Settings, чтобы плитки заработали.</string>
     <string name="app_menu_desc">Открыть меню приложения</string>
     <string name="navigate_back_desc">Назад</string>
     <string name="menu_settings">Настройки</string>
@@ -53,23 +50,17 @@
     <string name="dialog_close">Закрыть</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Способ %1$d: ADB (Android Debug Bridge) %2$s</string>
     <string name="permission_method_adb_desc">Это стандартный способ, требующий наличия компьютера с настроенным ADB.</string>
     <string name="button_show_adb_instructions">Показать инструкции ADB</string>
     <string name="adb_instructions_title">Инструкции ADB</string>
-    <string name="adb_instructions_intro">Подключите устройство к компьютеру с настроенным ADB. Убедитесь, что параметры разработчика и отладка по USB включены на вашем устройстве.</string>
-    <string name="help_dialog_method_1_title">Вариант А: Предоставить для текущей установки</string>
     <string name="help_dialog_how_to_grant_via_adb">Запустите следующую команду в терминале / командной строке:</string>
     <string name="button_copy_grant_command">Копировать команду разрешения</string>
-    <string name="help_dialog_method_2_title">Вариант Б: Установка с разрешением</string>
-    <string name="help_dialog_how_to_install_via_adb">Сначала удалите текущую версию, затем используйте эту команду (замените path/to/your/app.apk на фактический путь к APK):</string>
     <string name="button_copy_install_command">Копировать команду установки</string>
     <string name="help_dialog_apk_path_note">(Примечание: Вам понадобится файл APK для команды установки. Если вы собрали приложение самостоятельно, оно обычно находится в app/build/outputs/apk/debug/ или app/build/outputs/apk/release/. Вы также можете скачать последний релиз с GitHub.)</string>
     <string name="github_releases_link_text">Скачать последний релиз с GitHub</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Способ %1$d: Shizuku %2$s</string>
     <string name="shizuku_ready_to_grant_desc">Shizuku доступен, и у этого приложения есть разрешение на его использование. Вы можете попытаться предоставить WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
@@ -84,8 +75,6 @@
     <string name="shizuku_not_available_or_not_ready">Shizuku недоступен или не готов.</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Способ %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Ваше устройство имеет Root-права. Вы можете попытаться предоставить WRITE_SECURE_SETTINGS, используя привилегии суперпользователя.</string>
     <string name="device_not_rooted_detailed">Похоже, ваше устройство не имеет Root-прав или доступ не был предоставлен. Этот метод недоступен.</string>
     <string name="button_grant_with_root">Предоставить через Root</string>
     <string name="device_not_rooted">Устройство не имеет Root-прав.</string>
@@ -145,7 +134,6 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (1.1.1.1) известен своей высокой скоростью и упором на конфиденциальность. Он не фильтрует контент и обещает не записывать данные пользователей. Идеально подходит для тех, кто ценит приватность и производительность.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) блокирует рекламу, трекеры и известные вредоносные домены прямо на уровне DNS. Это обеспечивает более чистый и безопасный просмотр страниц. Хорошо подходит для уменьшения количества рекламы.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) фокусируется на безопасности, блокируя домены, связанные с вредоносным ПО, фишингом и ботнетами. Это усиливает защиту от онлайн-угроз. Подходит для пользователей, для которых безопасность в приоритете.</string>
-    <string name="recommended_for_you">(Рекомендуется вам)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Версия %1$s</string>

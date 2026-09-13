@@ -58,33 +58,26 @@ class AppEntryFlowInstrumentedTest : AppFlowTestFixture() {
     }
 
     @Test
-    fun permissionDialog_shouldShowAndDismiss() {
+    fun permissionPage_shouldShowAndReturn() {
         // Click help button to show permission dialog
         composeTestRule.clickHelpButton(context)
 
         // Wait for permission dialog to appear
         composeTestRule.waitUntil(timeoutMillis = 5_000) {
-            composeTestRule.onAllNodesWithText(context.getString(R.string.permission_grant_dialog_title))
+            composeTestRule.onAllNodesWithText(context.getString(R.string.menu_permission_help))
                 .fetchSemanticsNodes().isNotEmpty()
         }
 
         // Verify dialog is displayed
-        composeTestRule.onNodeWithText(context.getString(R.string.permission_grant_dialog_title))
+        composeTestRule.onNodeWithText(context.getString(R.string.menu_permission_help))
             .assertIsDisplayed()
 
         // Verify dialog content
-        composeTestRule.onNodeWithText(context.getString(R.string.permission_grant_dialog_intro))
+        composeTestRule.onNodeWithText(context.getString(R.string.permission_page_explanation))
             .assertIsDisplayed()
 
-        // Dismiss dialog
-        try {
-            composeTestRule.onNodeWithText(context.getString(R.string.dialog_close))
-                .performScrollTo()
-                .performClick()
-        } catch (_: AssertionError) {
-            composeTestRule.onNodeWithText(context.getString(R.string.dialog_close))
-                .performClick()
-        }
+        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc))
+            .performClick()
         composeTestRule.waitForIdle()
 
         Log.i(FLOW_TAG, "Permission dialog displayed and dismissed successfully")
@@ -113,7 +106,7 @@ class AppEntryFlowInstrumentedTest : AppFlowTestFixture() {
     }
 
     @Test
-    fun adbInstructionsDialog_shouldShowWhenRequested() {
+    fun adbInstructionsPage_shouldShowWhenRequested() {
         // First open permission dialog
         composeTestRule.clickHelpButton(context)
         composeTestRule.waitForIdle()

@@ -41,9 +41,6 @@
 
 
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">Vyžadováno oprávnění</string>
-    <string name="permission_grant_dialog_intro">Pro změnu systémových nastavení, jako je Privátní DNS a USB ladění, potřebuje aplikace speciální oprávnění WRITE_SECURE_SETTINGS. Vyber níže způsob, jak jej udělit:</string>
-    <string name="help_dialog_after_grant">Po udělení oprávnění restartujte aplikaci nebo znovu otevřete panel rychlého nastavení, aby dlaždice fungovaly.</string>
     <string name="app_menu_desc">Otevřít nabídku aplikace</string>
     <string name="navigate_back_desc">Zpět</string>
     <string name="menu_settings">Nastavení</string>
@@ -53,23 +50,17 @@
     <string name="dialog_close">Zavřít</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Metoda %1$d: ADB (Android Debug Bridge) %2$s</string>
     <string name="permission_method_adb_desc">Standardní metoda vyžadující počítač s nastaveným ADB.</string>
     <string name="button_show_adb_instructions">Zobrazit ADB instrukce</string>
     <string name="adb_instructions_title">ADB instrukce</string>
-    <string name="adb_instructions_intro">Připoj zařízení k počítači s ADB. Ujisti se, že jsou zapnuté možnosti pro vývojáře a USB ladění.</string>
-    <string name="help_dialog_method_1_title">Možnost A: Udělit stávající instalaci</string>
     <string name="help_dialog_how_to_grant_via_adb">Spusť následující příkaz v terminálu:</string>
     <string name="button_copy_grant_command">Kopírovat příkaz</string>
-    <string name="help_dialog_method_2_title">Možnost B: Instalace s oprávněním</string>
-    <string name="help_dialog_how_to_install_via_adb">Nejprve odinstaluj aktuální verzi a poté použij tento příkaz (nahraď cestu k APK):</string>
     <string name="button_copy_install_command">Kopírovat instalační příkaz</string>
     <string name="help_dialog_apk_path_note">(Poznámka: Potřebuješ APK soubor. Při vlastním buildu bývá v app/build/outputs/apk/… nebo jej stáhneš z GitHubu.)</string>
     <string name="github_releases_link_text">Stáhnout nejnovější verzi z GitHubu</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Metoda %1$d: Shizuku %2$s</string>
     <string name="shizuku_ready_to_grant_desc">Shizuku je dostupné a aplikace má oprávnění jej použít. Můžeš zkusit udělit WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
@@ -84,8 +75,6 @@
     <string name="shizuku_not_available_or_not_ready">Shizuku není dostupné nebo připravené.</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Metoda %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Zařízení je rootnuté. Můžeš zkusit udělit WRITE_SECURE_SETTINGS pomocí root práv.</string>
     <string name="device_not_rooted_detailed">Zařízení není rootnuté nebo nebyl udělen přístup root.</string>
     <string name="button_grant_with_root">Udělit pomocí rootu</string>
     <string name="device_not_rooted">Zařízení není rootnuté.</string>
@@ -158,7 +147,6 @@
     <string name="dns_info_cloudflare">Cloudflare DNS je rychlé a zaměřené na soukromí. Nefiltruje obsah a nesbírá data.</string>
     <string name="dns_info_adguard">AdGuard DNS blokuje reklamy, trackery a škodlivé domény přímo na úrovni DNS.</string>
     <string name="dns_info_quad9">Quad9 blokuje škodlivé a phishingové domény pro vyšší bezpečnost.</string>
-    <string name="recommended_for_you">(Doporučeno pro tebe)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Verze %1$s</string>

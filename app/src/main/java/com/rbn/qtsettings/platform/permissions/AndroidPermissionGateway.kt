@@ -24,7 +24,7 @@ class AndroidPermissionGateway(context: Context) : PermissionGateway {
     )
 
     override suspend fun runGrant(method: GrantMethod): Int = coroutineScope {
-        val command = "pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS"
+        val command = permissionGrantCommand(context.packageName)
         val process = when (method) {
             GrantMethod.Shizuku -> Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
             GrantMethod.Root -> Runtime.getRuntime().exec(arrayOf("su", "-c", command))

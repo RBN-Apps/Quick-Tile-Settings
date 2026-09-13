@@ -25,22 +25,37 @@ class AppNavigation internal constructor(
         if (selected != area) area = selected
     }
 
+    private val canOpenDns get() = area == AppArea.Dns || activeStack.contains(AppRoute.DnsAutomation)
+
+    fun openPermissionAutomation() {
+        if (activeStack.last() != AppRoute.DnsAutomation) activeStack.add(AppRoute.DnsAutomation)
+    }
+
     fun open(destination: AppDestination) {
         val route = when (destination) {
-            AppDestination.DnsProviders -> if (area == AppArea.Dns) AppRoute.DnsProviders else return
-            AppDestination.DnsAutomation -> if (area == AppArea.Dns) AppRoute.DnsAutomation else return
-            AppDestination.DnsWifiTarget -> if (area == AppArea.Dns) AppRoute.DnsWifiTarget else return
-            AppDestination.DnsMobileTarget -> if (area == AppArea.Dns) AppRoute.DnsMobileTarget else return
-            AppDestination.WifiRules -> if (area == AppArea.Dns) AppRoute.WifiRules else return
-            AppDestination.WifiRule -> if (area == AppArea.Dns) AppRoute.WifiRule(null) else return
-            AppDestination.DnsRevert -> if (area == AppArea.Dns) AppRoute.DnsRevert else return
+            AppDestination.DnsProviders -> if (canOpenDns) AppRoute.DnsProviders else return
+            AppDestination.DnsAutomation -> if (canOpenDns) AppRoute.DnsAutomation else return
+            AppDestination.DnsWifiTarget -> if (canOpenDns) AppRoute.DnsWifiTarget else return
+            AppDestination.DnsMobileTarget -> if (canOpenDns) AppRoute.DnsMobileTarget else return
+            AppDestination.WifiRules -> if (canOpenDns) AppRoute.WifiRules else return
+            AppDestination.WifiRule -> if (canOpenDns) AppRoute.WifiRule(null) else return
+            AppDestination.DnsRevert -> if (canOpenDns) AppRoute.DnsRevert else return
             AppDestination.TileSettings -> return
             AppDestination.ShortcutSettings -> AppRoute.Shortcuts(area)
             AppDestination.AppSettings -> AppRoute.Settings(area)
             AppDestination.About -> AppRoute.About
+            AppDestination.Permissions -> AppRoute.Permissions
+            AppDestination.AdbInstructions -> AppRoute.AdbInstructions
             AppDestination.UsbTile -> if (area == AppArea.Usb) AppRoute.UsbTile else return
             AppDestination.UsbActions -> if (area == AppArea.Usb) AppRoute.UsbActions else return
             AppDestination.UsbRevert -> if (area == AppArea.Usb) AppRoute.UsbRevert else return
+        }
+        if (route == AppRoute.Permissions || route == AppRoute.AdbInstructions) {
+            val existing = activeStack.indexOf(route)
+            if (existing >= 0) {
+                while (activeStack.lastIndex > existing) activeStack.removeAt(activeStack.lastIndex)
+                return
+            }
         }
         if (activeStack.last() != route) activeStack.add(route)
     }
@@ -52,7 +67,7 @@ class AppNavigation internal constructor(
 
     /** Opens the editor for a stored rule; [open] with [AppDestination.WifiRule] starts a new one. */
     fun openWifiRule(ruleId: String) {
-        if (area != AppArea.Dns) return
+        if (!canOpenDns) return
         val route = AppRoute.WifiRule(ruleId)
         if (activeStack.last() != route) activeStack.add(route)
     }

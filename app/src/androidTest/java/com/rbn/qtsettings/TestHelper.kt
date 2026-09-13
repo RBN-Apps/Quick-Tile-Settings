@@ -24,12 +24,12 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.d
     context: Context
 ) {
     try {
-        // Try to dismiss permission dialog if it appears
+        // Initial help is a page; return without changing the permission.
         waitUntil(timeoutMillis = 2_000) {
-            onAllNodesWithText(context.getString(R.string.dialog_close))
+            onAllNodesWithText(context.getString(R.string.permission_page_explanation))
                 .fetchSemanticsNodes().isNotEmpty()
         }
-        onNodeWithText(context.getString(R.string.dialog_close))
+        onNodeWithContentDescription(context.getString(R.string.navigate_back_desc))
             .performClick()
         waitForIdle()
     } catch (_: ComposeTimeoutException) {

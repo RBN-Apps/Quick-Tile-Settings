@@ -40,9 +40,6 @@
     <string name="toast_command_copied">Comando copiado!</string>
 
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">Permissão necessária</string>
-    <string name="permission_grant_dialog_intro">Para alterar configurações do sistema como DNS Privado e Depuração USB, este app precisa da permissão especial WRITE_SECURE_SETTINGS. Escolha um método abaixo para concedê-la:</string>
-    <string name="help_dialog_after_grant">Após conceder a permissão, reinicie o app ou abra novamente o painel de Configurações Rápidas para que os tiles funcionem.</string>
     <string name="app_menu_desc">Abrir menu do app</string>
     <string name="navigate_back_desc">Voltar</string>
     <string name="menu_settings">Configurações</string>
@@ -52,22 +49,16 @@
     <string name="dialog_close">Fechar</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Método %1$d: ADB (Android Debug Bridge) %2$s</string>
     <string name="permission_method_adb_desc">Este é o método padrão e requer um computador com ADB configurado.</string>
     <string name="button_show_adb_instructions">Mostrar instruções do ADB</string>
     <string name="adb_instructions_title">Instruções do ADB</string>
-    <string name="adb_instructions_intro">Conecte seu dispositivo a um computador com ADB configurado. Certifique-se de que as Opções do desenvolvedor e a Depuração USB estejam ativadas no dispositivo.</string>
-    <string name="help_dialog_method_1_title">Opção A: Conceder à instalação existente</string>
     <string name="help_dialog_how_to_grant_via_adb">Execute o seguinte comando no terminal/prompt:</string>
     <string name="button_copy_grant_command">Copiar comando de concessão</string>
-    <string name="help_dialog_method_2_title">Opção B: Instalar com permissão</string>
-    <string name="help_dialog_how_to_install_via_adb">Desinstale primeiro a versão atual e depois use este comando (substitua path/to/your/app.apk pelo caminho real do APK):</string>
     <string name="button_copy_install_command">Copiar comando de instalação</string>
     <string name="help_dialog_apk_path_note">(Nota: você precisa do arquivo APK para o comando de instalação. Se compilou o app, normalmente ele está em app/build/outputs/apk/debug/ ou app/build/outputs/apk/release/. Você também pode baixar a versão mais recente no GitHub.)</string>
     <string name="github_releases_link_text">Baixar versão mais recente no GitHub</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Método %1$d: Shizuku %2$s</string>
     <string name="shizuku_ready_to_grant_desc">O Shizuku está disponível e este app tem permissão para usá-lo. Você pode tentar conceder WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
@@ -82,8 +73,6 @@
     <string name="shizuku_not_available_or_not_ready">O Shizuku não está disponível ou não está pronto.</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Método %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Seu dispositivo possui root. Você pode tentar conceder WRITE_SECURE_SETTINGS usando privilégios de root.</string>
     <string name="device_not_rooted_detailed">Seu dispositivo não parece ter root ou o acesso root não foi concedido. Este método não está disponível.</string>
     <string name="button_grant_with_root">Conceder usando Root</string>
     <string name="device_not_rooted">O dispositivo não possui root.</string>

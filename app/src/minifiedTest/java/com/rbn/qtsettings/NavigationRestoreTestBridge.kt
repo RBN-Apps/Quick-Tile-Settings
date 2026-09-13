@@ -21,7 +21,7 @@ fun verifyMinifiedNavigationRestore() {
         AppRoute.Usb, AppRoute.UsbTile, AppRoute.UsbActions, AppRoute.UsbRevert,
         AppRoute.Shortcuts(AppArea.Dns), AppRoute.Shortcuts(AppArea.Usb),
         AppRoute.Shortcuts(AppArea.Dns, true), AppRoute.Shortcuts(AppArea.Usb, true),
-        AppRoute.Settings(AppArea.Dns), AppRoute.Settings(AppArea.Usb), AppRoute.About
+        AppRoute.Settings(AppArea.Dns), AppRoute.Settings(AppArea.Usb), AppRoute.About, AppRoute.Permissions, AppRoute.AdbInstructions
     )
     val saved = encodeToSavedState(serializer, original, AppNavigationSavedState)
     val parcel = Parcel.obtain()

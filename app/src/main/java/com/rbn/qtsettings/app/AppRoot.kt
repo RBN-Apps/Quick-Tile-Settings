@@ -6,10 +6,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
@@ -33,6 +30,8 @@ import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSection
 import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.PermissionSettingsRoot
+import com.rbn.qtsettings.feature.permissions.presentation.AdbInstructionsRoot
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.AppSettingsRoot
@@ -52,24 +51,23 @@ fun AppRoot(
     onOpenAdbSettings: () -> Unit,
     onRequestShizukuPermission: () -> Unit
 ) {
-    var overlay by rememberSaveable { mutableStateOf(AppOverlay.None) }
+    val navigation = rememberAppNavigation(externalArea ?: AppArea.Dns)
     val permissionState by viewModel.state.collectAsStateWithLifecycle()
     val initialized by viewModel.initialized.collectAsStateWithLifecycle()
     val hasPermission = permissionState.hasWriteSecureSettings
     val helpShown by viewModel.helpShown.collectAsStateWithLifecycle()
     val showPermissionHelp = {
-        overlay = AppOverlay.PermissionHelp
+        navigation.open(AppDestination.Permissions)
         viewModel.refresh()
     }
-    LaunchedEffect(initialized, hasPermission, helpShown) {
-        if (initialized && !hasPermission && !helpShown) showPermissionHelp()
-    }
-    val navigation = rememberAppNavigation(externalArea ?: AppArea.Dns)
     LaunchedEffect(externalArea) {
         externalArea?.let {
             navigation.openTileArea(it)
             onExternalAreaConsumed()
         }
+    }
+    LaunchedEffect(initialized, hasPermission, helpShown, externalArea) {
+        if (externalArea == null && initialized && !hasPermission && !helpShown) showPermissionHelp()
     }
     val snackbar = remember { SnackbarHostState() }
     AppStatusEffects(settingsViewModel, automationViewModel, snackbar)
@@ -128,6 +126,14 @@ fun AppRoot(
                         AppArea.Dns -> ShortcutSection.Dns
                         AppArea.Usb -> ShortcutSection.Usb
                     })
+            } else if (route == AppRoute.Permissions) {
+                PermissionSettingsRoot(
+                    viewModel, onOpenAdb = { navigation.open(AppDestination.AdbInstructions) },
+                    onOpenDeveloperOptions = onOpenAdbSettings,
+                    onRequestShizukuPermission = onRequestShizukuPermission,
+                    onOpenAutomation = navigation::openPermissionAutomation)
+            } else if (route == AppRoute.AdbInstructions) {
+                AdbInstructionsRoot()
             } else if (route == AppRoute.About) {
                 AboutRoot(
                     onPermissionHelp = showPermissionHelp,
@@ -139,20 +145,7 @@ fun AppRoot(
             }
         }
     }
-    AppGlobalDialogsRoot(
-        overlay = overlay,
-        viewModel = viewModel,
-        onDismiss = {
-            if (overlay == AppOverlay.AdbInstructions) overlay = AppOverlay.PermissionHelp
-            else {
-                if (overlay == AppOverlay.PermissionHelp && !hasPermission) viewModel.setHelpShown(true)
-                overlay = AppOverlay.None
-            }
-        },
-        onShowAdbInstructions = { overlay = AppOverlay.AdbInstructions },
-        onOpenAdbSettings = onOpenAdbSettings,
-        onRequestShizukuPermission = onRequestShizukuPermission
-    )
     DnsDialogsRoot(dnsViewModel)
-    NotificationDialogsRoot(automationViewModel, visible = overlay == AppOverlay.None)
+    NotificationDialogsRoot(automationViewModel, visible = navigation.destination != AppDestination.Permissions &&
+        navigation.destination != AppDestination.AdbInstructions)
 }

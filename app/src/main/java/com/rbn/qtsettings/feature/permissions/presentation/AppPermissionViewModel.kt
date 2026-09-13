@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -31,38 +32,65 @@ class AppPermissionViewModel(
     private val messages = Channel<UiMessage>(Channel.BUFFERED)
     val events = messages.receiveAsFlow()
     private val access = Mutex()
-    private var granting = false
+    private val operation = MutableStateFlow(PermissionOperation())
+    val progress = operation.asStateFlow()
 
     fun setHelpShown(shown: Boolean) = settings.setHelpShown(shown)
     fun refresh() {
         viewModelScope.launch {
             access.withLock {
-                snapshot.value = withContext(io) { gateway.snapshot() }
-                ready.value = true
+                operation.update { it.copy(checking = true) }
+                try {
+                    val latest = withContext(io) { gateway.snapshot() }
+                    val permissionChanged = snapshot.value.hasWriteSecureSettings != latest.hasWriteSecureSettings
+                    snapshot.value = latest
+                    ready.value = true
+                    operation.update { it.copy(checkFailed = false,
+                        feedback = if (permissionChanged) null else it.feedback) }
+                } catch (e: CancellationException) { throw e }
+                catch (_: Exception) { operation.update { it.copy(checkFailed = true) } }
+                finally { operation.update { it.copy(checking = false) } }
             }
         }
     }
 
     fun grant(method: GrantMethod) {
-        if (granting) return
-        granting = true
+        if (operation.value.granting) return
+        operation.update { it.copy(granting = true, feedback = null) }
         viewModelScope.launch {
             try {
                 access.withLock {
                     val result = try { withContext(io) { PermissionGrants(gateway).grant(method) } }
                     catch (e: CancellationException) { throw e }
                     catch (e: Exception) { GrantResult.Error(e.message) }
-                    snapshot.value = withContext(io) { gateway.snapshot() }
-                    ready.value = true
-                    messages.send(result.message(method))
+                    try {
+                        snapshot.value = withContext(io) { gateway.snapshot() }
+                        ready.value = true
+                        operation.update { it.copy(checkFailed = false, feedback = result.message(method)) }
+                        messages.send(result.message(method))
+                    } catch (e: CancellationException) { throw e }
+                    catch (_: Exception) {
+                        operation.update { it.copy(checkFailed = true,
+                            feedback = UiMessage(R.string.permission_check_failed)) }
+                    }
                 }
-            } finally { granting = false }
+            } finally { operation.update { it.copy(granting = false) } }
         }
     }
 
     fun onShizukuPermissionResult(granted: Boolean) {
-        messages.trySend(UiMessage(if (granted) R.string.shizuku_permission_granted_to_app
-            else R.string.shizuku_permission_denied_to_app))
+        val message = UiMessage(if (granted) R.string.shizuku_permission_granted_to_app
+            else R.string.shizuku_permission_denied_to_app)
+        operation.update { it.copy(feedback = message) }
+        messages.trySend(message)
         refresh()
     }
 }
+
+/** Transient status only; grants and permission truth stay in the existing owner/gateway. */
+data class PermissionOperation(
+    val checking: Boolean = false,
+    val granting: Boolean = false,
+    val checkFailed: Boolean = false,
+    val feedback: UiMessage? = null
+)

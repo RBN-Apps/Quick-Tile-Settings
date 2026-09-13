@@ -1,0 +1,14 @@
+# Permission method symbols
+
+The monochrome symbols use the SVG Repo examples selected for this UI:
+
+- [Shizuku](https://www.svgrepo.com/svg/504864/shizuku), SVG: https://www.svgrepo.com/show/504864/shizuku.svg
+- [Magisk](https://www.svgrepo.com/svg/504554/magisk), SVG: https://www.svgrepo.com/show/504554/magisk.svg
+
+Paths and circles were converted to Android VectorDrawable resources, preserving
+viewports, stroke widths, rounded caps and joins. Both use the same 24 dp size
+and `onSurfaceVariant` tint as the other settings symbols, including dark mode
+and dynamic colors. These replace the full-color application artwork.
+
+Source and licensing: SVG Repo, https://www.svgrepo.com/page/licensing/.
+The Magisk source page explicitly lists CC0.

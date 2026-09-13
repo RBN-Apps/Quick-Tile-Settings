@@ -132,18 +132,8 @@ object PermissionUtils {
                 return true
             }
         }
-        var process: Process? = null
-        return try {
-            process = Runtime.getRuntime().exec(arrayOf("su", "-c", "id"))
-
-            process.inputStream.bufferedReader().use { it.readText() }
-            process.errorStream.bufferedReader().use { it.readText() }
-            val exitValue = process.waitFor()
-            exitValue == 0
-        } catch (e: Exception) {
-            false
-        } finally {
-            process?.destroy()
-        }
+        return System.getenv("PATH").orEmpty().split(File.pathSeparatorChar)
+            .filter { it.isNotBlank() }
+            .any { File(it, "su").let { candidate -> candidate.isFile && candidate.canExecute() } }
     }
 }

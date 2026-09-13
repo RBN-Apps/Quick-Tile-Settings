@@ -41,9 +41,6 @@
     <string name="toast_command_copied">Befehl kopiert!</string>
 
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">Berechtigung erforderlich</string>
-    <string name="permission_grant_dialog_intro">Um Systemeinstellungen wie Privates DNS und USB-Debugging zu ändern, benötigt diese App die spezielle Berechtigung WRITE_SECURE_SETTINGS. Bitte wähle unten eine Methode, um sie zu erteilen:</string>
-    <string name="help_dialog_after_grant">Nachdem die Berechtigung erteilt wurde, starte die App neu oder öffne die Schnelleinstellungsleiste erneut, damit die Kacheln funktionieren.</string>
     <string name="app_menu_desc">App-Menü öffnen</string>
     <string name="navigate_back_desc">Zurück</string>
     <string name="menu_settings">Einstellungen</string>
@@ -53,23 +50,17 @@
     <string name="dialog_close">Schließen</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Methode %1$d: ADB (Android Debug Bridge) %2$s</string>
     <string name="permission_method_adb_desc">Dies ist die Standardmethode und erfordert einen Computer mit eingerichteter ADB.</string>
     <string name="button_show_adb_instructions">ADB-Anleitung anzeigen</string>
     <string name="adb_instructions_title">ADB-Anleitung</string>
-    <string name="adb_instructions_intro">Verbinde dein Gerät mit einem Computer, auf dem ADB eingerichtet ist. Stelle sicher, dass die Entwickleroptionen und USB-Debugging auf deinem Gerät aktiviert sind.</string>
-    <string name="help_dialog_method_1_title">Option A: Bestehender Installation erteilen</string>
     <string name="help_dialog_how_to_grant_via_adb">Führe folgenden Befehl in deinem Terminal/Eingabeaufforderung aus:</string>
     <string name="button_copy_grant_command">Grant-Befehl kopieren</string>
-    <string name="help_dialog_method_2_title">Option B: Mit Berechtigung installieren</string>
-    <string name="help_dialog_how_to_install_via_adb">Deinstalliere zuerst die aktuelle Version und verwende dann diesen Befehl (ersetze pfad/zu/deiner/app.apk mit dem tatsächlichen APK-Pfad):</string>
     <string name="button_copy_install_command">Install-Befehl kopieren</string>
     <string name="help_dialog_apk_path_note">(Hinweis: Du benötigst die APK-Datei für den Installationsbefehl. Wenn du die App selbst kompiliert hast, befindet sie sich normalerweise in app/build/outputs/apk/debug/ oder app/build/outputs/apk/release/. Du kannst die neueste Version auch von GitHub herunterladen.)</string>
     <string name="github_releases_link_text">Neueste Version von GitHub herunterladen</string>
     <string name="adb_command_install_g">adb install -g -r pfad/zu/deiner/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Methode %1$d: Shizuku %2$s</string>
     <string name="shizuku_ready_to_grant_desc">Shizuku ist verfügbar und diese App hat die Berechtigung, es zu nutzen. Du kannst versuchen, WRITE_SECURE_SETTINGS zu erteilen.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
@@ -84,8 +75,6 @@
     <string name="shizuku_not_available_or_not_ready">Shizuku ist nicht verfügbar oder nicht bereit.</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Methode %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Dein Gerät ist gerootet. Du kannst versuchen, WRITE_SECURE_SETTINGS mit Root-Rechten zu erteilen.</string>
     <string name="device_not_rooted_detailed">Dein Gerät scheint nicht gerootet zu sein oder Root-Zugriff wurde nicht gewährt. Diese Methode ist nicht verfügbar.</string>
     <string name="button_grant_with_root">Mit Root erteilen</string>
     <string name="device_not_rooted">Gerät ist nicht gerootet.</string>
@@ -158,7 +147,6 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one oder 1.1.1.1) ist bekannt für seine hohe Geschwindigkeit und den Fokus auf Datenschutz. Es filtert keine Inhalte und verspricht, keine Nutzerdaten zu protokollieren. Ideal für Nutzer, die Wert auf Privatsphäre und Performance legen.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) blockiert Werbung, Tracker und bekannte schädliche Domains direkt auf DNS-Ebene. Dies sorgt für ein saubereres und sichereres Surferlebnis. Gut für Nutzer, die Werbung reduzieren und ihre Privatsphäre schützen möchten.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) konzentriert sich auf Sicherheit, indem es Domains blockiert, die mit Malware, Phishing und Botnetzen in Verbindung stehen. Dies erhöht den Schutz vor Online-Bedrohungen. Geeignet für Nutzer, denen Internetsicherheit besonders wichtig ist.</string>
-    <string name="recommended_for_you">(Für dich empfohlen)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Version %1$s</string>
@@ -435,4 +423,32 @@
     <string name="about_report_include">Technische Informationen übernehmen</string>
     <string name="about_report_explanation">Beschreibe den Fehler und die Schritte zum Reproduzieren auf GitHub. Du kannst den Entwurf vor dem Absenden prüfen und bearbeiten. Technische Informationen sind freiwillig.</string>
     <string name="about_report_privacy">Enthält App-/Geräteversionen, Anzeige, Sprache und Berechtigungsstatus. Keine Netzwerknamen, DNS-Adressen, Geräte-IDs oder Logs.</string>
+    <string name="permission_checking">Status wird geprüft…</string>
+    <string name="permission_check_failed">Status konnte nicht geprüft werden. Bitte erneut versuchen.</string>
+    <string name="permission_is_granted">Berechtigung erteilt</string>
+    <string name="permission_not_setup">Noch nicht eingerichtet</string>
+    <string name="permission_grant_running">Berechtigung wird erteilt…</string>
+    <string name="permission_page_explanation">Zum Umschalten von DNS und USB-Debugging ist WRITE_SECURE_SETTINGS nötig. Android bietet dafür keine normale Berechtigungsabfrage.</string>
+    <string name="permission_refresh">Erneut prüfen</string>
+    <string name="permission_methods_title">Einrichtungsmethoden</string>
+    <string name="permission_adb_title">ADB über Computer</string>
+    <string name="permission_shizuku_title">Shizuku</string>
+    <string name="permission_root_title">Vorhandener Root-Zugriff</string>
+    <string name="permission_root_detected">Ein Root-Programm wurde erkannt. Nutze diese Methode nur, wenn du auf diesem Gerät bereits Root verwendest. Beim Erteilen kann dein Root-Manager eine Bestätigung verlangen.</string>
+    <string name="permission_check_before_grant">Warte vor dem Erteilen auf eine erfolgreiche Statusprüfung.</string>
+    <string name="permission_optional_title">Zusätzliche Feature-Berechtigungen</string>
+    <string name="permission_optional_summary">WLAN-Regeln und Hintergrunderkennung benötigen gegebenenfalls Standort- und Hintergrundzugriff. Das Benachrichtigungsverhalten hängt von der Android-Version ab. Richte diese bei Bedarf unter Automatisierung ein; sie sind von der Kachelberechtigung getrennt.</string>
+    <string name="permission_adb_intro">Erteile der installierten App die Berechtigung über die Android Platform Tools auf deinem Computer. Root oder eine Neuinstallation sind dafür nicht erforderlich.</string>
+    <string name="permission_adb_step_computer">1. Computer vorbereiten</string>
+    <string name="permission_adb_computer_summary">Lade die Android Platform Tools herunter und entpacke sie. Öffne ein Terminal in diesem Ordner. Verwende unter Windows gegebenenfalls .\\adb statt adb.</string>
+    <string name="permission_adb_step_device">2. USB-Debugging aktivieren</string>
+    <string name="permission_adb_device_summary">Aktiviere in den Android-Einstellungen die Entwickleroptionen, indem du siebenmal auf die Buildnummer tippst. Schalte anschließend USB-Debugging ein. Die Menünamen können je nach Hersteller abweichen.</string>
+    <string name="permission_adb_step_connect">3. Verbinden und bestätigen</string>
+    <string name="permission_adb_connect_summary">Verbinde das entsperrte Gerät per USB mit dem Computer und bestätige dessen Debugging-Zugriff auf dem Gerät. Führe adb devices aus; das Gerät sollte als device statt unauthorized erscheinen.</string>
+    <string name="permission_adb_step_grant">4. Berechtigung erteilen</string>
+    <string name="permission_adb_platform_tools">Android Platform Tools herunterladen</string>
+    <string name="permission_adb_verify">Kehre zur Einrichtungsseite zurück und tippe auf Erneut prüfen. Erfolg wird erst angezeigt, wenn Android die Berechtigung bestätigt. Du kannst USB-Debugging anschließend ausschalten, wenn du die Computerverbindung nicht mehr benötigst.</string>
+    <string name="permission_adb_install_title">Alternative: APK über ADB installieren</string>
+    <string name="permission_adb_install_summary">Dieser Befehl installiert oder aktualisiert eine APK und fordert ihre erteilbaren Berechtigungen an. Verwende für eine bereits installierte App vorzugsweise den Grant-Befehl oben. Signatur und Version der APK müssen kompatibel sein. Behalte bei einem Installationsfehler die installierte App und ihre Daten; deinstalliere sie nicht.</string>
+    <string name="permission_recommended">Für dich empfohlen</string>
 </resources>

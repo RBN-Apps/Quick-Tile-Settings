@@ -4,6 +4,7 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.core.presentation.UiMessage
 import com.rbn.qtsettings.feature.permissions.domain.*
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
+import com.rbn.qtsettings.feature.permissions.presentation.message
 import com.rbn.qtsettings.feature.settings.domain.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +30,8 @@ class AppPermissionViewModelTest {
         var exit = 0
         var verifies = true
         var failure: Exception? = null
-        override fun snapshot() = current
+        var snapshotFailure: Exception? = null
+        override fun snapshot(): PermissionSnapshot { snapshotFailure?.let { throw it }; return current }
         override suspend fun runGrant(method: GrantMethod): Int {
             calls++
             failure?.let { throw it }
@@ -73,7 +75,9 @@ class AppPermissionViewModelTest {
             val vm = AppPermissionViewModel(Settings(), gateway, dispatcher)
             val messages = mutableListOf<UiMessage>()
             vm.grant(GrantMethod.Root); vm.grant(GrantMethod.Root)
+            assertTrue(vm.progress.value.granting)
             dispatcher.drain()
+            assertFalse(vm.progress.value.granting)
             val first = backgroundScope.launch(Dispatchers.Unconfined) { vm.events.collect { messages += it } }
             assertEquals(1, gateway.calls)
             assertEquals(listOf(UiMessage(R.string.permission_granted_root_success)), messages)
@@ -123,4 +127,38 @@ class AppPermissionViewModelTest {
             vm.setHelpShown(true); assertTrue(settings.helpShown.value)
         } finally { backgroundScope.cancel() }
     }
+    @Test fun failedCheckCanRetry_andRevocationClearsSuccessWithoutGrantingAgain() {
+        val dispatcher = QueuedIoDispatcher()
+        val gateway = Gateway()
+        val vm = AppPermissionViewModel(Settings(), gateway, dispatcher)
+        assertFalse(vm.initialized.value)
+        gateway.snapshotFailure = IllegalStateException("check unavailable")
+        vm.refresh(); dispatcher.drain()
+        assertTrue(vm.progress.value.checkFailed)
+        assertFalse(vm.progress.value.checking)
+        assertFalse(vm.initialized.value)
+        gateway.snapshotFailure = null
+        vm.refresh(); dispatcher.drain()
+        assertTrue(vm.initialized.value)
+        assertFalse(vm.progress.value.checkFailed)
+        vm.grant(GrantMethod.Root); dispatcher.drain()
+        assertTrue(vm.state.value.hasWriteSecureSettings)
+        assertNotNull(vm.progress.value.feedback)
+        gateway.current = gateway.current.copy(hasWriteSecureSettings = false)
+        vm.refresh(); dispatcher.drain()
+        assertFalse(vm.state.value.hasWriteSecureSettings)
+        assertNull(vm.progress.value.feedback)
+        assertEquals(1, gateway.calls)
+    }
+
+    @Test fun commandCannotClaimSuccessWhenPermissionVerificationFails() {
+        val dispatcher = QueuedIoDispatcher()
+        val gateway = Gateway().apply { verifies = false }
+        val vm = AppPermissionViewModel(Settings(), gateway, dispatcher)
+        vm.grant(GrantMethod.Shizuku); dispatcher.drain()
+        assertFalse(vm.state.value.hasWriteSecureSettings)
+        assertEquals(GrantResult.VerificationFailed.message(GrantMethod.Shizuku), vm.progress.value.feedback)
+        assertFalse(vm.progress.value.granting)
+    }
+
 }

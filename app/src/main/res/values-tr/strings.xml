@@ -41,9 +41,6 @@
 
     
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">İzin Gerekli</string>
-    <string name="permission_grant_dialog_intro">Özel DNS ve USB Hata Ayıklama gibi sistem ayarlarını değiştirmek için bu uygulamanın özel WRITE_SECURE_SETTINGS iznine ihtiyacı var. Lütfen bu izni vermek için aşağıdaki yöntemlerden birini seçin:</string>
-    <string name="help_dialog_after_grant">İzni verdikten sonra, kutucukların çalışması için uygulamayı yeniden başlatın veya Hızlı Ayarlar panelini tekrar açın.</string>
     <string name="app_menu_desc">Uygulama menüsünü aç</string>
     <string name="navigate_back_desc">Geri</string>
     <string name="menu_settings">Ayarlar</string>
@@ -53,23 +50,17 @@
     <string name="dialog_close">Kapat</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Yöntem %1$d: ADB (Android Hata Ayıklama Köprüsü) %2$s</string>
     <string name="permission_method_adb_desc">Bu, standart yöntemdir ve ADB kurulu bir bilgisayar gerektirir.</string>
     <string name="button_show_adb_instructions">ADB Talimatlarını Göster</string>
     <string name="adb_instructions_title">ADB Talimatları</string>
-    <string name="adb_instructions_intro">Cihazınızı ADB kurulu bir bilgisayara bağlayın. Cihazınızda Geliştirici Seçenekleri ve USB Hata Ayıklama\'nın etkin olduğundan emin olun.</string>
-    <string name="help_dialog_method_1_title">Seçenek A: Mevcut uygulamaya izin verin</string>
     <string name="help_dialog_how_to_grant_via_adb">Aşağıdaki komutu terminalinizde/komut istemcinizde çalıştırın:</string>
     <string name="button_copy_grant_command">İzin Verme Komutunu Kopyala</string>
-    <string name="help_dialog_method_2_title">Seçenek B: İzinle birlikte yükleyin</string>
-    <string name="help_dialog_how_to_install_via_adb">Önce mevcut sürümü kaldırın, ardından bu komutu kullanın (path/to/your/app.apk kısmını gerçek APK yolu ile değiştirin):</string>
     <string name="button_copy_install_command">Yükleme Komutunu Kopyala</string>
     <string name="help_dialog_apk_path_note">(Not: Yükleme komutu için APK dosyasına ihtiyacınız var. Uygulamayı kendiniz derlediyseniz, genellikle app/build/outputs/apk/debug/ veya app/build/outputs/apk/release/ klasöründedir. Ayrıca en son sürümü GitHub\'dan indirebilirsiniz.)</string>
     <string name="github_releases_link_text">En son sürümü GitHub\'dan indirin</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Yöntem %1$d: Shizuku %2$s</string>
     <string name="shizuku_ready_to_grant_desc">Shizuku mevcut ve bu uygulamanın onu kullanma izni var. WRITE_SECURE_SETTINGS iznini vermeyi deneyebilirsiniz.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
@@ -84,8 +75,6 @@
     <string name="shizuku_not_available_or_not_ready">Shizuku mevcut değil veya hazır değil.</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Yöntem %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Cihazınız rootlanmış. Root ayrıcalıklarını kullanarak WRITE_SECURE_SETTINGS iznini vermeyi deneyebilirsiniz.</string>
     <string name="device_not_rooted_detailed">Cihazınız rootlu görünmüyor veya root erişimi verilmemiş. Bu yöntem kullanılamaz.</string>
     <string name="button_grant_with_root">Root kullanarak izin ver</string>
     <string name="device_not_rooted">Cihaz rootlu değil.</string>
@@ -145,7 +134,6 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one veya 1.1.1.1), yüksek hızı ve gizlilik odaklılığıyla bilinir. İçeriği filtrelemez ve kullanıcı verilerini kaydetmemeyi taahhüt eder. Gizlilik ve performansa öncelik veren kullanıcılar için idealdir.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com), reklamları, izleyicileri ve bilinen kötü amaçlı alan adlarını doğrudan DNS seviyesinde engeller. Bu, daha temiz ve güvenli bir gezinme deneyimi sağlar. Reklamları azaltmak ve gizliliğini korumak isteyen kullanıcılar için iyidir.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net), kötü amaçlı yazılım, kimlik avı ve botnet\'lerle ilişkili alan adlarını engelleyerek güvenliğe odaklanır. Bu, çevrimiçi tehditlere karşı korumayı artırır. İnternet güvenliğinin en önemli öncelik olduğu kullanıcılar için uygundur.</string>
-    <string name="recommended_for_you">(Sizin için önerilir)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Sürüm %1$s</string>

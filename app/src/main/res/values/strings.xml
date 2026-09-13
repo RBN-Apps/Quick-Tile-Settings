@@ -41,9 +41,6 @@
 
 
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">Permission Required</string>
-    <string name="permission_grant_dialog_intro">To change system settings like Private DNS and USB Debugging, this app needs the special WRITE_SECURE_SETTINGS permission. Please choose a method below to grant it:</string>
-    <string name="help_dialog_after_grant">After granting the permission, restart the app or re-open the Quick Settings panel for the tiles to function.</string>
     <string name="app_menu_desc">Open app menu</string>
     <string name="navigate_back_desc">Back</string>
     <string name="menu_settings">Settings</string>
@@ -53,16 +50,11 @@
     <string name="dialog_close">Close</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Method %1$d: ADB (Android Debug Bridge) %2$s</string>
     <string name="permission_method_adb_desc">This is the standard method and requires a computer with ADB set up.</string>
     <string name="button_show_adb_instructions">Show ADB Instructions</string>
     <string name="adb_instructions_title">ADB Instructions</string>
-    <string name="adb_instructions_intro">Connect your device to a computer with ADB set up. Ensure Developer Options and USB Debugging are enabled on your device.</string>
-    <string name="help_dialog_method_1_title">Option A: Grant to existing installation</string>
     <string name="help_dialog_how_to_grant_via_adb">Run the following command in your terminal/command prompt:</string>
     <string name="button_copy_grant_command">Copy Grant Command</string>
-    <string name="help_dialog_method_2_title">Option B: Install with permission</string>
-    <string name="help_dialog_how_to_install_via_adb">Uninstall the current version first, then use this command (replace path/to/your/app.apk with the actual APK path):</string>
     <string name="button_copy_install_command">Copy Install Command</string>
     <string name="help_dialog_apk_path_note">(Note: You need the APK file for the install command. If you built the app yourself, it\'s usually in app/build/outputs/apk/debug/ or app/build/outputs/apk/release/. You can also download the latest release from GitHub.)</string>
     <string name="github_releases_link_text">Download latest release from GitHub</string>
@@ -72,7 +64,6 @@
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Method %1$d: Shizuku %2$s</string>
     <string name="shizuku_ready_to_grant_desc">Shizuku is available and this app has permission to use it. You can attempt to grant WRITE_SECURE_SETTINGS.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
@@ -89,8 +80,6 @@
     <string name="shizuku_play_store_url" translatable="false">https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Method %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Your device is rooted. You can attempt to grant WRITE_SECURE_SETTINGS using root privileges.</string>
     <string name="device_not_rooted_detailed">Your device does not appear to be rooted or root access was not granted. This method is unavailable.</string>
     <string name="button_grant_with_root">Grant using Root</string>
     <string name="device_not_rooted">Device is not rooted.</string>
@@ -163,7 +152,6 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one or 1.1.1.1) is known for its high speed and focus on privacy. It does not filter content and promises not to log user data. Ideal for users prioritizing privacy and performance.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) blocks ads, trackers, and known malicious domains directly at the DNS level. This provides a cleaner and safer browsing experience. Good for users who want to reduce ads and protect their privacy.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) focuses on security by blocking domains associated with malware, phishing, and botnets. This enhances protection against online threats. Suitable for users for whom internet security is a top priority.</string>
-    <string name="recommended_for_you">(Recommended for you)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Version %1$s</string>
@@ -443,4 +431,32 @@
     <string name="about_report_include">Include technical information</string>
     <string name="about_report_explanation">Describe the bug and reproduction steps on GitHub. You can review and edit the draft before submitting it. Technical information is optional.</string>
     <string name="about_report_privacy">Includes app/device versions, display, language and permission status. No network names, DNS addresses, device IDs or logs.</string>
+    <string name="permission_checking">Checking status…</string>
+    <string name="permission_check_failed">Status could not be checked. Please try again.</string>
+    <string name="permission_is_granted">Permission granted</string>
+    <string name="permission_not_setup">Not set up yet</string>
+    <string name="permission_grant_running">Granting permission…</string>
+    <string name="permission_page_explanation">Switching DNS and USB debugging requires WRITE_SECURE_SETTINGS. Android does not offer a normal permission prompt for this access.</string>
+    <string name="permission_refresh">Check again</string>
+    <string name="permission_methods_title">Setup methods</string>
+    <string name="permission_adb_title">ADB with a computer</string>
+    <string name="permission_shizuku_title">Shizuku</string>
+    <string name="permission_root_title">Existing root access</string>
+    <string name="permission_root_detected">A root executable was found. Use this method only if you already manage root on this device. Your root manager may request approval when you grant the permission.</string>
+    <string name="permission_check_before_grant">Wait for a successful status check before granting permission.</string>
+    <string name="permission_optional_title">Additional feature permissions</string>
+    <string name="permission_optional_summary">Wi-Fi rules and background detection may need location and background access. Notification behavior depends on Android version. Configure these in Automation when needed; they are separate from the tile permission.</string>
+    <string name="permission_adb_intro">Grant permission to the installed app using Android Platform Tools on your computer. No root access or reinstallation is required.</string>
+    <string name="permission_adb_step_computer">1. Prepare your computer</string>
+    <string name="permission_adb_computer_summary">Download and extract Android Platform Tools. Open a terminal in that folder. On Windows, use .\\adb instead of adb if necessary.</string>
+    <string name="permission_adb_step_device">2. Enable USB debugging</string>
+    <string name="permission_adb_device_summary">Enable Developer Options in Android settings by tapping Build number seven times, then turn on USB debugging. Menu names can vary by manufacturer.</string>
+    <string name="permission_adb_step_connect">3. Connect and authorize</string>
+    <string name="permission_adb_connect_summary">Connect the unlocked device to the computer by USB and accept its debugging authorization on the device. Run adb devices; the device should appear as device, not unauthorized.</string>
+    <string name="permission_adb_step_grant">4. Grant permission</string>
+    <string name="permission_adb_platform_tools">Download Android Platform Tools</string>
+    <string name="permission_adb_verify">Return to the setup page and tap Check again. Success is shown only after Android confirms the permission. You can turn off USB debugging afterwards if you no longer need the computer connection.</string>
+    <string name="permission_adb_install_title">Alternative: install an APK with ADB</string>
+    <string name="permission_adb_install_summary">This command installs or updates an APK and requests its grantable permissions. For an already installed app, prefer the grant command above. The APK must have a compatible signature and version. Keep the installed app and its data if installation fails; do not uninstall it.</string>
+    <string name="permission_recommended">Recommended for you</string>
 </resources>

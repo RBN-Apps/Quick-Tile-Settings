@@ -60,6 +60,8 @@ class AppNavigationInstrumentedTest {
                             AppRoute.UsbTile -> "USB tile settings"
                             AppRoute.UsbActions -> "USB actions"
                             AppRoute.UsbRevert -> "USB revert"
+                            AppRoute.Permissions -> "Permissions"
+                            AppRoute.AdbInstructions -> "ADB instructions"
                             AppRoute.About -> "About"
                             is AppRoute.Settings -> "${route.origin} settings"
                             is AppRoute.Shortcuts -> "${route.origin} shortcuts"
@@ -67,6 +69,10 @@ class AppNavigationInstrumentedTest {
                         Text("Owner ${owner.id}")
                         BasicTextField(draft, { draft = it }, Modifier.testTag("draft"))
                         Button(onClick = { nav.open(AppDestination.AppSettings) }) { Text("Settings") }
+                        Button(onClick = { nav.open(AppDestination.Permissions) }) { Text("Open help") }
+                        Button(onClick = { nav.open(AppDestination.AdbInstructions) }) { Text("Open ADB") }
+                        Button(onClick = nav::openPermissionAutomation) { Text("Optional access") }
+                        Button(onClick = { nav.open(AppDestination.DnsWifiTarget) }) { Text("Open Wi-Fi target") }
                     }
                 }
             }
@@ -122,6 +128,28 @@ class AppNavigationInstrumentedTest {
         click("Back")
         compose.onNodeWithText("DNS root").assertExists()
         assertClearedOwners(2)
+    }
+
+    @Test fun setupReusesExistingEntry_andOptionalDnsFlowRestoresOnUsbStack() {
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent { NavigationHarness() }
+        click("Select USB")
+        draft("USB caller")
+        click("Open help")
+        draft("Setup scroll surrogate")
+        click("Open ADB")
+        click("Open help") // The same entry is reused, not appended above ADB.
+        assertDraft("Setup scroll surrogate")
+        click("Optional access")
+        click("Open Wi-Fi target")
+        compose.onNodeWithText("Wi-Fi DNS target").assertExists()
+        restoration.emulateSavedInstanceStateRestore()
+        click("Back")
+        compose.onNodeWithText("DNS automation").assertExists()
+        click("Back")
+        assertDraft("Setup scroll surrogate")
+        click("Back")
+        assertDraft("USB caller")
     }
 
     private fun assertClearedOwners(expected: Int) {

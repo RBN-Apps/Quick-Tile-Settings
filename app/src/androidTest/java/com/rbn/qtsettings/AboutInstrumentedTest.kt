@@ -76,7 +76,7 @@ class AboutInstrumentedTest {
         back()
         scrollTo(R.string.about_permission_setup)
         node(R.string.about_permission_setup).performClick()
-        // Dismiss the existing setup dialog; #148 will replace it with a page.
+        // Setup returns to its actual caller and keeps the About scroll position.
         androidx.test.espresso.Espresso.pressBack()
         node(R.string.about_permission_setup).assertIsDisplayed()
     }
