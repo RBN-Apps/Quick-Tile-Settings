@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.rbn.qtsettings.app.navigation.AppDestination
 import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.app.navigation.AppNavigationContent
 import com.rbn.qtsettings.app.navigation.AppRoute
@@ -28,6 +29,7 @@ import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
+import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSection
 import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
@@ -103,18 +105,28 @@ fun AppRoot(
         AppNavigationContent(navigation, modifier) { route ->
             if (route == AppRoute.Usb || route == AppRoute.UsbTile ||
                 route == AppRoute.UsbActions || route == AppRoute.UsbRevert) {
-                UsbSettingsRoot(usbViewModel, showPermissionHelp, route, navigation::open)
+                UsbSettingsRoot(usbViewModel, showPermissionHelp, route, { destination ->
+                    if (destination == AppDestination.ShortcutSettings) navigation.openAreaShortcuts()
+                    else navigation.open(destination)
+                })
             } else if (route == AppRoute.Dns || route == AppRoute.DnsProviders ||
                 route == AppRoute.DnsAutomation || route == AppRoute.DnsRevert ||
                 route == AppRoute.DnsWifiTarget || route == AppRoute.DnsMobileTarget ||
                 route == AppRoute.WifiRules || route is AppRoute.WifiRule) {
-                DnsSettingsRoot(dnsViewModel, showPermissionHelp, route, navigation::open) { automationRoute, providers ->
+                DnsSettingsRoot(dnsViewModel, showPermissionHelp, route, { destination ->
+                    if (destination == AppDestination.ShortcutSettings) navigation.openAreaShortcuts()
+                    else navigation.open(destination)
+                }) { automationRoute, providers ->
                     AutomationRoot(automationViewModel, providers, automationRoute,
                         onOpen = navigation::open, onEditRule = navigation::openWifiRule, onBack = navigation::back)
                 }
             } else if (route is AppRoute.Shortcuts) {
                 ShortcutSettingsRoot(shortcutViewModelFactory,
-                    Modifier.fillMaxSize().padding(horizontal = 16.dp))
+                    Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                    initialSection = if (!route.focusOrigin) null else when (route.origin) {
+                        AppArea.Dns -> ShortcutSection.Dns
+                        AppArea.Usb -> ShortcutSection.Usb
+                    })
             } else if (route is AppRoute.Settings) {
                 AppSettingsRoot(settingsViewModel, Modifier.padding(horizontal = 16.dp).fillMaxSize())
             }

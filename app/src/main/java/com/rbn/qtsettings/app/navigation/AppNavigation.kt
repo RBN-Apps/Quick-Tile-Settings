@@ -44,6 +44,11 @@ class AppNavigation internal constructor(
         if (activeStack.last() != route) activeStack.add(route)
     }
 
+    fun openAreaShortcuts() {
+        val route = AppRoute.Shortcuts(area, focusOrigin = true)
+        if (activeStack.last() != route) activeStack.add(route)
+    }
+
     /** Opens the editor for a stored rule; [open] with [AppDestination.WifiRule] starts a new one. */
     fun openWifiRule(ruleId: String) {
         if (area != AppArea.Dns) return

@@ -29,7 +29,8 @@ internal fun ShortcutCountInfo(state: ShortcutSettingsState, onAction: (Shortcut
         }) {
             SettingsRowContent(
                 title = stringResource(R.string.shortcut_settings_limit, state.configuration.enabledIds.size, state.configuration.maxCount),
-                summary = null, icon = Icons.Outlined.Info, enabled = true,
+                summary = stringResource(R.string.shortcut_favorites_count, state.configuration.favoriteIds.size,
+                    ShortcutCatalog.MAX_FAVORITE_SHORTCUTS), icon = Icons.Outlined.Info, enabled = true,
                 modifier = Modifier
             ) {
                 Icon(if (state.infoExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, null)

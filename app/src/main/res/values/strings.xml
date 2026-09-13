@@ -415,4 +415,6 @@
     <string name="backup_restore_summary">Choose a backup file and confirm before replacing settings.</string>
     <string name="developer_options_enabled_status">Developer options are enabled</string>
     <string name="developer_options_disabled_status">Developer options are disabled</string>
+    <string name="shortcut_menu_summary">Manage shortcuts and favorites</string>
+    <string name="shortcut_favorites_count">Favorites: %1$d / %2$d</string>
 </resources>

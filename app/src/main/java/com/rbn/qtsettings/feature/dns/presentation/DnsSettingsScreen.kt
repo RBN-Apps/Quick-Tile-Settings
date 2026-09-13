@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Dns
+import androidx.compose.material.icons.outlined.Shortcut
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.SettingsEthernet
 import androidx.compose.material.icons.outlined.Timer
@@ -25,7 +26,7 @@ import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
 fun DnsSettingsScreen(state: DnsSettingsState, onAction: (DnsSettingsAction) -> Unit, onOpen: (AppDestination) -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(AppSpacing.sectionGap)) {
         DnsStatusCard(state)
-        SettingsGroup(items = listOf(0, 1, 2, 3), itemKey = { it }) { item ->
+        SettingsGroup(items = listOf(0, 1, 2, 3, 4), itemKey = { it }) { item ->
             when (item) {
                 0 -> SettingsNavigationRow(stringResource(R.string.dns_menu_providers), Icons.Outlined.Dns,
                     { onOpen(AppDestination.DnsProviders) }, summary = stringResource(R.string.dns_menu_providers_summary))
@@ -36,7 +37,12 @@ fun DnsSettingsScreen(state: DnsSettingsState, onAction: (DnsSettingsAction) -> 
                     status = if (state.settings.enableAutoRevert && state.settings.autoRevertDelaySeconds > 0)
                         pluralStringResource(R.plurals.usb_delay_seconds, state.settings.autoRevertDelaySeconds, state.settings.autoRevertDelaySeconds)
                     else stringResource(R.string.off_state))
-                3 -> SettingsSwitchRow(stringResource(R.string.setting_require_unlock), state.settings.requireUnlock,
+                3 -> SettingsNavigationRow(
+                    stringResource(R.string.shortcut_settings_title), Icons.Outlined.Shortcut,
+                    { onOpen(AppDestination.ShortcutSettings) },
+                    summary = stringResource(R.string.shortcut_menu_summary)
+                )
+                4 -> SettingsSwitchRow(stringResource(R.string.setting_require_unlock), state.settings.requireUnlock,
                     { onAction(DnsSettingsAction.RequireUnlock(it)) }, summary = stringResource(R.string.setting_require_unlock_desc), icon = Icons.Outlined.Lock)
             }
         }

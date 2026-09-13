@@ -28,7 +28,8 @@ fun UsbSettingsRoot(
                 viewModel::onAction,
                 { onOpen(AppDestination.UsbTile) },
                 { onOpen(AppDestination.UsbActions) },
-                { onOpen(AppDestination.UsbRevert) })
+                { onOpen(AppDestination.UsbRevert) },
+                { onOpen(AppDestination.ShortcutSettings) })
 
             AppRoute.UsbTile -> UsbTileScreen(state, viewModel::onAction)
             AppRoute.UsbActions -> UsbAdditionalActionsScreen(state, viewModel::onAction)

@@ -1,6 +1,7 @@
 package com.rbn.qtsettings.feature.shortcuts.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.rbn.qtsettings.core.designsystem.SettingsGroup
 import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 
@@ -14,9 +15,10 @@ internal fun ShortcutGroup(
     onLimitReached: () -> Unit,
     onFavoriteLimitReached: () -> Unit,
     onToggle: (shortcutId: String, shouldEnable: Boolean) -> Unit,
-    onFavorite: (shortcutId: String, shouldFavorite: Boolean) -> Unit
+    onFavorite: (shortcutId: String, shouldFavorite: Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    SettingsGroup(items = items, itemKey = { it.id }, title = title) { item ->
+    SettingsGroup(items = items, itemKey = { it.id }, title = title, modifier = modifier) { item ->
         val isEnabled = enabledShortcutIds.contains(item.id)
         val isFavorite = favoriteShortcutIds.contains(item.id)
         val canEnableMore = enabledShortcutIds.size < maxShortcutCount

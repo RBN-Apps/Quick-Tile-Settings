@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Shortcut
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Timer
@@ -27,14 +28,15 @@ fun UsbSettingsScreen(
     onAction: (UsbSettingsAction) -> Unit,
     onTile: () -> Unit = {},
     onAdditionalActions: () -> Unit = {},
-    onRevert: () -> Unit = {}
+    onRevert: () -> Unit = {},
+    onShortcuts: () -> Unit = {}
 ) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         UsbStatusCard(state)
-        SettingsGroup(items = listOf(0, 1, 2, 3), itemKey = { it }) { item ->
+        SettingsGroup(items = listOf(0, 1, 2, 3, 4), itemKey = { it }) { item ->
             when (item) {
                 0 -> SettingsNavigationRow(
                     stringResource(R.string.usb_menu_tile), Icons.Outlined.Usb, onTile,
@@ -58,7 +60,12 @@ fun UsbSettingsScreen(
                     else stringResource(R.string.off_state)
                 )
 
-                3 -> SettingsSwitchRow(
+                3 -> SettingsNavigationRow(
+                    stringResource(R.string.shortcut_settings_title), Icons.Outlined.Shortcut,
+                    onShortcuts,
+                    summary = stringResource(R.string.shortcut_menu_summary)
+                )
+                4 -> SettingsSwitchRow(
                     stringResource(R.string.setting_require_unlock), state.settings.requireUnlock,
                     { onAction(UsbSettingsAction.RequireUnlock(it)) },
                     summary = stringResource(R.string.setting_require_unlock_desc), icon = Icons.Outlined.Lock

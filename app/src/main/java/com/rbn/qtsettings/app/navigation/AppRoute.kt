@@ -24,7 +24,7 @@ sealed interface AppRoute : NavKey {
     @Serializable @SerialName("usb_revert") data object UsbRevert : AppRoute
     @Serializable @SerialName("dns") data object Dns : AppRoute
     @Serializable @SerialName("usb") data object Usb : AppRoute
-    @Serializable @SerialName("shortcuts") data class Shortcuts(val origin: AppArea) : AppRoute
+    @Serializable @SerialName("shortcuts") data class Shortcuts(val origin: AppArea, val focusOrigin: Boolean = false) : AppRoute
     @Serializable @SerialName("settings") data class Settings(val origin: AppArea) : AppRoute
 }
 

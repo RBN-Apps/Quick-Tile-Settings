@@ -3,6 +3,10 @@ package com.rbn.qtsettings
 import android.content.Context
 import android.content.pm.ShortcutManager
 import android.util.Log
+import androidx.compose.ui.test.hasScrollToIndexAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -66,6 +70,11 @@ class ShortcutSettingsInstrumentedTest {
         }
     }
 
+    private fun scrollToShortcut(text: String) {
+        composeTestRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(text))
+        composeTestRule.onNodeWithText(text).performScrollTo().assertIsDisplayed()
+    }
+
     // === Navigation ===
 
     @Test
@@ -85,14 +94,9 @@ class ShortcutSettingsInstrumentedTest {
 
         composeTestRule.navigateBackFromShortcutSettings(context)
 
-        // Main screen app name is visible again; shortcut settings title is gone
+        // The overview is visible again; its new menu row also uses the shortcut title.
         composeTestRule.onNodeWithText(context.getString(R.string.app_name))
             .assertIsDisplayed()
-
-        composeTestRule.waitUntil(timeoutMillis = 3_000) {
-            composeTestRule.onAllNodesWithText(context.getString(R.string.shortcut_settings_title))
-                .fetchSemanticsNodes().isEmpty()
-        }
 
         composeTestRule.onNodeWithContentDescription(
             context.getString(R.string.shortcut_settings_open_desc)
@@ -134,7 +138,7 @@ class ShortcutSettingsInstrumentedTest {
     fun shortcutSettings_shouldShowPrivateDnsGroupTitle() {
         composeTestRule.navigateToShortcutSettings(context)
 
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
+        scrollToShortcut(context.getString(R.string.setting_title_private_dns))
 
         Log.i(TAG, "Private DNS group title is visible")
     }
@@ -143,7 +147,7 @@ class ShortcutSettingsInstrumentedTest {
     fun shortcutSettings_shouldShowUsbDebuggingGroupTitle() {
         composeTestRule.navigateToShortcutSettings(context)
 
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
+        scrollToShortcut(context.getString(R.string.setting_title_usb_debugging))
 
         Log.i(TAG, "USB Debugging group title is visible")
     }
@@ -152,11 +156,11 @@ class ShortcutSettingsInstrumentedTest {
     fun shortcutSettings_shouldShowAllPredefinedDnsShortcutItems() {
         composeTestRule.navigateToShortcutSettings(context)
 
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.shortcut_dns_off_short))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.shortcut_dns_auto_short))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.shortcut_dns_adguard_short))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.shortcut_dns_cloudflare_short))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.shortcut_dns_quad9_short))
+        scrollToShortcut(context.getString(R.string.shortcut_dns_off_short))
+        scrollToShortcut(context.getString(R.string.shortcut_dns_auto_short))
+        scrollToShortcut(context.getString(R.string.shortcut_dns_adguard_short))
+        scrollToShortcut(context.getString(R.string.shortcut_dns_cloudflare_short))
+        scrollToShortcut(context.getString(R.string.shortcut_dns_quad9_short))
 
         Log.i(TAG, "All predefined DNS shortcut items are visible")
     }
@@ -165,8 +169,8 @@ class ShortcutSettingsInstrumentedTest {
     fun shortcutSettings_shouldShowAllUsbShortcutItems() {
         composeTestRule.navigateToShortcutSettings(context)
 
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.shortcut_usb_on_short))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.shortcut_usb_off_short))
+        scrollToShortcut(context.getString(R.string.shortcut_usb_on_short))
+        scrollToShortcut(context.getString(R.string.shortcut_usb_off_short))
 
         Log.i(TAG, "USB shortcut items are visible")
     }
@@ -188,7 +192,7 @@ class ShortcutSettingsInstrumentedTest {
         val countBefore = prefsManager.shortcuts.enabledShortcutIds.value.size
 
         composeTestRule.navigateToShortcutSettings(context)
-        composeTestRule.safeScrollToAndAssert(dnsOffTitle)
+        scrollToShortcut(dnsOffTitle)
         composeTestRule.onNodeWithText(dnsOffTitle).performClick()
         composeTestRule.waitForIdle()
 
@@ -217,7 +221,7 @@ class ShortcutSettingsInstrumentedTest {
         val countBefore = prefsManager.shortcuts.enabledShortcutIds.value.size
 
         composeTestRule.navigateToShortcutSettings(context)
-        composeTestRule.safeScrollToAndAssert(dnsOffTitle)
+        scrollToShortcut(dnsOffTitle)
         composeTestRule.onNodeWithText(dnsOffTitle).performClick()
         composeTestRule.waitForIdle()
 
@@ -279,7 +283,7 @@ class ShortcutSettingsInstrumentedTest {
         }
         Log.i(TAG, "Clicking '$disabledTitle' to trigger limit-reached dialog")
 
-        composeTestRule.safeScrollToAndAssert(disabledTitle)
+        scrollToShortcut(disabledTitle)
         composeTestRule.onNodeWithText(disabledTitle).performClick()
         composeTestRule.waitForIdle()
 
@@ -340,7 +344,7 @@ class ShortcutSettingsInstrumentedTest {
 
         // Disabling an ENABLED shortcut at the limit must work without showing a dialog
         val enabledTitle = context.getString(R.string.shortcut_dns_off_short)
-        composeTestRule.safeScrollToAndAssert(enabledTitle)
+        scrollToShortcut(enabledTitle)
         composeTestRule.onNodeWithText(enabledTitle).performClick()
         composeTestRule.waitForIdle()
 
@@ -378,7 +382,7 @@ class ShortcutSettingsInstrumentedTest {
         )
 
         composeTestRule.navigateToShortcutSettings(context)
-        composeTestRule.safeScrollToAndAssert(dnsOffTitle)
+        scrollToShortcut(dnsOffTitle)
         composeTestRule.onNodeWithText(dnsOffTitle).performClick()
         composeTestRule.waitForIdle()
 
@@ -422,7 +426,7 @@ class ShortcutSettingsInstrumentedTest {
         )
 
         composeTestRule.navigateToShortcutSettings(context)
-        composeTestRule.safeScrollToAndAssert(dnsOffTitle)
+        scrollToShortcut(dnsOffTitle)
         composeTestRule.onNodeWithText(dnsOffTitle).performClick()
         composeTestRule.waitForIdle()
 

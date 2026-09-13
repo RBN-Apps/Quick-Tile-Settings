@@ -38,3 +38,19 @@ private fun QuickActionsPreview() {
                 R.drawable.ic_dns_off, QuickActionKind.DnsOff)), {}, {}, {})
     }
 }
+
+@Preview(showBackground = true, locale = "de", heightDp = 800)
+@Composable
+private fun UsbShortcutEntryPreview() {
+    QuickTileSettingsTheme {
+        Surface {
+            ShortcutSettingsScreen(
+                ShortcutSettingsState(
+                    configuration = ShortcutConfiguration(15, setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
+                        ShortcutCatalog.SHORTCUT_ID_USB_ON), setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF)),
+                    dnsItems = buildPrivateDnsShortcutItems(DnsHostnamePolicy.defaultHostnames())
+                ), onAction = {}, initialSection = ShortcutSection.Usb
+            )
+        }
+    }
+}

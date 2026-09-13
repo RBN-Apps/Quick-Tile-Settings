@@ -407,4 +407,6 @@
     <string name="backup_restore_summary">Backup-Datei auswählen und das Ersetzen der Einstellungen bestätigen.</string>
     <string name="developer_options_enabled_status">Entwickleroptionen sind aktiviert</string>
     <string name="developer_options_disabled_status">Entwickleroptionen sind deaktiviert</string>
+    <string name="shortcut_menu_summary">Shortcuts und Favoriten verwalten</string>
+    <string name="shortcut_favorites_count">Favoriten: %1$d / %2$d</string>
 </resources>
