@@ -37,6 +37,7 @@ class AppNavigation internal constructor(
             AppDestination.TileSettings -> return
             AppDestination.ShortcutSettings -> AppRoute.Shortcuts(area)
             AppDestination.AppSettings -> AppRoute.Settings(area)
+            AppDestination.About -> AppRoute.About
             AppDestination.UsbTile -> if (area == AppArea.Usb) AppRoute.UsbTile else return
             AppDestination.UsbActions -> if (area == AppArea.Usb) AppRoute.UsbActions else return
             AppDestination.UsbRevert -> if (area == AppArea.Usb) AppRoute.UsbRevert else return

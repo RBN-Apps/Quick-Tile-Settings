@@ -13,11 +13,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.feature.permissions.presentation.PermissionGrantDialog
 import com.rbn.qtsettings.feature.permissions.presentation.AdbInstructionDialog
-import com.rbn.qtsettings.feature.settings.presentation.AboutDialog
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import com.rbn.qtsettings.feature.permissions.domain.GrantMethod
 
-internal enum class AppOverlay { None, PermissionHelp, AdbInstructions, About }
+internal enum class AppOverlay { None, PermissionHelp, AdbInstructions }
 
 /** Global overlay binding. Feature permission logic remains in its current owner (#121). */
 @Composable
@@ -25,7 +24,6 @@ internal fun AppGlobalDialogsRoot(
     overlay: AppOverlay,
     viewModel: AppPermissionViewModel,
     onDismiss: () -> Unit,
-    onShowPermissionHelp: () -> Unit,
     onShowAdbInstructions: () -> Unit,
     onOpenAdbSettings: () -> Unit,
     onRequestShizukuPermission: () -> Unit
@@ -35,7 +33,6 @@ internal fun AppGlobalDialogsRoot(
     val dialogState = rememberSaveableStateHolder()
     when (overlay) {
         AppOverlay.None -> Unit
-        AppOverlay.About -> AboutDialog(com.rbn.qtsettings.platform.app.appVersionName(context), onDismiss, onShowPermissionHelp)
         AppOverlay.AdbInstructions -> AdbInstructionDialog(onDismissRequest = onDismiss,
             onCopyToClipboard = { text ->
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

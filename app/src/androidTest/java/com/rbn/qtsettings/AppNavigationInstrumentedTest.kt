@@ -60,6 +60,7 @@ class AppNavigationInstrumentedTest {
                             AppRoute.UsbTile -> "USB tile settings"
                             AppRoute.UsbActions -> "USB actions"
                             AppRoute.UsbRevert -> "USB revert"
+                            AppRoute.About -> "About"
                             is AppRoute.Settings -> "${route.origin} settings"
                             is AppRoute.Shortcuts -> "${route.origin} shortcuts"
                         })

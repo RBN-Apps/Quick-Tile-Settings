@@ -50,6 +50,7 @@ fun AppTopBar(
                         AppDestination.AppSettings ->
                             stringResource(R.string.app_settings_title)
 
+                        AppDestination.About -> stringResource(R.string.menu_about)
                         AppDestination.UsbTile -> stringResource(R.string.usb_menu_tile)
                         AppDestination.UsbActions -> stringResource(R.string.usb_menu_actions)
                         AppDestination.DnsProviders -> stringResource(R.string.dns_menu_providers)

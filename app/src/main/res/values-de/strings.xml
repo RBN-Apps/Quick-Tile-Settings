@@ -164,13 +164,7 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_description">QuickTile Settings bietet praktische Schnelleinstellungs-Kacheln zum Umschalten von Einstellungen direkt aus dem Benachrichtigungsfeld.</string>
     <string name="about_features_title">Funktionen</string>
-    <string name="about_feature_private_dns">• Private DNS-Kachel mit individueller Hostname-Unterstützung</string>
-    <string name="about_feature_usb_debugging">• USB-Debugging-Kachel für die Entwicklung</string>
-    <string name="about_feature_auto_revert">• Automatisches Zurücksetzen für temporäre Änderungen</string>
-    <string name="about_feature_custom_dns">• Integrierte beliebte DNS-Anbieter (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Entwickler</string>
     <string name="about_developer_info">Entwickelt von RBN-Apps\nOpen-Source-Projekt verfügbar auf GitHub</string>
-    <string name="about_button_permission_help">Hilfe zur Berechtigung einrichten</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Backup &amp; Wiederherstellung</string>
@@ -409,4 +403,36 @@
     <string name="developer_options_disabled_status">Entwickleroptionen sind deaktiviert</string>
     <string name="shortcut_menu_summary">Shortcuts und Favoriten verwalten</string>
     <string name="shortcut_favorites_count">Favoriten: %1$d / %2$d</string>
+
+    <!-- About page -->
+    <string name="about_loading">Wird geladen…</string>
+    <string name="about_unknown">Unbekannt</string>
+    <string name="about_dns_details">Privates DNS ausschalten, automatisch verwenden oder einen Anbieter wie AdGuard, Cloudflare oder Quad9 wählen. Eigene Hostnamen hinzufügen, den Kachelzyklus festlegen und ein Ziel direkt anwenden.</string>
+    <string name="about_usb_details">USB-Debugging über die Kachel umschalten. Optional auch Entwickleroptionen und Wireless-Debugging umschalten. Für diese geschützten Einstellungen ist die Einrichtungsberechtigung erforderlich.</string>
+    <string name="about_automation_details">DNS-Ziele für WLAN und mobile Daten wählen, WLAN-Regeln über Netzwerknamen und optional die Zugangspunkt-Adresse (BSSID) anlegen und das Verhalten bei VPN-Verbindungen festlegen. Die Hintergrunderkennung benötigt passende Berechtigungen und einen laufenden Dienst; das Benachrichtigungsverhalten hängt von der Android-Version ab.</string>
+    <string name="about_safety_title">Temporäre Änderungen &amp; Entsperrung</string>
+    <string name="about_safety_details">Nach einer festgelegten Zeit zur vorherigen DNS- oder USB-Debugging-Einstellung zurückkehren. Optional muss das Gerät vor einer Änderung über die Kachel entsperrt werden.</string>
+    <string name="about_shortcuts_details">Aktionen über Shortcuts und Quick Actions ausführen oder auf dem Startbildschirm anheften. DNS und USB teilen sich die verfügbaren Aktionsplätze und vier Favoriten. Die maximale Aktionszahl hängt vom Gerät ab und steht in der Shortcut-Übersicht.</string>
+    <string name="about_backup_details">Kacheleinstellungen, DNS-Einträge, Automatisierungsregeln und Shortcuts in eine Datei exportieren. Aktuelle oder unterstützte ältere Backups wiederherstellen; dabei werden vorhandene Einstellungen ersetzt. Systemberechtigungen müssen auf jedem Gerät separat erteilt werden.</string>
+    <string name="about_technical_title">Technische Informationen</string>
+    <string name="about_version_label">Version / Buildnummer</string>
+    <string name="about_package_label">Paketname</string>
+    <string name="about_android_label">Android / API-Level</string>
+    <string name="about_device_label">Hersteller / Modell</string>
+    <string name="about_abi_label">Unterstützte Architekturen (ABI)</string>
+    <string name="about_copy_technical">Technische Informationen kopieren</string>
+    <string name="about_technical_copied">Technische Informationen kopiert.</string>
+    <string name="about_project_title">Projekt &amp; Hilfe</string>
+    <string name="about_releases">Versionen &amp; Änderungen</string>
+    <string name="about_report_issue">Fehler melden</string>
+    <string name="about_license">Lizenz: GNU GPL v3</string>
+    <string name="about_credits">Danke an alle, die mit Code, Übersetzungen, Tests und Rückmeldungen beitragen. Entwickelt mit Android Jetpack Compose und Material-Komponenten.</string>
+    <string name="about_permission_setup">Berechtigung einrichten</string>
+    <string name="about_permission_summary">Erfahren, warum geschützte Einstellungen eine Berechtigung benötigen und wie sie über ADB, Shizuku oder Root erteilt wird.</string>
+    <string name="about_no_link_handler">Der Link konnte nicht geöffnet werden. Installiere oder aktiviere einen Browser und versuche es erneut.</string>
+    <string name="about_feature_request">Feature vorschlagen</string>
+    <string name="about_report_open">Weiter zu GitHub</string>
+    <string name="about_report_include">Technische Informationen übernehmen</string>
+    <string name="about_report_explanation">Beschreibe den Fehler und die Schritte zum Reproduzieren auf GitHub. Du kannst den Entwurf vor dem Absenden prüfen und bearbeiten. Technische Informationen sind freiwillig.</string>
+    <string name="about_report_privacy">Enthält App-/Geräteversionen, Anzeige, Sprache und Berechtigungsstatus. Keine Netzwerknamen, DNS-Adressen, Geräte-IDs oder Logs.</string>
 </resources>

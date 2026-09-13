@@ -46,7 +46,10 @@ private fun AdbInstructionsPreview() {
 @Preview(locale = "de", uiMode = Configuration.UI_MODE_NIGHT_YES, fontScale = 1.3f)
 @Composable
 private fun AboutPreview() {
-    QuickTileSettingsTheme { AboutDialog("1.5.0", {}, {}) }
+    QuickTileSettingsTheme { Surface { AboutScreen(
+        com.rbn.qtsettings.platform.app.AppInfo("1.5.0", 150, "com.rbn.qtsettings",
+            "15", 35, "Samsung", "Galaxy", "arm64-v8a"), null, {}, {}, {}, {}, {}
+    ) } }
 }
 
 @Preview(locale = "de", fontScale = 1.3f)

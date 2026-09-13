@@ -164,13 +164,7 @@
     <string name="about_version">Verze %1$s</string>
     <string name="about_description">QuickTile Settings přidává praktické dlaždice do panelu rychlých nastavení.</string>
     <string name="about_features_title">Funkce</string>
-    <string name="about_feature_private_dns">• Dlaždice Privátní DNS s podporou vlastních hostname</string>
-    <string name="about_feature_usb_debugging">• Dlaždice USB ladění pro vývoj</string>
-    <string name="about_feature_auto_revert">• Automatické obnovení změn</string>
-    <string name="about_feature_custom_dns">• Oblíbení poskytovatelé DNS (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Vývojář</string>
     <string name="about_developer_info">Vyvinuto RBN-Apps\nOpen source projekt na GitHubu</string>
-    <string name="about_button_permission_help">Nápověda k nastavení oprávnění</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Záloha a obnovení</string>

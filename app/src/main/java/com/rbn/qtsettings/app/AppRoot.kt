@@ -36,6 +36,7 @@ import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.AppSettingsRoot
+import com.rbn.qtsettings.feature.settings.presentation.AboutRoot
 
 /** Binds feature owners to the app shell and Navigation 3 destinations. */
 @Composable
@@ -100,7 +101,7 @@ fun AppRoot(
         },
         onOpenDestination = navigation::open,
         onShowPermissionHelp = showPermissionHelp,
-        onShowAbout = { overlay = AppOverlay.About }
+        onShowAbout = { navigation.open(AppDestination.About) }
     ) { modifier ->
         AppNavigationContent(navigation, modifier) { route ->
             if (route == AppRoute.Usb || route == AppRoute.UsbTile ||
@@ -127,6 +128,12 @@ fun AppRoot(
                         AppArea.Dns -> ShortcutSection.Dns
                         AppArea.Usb -> ShortcutSection.Usb
                     })
+            } else if (route == AppRoute.About) {
+                AboutRoot(
+                    onPermissionHelp = showPermissionHelp,
+                    onShortcuts = { navigation.open(AppDestination.ShortcutSettings) },
+                    onSettings = { navigation.open(AppDestination.AppSettings) }
+                )
             } else if (route is AppRoute.Settings) {
                 AppSettingsRoot(settingsViewModel, Modifier.padding(horizontal = 16.dp).fillMaxSize())
             }
@@ -142,7 +149,6 @@ fun AppRoot(
                 overlay = AppOverlay.None
             }
         },
-        onShowPermissionHelp = showPermissionHelp,
         onShowAdbInstructions = { overlay = AppOverlay.AdbInstructions },
         onOpenAdbSettings = onOpenAdbSettings,
         onRequestShizukuPermission = onRequestShizukuPermission

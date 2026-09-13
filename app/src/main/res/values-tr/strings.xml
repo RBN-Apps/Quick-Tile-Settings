@@ -151,13 +151,7 @@
     <string name="about_version">Sürüm %1$s</string>
     <string name="about_description">QuickTile Ayarları, bildirim panelinden ayarları doğrudan değiştirmek için kullanışlı Hızlı Ayarlar kutucukları sağlar.</string>
     <string name="about_features_title">Özellikler</string>
-    <string name="about_feature_private_dns">• Özel ana bilgisayar adı destekli Özel DNS kutucuğu</string>
-    <string name="about_feature_usb_debugging">• Geliştirme için USB Hata Ayıklama kutucuğu</string>
-    <string name="about_feature_auto_revert">• Geçici değişiklikler için otomatik geri alma işlevi</string>
-    <string name="about_feature_custom_dns">• Dahili popüler DNS sağlayıcıları (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Geliştirici</string>
     <string name="about_developer_info">RBN-Apps tarafından geliştirildi\nGitHub\'da bulunan açık kaynaklı bir projedir</string>
-    <string name="about_button_permission_help">İzin Kurulum Yardımı</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Yedekleme ve Geri Yükleme</string>

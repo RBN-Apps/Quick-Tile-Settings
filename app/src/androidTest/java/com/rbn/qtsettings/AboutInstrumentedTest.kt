@@ -1,0 +1,109 @@
+package com.rbn.qtsettings
+
+import android.content.ClipboardManager
+import androidx.activity.BackEventCompat
+import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.test.platform.app.InstrumentationRegistry
+import com.rbn.qtsettings.app.navigation.AppArea
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
+class AboutInstrumentedTest {
+    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
+    private fun label(id: Int) = context.getString(id)
+    private fun node(id: Int) = compose.onNodeWithText(label(id))
+
+    @Before fun prepare() { compose.dismissInitialDialogsIfPresent(context) }
+    private fun open() {
+        compose.onNodeWithContentDescription(label(R.string.app_menu_desc)).performClick()
+        node(R.string.menu_about).performClick()
+        node(R.string.about_description).assertIsDisplayed()
+    }
+    private fun scrollTo(id: Int) {
+        compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(label(id)))
+    }
+    private fun back() = compose.onNodeWithContentDescription(label(R.string.navigate_back_desc)).performClick()
+
+    @Test fun reportMetadataIsOptIn_andNewDraftResetsConsent() {
+        open()
+        scrollTo(R.string.about_report_issue)
+        node(R.string.about_report_issue).performClick()
+        val checkbox = compose.onNode(hasText(label(R.string.about_report_include)) and isToggleable())
+        checkbox.assertIsOff().performClick().assertIsOn()
+        compose.activityRule.scenario.recreate()
+        checkbox.assertIsOn()
+        node(R.string.dialog_cancel).performClick()
+        node(R.string.about_report_issue).performClick()
+        checkbox.assertIsOff()
+        node(R.string.dialog_cancel).performClick()
+        scrollTo(R.string.about_feature_request)
+        node(R.string.about_feature_request).assertIsDisplayed().assertHasClickAction()
+    }
+
+    @Test fun technicalDetailsComeFromInstalledPackage_andCopyContainsOnlyDisplayedMetadata() {
+        open()
+        scrollTo(R.string.about_copy_technical)
+        val info = context.packageManager.getPackageInfo(context.packageName, 0)
+        compose.onNodeWithText("${info.versionName} (${info.longVersionCode})").assertExists()
+        compose.onNodeWithText(context.packageName).assertExists()
+        node(R.string.about_copy_technical).performClick()
+        compose.runOnIdle {
+            val copied = context.getSystemService(ClipboardManager::class.java).primaryClip!!
+                .getItemAt(0).text.toString()
+            assertEquals(5, copied.lines().size)
+            assertTrue(copied.contains(context.packageName))
+            assertTrue(copied.contains("${info.versionName} (${info.longVersionCode})"))
+            assertTrue(copied.contains("API ${android.os.Build.VERSION.SDK_INT}"))
+        }
+    }
+
+    @Test fun featureLinksReturnToAbout_withScrollPosition_andPermissionHelpKeepsCaller() {
+        open()
+        scrollTo(R.string.shortcut_settings_title)
+        node(R.string.shortcut_settings_title).performClick()
+        node(R.string.shortcut_settings_allow_pinned_when_disabled).assertIsDisplayed()
+        back()
+        node(R.string.about_shortcuts_details).assertIsDisplayed()
+        scrollTo(R.string.settings_backup_title)
+        node(R.string.settings_backup_title).performClick()
+        node(R.string.backup_export_button).assertIsDisplayed()
+        back()
+        scrollTo(R.string.about_permission_setup)
+        node(R.string.about_permission_setup).performClick()
+        // Dismiss the existing setup dialog; #148 will replace it with a page.
+        androidx.test.espresso.Espresso.pressBack()
+        node(R.string.about_permission_setup).assertIsDisplayed()
+    }
+
+    @Test fun usbCallerAndAboutScrollSurviveRecreation_andBothPredictiveEdgesCancelOrPopOnce() {
+        compose.selectNavigationArea(context, AppArea.Usb)
+        open()
+        scrollTo(R.string.about_license)
+        fun offset() = compose.onNode(hasScrollToIndexAction()).fetchSemanticsNode()
+            .config[SemanticsProperties.VerticalScrollAxisRange].value()
+        // Content scroll survives recreation; absolute coordinates can change with system insets.
+        val before = offset()
+        compose.activityRule.scenario.recreate()
+        node(R.string.about_license).assertIsDisplayed()
+        val restored = node(R.string.about_license).fetchSemanticsNode().positionInRoot
+        assertEquals(before, offset(), 1f)
+        for (edge in listOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT)) {
+            compose.runOnIdle {
+                compose.activity.onBackPressedDispatcher.dispatchOnBackStarted(BackEventCompat(0f, 0f, 0f, edge))
+                compose.activity.onBackPressedDispatcher.dispatchOnBackProgressed(BackEventCompat(0f, 0f, .6f, edge))
+            }
+            assertTrue(node(R.string.about_license).fetchSemanticsNode().positionInRoot.x > restored.x)
+            compose.runOnIdle { compose.activity.onBackPressedDispatcher.dispatchOnBackCancelled() }
+            node(R.string.about_license).assertIsDisplayed()
+            assertEquals(before, offset(), 1f)
+        }
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        node(R.string.usb_menu_tile).assertIsDisplayed()
+    }
+}

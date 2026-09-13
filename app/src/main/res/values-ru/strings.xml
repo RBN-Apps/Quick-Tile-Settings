@@ -151,13 +151,7 @@
     <string name="about_version">Версия %1$s</string>
     <string name="about_description">QuickTile Settings предоставляет удобные плитки быстрых настроек для управления параметрами прямо из панели уведомлений.</string>
     <string name="about_features_title">Возможности</string>
-    <string name="about_feature_private_dns">• Плитка Частный DNS с поддержкой кастомных имен хостов</string>
-    <string name="about_feature_usb_debugging">• Плитка отладки по USB для разработки</string>
-    <string name="about_feature_auto_revert">• Функция авто-возврата для временных изменений</string>
-    <string name="about_feature_custom_dns">• Встроенные популярные DNS-провайдеры (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Разработчик</string>
     <string name="about_developer_info">Разработано RBN-Apps\nOpen-source проект доступен на GitHub</string>
-    <string name="about_button_permission_help">Справка по настройке разрешений</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Резервное копирование и восстановление</string>

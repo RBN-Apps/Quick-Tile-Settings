@@ -117,11 +117,6 @@
     <string name="about_version">Versão %1$s</string>
     <string name="about_description">O QuickTile Settings fornece tiles práticos de Configurações Rápidas para alternar configurações diretamente pelo painel de notificações.</string>
     <string name="about_features_title">Recursos</string>
-    <string name="about_feature_private_dns">• Tile de DNS Privado com suporte a hostname personalizado</string>
-    <string name="about_feature_usb_debugging">• Tile de Depuração USB para desenvolvimento</string>
-    <string name="about_feature_auto_revert">• Função de reversão automática para alterações temporárias</string>
-    <string name="about_feature_custom_dns">• Provedores DNS populares integrados (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Desenvolvedor</string>
     <string name="about_developer_info">Desenvolvido por RBN-Apps\nProjeto open source disponível no GitHub</string>
 
     <!-- App Settings -->
