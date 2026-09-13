@@ -88,18 +88,15 @@ fun AppRoot(
     }
     val backDispatcher = androidx.activity.compose.LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     AppScaffold(
-        area = navigation.area,
-        onSelectArea = navigation::selectArea,
+        selectedTarget = navigation.selectedTarget,
+        onSelectTarget = navigation::selectTarget,
         destination = navigation.destination,
         snackbarHostState = snackbar,
         onBack = {
             if (navigation.destination == com.rbn.qtsettings.app.navigation.AppDestination.WifiRule && backDispatcher != null)
                 backDispatcher.onBackPressed()
             else navigation.back()
-        },
-        onOpenDestination = navigation::open,
-        onShowPermissionHelp = showPermissionHelp,
-        onShowAbout = { navigation.open(AppDestination.About) }
+        }
     ) { modifier ->
         AppNavigationContent(navigation, modifier) { route ->
             if (route == AppRoute.Usb || route == AppRoute.UsbTile ||

@@ -21,8 +21,7 @@ class AboutInstrumentedTest {
 
     @Before fun prepare() { compose.dismissInitialDialogsIfPresent(context) }
     private fun open() {
-        compose.onNodeWithContentDescription(label(R.string.app_menu_desc)).performClick()
-        node(R.string.menu_about).performClick()
+        compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.About)
         node(R.string.about_description).assertIsDisplayed()
     }
     private fun scrollTo(id: Int) {

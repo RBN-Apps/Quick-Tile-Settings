@@ -1,5 +1,6 @@
 package com.rbn.qtsettings.app.navigation
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.SpringSpec
@@ -20,11 +21,11 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuOpen
-import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Usb
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
@@ -47,6 +48,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,9 +67,9 @@ fun AppNavigationRail(
     expanded: Boolean,
     modal: Boolean,
     headerHeight: Dp,
-    area: AppArea,
+    selectedTarget: AppRailTarget,
     onToggle: () -> Unit,
-    onSelectArea: (AppArea) -> Unit,
+    onSelectTarget: (AppRailTarget) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val itemSpacing by animateDpAsState(
@@ -85,8 +87,19 @@ fun AppNavigationRail(
             Modifier.selectableGroup().verticalScroll(rememberScrollState()).padding(top = AppSpacing.contentGap),
             verticalArrangement = Arrangement.spacedBy(itemSpacing)
         ) {
-            AppArea.entries.forEach { target ->
-                AppNavigationRailItem(target, target == area, expanded) { onSelectArea(target) }
+            AppRailGroup.entries.forEach { group ->
+                // Category space joins the existing rail motion instead of moving items abruptly.
+                Box(Modifier.animateContentSize(animationSpec = railSpatialAnimation())) {
+                    if (expanded) Text(
+                        stringResource(group.title),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp).semantics { heading() }
+                    ) else if (group != AppRailGroup.Tiles) HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                }
+                AppRailTarget.entries.filter { it.group == group }.forEach { target ->
+                    AppNavigationRailItem(target, target == selectedTarget, expanded) { onSelectTarget(target) }
+                }
             }
         }
     }
@@ -116,12 +129,12 @@ private fun RailToggle(expanded: Boolean, onToggle: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AppNavigationRailItem(area: AppArea, selected: Boolean, expanded: Boolean, onClick: () -> Unit) {
+private fun AppNavigationRailItem(target: AppRailTarget, selected: Boolean, expanded: Boolean, onClick: () -> Unit) {
     // Use the actual Material placement instead of duplicating its private animation timing.
     // During expansion the full name must not flash in the outgoing below-icon position.
     var iconBottom by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
     var labelTop by remember { mutableFloatStateOf(0f) }
-    val label = stringResource(if (area == AppArea.Dns) R.string.tab_title_dns else R.string.tab_title_usb)
+    val label = stringResource(target.title)
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = { PlainTooltip { Text(label) } },
@@ -131,13 +144,13 @@ private fun AppNavigationRailItem(area: AppArea, selected: Boolean, expanded: Bo
             selected = selected,
             onClick = onClick,
             railExpanded = expanded,
-            modifier = Modifier.heightIn(min = AppSpacing.minimumTouchTarget).testTag("navigation_area_${area.name}")
-                .semantics { if (!expanded) contentDescription = label },
+            modifier = Modifier.heightIn(min = AppSpacing.minimumTouchTarget).testTag(target.testTag)
+                .semantics { contentDescription = label },
             icon = {
                 Icon(
-                    if (area == AppArea.Dns) Icons.Default.Dns else Icons.Default.Usb,
+                    target.icon,
                     contentDescription = null,
-                    modifier = Modifier.testTag("navigation_icon_${area.name}")
+                    modifier = Modifier.testTag("navigation_icon_${target.name}")
                         .onGloballyPositioned { iconBottom = it.boundsInRoot().bottom }
                 )
             },
@@ -145,14 +158,14 @@ private fun AppNavigationRailItem(area: AppArea, selected: Boolean, expanded: Bo
                 // WideNavigationRailItem already fades and moves its label. A nested Crossfade
                 // retains the outgoing full label's width, misaligning the short label and then
                 // snapping the item height when that outgoing composition disappears.
-                if (expanded) Text(label, modifier = Modifier
+                if (expanded) Text(label, modifier = Modifier.clearAndSetSemantics { }
                     .onGloballyPositioned { labelTop = it.boundsInRoot().top }
                     .graphicsLayer { alpha = if (labelTop >= iconBottom) 0f else 1f }
                 )
                 else Text(
-                    stringResource(if (area == AppArea.Dns) R.string.navigation_dns_short else R.string.navigation_usb_short),
+                    stringResource(target.shortTitle),
                     // The parent exposes the full destination name once to accessibility.
-                    modifier = Modifier.testTag("navigation_short_label_${area.name}").clearAndSetSemantics { }
+                    modifier = Modifier.testTag("navigation_short_label_${target.name}").clearAndSetSemantics { }
                 )
             }
         )

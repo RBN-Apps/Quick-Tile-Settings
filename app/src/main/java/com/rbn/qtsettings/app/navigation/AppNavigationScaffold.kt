@@ -32,8 +32,8 @@ import kotlinx.coroutines.launch
 /** Current window constraints select presentation; content stays in one continuous composition. */
 @Composable
 fun AppNavigationScaffold(
-    area: AppArea,
-    onSelectArea: (AppArea) -> Unit,
+    selectedTarget: AppRailTarget,
+    onSelectTarget: (AppRailTarget) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (compact: Boolean, openNavigation: () -> Unit, onHeaderHeight: (Dp) -> Unit) -> Unit
 ) {
@@ -61,10 +61,10 @@ fun AppNavigationScaffold(
                         // Register the modal back handler when opening, after the active Nav3
                         // entry's handler. It remains active throughout the closing animation.
                         ModalDrawerSheet(drawer, Modifier.railWidth(expanded = true)) {
-                            AppNavigationRail(true, true, headerHeight, area,
+                            AppNavigationRail(true, true, headerHeight, selectedTarget,
                                 onToggle = { scope.launch { drawer.close() } },
-                                onSelectArea = { target ->
-                                    onSelectArea(target)
+                                onSelectTarget = { target ->
+                                    onSelectTarget(target)
                                     scope.launch { drawer.close() }
                                 })
                         }
@@ -85,8 +85,8 @@ fun AppNavigationScaffold(
                         ).railWidth(expanded),
                     color = MaterialTheme.colorScheme.surface
                 ) {
-                    AppNavigationRail(expanded, false, headerHeight, area,
-                        onToggle = { expanded = !expanded }, onSelectArea = onSelectArea)
+                    AppNavigationRail(expanded, false, headerHeight, selectedTarget,
+                        onToggle = { expanded = !expanded }, onSelectTarget = onSelectTarget)
                 }
                 content(compact, { scope.launch { drawer.open() } }, { headerHeight = it })
             }

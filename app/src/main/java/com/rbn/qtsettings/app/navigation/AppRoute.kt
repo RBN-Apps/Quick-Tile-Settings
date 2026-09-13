@@ -73,3 +73,11 @@ internal val AppRoute.destination: AppDestination get() = when (this) {
     AppRoute.UsbActions -> AppDestination.UsbActions
     AppRoute.UsbRevert -> AppDestination.UsbRevert
 }
+
+/** Stable, stack-scoped decorator identity when the same feature also appears in a help path. */
+internal val AppRoute.entryId: String get() = when (this) {
+    is AppRoute.Shortcuts -> "shortcuts:${origin.name}:$focusOrigin"
+    is AppRoute.Settings -> "settings:${origin.name}"
+    is AppRoute.WifiRule -> "wifi_rule:$ruleId"
+    else -> destination.name
+}

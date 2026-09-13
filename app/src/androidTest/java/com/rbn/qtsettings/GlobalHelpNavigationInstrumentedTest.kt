@@ -23,8 +23,7 @@ class GlobalHelpNavigationInstrumentedTest {
         try {
             ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java)).use { scenario ->
                 instrumentation.setInTouchMode(true)
-                compose.onNodeWithContentDescription(context.getString(R.string.app_menu_desc)).performClick()
-                text(R.string.menu_permission_help).performClick()
+                compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.Permissions)
                 text(R.string.button_show_adb_instructions).performScrollTo().performClick()
                 text(R.string.adb_instructions_title).assertIsDisplayed()
                 text(R.string.menu_permission_help).assertDoesNotExist()
@@ -35,7 +34,7 @@ class GlobalHelpNavigationInstrumentedTest {
                 text(R.string.menu_permission_help).assertIsDisplayed()
                 compose.onAllNodes(isDialog()).assertCountEquals(0)
                 instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-                compose.onNodeWithContentDescription(context.getString(R.string.app_menu_desc)).assertIsDisplayed()
+                compose.assertNavigationAvailable(context)
                 compose.onAllNodes(isDialog()).assertCountEquals(0)
             }
         } finally { store.setHelpShown(oldHelp) }

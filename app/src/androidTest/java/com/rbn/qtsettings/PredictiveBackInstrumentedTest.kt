@@ -45,8 +45,8 @@ class PredictiveBackInstrumentedTest {
             val nav = rememberAppNavigation(AppArea.Usb)
             var dialog by rememberSaveable { mutableStateOf(false) }
             QuickTileSettingsTheme {
-                AppScaffold(nav.destination, nav.area, nav::selectArea,
-                    remember { SnackbarHostState() }, nav::back, nav::open, {}, {}) { modifier ->
+                AppScaffold(nav.destination, nav.selectedTarget, nav::selectTarget,
+                    remember { SnackbarHostState() }, nav::back) { modifier ->
                     AppNavigationContent(nav, modifier) { route ->
                         viewModel { EntryOwner(cleared) }
                         var draft by rememberSaveable { mutableStateOf("") }

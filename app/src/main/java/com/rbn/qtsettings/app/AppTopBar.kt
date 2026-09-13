@@ -1,25 +1,15 @@
 package com.rbn.qtsettings.app
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AdminPanelSettings
-import androidx.compose.material.icons.filled.AppShortcut
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.rbn.qtsettings.R
@@ -30,136 +20,40 @@ import com.rbn.qtsettings.app.navigation.AppDestination
 fun AppTopBar(
     destination: AppDestination,
     onBack: () -> Unit,
-    onOpenDestination: (AppDestination) -> Unit,
-    onShowPermissionHelp: () -> Unit,
-    onShowAbout: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenNavigation: (() -> Unit)? = null
 ) {
-    val inSubScreen = destination != AppDestination.TileSettings
-    var showOverflowMenu by remember { mutableStateOf(false) }
-    if (inSubScreen) {
-        TopAppBar(
-            modifier = modifier,
-            title = {
-                Text(
-                    when (destination) {
-                        AppDestination.ShortcutSettings ->
-                            stringResource(R.string.shortcut_settings_title)
-
-                        AppDestination.AppSettings ->
-                            stringResource(R.string.app_settings_title)
-
-                        AppDestination.Permissions -> stringResource(R.string.menu_permission_help)
-                        AppDestination.AdbInstructions -> stringResource(R.string.adb_instructions_title)
-                        AppDestination.About -> stringResource(R.string.menu_about)
-                        AppDestination.UsbTile -> stringResource(R.string.usb_menu_tile)
-                        AppDestination.UsbActions -> stringResource(R.string.usb_menu_actions)
-                        AppDestination.DnsProviders -> stringResource(R.string.dns_menu_providers)
-                        AppDestination.DnsAutomation -> stringResource(R.string.dns_menu_automation)
-                        AppDestination.DnsWifiTarget -> stringResource(R.string.automation_wifi)
-                        AppDestination.DnsMobileTarget -> stringResource(R.string.automation_mobile)
-                        AppDestination.WifiRules -> stringResource(R.string.setting_wifi_network_rules_title)
-                        AppDestination.WifiRule -> stringResource(R.string.wifi_rule_title)
-                        AppDestination.DnsRevert -> stringResource(R.string.usb_menu_revert)
-                        AppDestination.UsbRevert -> stringResource(R.string.usb_menu_revert)
-                        AppDestination.TileSettings ->
-                            stringResource(R.string.app_name)
-                    }
-                )
-            },
-            actions = {
-                if (onOpenNavigation != null) NavigationMenuButton(onOpenNavigation)
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = {
-                        onBack()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.navigate_back_desc)
-                    )
+    TopAppBar(
+        modifier = modifier,
+        title = { Text(stringResource(destination.title)) },
+        navigationIcon = {
+            Row {
+                if (onOpenNavigation != null) IconButton(onClick = onOpenNavigation) {
+                    Icon(Icons.Default.Menu, stringResource(R.string.navigation_open))
+                }
+                if (destination != AppDestination.TileSettings) IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.navigate_back_desc))
                 }
             }
-        )
-    } else {
-        TopAppBar(
-            modifier = modifier,
-            title = { Text(stringResource(R.string.app_name)) },
-            navigationIcon = {
-                if (onOpenNavigation != null) NavigationMenuButton(onOpenNavigation)
-            },
-            actions = {
-                IconButton(
-                    onClick = {
-                        onOpenDestination(AppDestination.ShortcutSettings)
-                    }
-                ) {
-                    Icon(
-                        Icons.Filled.AppShortcut,
-                        contentDescription = stringResource(R.string.shortcut_settings_open_desc)
-                    )
-                }
-                IconButton(onClick = { showOverflowMenu = true }) {
-                    Icon(
-                        Icons.Filled.MoreVert,
-                        contentDescription = stringResource(R.string.app_menu_desc)
-                    )
-                }
-                DropdownMenu(
-                    expanded = showOverflowMenu,
-                    onDismissRequest = { showOverflowMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_settings)) },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.Settings,
-                                contentDescription = null
-                            )
-                        },
-                        onClick = {
-                            showOverflowMenu = false
-                            onOpenDestination(AppDestination.AppSettings)
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_permission_help)) },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.AdminPanelSettings,
-                                contentDescription = null
-                            )
-                        },
-                        onClick = {
-                            showOverflowMenu = false
-                            onShowPermissionHelp()
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_about)) },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.Info,
-                                contentDescription = null
-                            )
-                        },
-                        onClick = {
-                            showOverflowMenu = false
-                            onShowAbout()
-                        }
-                    )
-                }
-            }
-        )
-    }
+        }
+    )
 }
 
-@Composable
-private fun NavigationMenuButton(onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
-        Icon(Icons.Default.Menu, stringResource(R.string.navigation_open))
-    }
+private val AppDestination.title: Int get() = when (this) {
+    AppDestination.ShortcutSettings -> R.string.shortcut_settings_title
+    AppDestination.AppSettings -> R.string.app_settings_title
+    AppDestination.Permissions -> R.string.menu_permission_help
+    AppDestination.AdbInstructions -> R.string.adb_instructions_title
+    AppDestination.About -> R.string.menu_about
+    AppDestination.UsbTile -> R.string.usb_menu_tile
+    AppDestination.UsbActions -> R.string.usb_menu_actions
+    AppDestination.DnsProviders -> R.string.dns_menu_providers
+    AppDestination.DnsAutomation -> R.string.dns_menu_automation
+    AppDestination.DnsWifiTarget -> R.string.automation_wifi
+    AppDestination.DnsMobileTarget -> R.string.automation_mobile
+    AppDestination.WifiRules -> R.string.setting_wifi_network_rules_title
+    AppDestination.WifiRule -> R.string.wifi_rule_title
+    AppDestination.DnsRevert -> R.string.usb_menu_revert
+    AppDestination.UsbRevert -> R.string.usb_menu_revert
+    AppDestination.TileSettings -> R.string.app_name
 }

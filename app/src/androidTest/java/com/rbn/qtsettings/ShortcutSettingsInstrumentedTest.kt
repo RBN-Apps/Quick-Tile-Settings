@@ -79,9 +79,7 @@ class ShortcutSettingsInstrumentedTest {
 
     @Test
     fun shortcutSettings_backButton_shouldReturnToMainScreen() {
-        composeTestRule.onNodeWithContentDescription(
-            context.getString(R.string.shortcut_settings_open_desc)
-        ).assertIsDisplayed()
+        composeTestRule.assertNavigationAvailable(context)
 
         composeTestRule.navigateToShortcutSettings(context)
 
@@ -98,9 +96,7 @@ class ShortcutSettingsInstrumentedTest {
         composeTestRule.onNodeWithText(context.getString(R.string.app_name))
             .assertIsDisplayed()
 
-        composeTestRule.onNodeWithContentDescription(
-            context.getString(R.string.shortcut_settings_open_desc)
-        ).assertIsDisplayed()
+        composeTestRule.assertNavigationAvailable(context)
 
         Log.i(TAG, "Back button returns to the main screen")
     }

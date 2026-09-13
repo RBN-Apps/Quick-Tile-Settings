@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.rbn.qtsettings.app.navigation.AppRailTarget
 import com.rbn.qtsettings.app.navigation.AppArea
 
 /**
@@ -69,12 +70,7 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.n
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.clickHelpButton(
     context: Context
 ) {
-    onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
-        .performClick()
-    waitForIdle()
-    onNodeWithText(context.getString(R.string.menu_permission_help))
-        .performClick()
-    waitForIdle()
+    selectNavigationTarget(context, AppRailTarget.Permissions)
 }
 
 /**
@@ -97,15 +93,7 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.s
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToShortcutSettings(
     context: Context
 ) {
-    try {
-        onNodeWithContentDescription(context.getString(R.string.shortcut_settings_open_desc))
-            .performClick()
-    } catch (_: AssertionError) {
-        onNodeWithContentDescription(context.getString(R.string.shortcut_settings_open_desc))
-            .performScrollTo()
-            .performClick()
-    }
-    waitForIdle()
+    selectNavigationTarget(context, AppRailTarget.Shortcuts)
 }
 
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateBackFromShortcutSettings(
@@ -124,4 +112,16 @@ fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.n
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.navigateToDnsAutomation(context: Context) {
     navigateToDnsArea(context)
     onNodeWithText(context.getString(R.string.dns_menu_automation)).performScrollTo().performClick()
+}
+
+fun ComposeTestRule.selectNavigationTarget(context: Context, target: AppRailTarget) {
+    openNavigationIfNeeded(context)
+    onNodeWithTag(target.testTag).performScrollTo().performClick()
+    waitForIdle()
+}
+
+fun ComposeTestRule.assertNavigationAvailable(context: Context) {
+    if (onAllNodesWithTag("persistent_navigation_rail").fetchSemanticsNodes().isEmpty())
+        onNodeWithContentDescription(context.getString(R.string.navigation_open)).assertIsDisplayed()
+    else onNodeWithTag("persistent_navigation_rail").assertIsDisplayed()
 }

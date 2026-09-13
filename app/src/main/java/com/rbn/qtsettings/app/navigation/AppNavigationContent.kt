@@ -20,8 +20,9 @@ fun AppNavigationContent(
     modifier: Modifier = Modifier,
     content: @Composable (AppRoute) -> Unit
 ) {
-    val entries = navigation.stacks.mapValues { (area, stack) ->
-        key(area) {
+    val stacks = navigation.stacks.mapKeys { it.key.name } + ("global" to navigation.globalStack)
+    val entries = stacks.mapValues { (stackId, stack) ->
+        key(stackId) {
             rememberDecoratedNavEntries(
                 backStack = stack,
                 entryDecorators = listOf(
@@ -29,7 +30,7 @@ fun AppNavigationContent(
                     rememberViewModelStoreNavEntryDecorator<NavKey>()
                 ),
                 entryProvider = { route ->
-                    NavEntry(route) {
+                    NavEntry(route, contentKey = "$stackId:${(route as AppRoute).entryId}") {
                         // Each preview is an opaque page, so both live entries remain readable
                         // while the foreground follows the user's finger.
                         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -41,7 +42,7 @@ fun AppNavigationContent(
         }
     }
     NavDisplay(
-        entries = entries.getValue(navigation.area),
+        entries = entries.getValue(navigation.area.name) + entries.getValue("global"),
         onBack = navigation::back,
         transitionSpec = { AppNavigationTransitions.forward() },
         popTransitionSpec = { AppNavigationTransitions.back() },

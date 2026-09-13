@@ -54,14 +54,14 @@ class AppNavigationRailInstrumentedTest {
                     // width exceeds a phone's pixels. requiredWidth alone centers overflow
                     // and can push the menu off-screen, unrelated to rail state or timing.
                     Box(Modifier.wrapContentWidth(Alignment.Start, unbounded = true).requiredWidth(width.dp)) {
-                        AppScaffold(nav.destination, nav.area, nav::selectArea,
-                            remember { SnackbarHostState() }, nav::back, nav::open, {}, {}) { modifier ->
+                        AppScaffold(nav.destination, nav.selectedTarget, nav::selectTarget,
+                            remember { SnackbarHostState() }, nav::back) { modifier ->
                             AppNavigationContent(nav, modifier.testTag("screen")) { route ->
                                 var draft by rememberSaveable { mutableStateOf("") }
                                 Column {
                                     Text(route.toString())
                                     BasicTextField(draft, { draft = it }, Modifier.testTag("draft"))
-                                    Button(onClick = { nav.open(AppDestination.AppSettings) }) { Text("Edit settings") }
+                                    Button(onClick = { nav.open(if (nav.area == AppArea.Dns) AppDestination.DnsProviders else AppDestination.UsbTile) }) { Text("Edit settings") }
                                 }
                             }
                         }
@@ -134,7 +134,7 @@ class AppNavigationRailInstrumentedTest {
             .assertIsDisplayed().assertHeightIsAtLeast(48.dp).assertWidthIsAtLeast(48.dp)
             .assertContentDescriptionEquals(context.getString(R.string.tab_title_usb))
         icon(R.string.navigation_expand).performClick()
-        compose.onNodeWithText(context.getString(R.string.tab_title_usb)).assertIsDisplayed()
+        compose.onNodeWithTag("navigation_area_Usb").assertIsDisplayed()
         compose.selectNavigationArea(context, AppArea.Usb)
         compose.onNodeWithTag("navigation_area_Usb").assertIsSelected()
     }
@@ -146,7 +146,7 @@ class AppNavigationRailInstrumentedTest {
         val menu = icon(R.string.navigation_collapse).fetchSemanticsNode().boundsInRoot
         assertEquals(toolbarY, menu.center.y, 1f)
         val first = compose.onNodeWithTag("navigation_area_Dns").fetchSemanticsNode().boundsInRoot
-        assertTrue("Compact gap below menu: ${first.top - menu.bottom}", first.top - menu.bottom <= 24f)
+        assertTrue("Compact gap below menu: ${first.top - menu.bottom}", first.top - menu.bottom <= 64f)
         icon(R.string.navigation_collapse).performClick()
         resize(700)
         val narrowY = icon(R.string.navigation_expand).fetchSemanticsNode().boundsInRoot.center.y
@@ -168,8 +168,8 @@ class AppNavigationRailInstrumentedTest {
                     compose.mainClock.advanceTimeByFrame()
                     if (compose.onAllNodesWithTag("navigation_area_Dns").fetchSemanticsNodes().isNotEmpty()) {
                         visibleFrames++
-                        compose.onNodeWithText(context.getString(R.string.tab_title_dns)).assertExists()
-                        compose.onNodeWithText(context.getString(R.string.tab_title_usb)).assertExists()
+                        compose.onNodeWithTag("navigation_area_Dns").assertContentDescriptionEquals(context.getString(R.string.tab_title_dns))
+                        compose.onNodeWithTag("navigation_area_Usb").assertContentDescriptionEquals(context.getString(R.string.tab_title_usb))
                     }
                 }
                 assertTrue("Must inspect visible closing frames", visibleFrames > 0)
@@ -177,6 +177,32 @@ class AppNavigationRailInstrumentedTest {
                 compose.mainClock.autoAdvance = true
             }
             compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        }
+    }
+
+    @Test fun allSixTargets_groupedScrollableAndSelected_menuPrecedesBackInEveryLayout() {
+        show(fontScale = 1.5f)
+        for (layoutWidth in listOf(390, 700, 1000)) {
+            resize(layoutWidth)
+            for (target in AppRailTarget.entries) {
+                compose.selectNavigationTarget(context, target)
+                val compact = compose.openNavigationIfNeeded(context)
+                compose.onNodeWithTag(target.testTag).performScrollTo().assertIsSelected()
+                AppRailTarget.entries.filter { it != target }.forEach {
+                    compose.onNodeWithTag(it.testTag).assertIsNotSelected()
+                }
+                if (compact) icon(R.string.navigation_collapse).performClick()
+                if (target.area == null) {
+                    val back = icon(R.string.navigate_back_desc).fetchSemanticsNode().boundsInRoot
+                    val menuId = if (layoutWidth < 600) R.string.navigation_open
+                        else if (layoutWidth < 840) R.string.navigation_expand else R.string.navigation_collapse
+                    val menu = icon(menuId).fetchSemanticsNode().boundsInRoot
+                    assertTrue("Menu precedes Back", menu.right <= back.left)
+                    assertEquals("Aligned menu and Back", menu.center.y, back.center.y, 1f)
+                }
+                icon(R.string.app_menu_desc).assertDoesNotExist()
+                icon(R.string.shortcut_settings_open_desc).assertDoesNotExist()
+            }
         }
     }
 

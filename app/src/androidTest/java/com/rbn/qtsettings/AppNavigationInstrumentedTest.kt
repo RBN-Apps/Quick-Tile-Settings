@@ -68,7 +68,7 @@ class AppNavigationInstrumentedTest {
                         })
                         Text("Owner ${owner.id}")
                         BasicTextField(draft, { draft = it }, Modifier.testTag("draft"))
-                        Button(onClick = { nav.open(AppDestination.AppSettings) }) { Text("Settings") }
+                        Button(onClick = { nav.open(if (nav.area == AppArea.Dns) AppDestination.DnsProviders else AppDestination.UsbTile) }) { Text("Feature detail") }
                         Button(onClick = { nav.open(AppDestination.Permissions) }) { Text("Open help") }
                         Button(onClick = { nav.open(AppDestination.AdbInstructions) }) { Text("Open ADB") }
                         Button(onClick = nav::openPermissionAutomation) { Text("Optional access") }
@@ -87,17 +87,17 @@ class AppNavigationInstrumentedTest {
         val restoration = StateRestorationTester(compose)
         restoration.setContent { NavigationHarness() }
         draft("DNS root draft")
-        click("Settings")
+        click("Feature detail")
         draft("DNS form")
         click("Select USB")
         draft("USB root draft")
-        click("Settings")
+        click("Feature detail")
         draft("USB form")
-        click("Settings") // Reopening the visible destination must not duplicate it.
+        click("Feature detail") // Reopening the visible destination must not duplicate it.
         click("Select USB") // Reselecting the area must not reset its entry.
         assertDraft("USB form")
         restoration.emulateSavedInstanceStateRestore()
-        compose.onNodeWithText("Usb settings").assertExists()
+        compose.onNodeWithText("USB tile settings").assertExists()
         assertDraft("USB form")
         click("Select DNS")
         assertDraft("DNS form")
@@ -113,10 +113,10 @@ class AppNavigationInstrumentedTest {
 
     @Test fun tileEntryResetsOnlyTargetStack_andPoppingClearsEntryOwner() {
         compose.setContent { NavigationHarness() }
-        click("Settings")
+        click("Feature detail")
         draft("Keep DNS form")
         click("Select USB")
-        click("Settings")
+        click("Feature detail")
         draft("Discard USB form")
         click("USB tile")
         compose.onNodeWithText("USB root").assertExists()

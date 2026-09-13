@@ -459,4 +459,9 @@
     <string name="permission_adb_install_title">Alternative: install an APK with ADB</string>
     <string name="permission_adb_install_summary">This command installs or updates an APK and requests its grantable permissions. For an already installed app, prefer the grant command above. The APK must have a compatible signature and version. Keep the installed app and its data if installation fails; do not uninstall it.</string>
     <string name="permission_recommended">Recommended for you</string>
+    <string name="navigation_group_tiles">Tiles</string>
+    <string name="navigation_group_app">App</string>
+    <string name="navigation_group_help">Help &amp; info</string>
+    <string name="navigation_shortcuts_short">Shortcuts</string>
+    <string name="navigation_permissions_short">Setup</string>
 </resources>

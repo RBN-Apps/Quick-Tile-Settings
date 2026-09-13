@@ -67,8 +67,7 @@ class AppShellInstrumentedTest {
         compose.waitForIdle()
     }
     private fun openSettings() {
-        icon(R.string.app_menu_desc).performClick()
-        text(R.string.menu_settings).performClick()
+        compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.Settings)
     }
     private fun usbIntent() = Intent(context, MainActivity::class.java)
         .putExtra(Intent.EXTRA_COMPONENT_NAME, ComponentName(context, UsbDebuggingTileService::class.java))
@@ -86,7 +85,7 @@ class AppShellInstrumentedTest {
         // Measure content scrolling, not screen coordinates: Android can dispatch new system-bar
         // insets after recreation without changing the saved scroll position.
         val before = offset()
-        icon(R.string.shortcut_settings_open_desc).performClick()
+        compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.Shortcuts)
         text(R.string.shortcut_settings_title).assertIsDisplayed()
         icon(R.string.navigate_back_desc).performClick()
         compose.assertNavigationAreaSelected(context, AppArea.Usb)
@@ -107,7 +106,7 @@ class AppShellInstrumentedTest {
         launch()
         rotateTo(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, Configuration.ORIENTATION_PORTRAIT)
         compose.selectNavigationArea(context, AppArea.Usb)
-        icon(R.string.shortcut_settings_open_desc).performClick()
+        compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.Shortcuts)
         lateinit var owner: AppPermissionViewModel
         scenario.onActivity { owner = ViewModelProvider(it)[AppPermissionViewModel::class.java] }
         scenario.recreate()
@@ -175,7 +174,7 @@ class AppShellInstrumentedTest {
     @Test fun repeatedWarmTileIntentsSelectTheirAreaWithoutAddingHistory() {
         launch()
         repeat(2) {
-            icon(R.string.shortcut_settings_open_desc).performClick()
+            compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.Shortcuts)
             // Deliver through Android's real onNewIntent path to the existing Activity.
             scenario.onActivity {
                 it.startActivity(usbIntent().addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP))

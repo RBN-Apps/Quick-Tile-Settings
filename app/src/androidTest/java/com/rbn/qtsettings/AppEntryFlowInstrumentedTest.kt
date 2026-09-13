@@ -24,8 +24,7 @@ class AppEntryFlowInstrumentedTest : AppFlowTestFixture() {
             .assertIsDisplayed()
 
         // Verify app menu is present; permission help is available from that menu.
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
-            .assertIsDisplayed()
+        composeTestRule.assertNavigationAvailable(context)
 
         // Both areas are reachable through the adaptive rail
         composeTestRule.selectNavigationArea(context, AppArea.Dns)
@@ -161,8 +160,7 @@ class AppEntryFlowInstrumentedTest : AppFlowTestFixture() {
         // Verify accessibility of main UI elements
 
         // Top bar menu should have content description
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.app_menu_desc))
-            .assertIsDisplayed()
+        composeTestRule.assertNavigationAvailable(context)
 
         // Both areas expose their selection through accessible navigation items
         composeTestRule.selectNavigationArea(context, AppArea.Dns)

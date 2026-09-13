@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import com.rbn.qtsettings.app.navigation.AppArea
+import com.rbn.qtsettings.app.navigation.AppRailTarget
 import com.rbn.qtsettings.app.navigation.AppDestination
 import com.rbn.qtsettings.app.navigation.AppNavigationScaffold
 
@@ -19,17 +19,14 @@ import com.rbn.qtsettings.app.navigation.AppNavigationScaffold
 @Composable
 fun AppScaffold(
     destination: AppDestination,
-    area: AppArea,
-    onSelectArea: (AppArea) -> Unit,
+    selectedTarget: AppRailTarget,
+    onSelectTarget: (AppRailTarget) -> Unit,
     snackbarHostState: SnackbarHostState,
     onBack: () -> Unit,
-    onOpenDestination: (AppDestination) -> Unit,
-    onShowPermissionHelp: () -> Unit,
-    onShowAbout: () -> Unit,
     content: @Composable (Modifier) -> Unit
 ) {
     val density = LocalDensity.current
-    AppNavigationScaffold(area, onSelectArea) { compact, openNavigation, onHeaderHeight ->
+    AppNavigationScaffold(selectedTarget, onSelectTarget) { compact, openNavigation, onHeaderHeight ->
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = MaterialTheme.colorScheme.surface,
@@ -38,9 +35,6 @@ fun AppScaffold(
                     modifier = Modifier.onSizeChanged { onHeaderHeight(with(density) { it.height.toDp() }) },
                     destination = destination,
                     onBack = onBack,
-                    onOpenDestination = onOpenDestination,
-                    onShowPermissionHelp = onShowPermissionHelp,
-                    onShowAbout = onShowAbout,
                     onOpenNavigation = if (compact) openNavigation else null
                 )
             },

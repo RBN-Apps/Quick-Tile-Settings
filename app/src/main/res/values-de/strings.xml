@@ -451,4 +451,9 @@
     <string name="permission_adb_install_title">Alternative: APK über ADB installieren</string>
     <string name="permission_adb_install_summary">Dieser Befehl installiert oder aktualisiert eine APK und fordert ihre erteilbaren Berechtigungen an. Verwende für eine bereits installierte App vorzugsweise den Grant-Befehl oben. Signatur und Version der APK müssen kompatibel sein. Behalte bei einem Installationsfehler die installierte App und ihre Daten; deinstalliere sie nicht.</string>
     <string name="permission_recommended">Für dich empfohlen</string>
+    <string name="navigation_group_tiles">Kacheln</string>
+    <string name="navigation_group_app">App</string>
+    <string name="navigation_group_help">Hilfe &amp; Info</string>
+    <string name="navigation_shortcuts_short">Shortcuts</string>
+    <string name="navigation_permissions_short">Einrichtung</string>
 </resources>

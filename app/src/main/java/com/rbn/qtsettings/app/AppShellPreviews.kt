@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rbn.qtsettings.R
-import com.rbn.qtsettings.app.navigation.AppArea
+import com.rbn.qtsettings.app.navigation.AppRailTarget
 import com.rbn.qtsettings.app.navigation.AppDestination
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 
@@ -24,14 +24,11 @@ import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 private fun AppShellPreview() {
     QuickTileSettingsTheme {
         AppScaffold(
-            area = AppArea.Dns,
-            onSelectArea = {},
+            selectedTarget = AppRailTarget.Dns,
+            onSelectTarget = {},
             destination = AppDestination.TileSettings,
             snackbarHostState = remember { SnackbarHostState() },
-            onBack = {},
-            onOpenDestination = {},
-            onShowPermissionHelp = {},
-            onShowAbout = {}
+            onBack = {}
         ) { modifier ->
             Column(modifier) {
                 PermissionWarningCard({}, Modifier.padding(horizontal = 16.dp))

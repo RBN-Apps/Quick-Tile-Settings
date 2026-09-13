@@ -73,8 +73,7 @@ class AppSettingsBackupInstrumentedTest {
 
     private fun openSettings() {
         instrumentation.setInTouchMode(true)
-        compose.onNodeWithContentDescription(context.getString(R.string.app_menu_desc)).performClick()
-        text(R.string.menu_settings).performClick()
+        compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.Settings)
         text(R.string.settings_backup_title).assertIsDisplayed()
     }
 }
