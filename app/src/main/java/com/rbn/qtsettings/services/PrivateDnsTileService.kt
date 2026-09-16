@@ -1,5 +1,6 @@
 package com.rbn.qtsettings.services
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.database.ContentObserver
 import android.graphics.drawable.Icon
@@ -17,12 +18,18 @@ import androidx.core.content.edit
 import com.rbn.qtsettings.QuickTileSettingsApplication
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.DetectedNetworkState
+import com.rbn.qtsettings.data.DnsHostnameEntry
 import com.rbn.qtsettings.app.AppStores
 import com.rbn.qtsettings.data.PrivateDnsTarget
 import com.rbn.qtsettings.feature.dns.data.toDomain
 import com.rbn.qtsettings.feature.dns.data.toPersisted
 import com.rbn.qtsettings.feature.dns.domain.*
-import com.rbn.qtsettings.platform.dns.AndroidDnsSystemGateway
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
@@ -36,18 +43,22 @@ import com.rbn.qtsettings.platform.permissions.PermissionUtils
 import com.rbn.qtsettings.platform.automation.VpnDetectionUtils
 import com.rbn.qtsettings.feature.dns.presentation.dnsIconForHostname
 
+private const val SERVICE_STATE_PREFERENCES = "dns_tile_service_state"
 private const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
 private const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
 
 class PrivateDnsTileService : TileService() {
-    private val dnsActions by lazy { DnsActions(AndroidDnsSystemGateway(this)) }
-    private val dnsRevert by lazy { DnsAutoRevert(dnsActions) }
+    private val container get() = (application as QuickTileSettingsApplication).container
+    // Share the process-wide action and revert graph so a pending revert survives this service
+    // and so direct actions from the app cancel it.
+    private val dnsActions by lazy { container.dnsActions }
+    private val dnsRevert by lazy { container.dnsAutoRevert }
 
     private lateinit var dnsStore: com.rbn.qtsettings.feature.dns.data.DnsSettingsStore
     private lateinit var automationStore: com.rbn.qtsettings.feature.automation.data.AutomationSettingsStore
-    private var revertTimer: CountDownTimer? = null
+    private var subtitleScope: CoroutineScope? = null
     private val servicePrefs: SharedPreferences by lazy {
-        applicationContext.getSharedPreferences("dns_tile_service_state", MODE_PRIVATE)
+        applicationContext.getSharedPreferences(SERVICE_STATE_PREFERENCES, MODE_PRIVATE)
     }
 
     private var isVpnConnected = false
@@ -69,6 +80,12 @@ class PrivateDnsTileService : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { subtitleScope = it }
+        scope.launch {
+            dnsRevert.remainingSeconds.collectLatest { remaining ->
+                if (remaining == null) updateTile() else renderSubtitle(remaining)
+            }
+        }
         initializeVpnState()
         startVpnMonitoring()
         initializeNetworkTypeState()
@@ -237,8 +254,12 @@ class PrivateDnsTileService : TileService() {
         val persisted = previous.toPersisted()
         savePreviousState(persisted.mode, persisted.hostname)
         if (settings.enableAutoRevert && settings.autoRevertDelaySeconds > 0) {
-            dnsRevert.schedule(previous, cycle.generation)
-            startRevertTimer(settings.autoRevertDelaySeconds)
+            // Capture the application context only: this callback can outlive the service.
+            val context = applicationContext
+            val readableNames = dnsStore::getAllDnsHostnamesBlocking
+            dnsRevert.schedule(previous, cycle.generation, settings.autoRevertDelaySeconds) { restored, restoredTo ->
+                announceRevert(context, restored, restoredTo, readableNames)
+            }
             Toast.makeText(this, getString(
                 R.string.toast_reverting_dns_to,
                 getReadableDnsMode(persisted.mode, persisted.hostname),
@@ -251,70 +272,53 @@ class PrivateDnsTileService : TileService() {
         updateTile()
     }
 
-    private fun startRevertTimer(delaySeconds: Int) {
-        revertTimer?.cancel()
-        revertTimer = object : CountDownTimer(delaySeconds * 1000L, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                if (!dnsRevert.isCurrent()) {
-                    cancelRevertTimerWithMessage(null)
-                    return
-                }
-                qsTile?.let { tile ->
-                    getPreviousState()?.let { (prevMode, prevHost) ->
-                        val readablePrevMode = getReadableDnsMode(prevMode, prevHost)
-                        tile.subtitle = getString(
-                            R.string.tile_subtitle_reverting_in_seconds,
-                            readablePrevMode,
-                            millisUntilFinished / 1000
-                        )
-                        tile.updateTile()
-                    }
-                }
-            }
+    /** The countdown now lives outside this service, so the tile only renders its ticks. */
+    private fun renderSubtitle(remaining: Int) {
+        val tile = qsTile ?: return
+        val previous = dnsRevert.previous?.toPersisted() ?: return
+        tile.subtitle = getString(
+            R.string.tile_subtitle_reverting_in_seconds,
+            getReadableDnsMode(previous.mode, previous.hostname),
+            remaining
+        )
+        tile.updateTile()
+    }
 
-            override fun onFinish() {
-                if (!dnsRevert.isCurrent()) {
-                    clearPreviousState()
-                    revertTimer = null
-                    updateTile()
-                    return
-                }
-                getPreviousState()?.let { (prevMode, prevHost) ->
-                    try {
-                        if (dnsRevert.finish() != DnsActionResult.Success) return
-                        Log.i("PrivateDnsTile", "Auto-reverted DNS to $prevMode")
-                        Toast.makeText(
-                            applicationContext,
-                            getString(
-                                R.string.dns_state_reverted_to,
-                                getReadableDnsMode(prevMode, prevHost)
-                            ),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } catch (e: Exception) {
-                        Log.e("PrivateDnsTile", "Error auto-reverting DNS: ${e.message}", e)
-                    } finally {
-                        clearPreviousState()
-                        revertTimer = null
-                        updateTile()
-                    }
-                }
+    private companion object {
+        /** Static so a revert landing after the service is gone keeps nothing alive. */
+        fun announceRevert(
+            context: Context,
+            restored: DnsActionResult?,
+            previous: DnsTarget,
+            names: () -> List<DnsHostnameEntry>
+        ) {
+            context.getSharedPreferences(SERVICE_STATE_PREFERENCES, MODE_PRIVATE).edit {
+                remove(KEY_DNS_PREVIOUS_MODE_FOR_REVERT).remove(KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT)
             }
-        }.start()
+            if (restored != DnsActionResult.Success) return
+            val persisted = previous.toPersisted()
+            Log.i("PrivateDnsTile", "Auto-reverted DNS to " + persisted.mode)
+            val readable = when (persisted.mode) {
+                DNS_MODE_OFF -> context.getString(R.string.off_state)
+                DNS_MODE_AUTO -> context.getString(R.string.auto_state)
+                DNS_MODE_ON -> persisted.hostname?.let { host ->
+                    names().find { it.hostname == host }?.name ?: host
+                } ?: context.getString(R.string.on_state)
+                else -> persisted.mode
+            }
+            Toast.makeText(context, context.getString(R.string.dns_state_reverted_to, readable),
+                Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun cancelRevertTimerWithMessage(message: String?) {
-        dnsRevert.cancel()
-        if (revertTimer != null) {
-            revertTimer?.cancel()
-            revertTimer = null
-            clearPreviousState()
-            if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-            }
-            Log.i("PrivateDnsTile", "Revert timer cancelled.")
-            updateTile()
+        if (!dnsRevert.cancel()) return
+        clearPreviousState()
+        if (message != null) {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
+        Log.i("PrivateDnsTile", "Revert timer cancelled.")
+        updateTile()
     }
 
     private fun getReadableDnsMode(mode: String, hostname: String? = null): String {
@@ -340,7 +344,7 @@ class PrivateDnsTileService : TileService() {
     private fun updateTile() {
         val tile = qsTile ?: return
 
-        if (revertTimer == null || getPreviousState() == null) {
+        if (dnsRevert.remainingSeconds.value == null || getPreviousState() == null) {
             tile.subtitle = ""
         }
 
@@ -416,15 +420,18 @@ class PrivateDnsTileService : TileService() {
 
     override fun onStopListening() {
         super.onStopListening()
+        subtitleScope?.cancel()
+        subtitleScope = null
         stopVpnMonitoring()
         stopNetworkTypeMonitoring()
         stopObservingDnsSettings()
     }
 
+    // The pending revert deliberately outlives this service now; only the rendering stops.
     override fun onDestroy() {
         super.onDestroy()
-        revertTimer?.cancel()
-        revertTimer = null
+        subtitleScope?.cancel()
+        subtitleScope = null
         stopVpnMonitoring()
         stopNetworkTypeMonitoring()
         stopObservingDnsSettings()

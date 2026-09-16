@@ -3,8 +3,13 @@ package com.rbn.qtsettings.feature.dns
 import com.rbn.qtsettings.feature.dns.domain.*
 import org.junit.Assert.*
 import org.junit.Test
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class DnsActionsTest {
+    /** These assertions drive the ticket directly; no countdown ever runs on it. */
+    private val revertScope = CoroutineScope(Dispatchers.Unconfined)
+
     class FakeGateway : DnsSystemGateway {
         var current: DnsTarget? = DnsTarget.Off
         var permitted = true
@@ -51,7 +56,7 @@ class DnsActionsTest {
     }
     @Test fun laterDirectActionWinsOverPendingRevert_evenFromAnotherOwner() {
         val gateway = FakeGateway(); val tile = DnsActions(gateway)
-        val timer = DnsAutoRevert(tile)
+        val timer = DnsAutoRevert(tile, revertScope)
         val cycle = tile.cycle(DnsSettings())
         timer.schedule(cycle.previous!!, cycle.generation)
         DnsActions(gateway).set(DnsTarget.Hostname("direct.example"))
@@ -60,7 +65,7 @@ class DnsActionsTest {
         assertEquals(DnsTarget.Hostname("direct.example"), tile.read())
     }
     @Test fun unchangedTicketRestoresExactlyOnce_andCancelledTicketDoesNothing() {
-        val gateway = FakeGateway(); val actions = DnsActions(gateway); val timer = DnsAutoRevert(actions)
+        val gateway = FakeGateway(); val actions = DnsActions(gateway); val timer = DnsAutoRevert(actions, revertScope)
         val cycle = actions.cycle(DnsSettings())
         timer.schedule(cycle.previous!!, cycle.generation)
         assertEquals(DnsActionResult.Success, timer.finish())

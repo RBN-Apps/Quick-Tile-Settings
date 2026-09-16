@@ -191,6 +191,43 @@ class TileActionCharacterizationTest {
         }
     }
 
+    @Test
+    fun dnsAutoRevert_survivesTileServiceDestruction() {
+        prepareDnsTile()
+        val controller = Robolectric.buildService(PrivateDnsTileService::class.java).create()
+        Settings.Global.putString(application.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
+        controller.get().onClick()
+        assertEquals(DNS_MODE_AUTO, globalString(PRIVATE_DNS_MODE))
+        // Collapsing the quick settings panel used to kill the timer and strand the new state.
+        controller.destroy()
+        advancePastRevert()
+        assertEquals(DNS_MODE_ON, globalString(PRIVATE_DNS_MODE))
+        assertEquals("old.example.com", globalString(PRIVATE_DNS_SPECIFIER))
+    }
+
+    @Test
+    fun dnsRevertStolenByDirectAction_stillDropsItsRestorationBookkeeping() = withDnsTile { tile ->
+        tile.onClick()
+        assertEquals(
+            SystemQuickActionResult.SUCCESS,
+            SystemQuickActions.setActiveDns(application, "new.example.com")
+        )
+        advancePastRevert()
+        // A stale ticket here would later be replayed by the tile's blank-hostname repair path.
+        assertEquals(null, dnsPreviousModeForRevert())
+    }
+
+    @Test
+    fun usbAutoRevert_survivesTileServiceDestruction() {
+        enableUsbAutoRevert()
+        val controller = Robolectric.buildService(UsbDebuggingTileService::class.java).create()
+        controller.get().onClick()
+        assertEquals(1, globalInt(ADB_ENABLED))
+        controller.destroy()
+        advancePastRevert()
+        assertEquals(0, globalInt(ADB_ENABLED))
+    }
+
     private fun withUsbTile(block: (UsbDebuggingTileService) -> Unit) {
         val controller = Robolectric.buildService(UsbDebuggingTileService::class.java).create()
         try {
@@ -200,7 +237,7 @@ class TileActionCharacterizationTest {
         }
     }
 
-    private fun withDnsTile(block: (PrivateDnsTileService) -> Unit) {
+    private fun prepareDnsTile() {
         preferences.dns.setDnsToggleOff(false)
         preferences.dns.setDnsToggleAuto(true)
         preferences.dns.getAllDnsHostnamesBlocking().forEach {
@@ -208,6 +245,10 @@ class TileActionCharacterizationTest {
         }
         preferences.dns.setDnsEnableAutoRevert(true)
         preferences.dns.setDnsAutoRevertDelaySeconds(2)
+    }
+
+    private fun withDnsTile(block: (PrivateDnsTileService) -> Unit) {
+        prepareDnsTile()
         val controller = Robolectric.buildService(PrivateDnsTileService::class.java).create()
         try {
             block(controller.get())
@@ -224,6 +265,10 @@ class TileActionCharacterizationTest {
     private fun setUsbDirectly(enabled: Boolean) = SystemQuickActions.setUsbDebuggingEnabled(
         application, enabled, toggleDeveloperOptions = false, toggleWirelessDebugging = false
     )
+
+    private fun dnsPreviousModeForRevert(): String? = application
+        .getSharedPreferences("dns_tile_service_state", Context.MODE_PRIVATE)
+        .getString("dns_previous_mode_for_revert", null)
 
     private fun advancePastRevert() = shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(3))
 

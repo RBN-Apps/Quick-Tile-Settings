@@ -3,8 +3,13 @@ package com.rbn.qtsettings.feature.usb
 import com.rbn.qtsettings.feature.usb.domain.*
 import org.junit.Assert.*
 import org.junit.Test
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class UsbActionsTest {
+    /** These assertions drive the ticket directly; no countdown ever runs on it. */
+    private val revertScope = CoroutineScope(Dispatchers.Unconfined)
+
     internal class FakeGateway : UsbSystemGateway {
         var snapshot = UsbSystemState(false, true, false)
         var permission = true
@@ -84,7 +89,7 @@ class UsbActionsTest {
         val actions = UsbActions(gateway)
         val cycle = actions.cycle(UsbSettings())
         actions.set(true, false, false)
-        val revert = UsbAutoRevert(actions)
+        val revert = UsbAutoRevert(actions, revertScope)
         revert.schedule(cycle.previous!!, cycle.generation)
         assertNull(revert.finish(UsbSettings()))
         assertTrue(gateway.snapshot.usb)
@@ -93,7 +98,7 @@ class UsbActionsTest {
     @Test fun cancelAndRepeatedFinish_neverApplyTwice() {
         val gateway = FakeGateway()
         val actions = UsbActions(gateway)
-        val revert = UsbAutoRevert(actions)
+        val revert = UsbAutoRevert(actions, revertScope)
         val cycle = actions.cycle(UsbSettings())
         revert.schedule(cycle.previous!!, cycle.generation)
         revert.cancel()
@@ -108,7 +113,7 @@ class UsbActionsTest {
         val gateway = FakeGateway()
         val actions = UsbActions(gateway)
         val cycle = actions.cycle(UsbSettings())
-        val revert = UsbAutoRevert(actions)
+        val revert = UsbAutoRevert(actions, revertScope)
         revert.schedule(cycle.previous!!, cycle.generation)
         gateway.snapshot = gateway.snapshot.copy(developerOptions = false)
         val count = gateway.writes.size
