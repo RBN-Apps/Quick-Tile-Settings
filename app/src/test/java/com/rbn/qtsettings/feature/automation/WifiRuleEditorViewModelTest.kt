@@ -16,39 +16,50 @@ class WifiRuleEditorViewModelTest {
     private fun restore(saved: SavedStateHandle) =
         WifiRuleEditorViewModel(SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) }))
 
-    @Test fun bothStepQueriesAndDraftSurviveRestorationAndBack() {
+    @Test fun bothStepQueriesAndDraftSurviveRestoration() {
         val saved = SavedStateHandle()
         val owner = WifiRuleEditorViewModel(saved).apply { start(null) }
         owner.ssid("Campus")
         owner.searchNetworks("camp")
-        owner.next()
+        assertTrue(owner.validateNetwork())
         owner.searchTargets("dns.example")
         owner.target(DNS_MODE_ON, "dns.example.com")
         val restored = restore(saved)
-        assertTrue(restored.targetStep.value)
         assertEquals("camp", restored.networkQuery.value)
         assertEquals("dns.example", restored.targetQuery.value)
-        restored.previous()
-        assertFalse(restored.targetStep.value)
         assertEquals("Campus", restored.draft.value!!.ssid)
         assertEquals("dns.example.com", restored.draft.value!!.hostname)
     }
 
-    @Test fun invalidIdentityCannotAdvanceAndStorageRejectionReturnsToNetwork() {
+    @Test fun invalidIdentityCannotAdvanceAndStorageRejectionMarksTheField() {
         val owner = WifiRuleEditorViewModel(SavedStateHandle()).apply { start(null) }
-        owner.next()
-        assertFalse(owner.targetStep.value)
+        assertFalse(owner.validateNetwork())
         assertTrue(owner.draft.value!!.error)
         owner.ssid("Campus")
         owner.bssid("invalid")
-        owner.next()
-        assertFalse(owner.targetStep.value)
+        assertFalse(owner.validateNetwork())
         owner.bssid("")
-        owner.next()
-        assertTrue(owner.targetStep.value)
+        assertTrue(owner.validateNetwork())
+        assertFalse(owner.draft.value!!.error)
         assertFalse(owner.save { _, _, _, _, _ -> false })
-        assertFalse(owner.targetStep.value)
         assertTrue(owner.draft.value!!.error)
+    }
+
+    @Test fun startingASessionDropsThePreviousDraftAndSeedsFromStorageAgain() {
+        val saved = SavedStateHandle()
+        val stored = WifiDnsRule("id", "Stored", actionMode = DNS_MODE_ON, dnsHostname = "dns.example.com")
+        val owner = WifiRuleEditorViewModel(saved).apply { start(stored) }
+        owner.ssid("Edited")
+        owner.searchNetworks("camp")
+        owner.searchTargets("dns")
+        owner.requestDelete()
+        owner.startSession(stored)
+        assertEquals("", owner.networkQuery.value)
+        assertEquals("", owner.targetQuery.value)
+        assertFalse(owner.confirmDelete.value)
+        assertEquals("Stored", owner.draft.value!!.ssid)
+        // The dropped edits must not come back through saved state either.
+        assertEquals("Stored", restore(saved).draft.value!!.ssid)
     }
 
     @Test fun restoredEditorKeepsUncommittedEditsOverStoredRule() {

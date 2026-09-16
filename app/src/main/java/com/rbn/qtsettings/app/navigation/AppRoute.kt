@@ -17,8 +17,13 @@ sealed interface AppRoute : NavKey {
     @Serializable @SerialName("dns_wifi_target") data object DnsWifiTarget : AppRoute
     @Serializable @SerialName("dns_mobile_target") data object DnsMobileTarget : AppRoute
     @Serializable @SerialName("wifi_rules") data object WifiRules : AppRoute
-    /** `ruleId == null` edits a new rule; an existing rule ID keeps its stored identity. */
-    @Serializable @SerialName("wifi_rule") data class WifiRule(val ruleId: String?) : AppRoute
+    /**
+     * `ruleId == null` edits a new rule; an existing rule ID keeps its stored identity.
+     * Both editor steps are ordinary entries, so Back previews the whole page instead of
+     * redrawing only the part of it a nested back stack would own.
+     */
+    @Serializable @SerialName("wifi_rule")
+    data class WifiRule(val ruleId: String?, val targetStep: Boolean = false) : AppRoute
     @Serializable @SerialName("usb_tile") data object UsbTile : AppRoute
     @Serializable @SerialName("usb_actions") data object UsbActions : AppRoute
     @Serializable @SerialName("usb_revert") data object UsbRevert : AppRoute
@@ -78,6 +83,6 @@ internal val AppRoute.destination: AppDestination get() = when (this) {
 internal val AppRoute.entryId: String get() = when (this) {
     is AppRoute.Shortcuts -> "shortcuts:${origin.name}:$focusOrigin"
     is AppRoute.Settings -> "settings:${origin.name}"
-    is AppRoute.WifiRule -> "wifi_rule:$ruleId"
+    is AppRoute.WifiRule -> "wifi_rule:$ruleId:$targetStep"
     else -> destination.name
 }

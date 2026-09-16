@@ -15,8 +15,10 @@ internal object AppNavigationTransitions {
         (fadeIn(tween(220)) + slideInHorizontally(tween(220)) { it / 12 }) togetherWith
             fadeOut(tween(160))
 
+    // The returning page enters from the left, mirroring [forward] and the direction the gesture
+    // preview already uses. Without that counter-movement a committed Back reads as a plain fade.
     fun back(): ContentTransform =
-        fadeIn(tween(220)) togetherWith
+        (fadeIn(tween(220)) + slideInHorizontally(tween(220)) { -it / 12 }) togetherWith
             (fadeOut(tween(180)) + slideOutHorizontally(tween(220)) { it / 12 })
 
     fun predictive(): ContentTransform {

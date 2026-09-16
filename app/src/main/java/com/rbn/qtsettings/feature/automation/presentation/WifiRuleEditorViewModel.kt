@@ -10,27 +10,42 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Editor draft scoped to one rule-editor navigation entry. Storage validation and commits stay
- * in AutomationViewModel; leaving the entry discards the draft.
+ * Editor draft shared by the two rule-editor pages. Both steps are separate navigation entries, so
+ * the draft outlives each one; opening the editor begins a new one via [startSession]. Storage
+ * validation and commits stay in AutomationViewModel.
  */
 class WifiRuleEditorViewModel(private val saved: SavedStateHandle) : ViewModel() {
     private val _draft = MutableStateFlow(saved.get<List<String>>(KEY_DRAFT)?.toDraft())
     val draft = _draft.asStateFlow()
-    val targetStep = saved.getStateFlow("wifiRule.targetStep", false)
-    val networkQuery = saved.getStateFlow("wifiRule.networkQuery", "")
-    val targetQuery = saved.getStateFlow("wifiRule.targetQuery", "")
-    fun searchNetworks(value: String) { saved["wifiRule.networkQuery"] = value }
-    fun searchTargets(value: String) { saved["wifiRule.targetQuery"] = value }
-    fun previous() { saved["wifiRule.targetStep"] = false }
-    fun next() {
-        val current = _draft.value ?: return
+    val networkQuery = saved.getStateFlow(KEY_NETWORK_QUERY, "")
+    val targetQuery = saved.getStateFlow(KEY_TARGET_QUERY, "")
+    fun searchNetworks(value: String) { saved[KEY_NETWORK_QUERY] = value }
+    fun searchTargets(value: String) { saved[KEY_TARGET_QUERY] = value }
+
+    /** Reports whether the identity may advance to the target step and marks the field otherwise. */
+    fun validateNetwork(): Boolean {
+        val current = _draft.value ?: return false
         val valid = WifiNetworkRuleUtils.normalizeRule(WifiDnsRule(
             current.id ?: "draft", current.ssid.takeIf { it.isNotBlank() },
             current.bssid.takeIf { it.isNotBlank() }, current.action, current.hostname)) != null
         update(current.copy(error = !valid))
-        if (valid) saved["wifiRule.targetStep"] = true
+        return valid
     }
     val confirmDelete = saved.getStateFlow(KEY_CONFIRM_DELETE, false)
+
+    /** Begins a new editor session, dropping whatever draft the previous one left behind. */
+    fun startSession(rule: WifiDnsRule?) {
+        reset()
+        start(rule)
+    }
+
+    private fun reset() {
+        saved.remove<Any>(KEY_DRAFT)
+        saved[KEY_NETWORK_QUERY] = ""
+        saved[KEY_TARGET_QUERY] = ""
+        saved[KEY_CONFIRM_DELETE] = false
+        _draft.value = null
+    }
 
     /** Seeds the draft once; a restored draft keeps the user's edits over the stored rule. */
     fun start(rule: WifiDnsRule?) {
@@ -58,10 +73,7 @@ class WifiRuleEditorViewModel(private val saved: SavedStateHandle) : ViewModel()
         val draft = _draft.value ?: return false
         val saved = save(draft.id, draft.ssid.takeIf { it.isNotBlank() },
             draft.bssid.takeIf { it.isNotBlank() }, draft.action, draft.hostname)
-        if (!saved) {
-            previous()
-            update(draft.copy(error = true))
-        }
+        if (!saved) update(draft.copy(error = true))
         return saved
     }
 
@@ -83,6 +95,8 @@ class WifiRuleEditorViewModel(private val saved: SavedStateHandle) : ViewModel()
     private companion object {
         const val KEY_DRAFT = "wifiRule.draft"
         const val KEY_CONFIRM_DELETE = "wifiRule.confirmDelete"
+        const val KEY_NETWORK_QUERY = "wifiRule.networkQuery"
+        const val KEY_TARGET_QUERY = "wifiRule.targetQuery"
     }
 }
 

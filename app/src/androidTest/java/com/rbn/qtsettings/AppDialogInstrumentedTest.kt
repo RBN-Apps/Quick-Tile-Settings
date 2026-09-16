@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.ParcelFileDescriptor
 import android.view.View
+import androidx.activity.BackEventCompat
+import androidx.activity.findViewTreeOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
@@ -55,6 +57,7 @@ import com.rbn.qtsettings.feature.dns.presentation.ConfirmDeleteDialog
 import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutPinnedInfoDialog
 import java.io.File
 import java.util.Locale
+import kotlin.math.abs
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -104,6 +107,39 @@ class AppDialogInstrumentedTest {
         compose.waitForDialogWindowFocus()
         shell("input keyevent KEYCODE_BACK")
         compose.waitUntil(5_000) { robot.dismissals == 1 }
+        robot.assertCounts(0, 1)
+    }
+
+    @Test fun delete_predictiveBackPreviewsDismissalWithoutRunningIt() {
+        val robot = DialogRobot().deleteDialog()
+        val view = compose.waitForDialogWindowFocus()
+        // Dialogs live in their own window, so the preview is driven by that window's dispatcher.
+        val dispatcher = checkNotNull(view.findViewTreeOnBackPressedDispatcherOwner())
+            .onBackPressedDispatcher
+        fun width() = compose.onNodeWithText(label(R.string.button_delete))
+            .fetchSemanticsNode().boundsInRoot.width
+        val resting = width()
+        assertTrue("The frame needs a measurable resting size", resting > 0f)
+        screenshot("predictive-back-rest", fullScreen = true)
+        for (edge in listOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT)) {
+            compose.runOnIdle { dispatcher.dispatchOnBackStarted(BackEventCompat(0f, 0f, 0f, edge)) }
+            compose.runOnIdle { dispatcher.dispatchOnBackProgressed(BackEventCompat(0f, 0f, .2f, edge)) }
+            val early = width()
+            compose.runOnIdle { dispatcher.dispatchOnBackProgressed(BackEventCompat(0f, 0f, .9f, edge)) }
+            val later = width()
+            if (edge == BackEventCompat.EDGE_LEFT) screenshot("predictive-back-preview", fullScreen = true)
+            assertTrue("Preview must shrink with progress (resting=$resting early=$early later=$later)",
+                later < early && early < resting)
+            assertTrue("Preview must stay readable, not collapse", later > resting * 0.85f)
+            robot.assertCounts(0, 0)
+            compose.runOnIdle { dispatcher.dispatchOnBackCancelled() }
+            compose.waitUntil(5_000) { abs(width() - resting) < 0.5f }
+            robot.assertCounts(0, 0)
+        }
+        compose.runOnIdle { dispatcher.onBackPressed() }
+        compose.waitUntil(5_000) { robot.dismissals == 1 }
+        // This owner counts dismissals without removing the dialog, so the preview must be released.
+        compose.waitUntil(5_000) { abs(width() - resting) < 0.5f }
         robot.assertCounts(0, 1)
     }
 

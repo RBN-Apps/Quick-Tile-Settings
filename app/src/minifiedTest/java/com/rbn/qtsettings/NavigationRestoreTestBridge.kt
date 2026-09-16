@@ -18,6 +18,7 @@ fun verifyMinifiedNavigationRestore() {
     val original = NavBackStack<NavKey>(
         AppRoute.Dns, AppRoute.DnsWifiTarget, AppRoute.DnsMobileTarget,
         AppRoute.WifiRules, AppRoute.WifiRule(null), AppRoute.WifiRule("saved-rule"),
+        AppRoute.WifiRule(null, targetStep = true), AppRoute.WifiRule("saved-rule", targetStep = true),
         AppRoute.DnsProviders, AppRoute.DnsAutomation, AppRoute.DnsRevert,
         AppRoute.Usb, AppRoute.UsbTile, AppRoute.UsbActions, AppRoute.UsbRevert,
         AppRoute.Shortcuts(AppArea.Dns), AppRoute.Shortcuts(AppArea.Usb),

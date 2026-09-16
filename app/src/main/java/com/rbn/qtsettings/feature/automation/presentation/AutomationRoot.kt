@@ -22,10 +22,13 @@ import com.rbn.qtsettings.platform.permissions.PermissionUtils
 @Composable
 fun AutomationRoot(
     viewModel: AutomationViewModel,
+    ruleEditor: WifiRuleEditorViewModel,
     dnsHostnames: List<DnsHostnameEntry>,
     route: AppRoute,
     onOpen: (AppDestination) -> Unit,
     onEditRule: (String) -> Unit,
+    onOpenRuleTarget: () -> Unit,
+    onCloseRuleEditor: () -> Unit,
     onBack: () -> Unit
 ) {
     val vpnDetectionEnabled by viewModel.vpnDetectionEnabled.collectAsStateWithLifecycle()
@@ -79,13 +82,19 @@ fun AutomationRoot(
             dnsHostnames, { mode, host ->
                 viewModel.setDnsStateOnMobile(mode); viewModel.setDnsHostnameOnMobile(host); onBack()
             })
+        // The editor spans two entries and neither owns the whole session, so it is seeded here,
+        // where the stored rule is at hand and the user actually opens the editor.
         AppRoute.WifiRules -> WifiRulesScreen(state, dnsHostnames, viewModel::setWifiNetworkRulesEnabled,
-            onAddRule = { onOpen(AppDestination.WifiRule) }, onEditRule = onEditRule,
+            onAddRule = { ruleEditor.startSession(null); onOpen(AppDestination.WifiRule) },
+            onEditRule = { id ->
+                ruleEditor.startSession(state.wifiNetworkRules.firstOrNull { it.id == id })
+                onEditRule(id)
+            },
             onRequestPermission = viewModel::launchWifiSsidPermissionRequest,
             onOpenLocationSettings = openLocationSettings,
             onOpenAppPermissionSettings = { PermissionUtils.openAppPermissionSettings(context) })
-        is AppRoute.WifiRule -> WifiRuleEditorRoot(route.ruleId, state, viewModel, dnsHostnames,
-            openLocationSettings, onBack)
+        is AppRoute.WifiRule -> WifiRuleEditorRoot(route.ruleId, route.targetStep, ruleEditor, state,
+            viewModel, dnsHostnames, openLocationSettings, onOpenRuleTarget, onBack, onCloseRuleEditor)
         else -> {
             val dialogs = rememberAutomationDialogs()
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {

@@ -97,6 +97,19 @@ class AppNavigation internal constructor(
         if (activeStack.last() != route) activeStack.add(route)
     }
 
+    /** The target step stacks on the network step, so Back returns to the entered identity. */
+    fun openWifiRuleTarget() {
+        val current = activeStack.last() as? AppRoute.WifiRule ?: return
+        if (!current.targetStep) activeStack.add(current.copy(targetStep = true))
+    }
+
+    /** Saving or deleting leaves the editor as a whole, whichever step the user confirmed from. */
+    fun closeWifiRule() {
+        while (activeStack.size > 1 && activeStack.last() is AppRoute.WifiRule) {
+            activeStack.removeAt(activeStack.lastIndex)
+        }
+    }
+
     fun back() {
         if (globalStack.isNotEmpty()) globalStack.removeAt(globalStack.lastIndex)
         else if (activeStack.size > 1) activeStack.removeAt(activeStack.lastIndex)

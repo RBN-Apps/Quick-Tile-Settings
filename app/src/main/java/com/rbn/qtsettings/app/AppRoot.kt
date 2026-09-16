@@ -14,7 +14,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import com.rbn.qtsettings.app.navigation.AppDestination
 import com.rbn.qtsettings.app.navigation.AppArea
@@ -23,6 +27,8 @@ import com.rbn.qtsettings.app.navigation.AppRoute
 import com.rbn.qtsettings.app.navigation.rememberAppNavigation
 import com.rbn.qtsettings.feature.automation.presentation.AutomationRoot
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
+import com.rbn.qtsettings.feature.automation.presentation.WifiRuleDeleteRoot
+import com.rbn.qtsettings.feature.automation.presentation.WifiRuleEditorViewModel
 import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
@@ -54,6 +60,11 @@ fun AppRoot(
     onRestartOnboarding: () -> Unit
 ) {
     val navigation = rememberAppNavigation(externalArea ?: AppArea.Dns)
+    // The rule editor spans two navigation entries, so its draft is owned above both of them.
+    val ruleEditorFactory = remember { viewModelFactory {
+        initializer { WifiRuleEditorViewModel(createSavedStateHandle()) }
+    } }
+    val ruleEditor: WifiRuleEditorViewModel = viewModel(factory = ruleEditorFactory)
     val permissionState by viewModel.state.collectAsStateWithLifecycle()
     val initialized by viewModel.initialized.collectAsStateWithLifecycle()
     val hasPermission = permissionState.hasWriteSecureSettings
@@ -90,17 +101,12 @@ fun AppRoot(
             }
         }
     }
-    val backDispatcher = androidx.activity.compose.LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     AppScaffold(
         selectedTarget = navigation.selectedTarget,
         onSelectTarget = navigation::selectTarget,
         destination = navigation.destination,
         snackbarHostState = snackbar,
-        onBack = {
-            if (navigation.destination == com.rbn.qtsettings.app.navigation.AppDestination.WifiRule && backDispatcher != null)
-                backDispatcher.onBackPressed()
-            else navigation.back()
-        }
+        onBack = navigation::back
     ) { modifier ->
         AppNavigationContent(navigation, modifier) { route ->
             if (route == AppRoute.Usb || route == AppRoute.UsbTile ||
@@ -117,8 +123,10 @@ fun AppRoot(
                     if (destination == AppDestination.ShortcutSettings) navigation.openAreaShortcuts()
                     else navigation.open(destination)
                 }) { automationRoute, providers ->
-                    AutomationRoot(automationViewModel, providers, automationRoute,
-                        onOpen = navigation::open, onEditRule = navigation::openWifiRule, onBack = navigation::back)
+                    AutomationRoot(automationViewModel, ruleEditor, providers, automationRoute,
+                        onOpen = navigation::open, onEditRule = navigation::openWifiRule,
+                        onOpenRuleTarget = navigation::openWifiRuleTarget,
+                        onCloseRuleEditor = navigation::closeWifiRule, onBack = navigation::back)
                 }
             } else if (route is AppRoute.Shortcuts) {
                 ShortcutSettingsRoot(shortcutViewModelFactory,
@@ -148,6 +156,7 @@ fun AppRoot(
         }
     }
     DnsDialogsRoot(dnsViewModel)
+    WifiRuleDeleteRoot(ruleEditor, automationViewModel, navigation::closeWifiRule)
     NotificationDialogsRoot(automationViewModel, visible = navigation.destination != AppDestination.Permissions &&
         navigation.destination != AppDestination.AdbInstructions)
 }

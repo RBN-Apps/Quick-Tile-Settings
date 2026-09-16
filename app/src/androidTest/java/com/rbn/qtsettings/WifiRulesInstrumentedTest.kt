@@ -15,7 +15,21 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.rbn.qtsettings.app.navigation.AppArea
+import com.rbn.qtsettings.app.navigation.AppDestination
+import com.rbn.qtsettings.app.navigation.AppNavigation
+import com.rbn.qtsettings.app.navigation.AppNavigationContent
+import com.rbn.qtsettings.app.navigation.AppRoute
+import com.rbn.qtsettings.app.navigation.rememberAppNavigation
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -35,7 +49,9 @@ import com.rbn.qtsettings.data.WifiIdentityAccessState
 import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.feature.automation.presentation.AutomationUiActions
 import com.rbn.qtsettings.feature.automation.presentation.AutomationUiState
+import com.rbn.qtsettings.feature.automation.presentation.WifiRuleDeleteRoot
 import com.rbn.qtsettings.feature.automation.presentation.WifiRuleEditorRoot
+import com.rbn.qtsettings.feature.automation.presentation.WifiRuleEditorViewModel
 import com.rbn.qtsettings.feature.automation.presentation.WifiRulesScreen
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
@@ -166,31 +182,31 @@ class WifiRulesInstrumentedTest {
     @Test
     fun editor_manualRuleSavesSsidWithDefaultOffAndLeavesPage() {
         val actions = RecordingActions()
-        var back = 0
-        compose.setContent { Editor(null, state(), actions, onBack = { back++ }) }
+        var left = 0
+        compose.setContent { Editor(null, state(), actions, onLeave = { left++ }) }
 
         compose.onNodeWithTag("wifi_rule_ssid").performTextInput("Campus")
         saveRule()
 
         assertEquals(listOf(Saved(null, "Campus", null, DNS_MODE_OFF, null)), actions.saved)
-        assertEquals(1, back)
+        assertEquals(1, left)
         compose.onNodeWithTag("wifi_rule_delete").assertDoesNotExist()
     }
 
     @Test
     fun editor_invalidRuleKeepsErrorAndCanBeCorrected() {
         val actions = RecordingActions(accept = { it.ssid == "Campus" })
-        var back = 0
-        compose.setContent { Editor(null, state(), actions, onBack = { back++ }) }
+        var left = 0
+        compose.setContent { Editor(null, state(), actions, onLeave = { left++ }) }
 
         saveRule()
         compose.onNodeWithText(string(R.string.wifi_rule_invalid_or_duplicate)).performScrollTo().assertIsDisplayed()
-        assertEquals(0, back)
+        assertEquals(0, left)
         compose.onNodeWithTag("wifi_rule_ssid").performScrollTo().performTextInput("Campus")
         compose.onNodeWithText(string(R.string.wifi_rule_invalid_or_duplicate)).assertDoesNotExist()
         saveRule()
         assertEquals(1, actions.saved.size)
-        assertEquals(1, back)
+        assertEquals(1, left)
     }
 
     @Test
@@ -232,15 +248,15 @@ class WifiRulesInstrumentedTest {
     @Test
     fun editor_existingRuleUpdatesInPlaceAndDeletesOnlyAfterConfirmation() {
         val actions = RecordingActions()
-        var back = 0
-        compose.setContent { Editor("campus", state(rules = listOf(campus)), actions, onBack = { back++ }) }
+        var left = 0
+        compose.setContent { Editor("campus", state(rules = listOf(campus)), actions, onLeave = { left++ }) }
 
         compose.onNodeWithTag("wifi_rule_ssid").assert(editableTextEquals("Campus"))
         compose.onNodeWithTag("wifi_rule_next").performClick()
         compose.onNodeWithTag("automation_target_default").performScrollTo().performClick()
         saveRule()
         assertEquals(Saved("campus", "Campus", null, WIFI_DNS_ACTION_DEFAULT, null), actions.saved.single())
-        assertEquals(1, back)
+        assertEquals(1, left)
 
         compose.onNodeWithTag("wifi_rule_delete").performScrollTo().performClick()
         compose.onNodeWithText(string(R.string.wifi_rule_delete_message, "Campus")).assertIsDisplayed()
@@ -249,7 +265,7 @@ class WifiRulesInstrumentedTest {
         compose.onNodeWithTag("wifi_rule_delete").performScrollTo().performClick()
         compose.onNodeWithText(string(R.string.button_delete)).performClick()
         assertEquals(listOf("campus"), actions.deleted)
-        assertEquals(2, back)
+        assertEquals(2, left)
     }
 
     @Test
@@ -377,6 +393,7 @@ class WifiRulesInstrumentedTest {
         compose.onNodeWithTag("wifi_rule_ssid").performTextInput("Campus")
         compose.onNodeWithTag("wifi_rule_next").performClick()
         compose.onNodeWithTag("automation_target_provider").performScrollTo().performClick()
+        // The tag sits on the navigation entry, so this follows the page rather than its content.
         fun x() = compose.onNodeWithTag("wifi_rule_step_1").fetchSemanticsNode().positionInRoot.x
         for (edge in listOf(androidx.activity.BackEventCompat.EDGE_LEFT, androidx.activity.BackEventCompat.EDGE_RIGHT)) {
             val resting = x()
@@ -453,10 +470,37 @@ class WifiRulesInstrumentedTest {
         }
     }
 
+    /**
+     * Hosts the editor on the real app stack: both steps are ordinary navigation entries, so the
+     * step tags below measure whole pages. [onLeave] stands in for the caller returning to the rule
+     * list; it deliberately does not pop, so assertions can keep inspecting the editor afterwards.
+     */
     @Composable
-    private fun Editor(ruleId: String?, state: AutomationUiState, actions: RecordingActions, onBack: () -> Unit = {}) {
+    private fun Editor(ruleId: String?, state: AutomationUiState, actions: RecordingActions, onLeave: () -> Unit = {}) {
         backDispatcher = androidx.activity.compose.LocalOnBackPressedDispatcherOwner.current!!.onBackPressedDispatcher
-        QuickTileSettingsTheme { WifiRuleEditorRoot(ruleId, state, actions, providers, {}, onBack) }
+        val stack = rememberAppNavigation(AppArea.Dns)
+        val navigation = remember(stack, ruleId) { stack.seedRuleEditor(ruleId) }
+        val editor: WifiRuleEditorViewModel = viewModel(factory = remember {
+            viewModelFactory { initializer { WifiRuleEditorViewModel(createSavedStateHandle()) } }
+        })
+        QuickTileSettingsTheme {
+            AppNavigationContent(navigation) { route ->
+                if (route is AppRoute.WifiRule) {
+                    Box(Modifier.fillMaxSize().testTag("wifi_rule_step_${if (route.targetStep) 1 else 0}")) {
+                        WifiRuleEditorRoot(route.ruleId, route.targetStep, editor, state, actions, providers,
+                            onOpenLocationSettings = {}, onOpenTargetStep = navigation::openWifiRuleTarget,
+                            onBack = navigation::back, onClose = onLeave)
+                    }
+                }
+            }
+            WifiRuleDeleteRoot(editor, actions, onLeave)
+        }
+    }
+
+    /** Places the editor on the stack before the first composition, as the rule list would. */
+    private fun AppNavigation.seedRuleEditor(ruleId: String?) = apply {
+        open(AppDestination.WifiRules)
+        if (ruleId == null) open(AppDestination.WifiRule) else openWifiRule(ruleId)
     }
 
     private data class Saved(val id: String?, val ssid: String?, val bssid: String?, val action: String, val hostname: String?)
