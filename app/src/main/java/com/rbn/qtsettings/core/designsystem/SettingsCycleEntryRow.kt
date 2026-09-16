@@ -1,5 +1,8 @@
 package com.rbn.qtsettings.core.designsystem
 
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -12,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,7 +43,14 @@ fun SettingsCycleEntryRow(
     enabled: Boolean = true,
     activateEnabled: Boolean = true
 ) {
-    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    // Keep the trailing action separate while drawing the toggle feedback across the whole card.
+    val toggleInteractionSource = remember { MutableInteractionSource() }
+    Row(
+        modifier
+            .fillMaxWidth()
+            .indication(toggleInteractionSource, LocalIndication.current),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         SettingsRowContent(
             title = title,
             summary = summary,
@@ -49,6 +60,8 @@ fun SettingsCycleEntryRow(
                 value = checked,
                 enabled = enabled,
                 role = Role.Checkbox,
+                interactionSource = toggleInteractionSource,
+                indication = null,
                 onValueChange = onCheckedChange
             ),
             titleBadge = if (isActive) {

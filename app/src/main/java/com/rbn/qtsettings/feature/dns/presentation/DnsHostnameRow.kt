@@ -2,7 +2,10 @@ package com.rbn.qtsettings.feature.dns.presentation
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -85,6 +88,8 @@ fun DnsHostnameRow(
         animationSpec = tween(durationMillis = 120),
         label = "dnsDragHandle"
     )
+    // Keep the actions menu separate while drawing the toggle feedback across the whole card.
+    val toggleInteractionSource = remember { MutableInteractionSource() }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -95,11 +100,20 @@ fun DnsHostnameRow(
             .onGloballyPositioned { coordinates ->
                 rowCenterY = coordinates.boundsInWindow().center.y
             }
+            .indication(toggleInteractionSource, LocalIndication.current)
 
     ) {
         Row(
-            Modifier.weight(1f).toggleable(value = entry.isSelectedForCycle, role = Role.Checkbox,
-                onValueChange = onSelectionChanged).padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+            Modifier
+                .weight(1f)
+                .toggleable(
+                    value = entry.isSelectedForCycle,
+                    role = Role.Checkbox,
+                    interactionSource = toggleInteractionSource,
+                    indication = null,
+                    onValueChange = onSelectionChanged
+                )
+                .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
