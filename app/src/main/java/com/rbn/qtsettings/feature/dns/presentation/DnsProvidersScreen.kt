@@ -18,9 +18,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.core.designsystem.AppButton
 import com.rbn.qtsettings.core.designsystem.AppButtonStyle
@@ -67,6 +69,9 @@ fun DnsProvidersScreen(
                         activeLabel = stringResource(R.string.dns_active),
                         activateLabel = stringResource(R.string.dns_set_active_mode, label),
                         onActivate = { onAction(DnsSettingsAction.Activate(target)) },
+                        icon = ImageVector.vectorResource(
+                            if (off) R.drawable.ic_dns_off else R.drawable.ic_dns_auto
+                        ),
                         activateEnabled = state.hasPermission
                     )
                 }
