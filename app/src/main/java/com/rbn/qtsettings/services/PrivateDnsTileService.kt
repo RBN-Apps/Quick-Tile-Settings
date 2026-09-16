@@ -34,6 +34,7 @@ import com.rbn.qtsettings.platform.automation.NetworkDnsAutomation
 import com.rbn.qtsettings.platform.automation.NetworkTypeDetectionUtils
 import com.rbn.qtsettings.platform.permissions.PermissionUtils
 import com.rbn.qtsettings.platform.automation.VpnDetectionUtils
+import com.rbn.qtsettings.feature.dns.presentation.dnsIconForHostname
 
 private const val KEY_DNS_PREVIOUS_MODE_FOR_REVERT = "dns_previous_mode_for_revert"
 private const val KEY_DNS_PREVIOUS_HOSTNAME_FOR_REVERT = "dns_previous_hostname_for_revert"
@@ -334,14 +335,7 @@ class PrivateDnsTileService : TileService() {
         }
     }
 
-    private fun getDnsIcon(hostname: String?): Int {
-        return when (hostname) {
-            "dns.adguard.com" -> R.drawable.ic_dns_on_adguard
-            "one.one.one.one" -> R.drawable.ic_dns_on_cloudflare
-            "dns.quad9.net" -> R.drawable.ic_dns_on_quad9_security
-            else -> R.drawable.ic_dns_on
-        }
-    }
+    private fun getDnsIcon(hostname: String?): Int = dnsIconForHostname(hostname)
 
     private fun updateTile() {
         val tile = qsTile ?: return

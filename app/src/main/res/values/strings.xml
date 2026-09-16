@@ -319,7 +319,7 @@
     <string name="usb_menu_revert_summary">Restore the previous state after a tile tap.</string>
     <string name="usb_status_on">USB debugging is on</string>
     <string name="usb_status_off">USB debugging is off</string>
-    <string name="usb_status_summary">Current system state, independent of the selected cycle states.</string>
+    <string name="status_current_state">Current system state</string>
     <plurals name="usb_delay_seconds">
         <item quantity="one">%1$d second</item>
         <item quantity="other">%1$d seconds</item>
@@ -339,7 +339,6 @@
     <string name="dns_menu_automation_summary">Control DNS for Wi-Fi, mobile networks and VPN connections.</string>
     <string name="dns_menu_revert_summary">Restore the previous DNS setting after a delay.</string>
     <string name="dns_status_unavailable">Status unavailable</string>
-    <string name="dns_status_summary">Current system setting. Cycle selection does not change the active DNS setting.</string>
     <string name="dns_cycle_title">Tile cycle</string>
     <string name="dns_cycle_explanation">Select the states and providers to cycle through when tapping the tile. Use the activation action to apply a state immediately.</string>
     <string name="dns_providers_empty">No providers available. Add a hostname to include it in the cycle.</string>

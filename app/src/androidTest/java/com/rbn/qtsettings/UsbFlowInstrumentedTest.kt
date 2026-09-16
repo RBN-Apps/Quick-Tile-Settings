@@ -21,7 +21,7 @@ class UsbFlowInstrumentedTest : AppFlowTestFixture() {
         composeTestRule.navigateToUsbArea(context)
 
         // Verify USB debugging settings title
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
+        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_usb)).assertIsDisplayed()
 
         composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_tile)).performClick()
 

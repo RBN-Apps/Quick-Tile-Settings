@@ -311,7 +311,7 @@
     <string name="usb_menu_revert_summary">Nach einem Kacheltipp den vorherigen Zustand wiederherstellen.</string>
     <string name="usb_status_on">USB-Debugging ist an</string>
     <string name="usb_status_off">USB-Debugging ist aus</string>
-    <string name="usb_status_summary">Aktueller Systemzustand, unabhängig von der Zyklusauswahl.</string>
+    <string name="status_current_state">Aktueller Systemzustand</string>
     <plurals name="usb_delay_seconds">
         <item quantity="one">%1$d Sekunde</item>
         <item quantity="other">%1$d Sekunden</item>
@@ -331,7 +331,6 @@
     <string name="dns_menu_automation_summary">DNS für WLAN, Mobilfunk und VPN-Verbindungen steuern.</string>
     <string name="dns_menu_revert_summary">Nach einer festgelegten Zeit zur vorherigen DNS-Einstellung zurückkehren.</string>
     <string name="dns_status_unavailable">Status nicht verfügbar</string>
-    <string name="dns_status_summary">Aktuelle Systemeinstellung. Die Zyklusauswahl ändert den aktiven DNS-Zustand nicht.</string>
     <string name="dns_cycle_title">Kachelzyklus</string>
     <string name="dns_cycle_explanation">Wähle die Zustände und Anbieter, die beim Tippen auf die Kachel durchlaufen werden. Über die Aktivierungsaktion kannst du einen Zustand direkt setzen.</string>
     <string name="dns_providers_empty">Keine Anbieter vorhanden. Füge einen Hostnamen hinzu, um ihn im Zyklus zu verwenden.</string>

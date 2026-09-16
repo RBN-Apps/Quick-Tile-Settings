@@ -5,6 +5,7 @@ import android.content.Context
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.feature.dns.domain.DnsProvider
 import com.rbn.qtsettings.feature.dns.domain.DnsSettings
+import com.rbn.qtsettings.feature.dns.presentation.dnsIconForHostname
 import com.rbn.qtsettings.feature.usb.domain.UsbSettings
 import com.rbn.qtsettings.services.PrivateDnsTileService
 import com.rbn.qtsettings.services.UsbDebuggingTileService
@@ -120,11 +121,5 @@ internal object QuickActionResolver {
         return actions
     }
 
-    private fun getDnsIcon(entry: DnsProvider): Int =
-        when (entry.target.value) {
-            "dns.adguard.com" -> R.drawable.ic_dns_on_adguard
-            "one.one.one.one" -> R.drawable.ic_dns_on_cloudflare
-            "dns.quad9.net" -> R.drawable.ic_dns_on_quad9_security
-            else -> R.drawable.ic_dns_on
-        }
+    private fun getDnsIcon(entry: DnsProvider): Int = dnsIconForHostname(entry.target.value)
 }

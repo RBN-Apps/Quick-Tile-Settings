@@ -92,8 +92,8 @@ class ShortcutSettingsInstrumentedTest {
 
         composeTestRule.navigateBackFromShortcutSettings(context)
 
-        // The overview is visible again; its new menu row also uses the shortcut title.
-        composeTestRule.onNodeWithText(context.getString(R.string.app_name))
+        // The overview is visible again; its root top bar names the selected tile area.
+        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns))
             .assertIsDisplayed()
 
         composeTestRule.assertNavigationAvailable(context)

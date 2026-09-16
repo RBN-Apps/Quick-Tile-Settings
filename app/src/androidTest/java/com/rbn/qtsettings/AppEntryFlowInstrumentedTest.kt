@@ -19,8 +19,8 @@ class AppEntryFlowInstrumentedTest : AppFlowTestFixture() {
 
     @Test
     fun appLaunches_shouldShowMainScreenWithNavigation() {
-        // Verify app name in top bar
-        composeTestRule.onNodeWithText(context.getString(R.string.app_name))
+        // The top bar names the tile area the app opened on
+        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns))
             .assertIsDisplayed()
 
         // Verify app menu is present; permission help is available from that menu.
@@ -45,13 +45,13 @@ class AppEntryFlowInstrumentedTest : AppFlowTestFixture() {
         composeTestRule.navigateToUsbArea(context)
 
         // Verify USB settings are visible
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
+        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_usb)).assertIsDisplayed()
 
         // Navigate back to DNS area
         composeTestRule.navigateToDnsArea(context)
 
         // Verify DNS settings are visible
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
+        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns)).assertIsDisplayed()
 
         Log.i(FLOW_TAG, "Area navigation works correctly")
     }
@@ -143,13 +143,13 @@ class AppEntryFlowInstrumentedTest : AppFlowTestFixture() {
             composeTestRule.navigateToUsbArea(context)
 
             // Verify USB content is visible
-            composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_usb_debugging))
+            composeTestRule.onNodeWithText(context.getString(R.string.tab_title_usb)).assertIsDisplayed()
 
             // Switch to DNS area
             composeTestRule.navigateToDnsArea(context)
 
             // Verify DNS content is visible
-            composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
+            composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns)).assertIsDisplayed()
         }
 
         Log.i(FLOW_TAG, "Multiple area switches completed successfully")

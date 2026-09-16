@@ -37,7 +37,7 @@ class DnsFlowInstrumentedTest : AppFlowTestFixture() {
         composeTestRule.navigateToDnsArea(context)
 
         // Verify DNS settings title
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_title_private_dns))
+        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns)).assertIsDisplayed()
 
         composeTestRule.onNodeWithText(context.getString(R.string.dns_menu_providers)).performScrollTo().performClick()
         // Verify tile cycles description

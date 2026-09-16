@@ -14,18 +14,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.rbn.qtsettings.R
 import com.rbn.qtsettings.app.navigation.AppDestination
+import com.rbn.qtsettings.app.navigation.AppRailTarget
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
     destination: AppDestination,
+    selectedTarget: AppRailTarget,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenNavigation: (() -> Unit)? = null
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(stringResource(destination.title)) },
+        // The tile roots share one destination, so the selected area names the page.
+        title = {
+            Text(stringResource(
+                if (destination == AppDestination.TileSettings) selectedTarget.title else destination.title
+            ))
+        },
         navigationIcon = {
             Row {
                 if (onOpenNavigation != null) IconButton(onClick = onOpenNavigation) {

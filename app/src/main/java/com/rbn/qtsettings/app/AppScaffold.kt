@@ -34,6 +34,7 @@ fun AppScaffold(
                 AppTopBar(
                     modifier = Modifier.onSizeChanged { onHeaderHeight(with(density) { it.height.toDp() }) },
                     destination = destination,
+                    selectedTarget = selectedTarget,
                     onBack = onBack,
                     onOpenNavigation = if (compact) openNavigation else null
                 )
