@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.app.AppPermissionBinding
 import com.rbn.qtsettings.app.AppRoot
 import com.rbn.qtsettings.app.AppSystemStateObserver
@@ -18,8 +19,11 @@ import com.rbn.qtsettings.app.navigation.resolveTileArea
 import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
 import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
+import com.rbn.qtsettings.feature.onboarding.presentation.OnboardingRoot
+import com.rbn.qtsettings.feature.onboarding.presentation.OnboardingViewModel
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsViewModel
 import com.rbn.qtsettings.platform.dns.DnsSystemStateObserver
+import com.rbn.qtsettings.platform.tiles.TilePanelRequests
 import com.rbn.qtsettings.platform.usb.UsbSystemStateObserver
 import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewModel
 import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
@@ -45,6 +49,9 @@ class MainActivity : ComponentActivity() {
             automation.onBackupRestored(context)
         }
     }
+    private val onboardingViewModel: OnboardingViewModel by viewModels {
+        (application as QuickTileSettingsApplication).container.onboardingViewModelFactory
+    }
     private var externalArea by mutableStateOf<AppArea?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,9 +65,20 @@ class MainActivity : ComponentActivity() {
         lifecycle.addObserver(permissions)
         lifecycle.addObserver(UsbSystemStateObserver(applicationContext, usbViewModel))
         lifecycle.addObserver(DnsSystemStateObserver(applicationContext, dnsViewModel))
+        val openDeveloperOptions = { startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) }
+        val tilePanel = TilePanelRequests(this)
         setContent {
             QuickTileSettingsTheme {
-                AppRoot(
+                // The first run owns the whole window; the shell appears once it is finished.
+                val onboarded by onboardingViewModel.completed.collectAsStateWithLifecycle()
+                if (!onboarded) OnboardingRoot(onboardingViewModel, viewModel,
+                    onOpenDeveloperOptions = openDeveloperOptions,
+                    onRequestShizukuPermission = permissions::requestShizukuPermission,
+                    onAddTile = { tile ->
+                        tilePanel.request(tile) { onboardingViewModel.onTileResult(tile, it) }
+                    },
+                    canAddTiles = TilePanelRequests.AVAILABLE)
+                else AppRoot(
                     viewModel = viewModel,
                     settingsViewModel = settingsViewModel,
                     usbViewModel = usbViewModel,
@@ -69,8 +87,9 @@ class MainActivity : ComponentActivity() {
                     shortcutViewModelFactory = (application as QuickTileSettingsApplication).container.shortcutViewModelFactory,
                     externalArea = externalArea,
                     onExternalAreaConsumed = { externalArea = null },
-                    onOpenAdbSettings = { startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) },
-                    onRequestShizukuPermission = permissions::requestShizukuPermission
+                    onOpenAdbSettings = openDeveloperOptions,
+                    onRequestShizukuPermission = permissions::requestShizukuPermission,
+                    onRestartOnboarding = onboardingViewModel::restart
                 )
             }
         }

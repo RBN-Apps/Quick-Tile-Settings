@@ -14,5 +14,29 @@ class AppSettingsStore(private val preferences: SharedPreferences) : AppSettings
         preferences.edit { putBoolean(KEY_HELP_SHOWN, shown) }
         this.shown.value = shown
     }
-    private companion object { const val KEY_HELP_SHOWN = "help_shown_v1" }
+
+    private val completed = MutableStateFlow(readOrSeedOnboarding())
+    override val onboardingCompleted = completed.asStateFlow()
+    override fun setOnboardingCompleted(completed: Boolean) {
+        preferences.edit { putBoolean(KEY_ONBOARDING_COMPLETED, completed) }
+        this.completed.value = completed
+    }
+
+    /**
+     * An installation that already carries settings has passed the previous first run and keeps
+     * its usual entry point. The answer is written on the first read, because the other stores
+     * persist their defaults moments later and an empty file is the only reliable signal.
+     */
+    private fun readOrSeedOnboarding(): Boolean {
+        if (preferences.contains(KEY_ONBOARDING_COMPLETED))
+            return preferences.getBoolean(KEY_ONBOARDING_COMPLETED, false)
+        val existingInstallation = preferences.all.isNotEmpty()
+        preferences.edit(commit = true) { putBoolean(KEY_ONBOARDING_COMPLETED, existingInstallation) }
+        return existingInstallation
+    }
+
+    private companion object {
+        const val KEY_HELP_SHOWN = "help_shown_v1"
+        const val KEY_ONBOARDING_COMPLETED = "onboarding_completed_v1"
+    }
 }

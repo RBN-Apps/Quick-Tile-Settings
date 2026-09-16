@@ -23,8 +23,10 @@ class AppSettingsBackupInstrumentedTest {
     @Test fun restoreConfirmation_survivesRecreation_andCancelPreservesSettings() {
         val stores = AppStores.getInstance(context)
         val previousHelp = stores.app.helpShown.value
+        val previousOnboarding = stores.app.onboardingCompleted.value
         val before = stores.usb.state.value
         stores.app.setHelpShown(true)
+        stores.app.setOnboardingCompleted(true)
         try {
             ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java)).use { scenario ->
                 openSettings()
@@ -44,15 +46,20 @@ class AppSettingsBackupInstrumentedTest {
                 assertEquals(before, stores.usb.state.value)
                 scenario.onActivity { assertNull(ViewModelProvider(it)[AppSettingsViewModel::class.java].pendingRestore.value) }
             }
-        } finally { stores.app.setHelpShown(previousHelp) }
+        } finally {
+            stores.app.setHelpShown(previousHelp)
+            stores.app.setOnboardingCompleted(previousOnboarding)
+        }
     }
 
     @Test fun confirmedRestore_readsDocumentAndRefreshesExistingFeatureStore() {
         val stores = AppStores.getInstance(context)
         val previousHelp = stores.app.helpShown.value
+        val previousOnboarding = stores.app.onboardingCompleted.value
         val original = stores.backup.exportSettingsBackupJson()
         val file = File(context.cacheDir, "settings-restore-test.json")
         stores.app.setHelpShown(true)
+        stores.app.setOnboardingCompleted(true)
         try {
             stores.usb.setRequireUnlock(true)
             file.writeText(stores.backup.exportSettingsBackupJson())
@@ -67,6 +74,7 @@ class AppSettingsBackupInstrumentedTest {
         } finally {
             stores.backup.restoreSettingsBackupJson(original)
             stores.app.setHelpShown(previousHelp)
+            stores.app.setOnboardingCompleted(previousOnboarding)
             file.delete()
         }
     }

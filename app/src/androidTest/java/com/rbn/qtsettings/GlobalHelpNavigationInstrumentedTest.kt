@@ -19,7 +19,9 @@ class GlobalHelpNavigationInstrumentedTest {
     @Test fun adbPage_recreationAndBackReturnThroughSetupToCaller() {
         val store = AppStores.getInstance(context).app
         val oldHelp = store.helpShown.value
+        val oldOnboarding = store.onboardingCompleted.value
         store.setHelpShown(true)
+        store.setOnboardingCompleted(true)
         try {
             ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java)).use { scenario ->
                 instrumentation.setInTouchMode(true)
@@ -37,6 +39,9 @@ class GlobalHelpNavigationInstrumentedTest {
                 compose.assertNavigationAvailable(context)
                 compose.onAllNodes(isDialog()).assertCountEquals(0)
             }
-        } finally { store.setHelpShown(oldHelp) }
+        } finally {
+            store.setHelpShown(oldHelp)
+            store.setOnboardingCompleted(oldOnboarding)
+        }
     }
 }

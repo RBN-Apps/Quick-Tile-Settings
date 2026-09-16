@@ -11,7 +11,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun AppSettingsRoot(viewModel: AppSettingsViewModel, modifier: Modifier = Modifier) {
+fun AppSettingsRoot(
+    viewModel: AppSettingsViewModel,
+    onRestartOnboarding: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val pending by viewModel.pendingRestore.collectAsStateWithLifecycle()
     val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) {
         it?.let { uri -> viewModel.export(uri.toString()) }
@@ -24,6 +28,7 @@ fun AppSettingsRoot(viewModel: AppSettingsViewModel, modifier: Modifier = Modifi
         onChooseRestore = { restore.launch(arrayOf("application/json", "text/json", "*/*")) },
         onConfirmRestore = viewModel::confirmRestore,
         onCancelRestore = viewModel::cancelRestore,
+        onRestartOnboarding = onRestartOnboarding,
         modifier = modifier)
 }
 private val FILENAME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmss")

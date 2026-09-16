@@ -464,4 +464,43 @@
     <string name="navigation_group_help">Help &amp; info</string>
     <string name="navigation_shortcuts_short">Shortcuts</string>
     <string name="navigation_permissions_short">Setup</string>
+
+    <string name="onboarding_progress">Step %1$d of %2$d</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_start">Get started</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_later">Set this up later</string>
+    <string name="onboarding_finish">Finish setup</string>
+    <string name="onboarding_welcome_subtitle">Private DNS and USB debugging, switched straight from the quick settings panel.</string>
+    <string name="onboarding_tiles_title">What the tiles do</string>
+    <string name="onboarding_tiles_subtitle">Two tiles, and the settings behind them.</string>
+    <string name="onboarding_highlight_dns">Cycle Off, Automatic and your own providers from one tile.</string>
+    <string name="onboarding_highlight_usb">Switch it on for one session instead of leaving it on.</string>
+    <string name="onboarding_highlight_revert_title">Rules and auto-revert</string>
+    <string name="onboarding_highlight_revert">Use rules to automatically choose the right DNS provider for each Wi-Fi network. Optionally return to the previous state after a delay.</string>
+    <string name="onboarding_highlight_shortcuts_title">Shortcuts</string>
+    <string name="onboarding_highlight_shortcuts">Every action is an app shortcut too, for launchers and automation apps.</string>
+    <string name="onboarding_permission_title">One permission first</string>
+    <string name="onboarding_permission_subtitle">Android keeps these settings behind WRITE_SECURE_SETTINGS and never asks for it. Grant it once and the tiles work.</string>
+    <string name="onboarding_methods_title">Pick a way</string>
+    <string name="onboarding_method_adb">Works on every device. Needs a computer and a USB cable.</string>
+    <string name="onboarding_method_shizuku_ready">Shizuku is running. Two taps from here.</string>
+    <string name="onboarding_method_shizuku_missing">Needs the Shizuku app, started once after every reboot.</string>
+    <string name="onboarding_method_root_ready">A root manager was found on this device.</string>
+    <string name="onboarding_method_root_missing">For devices that are already rooted.</string>
+    <string name="onboarding_grant_shizuku_subtitle">Shizuku passes the command on for you, so no computer is involved.</string>
+    <string name="onboarding_grant_root_subtitle">Your root manager runs the command and may ask you to confirm.</string>
+    <string name="onboarding_adb_verify">This page keeps checking while you work on the computer and moves on by itself once the permission is there.</string>
+    <string name="onboarding_done_title">Ready</string>
+    <string name="onboarding_done_subtitle">The permission is granted and both tiles can switch their settings.</string>
+    <string name="onboarding_pending_title">Nothing granted yet</string>
+    <string name="onboarding_pending_subtitle">The tiles stay inactive until WRITE_SECURE_SETTINGS is granted.</string>
+    <string name="onboarding_pending_hint">You can pick the setup up again under Help &amp; info.</string>
+    <string name="onboarding_add_tile_title">Add the tile</string>
+    <string name="onboarding_add_tile_summary">Pull down the quick settings panel, open its edit mode and drag Private DNS or USB Debugging into the panel.</string>
+    <string name="onboarding_replay_title">Show the introduction again</string>
+    <string name="onboarding_replay_summary">Runs through the first-run pages, including the permission setup.</string>
+    <string name="platform_tools_url" translatable="false">https://developer.android.com/tools/releases/platform-tools</string>
+    <string name="onboarding_tile_add_summary">Add it to the quick settings panel</string>
+    <string name="onboarding_tile_added">In the quick settings panel</string>
 </resources>

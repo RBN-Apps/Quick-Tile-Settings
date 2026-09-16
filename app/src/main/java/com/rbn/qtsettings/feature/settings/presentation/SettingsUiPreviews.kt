@@ -13,14 +13,14 @@ import com.rbn.qtsettings.feature.permissions.presentation.*
 @Preview(locale = "de", uiMode = Configuration.UI_MODE_NIGHT_YES, fontScale = 1.3f)
 @Composable
 private fun BackupSettingsPreview() {
-    QuickTileSettingsTheme { Surface { AppSettingsScreen(null, {}, {}, {}, {}) } }
+    QuickTileSettingsTheme { Surface { AppSettingsScreen(null, {}, {}, {}, {}, {}) } }
 }
 
 @Preview(locale = "en")
 @Preview(locale = "de", uiMode = Configuration.UI_MODE_NIGHT_YES, fontScale = 1.3f)
 @Composable
 private fun RestoreConfirmationPreview() {
-    QuickTileSettingsTheme { AppSettingsScreen("content://preview/backup", {}, {}, {}, {}) }
+    QuickTileSettingsTheme { AppSettingsScreen("content://preview/backup", {}, {}, {}, {}, {}) }
 }
 
 @Preview(locale = "en")

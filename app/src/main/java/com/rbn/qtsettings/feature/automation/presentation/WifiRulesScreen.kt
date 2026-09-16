@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Rule
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationOff
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Rule
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -48,7 +48,7 @@ fun WifiRulesScreen(
         verticalArrangement = Arrangement.spacedBy(AppSpacing.sectionGap)) {
         SettingsGroup(listOf("enabled"), { it }) {
             SettingsSwitchRow(stringResource(R.string.wifi_rules_enabled), state.wifiNetworkRulesEnabled,
-                onEnabledChange, Modifier.testTag("wifi_network_rules_toggle"), icon = Icons.Outlined.Rule,
+                onEnabledChange, Modifier.testTag("wifi_network_rules_toggle"), icon = Icons.AutoMirrored.Outlined.Rule,
                 summary = stringResource(if (state.networkTypeDetectionEnabled) R.string.automation_rules_summary
                     else R.string.automation_rules_requires_network),
                 enabled = state.networkTypeDetectionEnabled)

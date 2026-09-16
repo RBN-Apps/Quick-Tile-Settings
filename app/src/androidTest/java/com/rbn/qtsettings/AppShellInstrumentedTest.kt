@@ -39,18 +39,22 @@ class AppShellInstrumentedTest {
     private val context get() = instrumentation.targetContext
     private lateinit var scenario: ActivityScenario<MainActivity>
     private var previousHelpShown = false
+    private var previousOnboarding = false
 
     @Before fun prepare() {
         // Semantic clicks do not switch Android out of keyboard navigation mode.
         instrumentation.setInTouchMode(true)
         val preferences = AppStores.getInstance(context)
         previousHelpShown = preferences.app.helpShown.value
+        previousOnboarding = preferences.app.onboardingCompleted.value
         preferences.app.setHelpShown(true)
+        preferences.app.setOnboardingCompleted(true)
     }
 
     @After fun close() {
         if (::scenario.isInitialized) scenario.close()
         AppStores.getInstance(context).app.setHelpShown(previousHelpShown)
+        AppStores.getInstance(context).app.setOnboardingCompleted(previousOnboarding)
     }
 
     private fun text(id: Int) = compose.onNodeWithText(context.getString(id))

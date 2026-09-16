@@ -37,7 +37,7 @@ fun AdbInstructionsScreen(command: String, onCopy: (String) -> Unit) {
             SettingsRowContent(stringResource(title), stringResource(description), null, true, Modifier) {}
         }
         AppLinkButton(stringResource(R.string.permission_adb_platform_tools),
-            "https://developer.android.com/tools/releases/platform-tools", Modifier.fillMaxWidth())
+            stringResource(R.string.platform_tools_url), Modifier.fillMaxWidth())
         AdbCommandSection(stringResource(R.string.permission_adb_step_grant),
             stringResource(R.string.help_dialog_how_to_grant_via_adb), command,
             stringResource(R.string.button_copy_grant_command), onCopy)

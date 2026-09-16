@@ -22,7 +22,8 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.core.designsystem.*
 import com.rbn.qtsettings.feature.permissions.domain.PermissionSnapshot
 
-/** Reusable setup content for the later onboarding flow; system actions are callbacks only. */
+/** Setup page inside the app shell; system actions are callbacks only.
+ * The first run has its own pages and shares the smaller parts below. */
 @Composable
 fun PermissionSettingsScreen(
     snapshot: PermissionSnapshot,

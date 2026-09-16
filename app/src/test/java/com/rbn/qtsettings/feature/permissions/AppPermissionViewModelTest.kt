@@ -42,6 +42,8 @@ class AppPermissionViewModelTest {
     private class Settings : AppSettings {
         override val helpShown = MutableStateFlow(false)
         override fun setHelpShown(shown: Boolean) { helpShown.value = shown }
+        override val onboardingCompleted = MutableStateFlow(true)
+        override fun setOnboardingCompleted(completed: Boolean) { onboardingCompleted.value = completed }
     }
 
     @Test fun unavailableCapabilities_neverExecutePrivilegedCommand() = runBlocking {
@@ -127,6 +129,24 @@ class AppPermissionViewModelTest {
             vm.setHelpShown(true); assertTrue(settings.helpShown.value)
         } finally { backgroundScope.cancel() }
     }
+    /** The first run polls while the user is at a terminal; that must not disable its buttons. */
+    @Test fun quietRefresh_updatesTheSnapshotWithoutReportingARunningCheck() {
+        val dispatcher = QueuedIoDispatcher()
+        val gateway = Gateway()
+        val vm = AppPermissionViewModel(Settings(), gateway, dispatcher)
+        vm.refreshQuietly()
+        assertFalse(vm.progress.value.checking)
+        gateway.current = gateway.current.copy(hasWriteSecureSettings = true)
+        vm.refreshQuietly(); dispatcher.drain()
+        assertTrue(vm.state.value.hasWriteSecureSettings)
+        assertTrue(vm.initialized.value)
+        assertFalse(vm.progress.value.checking)
+        vm.refresh()
+        assertTrue(vm.progress.value.checking)
+        dispatcher.drain()
+        assertFalse(vm.progress.value.checking)
+    }
+
     @Test fun failedCheckCanRetry_andRevocationClearsSuccessWithoutGrantingAgain() {
         val dispatcher = QueuedIoDispatcher()
         val gateway = Gateway()

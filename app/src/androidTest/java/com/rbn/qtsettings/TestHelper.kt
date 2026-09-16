@@ -18,12 +18,21 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.rbn.qtsettings.app.navigation.AppRailTarget
 import com.rbn.qtsettings.app.navigation.AppArea
 
+/** A cleared package starts in the first run; tests continue in the shell behind it. */
+fun ComposeTestRule.skipOnboardingIfPresent() {
+    waitForIdle()
+    if (onAllNodesWithTag("onboarding").fetchSemanticsNodes().isEmpty()) return
+    onNodeWithTag("onboarding_skip").performClick()
+    waitForIdle()
+}
+
 /**
  * Extension functions for AndroidComposeTestRule to help with testing
  */
 fun <T : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<T>, T>.dismissInitialDialogsIfPresent(
     context: Context
 ) {
+    skipOnboardingIfPresent()
     try {
         // Initial help is a page; return without changing the permission.
         waitUntil(timeoutMillis = 2_000) {

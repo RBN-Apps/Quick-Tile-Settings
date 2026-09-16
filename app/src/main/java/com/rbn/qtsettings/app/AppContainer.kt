@@ -10,6 +10,7 @@ import com.rbn.qtsettings.feature.automation.presentation.AutomationViewModel
 import com.rbn.qtsettings.feature.dns.domain.DnsActions
 import com.rbn.qtsettings.feature.dns.domain.DnsAutoRevert
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
+import com.rbn.qtsettings.feature.onboarding.presentation.OnboardingViewModel
 import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSettingsViewModel
 import com.rbn.qtsettings.feature.usb.domain.UsbActions
 import com.rbn.qtsettings.feature.usb.domain.UsbAutoRevert
@@ -75,6 +76,13 @@ class AppContainer(context: Context) {
             return ShortcutSettingsViewModel(
                 shortcutSettingsStore, dnsSettingsStore.dnsHostnames, extras.createSavedStateHandle()
             ) as T
+        }
+    }
+    val onboardingViewModelFactory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            require(modelClass == OnboardingViewModel::class.java)
+            @Suppress("UNCHECKED_CAST")
+            return OnboardingViewModel(stores.app, extras.createSavedStateHandle()) as T
         }
     }
     val permissionViewModelFactory = object : ViewModelProvider.Factory {

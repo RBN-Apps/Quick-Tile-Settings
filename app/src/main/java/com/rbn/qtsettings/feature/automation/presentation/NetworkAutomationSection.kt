@@ -1,6 +1,7 @@
 package com.rbn.qtsettings.feature.automation.presentation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Rule
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -40,7 +41,7 @@ internal fun NetworkAutomationSection(state: AutomationUiState, actions: Automat
                 enabled = state.networkTypeDetectionEnabled,
                 summary = if (state.wifiNetworkRulesEnabled) stringResource(R.string.automation_wifi_fallback) else null,
                 status = automationTargetLabel(state.dnsStateOnWifi, state.dnsHostnameOnWifi, providers))
-            "rules" -> SettingsNavigationRow(stringResource(R.string.setting_wifi_network_rules_title), Icons.Outlined.Rule,
+            "rules" -> SettingsNavigationRow(stringResource(R.string.setting_wifi_network_rules_title), Icons.AutoMirrored.Outlined.Rule,
                 onOpenRules, Modifier.testTag("automation_wifi_rules"), enabled = state.networkTypeDetectionEnabled,
                 status = wifiRulesStatus(state))
             "mobile" -> SettingsNavigationRow(stringResource(R.string.automation_mobile), Icons.Outlined.SignalCellularAlt,

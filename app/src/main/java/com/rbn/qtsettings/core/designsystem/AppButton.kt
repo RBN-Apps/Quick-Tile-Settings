@@ -26,7 +26,8 @@ fun AppButton(
     modifier: Modifier = Modifier,
     style: AppButtonStyle = AppButtonStyle.Primary,
     enabled: Boolean = true,
-    icon: ImageVector? = null
+    icon: ImageVector? = null,
+    trailing: (@Composable RowScope.() -> Unit)? = null
 ) {
     val touchModifier = modifier.heightIn(min = AppSpacing.minimumTouchTarget)
     val content: @Composable RowScope.() -> Unit = {
@@ -35,6 +36,7 @@ fun AppButton(
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         }
         Text(text, modifier = Modifier.weight(1f, fill = false))
+        trailing?.invoke(this)
     }
     when (style) {
         AppButtonStyle.Primary -> Button(onClick, touchModifier, enabled,

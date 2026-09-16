@@ -36,10 +36,15 @@ class AppPermissionViewModel(
     val progress = operation.asStateFlow()
 
     fun setHelpShown(shown: Boolean) = settings.setHelpShown(shown)
-    fun refresh() {
+    fun refresh() = check(reportProgress = true)
+
+    /** Polling in the background must not look like a running check or disable the page's actions. */
+    fun refreshQuietly() = check(reportProgress = false)
+
+    private fun check(reportProgress: Boolean) {
         viewModelScope.launch {
             access.withLock {
-                operation.update { it.copy(checking = true) }
+                if (reportProgress) operation.update { it.copy(checking = true) }
                 try {
                     val latest = withContext(io) { gateway.snapshot() }
                     val permissionChanged = snapshot.value.hasWriteSecureSettings != latest.hasWriteSecureSettings
@@ -49,7 +54,7 @@ class AppPermissionViewModel(
                         feedback = if (permissionChanged) null else it.feedback) }
                 } catch (e: CancellationException) { throw e }
                 catch (_: Exception) { operation.update { it.copy(checkFailed = true) } }
-                finally { operation.update { it.copy(checking = false) } }
+                finally { if (reportProgress) operation.update { it.copy(checking = false) } }
             }
         }
     }

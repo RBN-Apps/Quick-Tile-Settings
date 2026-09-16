@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Shortcut
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.HighlightOff
-import androidx.compose.material.icons.outlined.Shortcut
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Timer
@@ -75,7 +75,7 @@ fun UsbSettingsScreen(
                 )
 
                 4 -> SettingsNavigationRow(
-                    stringResource(R.string.shortcut_settings_title), Icons.Outlined.Shortcut,
+                    stringResource(R.string.shortcut_settings_title), Icons.AutoMirrored.Outlined.Shortcut,
                     onShortcuts,
                     summary = stringResource(R.string.shortcut_menu_summary)
                 )

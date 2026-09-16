@@ -50,7 +50,8 @@ fun AppRoot(
     externalArea: AppArea?,
     onExternalAreaConsumed: () -> Unit,
     onOpenAdbSettings: () -> Unit,
-    onRequestShizukuPermission: () -> Unit
+    onRequestShizukuPermission: () -> Unit,
+    onRestartOnboarding: () -> Unit
 ) {
     val navigation = rememberAppNavigation(externalArea ?: AppArea.Dns)
     val permissionState by viewModel.state.collectAsStateWithLifecycle()
@@ -141,7 +142,8 @@ fun AppRoot(
                     onSettings = { navigation.open(AppDestination.AppSettings) }
                 )
             } else if (route is AppRoute.Settings) {
-                AppSettingsRoot(settingsViewModel, Modifier.padding(horizontal = 16.dp).fillMaxSize())
+                AppSettingsRoot(settingsViewModel, onRestartOnboarding,
+                    Modifier.padding(horizontal = 16.dp).fillMaxSize())
             }
         }
     }

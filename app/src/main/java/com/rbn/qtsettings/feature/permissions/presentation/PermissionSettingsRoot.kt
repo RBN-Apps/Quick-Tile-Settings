@@ -20,7 +20,7 @@ fun PermissionSettingsRoot(
     val progress by viewModel.progress.collectAsStateWithLifecycle()
     val resources = LocalResources.current
     LaunchedEffect(Unit) { viewModel.refresh() }
-    // Preserve one-time help, including system/predictive Back and rail exits. #150 owns onboarding.
+    // Opening the page retires the one-time help, including system/predictive Back and rail exits.
     LaunchedEffect(ready) {
         if (ready && !snapshot.hasWriteSecureSettings) viewModel.setHelpShown(true)
     }

@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.automirrored.outlined.Shortcut
 import androidx.compose.material.icons.outlined.Dns
-import androidx.compose.material.icons.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.Shortcut
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.SettingsEthernet
 import androidx.compose.material.icons.outlined.Timer
@@ -54,7 +54,7 @@ fun DnsSettingsScreen(state: DnsSettingsState, onAction: (DnsSettingsAction) -> 
                         pluralStringResource(R.plurals.usb_delay_seconds, state.settings.autoRevertDelaySeconds, state.settings.autoRevertDelaySeconds)
                     else stringResource(R.string.off_state))
                 4 -> SettingsNavigationRow(
-                    stringResource(R.string.shortcut_settings_title), Icons.Outlined.Shortcut,
+                    stringResource(R.string.shortcut_settings_title), Icons.AutoMirrored.Outlined.Shortcut,
                     { onOpen(AppDestination.ShortcutSettings) },
                     summary = stringResource(R.string.shortcut_menu_summary)
                 )
@@ -72,7 +72,7 @@ private data class DnsStatus(val label: String, val hostname: String?, val icon:
 private fun dnsStatus(state: DnsSettingsState): DnsStatus {
     val active = state.active
     val icon = dnsIconForTarget(active)
-        ?.let { painterResource(it) } ?: rememberVectorPainter(Icons.Outlined.HelpOutline)
+        ?.let { painterResource(it) } ?: rememberVectorPainter(Icons.AutoMirrored.Outlined.HelpOutline)
     val provider = (active as? DnsTarget.Hostname)?.let { target ->
         state.settings.providers.find { it.target.value.equals(target.value, ignoreCase = true) }
     }
