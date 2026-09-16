@@ -27,6 +27,7 @@ class ShortcutEntryInstrumentedTest {
 
     private fun assertGlobalCounts() {
         val config = AppStores.getInstance(context).shortcuts.state.value
+        compose.onNode(hasScrollToIndexAction()).performScrollToIndex(0)
         compose.onNodeWithText(context.getString(R.string.shortcut_settings_limit,
             config.enabledIds.size, config.maxCount)).assertIsDisplayed()
         compose.onNodeWithText(context.getString(R.string.shortcut_favorites_count,
@@ -59,16 +60,19 @@ class ShortcutEntryInstrumentedTest {
         compose.onNodeWithText(label(R.string.usb_menu_tile)).performScrollTo().assertIsDisplayed()
     }
 
-    @Test fun globalEntry_startsAtTop_andInfoCanCollapseFromExpandedContent() {
+    @Test fun globalEntry_expandedInfoAndSettingsRemainScrollable() {
         compose.navigateToShortcutSettings(context)
-        compose.onNodeWithText(label(R.string.shortcut_settings_allow_pinned_when_disabled)).assertIsDisplayed()
+        val pinnedFallback = label(R.string.shortcut_settings_allow_pinned_when_disabled)
+        compose.onNodeWithText(pinnedFallback).assertIsDisplayed()
         assertGlobalCounts()
         val config = AppStores.getInstance(context).shortcuts.state.value
         compose.onNodeWithText(context.getString(R.string.shortcut_settings_limit,
             config.enabledIds.size, config.maxCount)).performClick()
         val description = context.getString(R.string.shortcut_settings_description, config.maxCount,
             ShortcutCatalog.MAX_FAVORITE_SHORTCUTS)
-        compose.onNodeWithText(description).assertIsDisplayed().performClick()
+        compose.onNodeWithText(description).assertExists()
+        compose.onNodeWithText(pinnedFallback).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(description).performScrollTo().assertIsDisplayed().performClick()
         compose.onNodeWithText(description).assertDoesNotExist()
     }
 }
