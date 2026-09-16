@@ -44,7 +44,10 @@ fun UsbSettingsScreen(
                 if (state.system.active) Icons.Outlined.CheckCircle else Icons.Outlined.HighlightOff,
                 summary = if (state.system.developerOptions) null
                 else stringResource(R.string.usb_dev_options_off),
-                stateLabel = stringResource(R.string.status_current_state)
+                stateLabel = stringResource(R.string.status_current_state),
+                actionLabel = stringResource(R.string.status_cycle_action),
+                enabled = state.hasPermission,
+                onClick = { onAction(UsbSettingsAction.Cycle) }
             )
         }
         SettingsGroup(items = listOf(1, 2, 3, 4, 5), itemKey = { it }) { item ->

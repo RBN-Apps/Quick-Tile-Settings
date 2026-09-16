@@ -18,4 +18,5 @@ sealed interface UsbSettingsAction {
     data class AutoRevertDelaySeconds(val value: Int) : UsbSettingsAction
     data class RequireUnlock(val value: Boolean) : UsbSettingsAction
     data class SetActive(val enabled: Boolean) : UsbSettingsAction
+    data object Cycle : UsbSettingsAction
 }

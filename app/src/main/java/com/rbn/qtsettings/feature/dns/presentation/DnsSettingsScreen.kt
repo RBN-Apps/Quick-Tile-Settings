@@ -33,8 +33,14 @@ fun DnsSettingsScreen(state: DnsSettingsState, onAction: (DnsSettingsAction) -> 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(AppSpacing.sectionGap)) {
         SettingsGroup(items = listOf(0), itemKey = { it }) {
             val status = dnsStatus(state)
-            SettingsStatusRow(status.label, status.icon, status = status.hostname,
-                stateLabel = stringResource(R.string.status_current_state))
+            SettingsStatusRow(
+                status.label, status.icon, status = status.hostname,
+                stateLabel = stringResource(R.string.status_current_state),
+                actionLabel = stringResource(R.string.status_cycle_action),
+                reserveStatusLine = true,
+                enabled = state.hasPermission,
+                onClick = { onAction(DnsSettingsAction.Cycle) }
+            )
         }
         SettingsGroup(items = listOf(1, 2, 3, 4, 5), itemKey = { it }) { item ->
             when (item) {

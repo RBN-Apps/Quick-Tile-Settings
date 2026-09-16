@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.collectLatest
 import com.rbn.qtsettings.app.navigation.AppDestination
 import com.rbn.qtsettings.app.navigation.AppArea
 import com.rbn.qtsettings.app.navigation.AppNavigationContent
@@ -75,12 +76,14 @@ fun AppRoot(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(usbViewModel, lifecycle, resources) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            usbViewModel.events.collect { snackbar.showSnackbar(resources.getString(it)) }
+            // Cycling is tappable in quick succession: the newest outcome replaces the last
+            // instead of queueing behind it.
+            usbViewModel.events.collectLatest { snackbar.showSnackbar(resources.getString(it)) }
         }
     }
     LaunchedEffect(dnsViewModel, lifecycle, resources) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            dnsViewModel.events.collect { message ->
+            dnsViewModel.events.collectLatest { message ->
                 snackbar.showSnackbar(if (message.argument == null) resources.getString(message.resource)
                     else resources.getString(message.resource, message.argument))
             }

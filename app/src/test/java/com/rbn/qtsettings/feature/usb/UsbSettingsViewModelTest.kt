@@ -3,6 +3,7 @@ package com.rbn.qtsettings.feature.usb
 import android.content.Context
 import com.rbn.qtsettings.feature.usb.data.UsbSettingsStore
 import com.rbn.qtsettings.feature.usb.domain.UsbActions
+import com.rbn.qtsettings.feature.usb.domain.UsbAutoRevert
 import com.rbn.qtsettings.feature.usb.presentation.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -11,6 +12,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 @RunWith(RobolectricTestRunner::class)
 class UsbSettingsViewModelTest {
@@ -34,12 +37,29 @@ class UsbSettingsViewModelTest {
         assertEquals(com.rbn.qtsettings.feature.usb.domain.UsbSettings(), store.state.value)
     }
 
+    @Test fun cycleFromOverview_advancesTheSameCycleAsTheTile() = runBlocking {
+        val prefs = RuntimeEnvironment.getApplication().getSharedPreferences("usb-vm-cycle-test", Context.MODE_PRIVATE)
+        prefs.edit().clear().commit()
+        val store = UsbSettingsStore(prefs)
+        val gateway = UsbActionsTest.FakeGateway()
+        val actions = UsbActions(gateway)
+        val vm = UsbSettingsViewModel(store, actions, UsbAutoRevert(actions, CoroutineScope(Dispatchers.Unconfined)))
+        assertFalse(gateway.snapshot.usb)
+        vm.onAction(UsbSettingsAction.Cycle)
+        assertTrue(gateway.snapshot.usb)
+        assertTrue(vm.state.value.system.active)
+        assertEquals(com.rbn.qtsettings.R.string.shortcut_toast_usb_on, vm.events.first())
+        vm.onAction(UsbSettingsAction.Cycle)
+        assertFalse(gateway.snapshot.usb)
+    }
+
     @Test fun cycleSelectionPersists_withoutChangingSystem_andDirectActionRefreshesStateAndEmitsOnce() = runBlocking {
         val prefs = RuntimeEnvironment.getApplication().getSharedPreferences("usb-vm-test", Context.MODE_PRIVATE)
         prefs.edit().clear().commit()
         val store = UsbSettingsStore(prefs)
         val gateway = UsbActionsTest.FakeGateway()
-        val vm = UsbSettingsViewModel(store, UsbActions(gateway))
+        val actions = UsbActions(gateway)
+        val vm = UsbSettingsViewModel(store, actions, UsbAutoRevert(actions, CoroutineScope(Dispatchers.Unconfined)))
         vm.onAction(UsbSettingsAction.ToggleEnable(false))
         assertFalse(vm.state.value.settings.toggleEnable)
         assertFalse(UsbSettingsStore(prefs).read().toggleEnable)

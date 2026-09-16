@@ -28,6 +28,7 @@ sealed interface DnsSettingsAction {
     data class RevertDelay(val value: Int) : DnsSettingsAction
     data class RequireUnlock(val value: Boolean) : DnsSettingsAction
     data class Activate(val target: DnsTarget, val name: String? = null) : DnsSettingsAction
+    data object Cycle : DnsSettingsAction
     data class Edit(val id: String?) : DnsSettingsAction
     data class Delete(val id: String?) : DnsSettingsAction
 }

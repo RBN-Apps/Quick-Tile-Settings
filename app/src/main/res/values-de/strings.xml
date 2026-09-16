@@ -312,6 +312,7 @@
     <string name="usb_status_on">USB-Debugging ist an</string>
     <string name="usb_status_off">USB-Debugging ist aus</string>
     <string name="status_current_state">Aktueller Systemzustand</string>
+    <string name="status_cycle_action">Zum Umschalten auf den nächsten Zustand im Kachelzyklus tippen</string>
     <plurals name="usb_delay_seconds">
         <item quantity="one">%1$d Sekunde</item>
         <item quantity="other">%1$d Sekunden</item>

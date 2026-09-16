@@ -6,6 +6,8 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.feature.dns.data.DnsSettingsStore
 import com.rbn.qtsettings.feature.dns.domain.*
 import com.rbn.qtsettings.feature.dns.presentation.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -21,14 +23,46 @@ class DnsSettingsViewModelTest {
     private lateinit var gateway: DnsActionsTest.FakeGateway
     private lateinit var handle: SavedStateHandle
     private lateinit var vm: DnsSettingsViewModel
+
+    /** The countdown never runs here; these assertions drive the view model directly. */
+    private val revertScope = CoroutineScope(Dispatchers.Unconfined)
+
+    private fun viewModel(savedState: SavedStateHandle): DnsSettingsViewModel {
+        val actions = DnsActions(gateway)
+        return DnsSettingsViewModel(store, actions, DnsAutoRevert(actions, revertScope), savedState)
+    }
+
     @Before fun setup() {
         val prefs = RuntimeEnvironment.getApplication().getSharedPreferences("dns-owner-test", Context.MODE_PRIVATE)
         prefs.edit().clear().commit()
         store = DnsSettingsStore(prefs)
         gateway = DnsActionsTest.FakeGateway()
         handle = SavedStateHandle()
-        vm = DnsSettingsViewModel(store, DnsActions(gateway), handle)
+        vm = viewModel(handle)
     }
+    @Test fun cycleFromOverview_advancesTheSameCycleAsTheTile_andNamesTheAppliedState() = runBlocking {
+        store.setDnsToggleOff(true)
+        store.setDnsToggleAuto(true)
+        store.read().providers.forEach { store.setSelected(it.id, false) }
+        vm.onAction(DnsSettingsAction.Cycle)
+        val first = gateway.read()
+        assertEquals(R.string.shortcut_toast_dns_auto, vm.events.first().resource)
+        assertEquals(DnsTarget.Automatic, first)
+        vm.onAction(DnsSettingsAction.Cycle)
+        assertEquals(DnsTarget.Off, gateway.read())
+        assertEquals(DnsTarget.Off, vm.state.value.active)
+    }
+
+    @Test fun cycleWithoutAnyEnabledState_reportsItAndTouchesNothing() = runBlocking {
+        store.setDnsToggleOff(false)
+        store.setDnsToggleAuto(false)
+        store.read().providers.forEach { store.setSelected(it.id, false) }
+        val before = gateway.writes.size
+        vm.onAction(DnsSettingsAction.Cycle)
+        assertEquals(R.string.toast_no_states_enabled_dns, vm.events.first().resource)
+        assertEquals(before, gateway.writes.size)
+    }
+
     @Test fun addingAfterEditingClearsOldDraft_andCancelWritesNothing() {
         store.add("Existing", "old.example")
         val old = store.read().providers.single { !it.predefined }
@@ -49,7 +83,7 @@ class DnsSettingsViewModelTest {
         vm.saveEditor()
         assertEquals(DnsEditorError.HostnameInvalid, vm.editor.value.hostnameError)
         val restoredHandle = SavedStateHandle(handle.keys().associateWith { handle.get<Any?>(it) })
-        val restored = DnsSettingsViewModel(store, DnsActions(gateway), restoredHandle)
+        val restored = viewModel(restoredHandle)
         assertEquals(vm.editor.value, restored.editor.value)
         restored.editHostname(" dns.example ")
         assertNull(restored.editor.value.hostnameError)
@@ -88,7 +122,7 @@ class DnsSettingsViewModelTest {
         store.add("Delete", "delete.example")
         val id = store.read().providers.single { !it.predefined }.id
         vm.onAction(DnsSettingsAction.Delete(id))
-        val restored = DnsSettingsViewModel(store, DnsActions(gateway), SavedStateHandle(mapOf("dns.delete" to id)))
+        val restored = viewModel(SavedStateHandle(mapOf("dns.delete" to id)))
         assertEquals(id, restored.pendingDeletion.value)
         restored.onAction(DnsSettingsAction.Delete(null))
         assertTrue(store.read().providers.any { it.id == id })

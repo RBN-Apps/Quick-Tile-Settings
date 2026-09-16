@@ -44,7 +44,7 @@ class AppContainer(context: Context) {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass == UsbSettingsViewModel::class.java)
             @Suppress("UNCHECKED_CAST")
-            return UsbSettingsViewModel(usbSettingsStore, usbActions) as T
+            return UsbSettingsViewModel(usbSettingsStore, usbActions, usbAutoRevert) as T
         }
     }
     val dnsSettingsStore get() = stores.dns
@@ -54,7 +54,7 @@ class AppContainer(context: Context) {
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             require(modelClass == DnsSettingsViewModel::class.java)
             @Suppress("UNCHECKED_CAST")
-            return DnsSettingsViewModel(dnsSettingsStore, dnsActions, extras.createSavedStateHandle()) as T
+            return DnsSettingsViewModel(dnsSettingsStore, dnsActions, dnsAutoRevert, extras.createSavedStateHandle()) as T
         }
     }
     val automationViewModelFactory = object : ViewModelProvider.Factory {
