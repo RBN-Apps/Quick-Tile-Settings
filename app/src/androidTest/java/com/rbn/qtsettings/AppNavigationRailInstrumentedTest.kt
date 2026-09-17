@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
@@ -204,6 +205,20 @@ class AppNavigationRailInstrumentedTest {
                 icon(R.string.shortcut_settings_open_desc).assertDoesNotExist()
             }
         }
+    }
+
+    @Test fun expandedRail_tapBesideShortLabelPill_selectsTarget() {
+        show()
+        icon(R.string.navigation_open).performClick()
+        val about = compose.onNodeWithTag(AppRailTarget.About.testTag).performScrollTo()
+        val pill = about.fetchSemanticsNode().boundsInRoot
+        val widerPill = compose.onNodeWithTag(AppRailTarget.Dns.testTag).fetchSemanticsNode().boundsInRoot
+        // "Über"/"About" is far narrower than the drawer; the empty row space must still react.
+        val beside = maxOf(widerPill.right, pill.right) + 24f
+        compose.onRoot().performTouchInput { click(Offset(beside, pill.center.y)) }
+        compose.waitForIdle()
+        compose.openNavigationIfNeeded(context)
+        compose.onNodeWithTag(AppRailTarget.About.testTag).performScrollTo().assertIsSelected()
     }
 
     @Test fun collapsingPersistentRail_shortLabelsStayCenteredDuringAnimation() {

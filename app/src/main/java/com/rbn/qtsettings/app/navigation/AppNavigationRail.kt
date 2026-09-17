@@ -5,6 +5,9 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,13 +40,16 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -135,17 +141,39 @@ private fun AppNavigationRailItem(target: AppRailTarget, selected: Boolean, expa
     var iconBottom by remember { mutableFloatStateOf(Float.POSITIVE_INFINITY) }
     var labelTop by remember { mutableFloatStateOf(0f) }
     val label = stringResource(target.title)
+    val interactionSource = remember { MutableInteractionSource() }
+    var itemWidth by remember { mutableIntStateOf(0) }
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = { PlainTooltip { Text(label) } },
         state = rememberTooltipState()
     ) {
+        // The pill is only as wide as its label, so short names like "Über" were much harder to
+        // hit. Taps on the empty rest of the row select the item too; taps on the pill itself are
+        // consumed by the item, and the shared interaction source keeps the ripple on the pill.
+        Box(
+            Modifier.fillMaxWidth().pointerInput(onClick) {
+                detectTapGestures(
+                    onPress = { offset ->
+                        if (offset.x < itemWidth) return@detectTapGestures
+                        val press = PressInteraction.Press(offset)
+                        interactionSource.emit(press)
+                        interactionSource.emit(
+                            if (tryAwaitRelease()) PressInteraction.Release(press) else PressInteraction.Cancel(press)
+                        )
+                    },
+                    onTap = { onClick() }
+                )
+            },
+            contentAlignment = Alignment.CenterStart
+        ) {
         WideNavigationRailItem(
             selected = selected,
             onClick = onClick,
             railExpanded = expanded,
             modifier = Modifier.heightIn(min = AppSpacing.minimumTouchTarget).testTag(target.testTag)
-                .semantics { contentDescription = label },
+                .semantics { contentDescription = label }.onSizeChanged { itemWidth = it.width },
+            interactionSource = interactionSource,
             icon = {
                 Icon(
                     target.icon,
@@ -169,5 +197,6 @@ private fun AppNavigationRailItem(target: AppRailTarget, selected: Boolean, expa
                 )
             }
         )
+        }
     }
 }
