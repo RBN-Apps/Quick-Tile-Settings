@@ -23,8 +23,13 @@ import kotlin.math.absoluteValue
 /**
  * The page the pager is leaving fades and shrinks a little, so a swipe reads as depth rather than a
  * jump. Read inside the layer block: the values change per frame and never recompose the page.
+ *
+ * An arriving permission drops the two setup pages, so the count can shrink while a page composed
+ * for the longer flow is still on screen for a frame. The pager rejects a page it no longer has,
+ * and that rejection lands in the draw pass, so the stale page leaves at its plain size instead.
  */
 internal fun Modifier.onboardingPageDepth(pager: PagerState, page: Int) = graphicsLayer {
+    if (page !in 0 until pager.pageCount) return@graphicsLayer
     val distance = pager.getOffsetDistanceInPages(page).absoluteValue.coerceIn(0f, 1f)
     alpha = 1f - distance * 0.5f
     scaleX = 1f - distance * 0.06f

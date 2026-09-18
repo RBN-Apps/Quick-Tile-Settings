@@ -438,6 +438,7 @@
     <string name="permission_grant_running">Granting permission…</string>
     <string name="permission_page_explanation">Switching DNS and USB debugging requires WRITE_SECURE_SETTINGS. Android does not offer a normal permission prompt for this access.</string>
     <string name="permission_refresh">Check again</string>
+    <string name="permission_status_action">Tap to check the status again</string>
     <string name="permission_methods_title">Setup methods</string>
     <string name="permission_adb_title">ADB with a computer</string>
     <string name="permission_shizuku_title">Shizuku</string>

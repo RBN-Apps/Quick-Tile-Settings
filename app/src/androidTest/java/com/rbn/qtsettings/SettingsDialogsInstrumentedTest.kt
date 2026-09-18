@@ -16,6 +16,9 @@ class SettingsDialogsInstrumentedTest {
     @get:Rule val compose = createComposeRule()
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     private fun text(id: Int) = compose.onNodeWithText(context.getString(id))
+    // The status row speaks as one node, so its state is only reachable as a description.
+    private fun spoken(id: Int) =
+        compose.onNodeWithContentDescription(context.getString(id), substring = true)
 
     @Test fun adbCommands_copyExactValues_atLargeFont() {
         val copied = mutableListOf<String>()
@@ -69,10 +72,25 @@ class SettingsDialogsInstrumentedTest {
         compose.runOnIdle { operation.value = PermissionOperation(); granted.value = true }
         text(R.string.button_grant_with_root).performScrollTo().assertIsNotEnabled()
         text(R.string.button_grant_with_shizuku).performScrollTo().assertIsNotEnabled()
-        text(R.string.permission_is_granted).performScrollTo().assertIsDisplayed()
+        spoken(R.string.permission_is_granted).performScrollTo().assertIsDisplayed()
         compose.runOnIdle { granted.value = false }
         text(R.string.button_grant_with_root).performScrollTo().assertIsEnabled()
         text(R.string.button_grant_with_shizuku).performScrollTo().assertIsEnabled()
+    }
+
+    @Test fun setupStatusRow_carriesTheCheckAgainAction_andStandsDownWhileBusy() {
+        var refreshed = 0
+        val operation = androidx.compose.runtime.mutableStateOf(PermissionOperation())
+        compose.setContent {
+            QuickTileSettingsTheme {
+                PermissionSettingsScreen(PermissionSnapshot(), true, operation.value, null,
+                    { refreshed++ }, {}, {}, {}, {}, {}, {})
+            }
+        }
+        spoken(R.string.permission_not_setup).performScrollTo().performClick()
+        compose.runOnIdle { assertEquals(1, refreshed); operation.value = PermissionOperation(checking = true) }
+        spoken(R.string.permission_checking).performScrollTo().assertIsNotEnabled()
+        compose.runOnIdle { assertEquals(1, refreshed) }
     }
 
     @Test fun notificationSettings_largeFont_keepsBothActions_andDoesNotOpenSettingsOnDismiss() {

@@ -132,6 +132,32 @@ class OnboardingInstrumentedTest {
         assertEquals(listOf("choose:Shizuku", "later"), recorded)
     }
 
+    /**
+     * The permission normally arrives from a computer while the setup page is open. That drops two
+     * pages from the flow underneath a pager that still holds them, which used to take the app down
+     * in the draw pass.
+     */
+    @Test fun permissionArrivingOnTheSetupPage_shortensTheFlowToItsLastPage() {
+        val granted = androidx.compose.runtime.mutableStateOf(false)
+        val step = androidx.compose.runtime.mutableStateOf(OnboardingStep.Permission)
+        compose.setContent {
+            QuickTileSettingsTheme {
+                OnboardingScreen(OnboardingUiState(step.value,
+                    PermissionSnapshot(hasWriteSecureSettings = granted.value), true,
+                    PermissionOperation(), PermissionMethod.Adb, command,
+                    decorativeMotion = false), actions)
+            }
+        }
+        awaitPage(3, 5)
+        // Choosing a method turns the pager onto the setup page, which composes the page behind it
+        // off screen. That page is the one the shorter flow no longer has.
+        compose.runOnIdle { step.value = OnboardingStep.Grant }
+        awaitPage(4, 5)
+        compose.runOnIdle { granted.value = true }
+        awaitPage(3, 3)
+        compose.onNodeWithText(text(R.string.onboarding_done_title)).assertIsDisplayed()
+    }
+
     @Test fun adbSetupPage_showsTheGrantCommandAndCopiesIt() {
         show(OnboardingStep.Grant, method = PermissionMethod.Adb)
         compose.onNodeWithText(text(R.string.permission_adb_intro)).assertIsDisplayed()

@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
@@ -46,6 +47,8 @@ internal fun SettingsRowContent(
     modifier: Modifier,
     status: String? = null,
     iconPainter: Painter? = null,
+    // A row whose icon carries the state itself (a granted check) needs to leave the neutral tint.
+    iconTint: Color? = null,
     titleBadge: (@Composable () -> Unit)? = null,
     // Reported state comes and goes with its second line. Reserving that line keeps the row
     // from resizing, and lets the title sit centred whenever the line is absent.
@@ -53,6 +56,7 @@ internal fun SettingsRowContent(
     trailing: @Composable () -> Unit
 ) {
     val alpha = if (enabled) 1f else AppSpacing.disabledContentAlpha
+    val resolvedIconTint = (iconTint ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = alpha)
     Row(
         modifier = modifier.fillMaxWidth()
             .heightIn(min = AppSpacing.rowMinHeight)
@@ -62,11 +66,11 @@ internal fun SettingsRowContent(
     ) {
         if (icon != null) {
             Icon(icon, contentDescription = null, modifier = Modifier.size(AppSpacing.iconSize),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha))
+                tint = resolvedIconTint)
         }
         if (icon == null && iconPainter != null) {
             Icon(iconPainter, contentDescription = null, modifier = Modifier.size(AppSpacing.iconSize),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha))
+                tint = resolvedIconTint)
         }
         // Derived from the type scale rather than a fixed dp, so it still holds at large font sizes.
         val reservedHeight = with(LocalDensity.current) {

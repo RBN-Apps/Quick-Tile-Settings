@@ -430,6 +430,7 @@
     <string name="permission_grant_running">Berechtigung wird erteilt…</string>
     <string name="permission_page_explanation">Zum Umschalten von DNS und USB-Debugging ist WRITE_SECURE_SETTINGS nötig. Android bietet dafür keine normale Berechtigungsabfrage.</string>
     <string name="permission_refresh">Erneut prüfen</string>
+    <string name="permission_status_action">Zum erneuten Prüfen des Status tippen</string>
     <string name="permission_methods_title">Einrichtungsmethoden</string>
     <string name="permission_adb_title">ADB über Computer</string>
     <string name="permission_shizuku_title">Shizuku</string>

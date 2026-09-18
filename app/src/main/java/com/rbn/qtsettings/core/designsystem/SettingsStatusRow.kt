@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,9 +39,10 @@ fun SettingsStatusRow(
     stateLabel: String? = null,
     actionLabel: String? = null,
     reserveStatusLine: Boolean = false,
+    iconTint: Color? = null,
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null
-) = StatusRow(title, icon, null, modifier, summary, status, stateLabel, actionLabel, reserveStatusLine, enabled, onClick)
+) = StatusRow(title, icon, null, modifier, summary, status, stateLabel, actionLabel, reserveStatusLine, iconTint, enabled, onClick)
 
 @Composable
 fun SettingsStatusRow(
@@ -52,9 +54,10 @@ fun SettingsStatusRow(
     stateLabel: String? = null,
     actionLabel: String? = null,
     reserveStatusLine: Boolean = false,
+    iconTint: Color? = null,
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null
-) = StatusRow(title, null, icon, modifier, summary, status, stateLabel, actionLabel, reserveStatusLine, enabled, onClick)
+) = StatusRow(title, null, icon, modifier, summary, status, stateLabel, actionLabel, reserveStatusLine, iconTint, enabled, onClick)
 
 @Composable
 private fun StatusRow(
@@ -67,6 +70,7 @@ private fun StatusRow(
     stateLabel: String?,
     actionLabel: String?,
     reserveStatusLine: Boolean,
+    iconTint: Color?,
     enabled: Boolean,
     onClick: (() -> Unit)?
 ) {
@@ -85,6 +89,7 @@ private fun StatusRow(
         iconPainter = iconPainter,
         enabled = enabled,
         status = status,
+        iconTint = iconTint,
         reserveStatusLine = reserveStatusLine,
         modifier = modifier
             .then(

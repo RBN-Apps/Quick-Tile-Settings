@@ -145,12 +145,15 @@ private fun OnboardingPages(
         // Landscape and large fonts leave too little room for the artwork above the content.
         CompositionLocalProvider(LocalOnboardingShortPage provides (maxHeight < 420.dp)) {
             HorizontalPager(pager, Modifier.fillMaxSize().testTag(ONBOARDING_PAGER_TAG)) { page ->
+                // The same shrinking flow reaches the content: a page recomposes once more before
+                // the pager measures it away, and by then the list no longer holds its index.
+                val step = pages.getOrNull(page) ?: return@HorizontalPager
                 Column(Modifier.fillMaxSize().onboardingPageDepth(pager, page)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = PageGutter, vertical = AppSpacing.sectionGap),
-                    verticalArrangement = if (pages[page] == OnboardingStep.Welcome) Arrangement.Center
+                    verticalArrangement = if (step == OnboardingStep.Welcome) Arrangement.Center
                         else Arrangement.spacedBy(AppSpacing.sectionGap)) {
-                    when (pages[page]) {
+                    when (step) {
                         OnboardingStep.Welcome -> OnboardingWelcomePage(state.decorativeMotion, onForward)
                         OnboardingStep.Tiles -> OnboardingTilesPage()
                         OnboardingStep.Permission -> OnboardingPermissionPage(state, actions::chooseMethod)
