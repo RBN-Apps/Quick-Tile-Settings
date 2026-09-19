@@ -97,7 +97,9 @@ class OnboardingEntryInstrumentedTest {
         openFirstRun()
         compose.onNodeWithTag("onboarding_skip").performClick()
         compose.waitUntil { compose.onAllNodesWithTag("onboarding").fetchSemanticsNodes().isEmpty() }
-        compose.onNodeWithText(text(R.string.app_name)).assertIsDisplayed()
+        // The shell now names its selected area; the app name belongs to the welcome page.
+        compose.assertNavigationAvailable(context)
+        compose.onNodeWithText(text(R.string.dns_menu_providers)).assertIsDisplayed()
     }
 
     @Test fun settingsEntry_opensTheFlowAgainAfterItWasFinished() {

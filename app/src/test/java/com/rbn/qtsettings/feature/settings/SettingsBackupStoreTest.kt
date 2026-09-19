@@ -30,6 +30,23 @@ class SettingsBackupStoreTest {
     private val shortcuts = ShortcutSettingsStore(preferences, dns.dnsHostnames, publisher)
     private val backup = SettingsBackupStore(preferences, dns, usb, automation, shortcuts)
 
+    @Test fun portableRestore_doesNotCompleteOrRestartTheLocalOnboarding() {
+        val app = AppSettingsStore(preferences)
+        for (sourceCompleted in listOf(false, true)) {
+            app.setOnboardingCompleted(sourceCompleted)
+            app.setHelpShown(sourceCompleted)
+            val json = backup.exportSettingsBackupJson()
+            assertFalse(json.contains("onboarding", ignoreCase = true))
+            // The destination device is at a different point in setup than the backup source.
+            app.setOnboardingCompleted(!sourceCompleted)
+            app.setHelpShown(!sourceCompleted)
+            backup.restoreSettingsBackupJson(json)
+            val reopened = AppSettingsStore(preferences)
+            assertEquals(!sourceCompleted, reopened.onboardingCompleted.value)
+            assertEquals(!sourceCompleted, reopened.helpShown.value)
+        }
+    }
+
     @Test fun invalidDocument_changesNeitherPersistentDataNorOwnersOrPublishing() {
         dns.addCustomDnsHostname("Home", "dns.example.com")
         usb.setRequireUnlock(true)
