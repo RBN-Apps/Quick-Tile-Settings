@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rbn.qtsettings.app.AppPermissionBinding
+import com.rbn.qtsettings.app.AppControlPermissionObserver
 import com.rbn.qtsettings.app.AppRoot
 import com.rbn.qtsettings.app.AppSystemStateObserver
 import com.rbn.qtsettings.app.navigation.AppArea
@@ -65,6 +66,10 @@ class MainActivity : ComponentActivity() {
         lifecycle.addObserver(permissions)
         lifecycle.addObserver(UsbSystemStateObserver(applicationContext, usbViewModel))
         lifecycle.addObserver(DnsSystemStateObserver(applicationContext, dnsViewModel))
+        lifecycle.addObserver(AppControlPermissionObserver(viewModel.state) {
+            dnsViewModel.refresh()
+            usbViewModel.refresh()
+        })
         val openDeveloperOptions = { startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) }
         val tilePanel = TilePanelRequests(this)
         setContent {
