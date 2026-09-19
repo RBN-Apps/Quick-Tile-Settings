@@ -1,6 +1,7 @@
 package com.rbn.qtsettings.core.designsystem
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -58,7 +59,12 @@ internal fun SettingsRowContent(
     val alpha = if (enabled) 1f else AppSpacing.disabledContentAlpha
     val resolvedIconTint = (iconTint ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = alpha)
     Row(
-        modifier = modifier.fillMaxWidth()
+        // AnimatedVisibility covers a status line appearing or disappearing, but not a title or
+        // an already-visible status wrapping onto a different number of lines. Animate the row's
+        // measured height as well so its containing card follows those text changes smoothly.
+        modifier = modifier
+            .then(if (reserveStatusLine) Modifier.animateContentSize(STATUS_LINE_SIZE) else Modifier)
+            .fillMaxWidth()
             .heightIn(min = AppSpacing.rowMinHeight)
             .padding(horizontal = AppSpacing.rowHorizontal, vertical = AppSpacing.rowVertical),
         verticalAlignment = Alignment.CenterVertically,
