@@ -16,11 +16,11 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.core.designsystem.AppButton
 import com.rbn.qtsettings.core.designsystem.AppButtonStyle
 import com.rbn.qtsettings.core.designsystem.AppLinkButton
-import com.rbn.qtsettings.core.designsystem.SettingsGroup
-import com.rbn.qtsettings.core.designsystem.SettingsRowContent
 import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
 import com.rbn.qtsettings.feature.permissions.domain.PermissionMethod
-import com.rbn.qtsettings.feature.permissions.presentation.AdbCommandSection
+import com.rbn.qtsettings.feature.permissions.presentation.AdbCommandBlock
+import com.rbn.qtsettings.feature.permissions.presentation.AdbStep
+import com.rbn.qtsettings.feature.permissions.presentation.AdbStepGroup
 
 /** The chosen way to the permission, with the live status the page is waiting for. */
 @Composable
@@ -50,23 +50,30 @@ internal fun OnboardingGrantPage(
     }
 }
 
+/** The same numbered route as the setup page, with the steps this flow can shortcut itself. */
 @Composable
 private fun AdbGrant(state: OnboardingUiState, actions: OnboardingUiActions) {
-    val steps = listOf(
-        R.string.permission_adb_step_computer to R.string.permission_adb_computer_summary,
-        R.string.permission_adb_step_device to R.string.permission_adb_device_summary,
-        R.string.permission_adb_step_connect to R.string.permission_adb_connect_summary
-    )
-    SettingsGroup(steps, itemKey = { it.first }) { (title, summary) ->
-        SettingsRowContent(stringResource(title), stringResource(summary), null, true, Modifier) {}
-    }
-    AppLinkButton(stringResource(R.string.permission_adb_platform_tools),
-        stringResource(R.string.platform_tools_url), Modifier.fillMaxWidth())
-    AppButton(stringResource(R.string.button_open_developer_options), actions::openDeveloperOptions,
-        Modifier.fillMaxWidth(), style = AppButtonStyle.Secondary, icon = Icons.Outlined.DeveloperMode)
-    AdbCommandSection(stringResource(R.string.permission_adb_step_grant),
-        stringResource(R.string.help_dialog_how_to_grant_via_adb), state.grantCommand,
-        stringResource(R.string.button_copy_grant_command), actions::copyCommand)
+    AdbStepGroup(listOf(
+        AdbStep(stringResource(R.string.permission_adb_step_computer),
+            stringResource(R.string.permission_adb_computer_summary)) {
+            AppLinkButton(stringResource(R.string.permission_adb_platform_tools),
+                stringResource(R.string.platform_tools_url), Modifier.fillMaxWidth())
+        },
+        AdbStep(stringResource(R.string.permission_adb_step_device),
+            stringResource(R.string.permission_adb_device_summary)) {
+            AppButton(stringResource(R.string.button_open_developer_options), actions::openDeveloperOptions,
+                Modifier.fillMaxWidth(), style = AppButtonStyle.Secondary, icon = Icons.Outlined.DeveloperMode)
+        },
+        AdbStep(stringResource(R.string.permission_adb_step_connect),
+            stringResource(R.string.permission_adb_connect_summary)),
+        AdbStep(stringResource(R.string.permission_adb_step_grant),
+            stringResource(R.string.help_dialog_how_to_grant_via_adb)) {
+            AdbCommandBlock(state.grantCommand, stringResource(R.string.button_copy_grant_command),
+                actions::copyCommand)
+        }
+    ))
+    // This page checks on its own instead of sending anyone back to a setup page, so it ends on
+    // what happens next rather than on a fifth step.
     Text(stringResource(R.string.onboarding_adb_verify), style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
 }

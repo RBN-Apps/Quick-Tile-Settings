@@ -13,8 +13,8 @@ import com.rbn.qtsettings.platform.permissions.adbPermissionGrantCommand
 fun AdbInstructionsRoot() {
     val context = LocalContext.current
     val label = stringResource(R.string.adb_instructions_title)
-    AdbInstructionsScreen(adbPermissionGrantCommand(context.packageName)) { command ->
+    AdbInstructionsScreen(adbPermissionGrantCommand(context.packageName), onCopy = { command ->
         context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText(label, command))
         Toast.makeText(context, R.string.toast_command_copied, Toast.LENGTH_SHORT).show()
-    }
+    })
 }
