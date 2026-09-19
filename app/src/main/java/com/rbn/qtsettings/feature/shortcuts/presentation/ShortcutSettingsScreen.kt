@@ -16,11 +16,12 @@ import com.rbn.qtsettings.core.designsystem.theme.AppSpacing
 internal fun ShortcutSettingsScreen(
     state: ShortcutSettingsState,
     onAction: (ShortcutSettingsAction) -> Unit,
+    onOpenHelp: () -> Unit,
     modifier: Modifier = Modifier,
     initialSection: ShortcutSection? = null
 ) {
-    // Only the first visit uses the hint. The overview now occupies index 0 and the pinned
-    // fallback index 1; LazyListState restores the user's position thereafter.
+    // Only the first visit uses the hint. The overview (counts and the explanation entry)
+    // occupies index 0 and the pinned fallback index 1; LazyListState restores the user's position thereafter.
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = when (initialSection) {
         ShortcutSection.Dns -> 2
         ShortcutSection.Usb -> 3
@@ -34,7 +35,7 @@ internal fun ShortcutSettingsScreen(
         contentPadding = PaddingValues(top = AppSpacing.sectionGap, bottom = AppSpacing.sectionGap)
     ) {
         item(key = "count") {
-            ShortcutCountInfo(state, onAction)
+            ShortcutOverviewGroup(state, onOpenHelp)
         }
         item(key = "pinned") {
             ShortcutPinnedFallbackRow(

@@ -179,7 +179,11 @@ functional.**
 7. Settings are saved automatically as you make changes in the app.
 8. **For Shortcut Actions (Optional):**
     * Open the shortcut settings screen from the app (shortcut icon in the top bar).
+    * "How shortcut actions work" at the top of that screen explains what the actions are and how
+      to run, pin or automate them.
     * Enable the actions you want to expose as app shortcuts.
+    * Touch and hold the app icon in your launcher to run an action; drag one onto the home screen
+      to pin it there.
     * Keep automation-required actions enabled so Tasker/Samsung Routines can discover them.
     * If needed, you can allow already pinned shortcuts to keep working after an action is disabled.
 

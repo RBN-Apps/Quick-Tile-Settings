@@ -271,7 +271,7 @@
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Shortcut-Aktionen</string>
-    <string name="shortcut_settings_description">Wähle aus, welche Aktionen als Android-App-Shortcuts bereitgestellt werden. Sie können über Launcher, Samsung Routines, Tasker oder als angeheftete Homescreen-Verknüpfungen genutzt werden.\n\nAndroid begrenzt die Anzahl der im Launcher sichtbaren dynamischen Shortcuts für diese App-Aktivität auf %1$d, daher können hier gleichzeitig nur %1$d Aktionen aktiviert werden.\n\nDu kannst bis zu %2$d aktive Aktionen mit dem Stern als Favoriten markieren. Favoriten erhalten die höchste Priorität und werden eher zuerst in den Shortcut-Menüs des Launchers angezeigt. Deaktivierte Aktionen können nicht als Favorit markiert werden.\n\nStandardmäßig werden deaktivierte Aktionen vollständig blockiert und nicht mehr von der App ausgeführt. Aktiviere die Option unten nur, wenn bereits angeheftete Shortcuts nach dem Deaktivieren hier weiter funktionieren sollen.</string>
+    <string name="shortcut_settings_description">Wähle aus, welche Aktionen als Android-App-Shortcuts bereitgestellt werden. Sie können über Launcher, Samsung Routines, Tasker oder als angeheftete Homescreen-Verknüpfungen genutzt werden.\n\nAndroid begrenzt die Anzahl der im Launcher sichtbaren dynamischen Shortcuts für diese App-Aktivität auf %1$d, daher können hier gleichzeitig nur %1$d Aktionen aktiviert werden.\n\nDu kannst bis zu %2$d aktive Aktionen mit dem Stern als Favoriten markieren. Favoriten erhalten die höchste Priorität und werden eher zuerst in den Shortcut-Menüs des Launchers angezeigt. Deaktivierte Aktionen können nicht als Favorit markiert werden.\n\nStandardmäßig werden deaktivierte Aktionen vollständig blockiert und nicht mehr von der App ausgeführt. Aktiviere „Deaktivierte angeheftete Shortcuts erlauben“ in der Shortcut-Übersicht nur, wenn bereits angeheftete Shortcuts nach dem Deaktivieren dort weiter funktionieren sollen.</string>
     <string name="shortcut_settings_limit">Aktive Shortcuts: %1$d / %2$d</string>
     <string name="shortcut_settings_limit_reached_title">Shortcut-Limit erreicht</string>
     <string name="shortcut_settings_limit_reached">Shortcut-Limit erreicht. Deaktiviere zuerst eine andere Aktion.</string>
@@ -286,6 +286,23 @@
     <string name="shortcut_settings_mark_favorite_desc">%1$s als Favorit markieren</string>
     <string name="shortcut_settings_remove_favorite_desc">%1$s aus Favoriten entfernen</string>
     <string name="shortcut_settings_open_desc">Shortcut-Einstellungen öffnen</string>
+    <!-- Shortcut-Hilfe -->
+    <string name="shortcut_help_title">So funktionieren Shortcut-Aktionen</string>
+    <string name="shortcut_help_entry_summary">Was sie sind und wie du sie ausführst, anheftest oder automatisierst</string>
+    <string name="shortcut_help_intro">Eine Shortcut-Aktion ist ein Android-App-Shortcut für eine einzelne Einstellung, zum Beispiel privates DNS auf Cloudflare oder USB-Debugging aus. Ein Tippen setzt diese Einstellung sofort und zeigt eine kurze Bestätigung. Die App selbst bleibt geschlossen.</string>
+    <string name="shortcut_help_steps_title">Shortcut-Aktionen verwenden</string>
+    <string name="shortcut_help_step_open_title">Shortcut-Menü öffnen</string>
+    <string name="shortcut_help_step_open_summary">Halte das App-Symbol auf dem Startbildschirm oder in der App-Übersicht gedrückt. Die aktiven Aktionen erscheinen im Menü daneben.</string>
+    <string name="shortcut_help_step_run_title">Aktion ausführen</string>
+    <string name="shortcut_help_step_run_summary">Tippe im Menü auf eine Aktion. Die Einstellung ändert sich sofort, ohne Rückfrage.</string>
+    <string name="shortcut_help_step_pin_title">Aktion auf dem Startbildschirm anheften</string>
+    <string name="shortcut_help_step_pin_summary">Halte eine Aktion im Menü gedrückt und zieh sie auf eine freie Stelle des Startbildschirms. Sie wird dort zu einem eigenen Symbol und führt die Aktion beim Antippen aus.</string>
+    <string name="shortcut_help_step_automate_title">Aus anderen Apps auslösen</string>
+    <string name="shortcut_help_step_automate_summary">Automatisierungs-Apps wie Tasker, MacroDroid oder Samsung Routines können dieselben Aktionen als Schritt einer Routine starten.</string>
+    <string name="shortcut_help_rules_title">Aktive Aktionen und Favoriten</string>
+    <string name="shortcut_help_permission_title">Berechtigung</string>
+    <string name="shortcut_help_permission_summary">Shortcut-Aktionen ändern dieselben Systemeinstellungen wie die Kacheln und brauchen dieselbe Berechtigung. Ohne sie meldet eine Aktion nur, dass die Berechtigung fehlt.</string>
+    <string name="shortcut_help_launcher_note">Launcher unterscheiden sich. Manche benennen das Menü anders, und nicht jeder Launcher kann Shortcuts auf dem Startbildschirm anheften.</string>
     <!-- Quick Action Dialog -->
     <string name="quick_action_title">Schnellaktionen</string>
     <string name="quick_action_dns_title">Privates DNS</string>
@@ -389,7 +406,7 @@
     <string name="backup_restore_summary">Backup-Datei auswählen und das Ersetzen der Einstellungen bestätigen.</string>
     <string name="developer_options_enabled_status">Entwickleroptionen sind aktiviert</string>
     <string name="developer_options_disabled_status">Entwickleroptionen sind deaktiviert</string>
-    <string name="shortcut_menu_summary">Shortcuts und Favoriten verwalten</string>
+    <string name="shortcut_menu_summary">Diese Aktionen aus dem Launcher starten oder anheften</string>
     <string name="shortcut_favorites_count">Favoriten: %1$d / %2$d</string>
 
     <!-- About page -->

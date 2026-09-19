@@ -279,7 +279,7 @@
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Shortcut Actions</string>
-    <string name="shortcut_settings_description">Choose which actions are exposed as Android app shortcuts. They can be used from launchers, Samsung Routines, Tasker, or as pinned home screen shortcuts.\n\nThe maximum number of simultaneously active, launcher-visible dynamic shortcuts for this app activity is %1$d.\n\nYou can mark active actions as favorites using the star icon. The maximum number of favorites is %2$d. Favorites are published with highest priority and are more likely to appear first in launcher shortcut menus. Disabled actions cannot be favorited.\n\nBy default, disabled actions are fully blocked and can no longer be executed by the app. Enable the option below only if you want already pinned shortcuts to keep working after they are disabled here.</string>
+    <string name="shortcut_settings_description">Choose which actions are exposed as Android app shortcuts. They can be used from launchers, Samsung Routines, Tasker, or as pinned home screen shortcuts.\n\nThe maximum number of simultaneously active, launcher-visible dynamic shortcuts for this app activity is %1$d.\n\nYou can mark active actions as favorites using the star icon. The maximum number of favorites is %2$d. Favorites are published with highest priority and are more likely to appear first in launcher shortcut menus. Disabled actions cannot be favorited.\n\nBy default, disabled actions are fully blocked and can no longer be executed by the app. Enable “Allow disabled pinned shortcuts” in the shortcut list only if you want already pinned shortcuts to keep working after they are disabled there.</string>
     <string name="shortcut_settings_limit">Active shortcuts: %1$d / %2$d</string>
     <string name="shortcut_settings_limit_reached_title">Shortcut limit reached</string>
     <string name="shortcut_settings_limit_reached">Shortcut limit reached. Disable another action first.</string>
@@ -294,6 +294,23 @@
     <string name="shortcut_settings_mark_favorite_desc">Mark %1$s as favorite</string>
     <string name="shortcut_settings_remove_favorite_desc">Remove %1$s from favorites</string>
     <string name="shortcut_settings_open_desc">Open shortcut settings</string>
+    <!-- Shortcut Help -->
+    <string name="shortcut_help_title">How shortcut actions work</string>
+    <string name="shortcut_help_entry_summary">What they are and how to run, pin or automate them</string>
+    <string name="shortcut_help_intro">A shortcut action is an Android app shortcut for a single setting, for example Private DNS on Cloudflare or USB debugging off. Tapping it applies that setting right away and shows a short confirmation. The app itself stays closed.</string>
+    <string name="shortcut_help_steps_title">Using shortcut actions</string>
+    <string name="shortcut_help_step_open_title">Open the shortcut menu</string>
+    <string name="shortcut_help_step_open_summary">Touch and hold this app\'s icon on the home screen or in the app drawer. The active actions appear in the menu next to it.</string>
+    <string name="shortcut_help_step_run_title">Run an action</string>
+    <string name="shortcut_help_step_run_summary">Tap an action in that menu. The setting changes immediately, without a confirmation prompt.</string>
+    <string name="shortcut_help_step_pin_title">Pin an action to the home screen</string>
+    <string name="shortcut_help_step_pin_summary">Touch and hold an action in the menu and drag it onto a free spot on the home screen. It becomes its own icon there and runs the action when you tap it.</string>
+    <string name="shortcut_help_step_automate_title">Trigger from other apps</string>
+    <string name="shortcut_help_step_automate_summary">Automation apps such as Tasker, MacroDroid or Samsung Routines can start the same actions as a step in a routine.</string>
+    <string name="shortcut_help_rules_title">Active actions and favorites</string>
+    <string name="shortcut_help_permission_title">Permission</string>
+    <string name="shortcut_help_permission_summary">Shortcut actions change the same system settings as the tiles and need the same permission. Without it, an action only reports that the permission is missing.</string>
+    <string name="shortcut_help_launcher_note">Launchers differ. Some name the menu differently, and not every launcher can pin shortcuts to the home screen.</string>
     <!-- Quick Action Dialog -->
     <string name="quick_action_title">Quick Actions</string>
     <string name="quick_action_dns_title">Private DNS</string>
@@ -397,7 +414,7 @@
     <string name="backup_restore_summary">Choose a backup file and confirm before replacing settings.</string>
     <string name="developer_options_enabled_status">Developer options are enabled</string>
     <string name="developer_options_disabled_status">Developer options are disabled</string>
-    <string name="shortcut_menu_summary">Manage shortcuts and favorites</string>
+    <string name="shortcut_menu_summary">Run these actions from the launcher or pin them to the home screen</string>
     <string name="shortcut_favorites_count">Favorites: %1$d / %2$d</string>
 
     <!-- About page -->

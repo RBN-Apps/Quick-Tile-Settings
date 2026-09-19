@@ -39,7 +39,7 @@ enum class AppRailTarget(
 
     companion object {
         fun forDestination(destination: AppDestination, area: AppArea): AppRailTarget = when (destination) {
-            AppDestination.ShortcutSettings -> Shortcuts
+            AppDestination.ShortcutSettings, AppDestination.ShortcutHelp -> Shortcuts
             AppDestination.AppSettings -> Settings
             AppDestination.About -> About
             AppDestination.Permissions, AppDestination.AdbInstructions -> Permissions

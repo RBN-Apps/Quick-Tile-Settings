@@ -22,7 +22,7 @@ fun verifyMinifiedNavigationRestore() {
         AppRoute.DnsProviders, AppRoute.DnsAutomation, AppRoute.DnsRevert,
         AppRoute.Usb, AppRoute.UsbTile, AppRoute.UsbActions, AppRoute.UsbRevert,
         AppRoute.Shortcuts(AppArea.Dns), AppRoute.Shortcuts(AppArea.Usb),
-        AppRoute.Shortcuts(AppArea.Dns, true), AppRoute.Shortcuts(AppArea.Usb, true),
+        AppRoute.Shortcuts(AppArea.Dns, true), AppRoute.Shortcuts(AppArea.Usb, true), AppRoute.ShortcutHelp,
         AppRoute.Settings(AppArea.Dns), AppRoute.Settings(AppArea.Usb), AppRoute.About, AppRoute.Permissions, AppRoute.AdbInstructions
     )
     // Global navigation is independently saveable, including its empty state and caller links.

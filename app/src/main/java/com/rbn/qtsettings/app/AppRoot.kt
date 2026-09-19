@@ -33,6 +33,7 @@ import com.rbn.qtsettings.feature.dns.presentation.DnsDialogsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsRoot
 import com.rbn.qtsettings.feature.dns.presentation.DnsSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.NotificationDialogsRoot
+import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutHelpRoot
 import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSection
 import com.rbn.qtsettings.feature.shortcuts.presentation.ShortcutSettingsRoot
 import com.rbn.qtsettings.feature.usb.presentation.UsbSettingsRoot
@@ -130,11 +131,14 @@ fun AppRoot(
                 }
             } else if (route is AppRoute.Shortcuts) {
                 ShortcutSettingsRoot(shortcutViewModelFactory,
-                    Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                    onOpenHelp = { navigation.open(AppDestination.ShortcutHelp) },
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                     initialSection = if (!route.focusOrigin) null else when (route.origin) {
                         AppArea.Dns -> ShortcutSection.Dns
                         AppArea.Usb -> ShortcutSection.Usb
                     })
+            } else if (route == AppRoute.ShortcutHelp) {
+                ShortcutHelpRoot(shortcutViewModelFactory, showPermissionHelp, Modifier.fillMaxSize())
             } else if (route == AppRoute.Permissions) {
                 PermissionSettingsRoot(
                     viewModel, onOpenAdb = { navigation.open(AppDestination.AdbInstructions) },

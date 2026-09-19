@@ -8,8 +8,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun ShortcutSettingsRoot(factory: ViewModelProvider.Factory, modifier: Modifier = Modifier, initialSection: ShortcutSection? = null) {
+fun ShortcutSettingsRoot(
+    factory: ViewModelProvider.Factory,
+    onOpenHelp: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialSection: ShortcutSection? = null
+) {
     val viewModel: ShortcutSettingsViewModel = viewModel(factory = factory)
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ShortcutSettingsScreen(state, viewModel::onAction, modifier, initialSection)
+    ShortcutSettingsScreen(state, viewModel::onAction, onOpenHelp, modifier, initialSection)
 }

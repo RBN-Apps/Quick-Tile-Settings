@@ -30,6 +30,7 @@ sealed interface AppRoute : NavKey {
     @Serializable @SerialName("dns") data object Dns : AppRoute
     @Serializable @SerialName("usb") data object Usb : AppRoute
     @Serializable @SerialName("shortcuts") data class Shortcuts(val origin: AppArea, val focusOrigin: Boolean = false) : AppRoute
+    @Serializable @SerialName("shortcut_help") data object ShortcutHelp : AppRoute
     @Serializable @SerialName("permissions") data object Permissions : AppRoute
     @Serializable @SerialName("adb_instructions") data object AdbInstructions : AppRoute
     @Serializable @SerialName("about") data object About : AppRoute
@@ -52,6 +53,7 @@ internal val AppNavigationSavedState = SavedStateConfiguration {
             subclass(AppRoute.Dns.serializer())
             subclass(AppRoute.Usb.serializer())
             subclass(AppRoute.Shortcuts.serializer())
+            subclass(AppRoute.ShortcutHelp.serializer())
             subclass(AppRoute.Settings.serializer())
             subclass(AppRoute.About.serializer())
             subclass(AppRoute.Permissions.serializer())
@@ -63,6 +65,7 @@ internal val AppNavigationSavedState = SavedStateConfiguration {
 internal val AppRoute.destination: AppDestination get() = when (this) {
     AppRoute.Dns, AppRoute.Usb -> AppDestination.TileSettings
     is AppRoute.Shortcuts -> AppDestination.ShortcutSettings
+    AppRoute.ShortcutHelp -> AppDestination.ShortcutHelp
     is AppRoute.Settings -> AppDestination.AppSettings
     AppRoute.About -> AppDestination.About
     AppRoute.Permissions -> AppDestination.Permissions

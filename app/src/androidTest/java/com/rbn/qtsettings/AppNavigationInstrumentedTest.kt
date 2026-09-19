@@ -65,6 +65,7 @@ class AppNavigationInstrumentedTest {
                             AppRoute.About -> "About"
                             is AppRoute.Settings -> "${route.origin} settings"
                             is AppRoute.Shortcuts -> "${route.origin} shortcuts"
+                            AppRoute.ShortcutHelp -> "Shortcut help"
                         })
                         Text("Owner ${owner.id}")
                         BasicTextField(draft, { draft = it }, Modifier.testTag("draft"))

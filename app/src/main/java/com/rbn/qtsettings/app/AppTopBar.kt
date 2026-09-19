@@ -48,6 +48,7 @@ fun AppTopBar(
 
 private val AppDestination.title: Int get() = when (this) {
     AppDestination.ShortcutSettings -> R.string.shortcut_settings_title
+    AppDestination.ShortcutHelp -> R.string.shortcut_help_title
     AppDestination.AppSettings -> R.string.app_settings_title
     AppDestination.Permissions -> R.string.menu_permission_help
     AppDestination.AdbInstructions -> R.string.adb_instructions_title

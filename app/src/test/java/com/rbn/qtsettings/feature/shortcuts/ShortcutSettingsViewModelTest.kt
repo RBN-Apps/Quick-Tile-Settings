@@ -16,7 +16,7 @@ import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class ShortcutSettingsViewModelTest {
-    @Test fun dialogAndExpansionRestore_withoutApplyingPinnedWarning() {
+    @Test fun dialogRestores_withoutApplyingPinnedWarning() {
         val settings = FakeSettings()
         val saved = SavedStateHandle()
         val providers = MutableStateFlow(emptyList<DnsHostnameEntry>())
@@ -24,14 +24,12 @@ class ShortcutSettingsViewModelTest {
         val owners = ViewModelStore()
         owners.put("first", vm)
         try {
-            vm.onAction(ShortcutSettingsAction.ToggleInfo)
             vm.onAction(ShortcutSettingsAction.ShowDialog(ShortcutDialog.PinnedWarning))
             shadowOf(Looper.getMainLooper()).idle()
             val restored = ShortcutSettingsViewModel(settings, providers,
                 SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) }))
             owners.put("restored", restored)
             assertEquals(ShortcutDialog.PinnedWarning, restored.state.value.dialog)
-            assertTrue(restored.state.value.infoExpanded)
             restored.onAction(ShortcutSettingsAction.DismissDialog)
             assertFalse(settings.state.value.allowPinnedWhenDisabled)
             restored.onAction(ShortcutSettingsAction.SetPinnedFallback(true))

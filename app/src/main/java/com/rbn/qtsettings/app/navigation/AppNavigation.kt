@@ -64,6 +64,7 @@ class AppNavigation internal constructor(
             AppDestination.DnsRevert -> if (canOpenDns) AppRoute.DnsRevert else return
             AppDestination.TileSettings -> return
             AppDestination.ShortcutSettings -> AppRoute.Shortcuts(area)
+            AppDestination.ShortcutHelp -> AppRoute.ShortcutHelp
             AppDestination.AppSettings -> AppRoute.Settings(area)
             AppDestination.About -> AppRoute.About
             AppDestination.Permissions -> AppRoute.Permissions
@@ -73,7 +74,8 @@ class AppNavigation internal constructor(
             AppDestination.UsbRevert -> if (area == AppArea.Usb) AppRoute.UsbRevert else return
         }
         val targetStack = if (route is AppRoute.Shortcuts || route is AppRoute.Settings ||
-            route == AppRoute.About || route == AppRoute.Permissions || route == AppRoute.AdbInstructions)
+            route == AppRoute.About || route == AppRoute.Permissions || route == AppRoute.AdbInstructions ||
+            route == AppRoute.ShortcutHelp)
             globalStack else activeStack
         if (targetStack === globalStack) {
             val existing = targetStack.indexOf(route)

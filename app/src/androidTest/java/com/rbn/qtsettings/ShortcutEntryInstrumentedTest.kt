@@ -60,19 +60,35 @@ class ShortcutEntryInstrumentedTest {
         compose.onNodeWithText(label(R.string.usb_menu_tile)).performScrollTo().assertIsDisplayed()
     }
 
-    @Test fun globalEntry_expandedInfoAndSettingsRemainScrollable() {
+    @Test fun globalEntry_explanationOpensFromOverview_andBackKeepsTheList() {
         compose.navigateToShortcutSettings(context)
         val pinnedFallback = label(R.string.shortcut_settings_allow_pinned_when_disabled)
         compose.onNodeWithText(pinnedFallback).assertIsDisplayed()
         assertGlobalCounts()
+        compose.onNodeWithText(label(R.string.shortcut_help_title)).performScrollTo().performClick()
+        compose.onNodeWithText(label(R.string.shortcut_help_intro)).assertIsDisplayed()
+        compose.onNodeWithText(label(R.string.shortcut_help_step_pin_title)).performScrollTo().assertIsDisplayed()
         val config = AppStores.getInstance(context).shortcuts.state.value
-        compose.onNodeWithText(context.getString(R.string.shortcut_settings_limit,
-            config.enabledIds.size, config.maxCount)).performClick()
-        val description = context.getString(R.string.shortcut_settings_description, config.maxCount,
-            ShortcutCatalog.MAX_FAVORITE_SHORTCUTS)
-        compose.onNodeWithText(description).assertExists()
-        compose.onNodeWithText(pinnedFallback).performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText(description).performScrollTo().assertIsDisplayed().performClick()
-        compose.onNodeWithText(description).assertDoesNotExist()
+        // The device-dependent limit and the favorite count are named in the explanation itself.
+        compose.onNodeWithText(context.getString(R.string.shortcut_settings_description, config.maxCount,
+            ShortcutCatalog.MAX_FAVORITE_SHORTCUTS)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(label(R.string.shortcut_help_launcher_note)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithContentDescription(label(R.string.navigate_back_desc)).performClick()
+        compose.onNodeWithText(pinnedFallback).assertIsDisplayed()
+        assertGlobalCounts()
+    }
+
+    @Test fun explanation_survivesRecreation_andLinksToPermissionSetup() {
+        compose.navigateToShortcutSettings(context)
+        compose.onNodeWithText(label(R.string.shortcut_help_title)).performScrollTo().performClick()
+        compose.activityRule.scenario.recreate()
+        compose.onNodeWithText(label(R.string.shortcut_help_intro)).assertIsDisplayed()
+        // The rail may show the same page title, so the row is addressed by its summary.
+        compose.onNodeWithText(label(R.string.shortcut_help_permission_summary)).performScrollTo().performClick()
+        compose.onNodeWithText(label(R.string.permission_page_explanation)).assertIsDisplayed()
+        compose.onNodeWithContentDescription(label(R.string.navigate_back_desc)).performClick()
+        // Back returns to the explanation at the position it was left at.
+        compose.onNodeWithText(label(R.string.shortcut_help_permission_summary)).assertIsDisplayed()
+        compose.onNodeWithText(label(R.string.shortcut_help_intro)).performScrollTo().assertIsDisplayed()
     }
 }

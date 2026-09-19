@@ -22,7 +22,7 @@ private fun ShortcutSettingsPreview() {
                     configuration = ShortcutConfiguration(5, setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF),
                         setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF)),
                     dnsItems = buildPrivateDnsShortcutItems(DnsHostnamePolicy.defaultHostnames())
-                ), onAction = {}
+                ), onAction = {}, onOpenHelp = {}
             )
         }
     }
@@ -39,6 +39,15 @@ private fun QuickActionsPreview() {
     }
 }
 
+@Preview(showBackground = true, locale = "en", heightDp = 900)
+@Preview(showBackground = true, locale = "de", uiMode = Configuration.UI_MODE_NIGHT_YES, heightDp = 1100, fontScale = 1.3f)
+@Composable
+private fun ShortcutHelpPreview() {
+    QuickTileSettingsTheme {
+        Surface { ShortcutHelpScreen(maxShortcutCount = 5, onPermissionHelp = {}) }
+    }
+}
+
 @Preview(showBackground = true, locale = "de", heightDp = 800)
 @Composable
 private fun UsbShortcutEntryPreview() {
@@ -49,7 +58,7 @@ private fun UsbShortcutEntryPreview() {
                     configuration = ShortcutConfiguration(15, setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF,
                         ShortcutCatalog.SHORTCUT_ID_USB_ON), setOf(ShortcutCatalog.SHORTCUT_ID_DNS_OFF)),
                     dnsItems = buildPrivateDnsShortcutItems(DnsHostnamePolicy.defaultHostnames())
-                ), onAction = {}, initialSection = ShortcutSection.Usb
+                ), onAction = {}, onOpenHelp = {}, initialSection = ShortcutSection.Usb
             )
         }
     }
