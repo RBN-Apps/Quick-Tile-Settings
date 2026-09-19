@@ -78,6 +78,68 @@ class AppNavigationRailInstrumentedTest {
     private fun draft(value: String) { compose.onNodeWithTag("draft").performTextReplacement(value) }
     private fun assertDraft(value: String) { compose.onNodeWithTag("draft").assertTextEquals(value) }
 
+    @Test fun compactRail_followsFingerBeforeRelease_andCanBeDraggedBack() {
+        show()
+        draft("Keep this draft")
+        val screen = compose.onNodeWithTag("screen")
+        fun sheetRight() = compose.onNodeWithTag("modal_navigation_sheet")
+            .fetchSemanticsNode().boundsInRoot.right
+
+        // Start well inside the screen, keep the pointer down across frames, and inspect
+        // actual placement. A swipe-end callback or animated opening cannot satisfy this.
+        screen.performTouchInput {
+            down(Offset(90f, centerY))
+            moveBy(Offset(120f, 0f), delayMillis = 300)
+        }
+        val firstRight = sheetRight()
+        assertTrue("Rail must already be partially revealed", firstRight in 1f..120f)
+        compose.onNodeWithTag("navigation_area_Dns").assertExists()
+        compose.mainClock.advanceTimeBy(300)
+        assertEquals("Holding the finger must hold the rail", firstRight, sheetRight(), 1f)
+
+        screen.performTouchInput { moveBy(Offset(40f, 0f), delayMillis = 300) }
+        assertEquals("Rail must follow the finger 1:1", firstRight + 40f, sheetRight(), 1f)
+        screen.performTouchInput { moveBy(Offset(-90f, 0f), delayMillis = 300) }
+        assertEquals("Reversing must pull the rail back", firstRight - 50f, sheetRight(), 1f)
+        screen.performTouchInput {
+            advanceEventTime(300)
+            up()
+        }
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        assertDraft("Keep this draft")
+    }
+
+    @Test fun compactSwipeFromContent_opensRail_andBackDismissesBeforeDetail() {
+        show()
+        compose.onNodeWithText("Edit settings").performClick()
+        compose.onNodeWithTag("screen").performTouchInput {
+            swipe(Offset(80f, centerY), Offset(380f, centerY), durationMillis = 600)
+        }
+        compose.onNodeWithTag("modal_navigation_open").assertExists()
+        compose.onNodeWithTag("navigation_area_Dns").assertIsDisplayed().assertIsSelected()
+        Espresso.pressBack()
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        icon(R.string.navigate_back_desc).assertIsDisplayed()
+    }
+
+    @Test fun railOpeningGesture_onlyAppliesToCompactHorizontalDrags() {
+        show()
+        compose.onNodeWithTag("screen").performTouchInput { swipeUp() }
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        compose.onNodeWithTag("screen").performTouchInput { swipeLeft() }
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        for (layoutWidth in listOf(700, 1000)) {
+            resize(layoutWidth)
+            val rail = compose.onNodeWithTag("persistent_navigation_rail")
+            val before = rail.fetchSemanticsNode().boundsInRoot
+            compose.onNodeWithTag("screen").performTouchInput {
+                swipe(Offset(30f, centerY), Offset(200f, centerY))
+            }
+            assertEquals(before, rail.fetchSemanticsNode().boundsInRoot)
+            compose.onNodeWithTag("modal_navigation_sheet").assertDoesNotExist()
+        }
+    }
+
     @Test fun resizeDefaultsAndManualToggle_preserveBothAreaStacksAndDrafts() {
         val restoration = StateRestorationTester(compose)
         show(restoration)

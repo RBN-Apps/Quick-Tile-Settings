@@ -15,8 +15,10 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,7 +26,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -53,25 +57,41 @@ fun AppNavigationScaffold(
         ModalNavigationDrawer(
             modifier = if (drawer.isOpen) Modifier.testTag("modal_navigation_open") else Modifier,
             drawerState = drawer,
-            gesturesEnabled = compact && drawer.isOpen,
+            gesturesEnabled = compact,
             drawerContent = {
                 if (compact) {
-                    val visible = drawer.currentValue == DrawerValue.Open || drawer.targetValue == DrawerValue.Open
-                    if (visible) {
+                    var sheetWidth by remember { mutableIntStateOf(0) }
+                    val visible by remember(drawer) {
+                        derivedStateOf {
+                            drawer.currentValue == DrawerValue.Open || drawer.targetValue == DrawerValue.Open ||
+                                (sheetWidth > 0 && drawer.currentOffset > -sheetWidth)
+                        }
+                    }
+                    val sheetModifier = Modifier.railWidth(expanded = true)
+                        .onSizeChanged { sheetWidth = it.width }
+                        .testTag("modal_navigation_sheet")
+                        .then(if (visible) Modifier else Modifier.clearAndSetSemantics { })
+                    val railContent: @Composable () -> Unit = {
+                        AppNavigationRail(true, true, headerHeight, selectedTarget,
+                            onToggle = { scope.launch { drawer.close() } },
+                            onSelectTarget = { target ->
+                                onSelectTarget(target)
+                                scope.launch { drawer.close() }
+                            })
+                    }
+                    val openingOrOpen = drawer.currentValue == DrawerValue.Open || drawer.targetValue == DrawerValue.Open
+                    if (openingOrOpen) {
                         // Register the modal back handler when opening, after the active Nav3
                         // entry's handler. It remains active throughout the closing animation.
-                        ModalDrawerSheet(drawer, Modifier.railWidth(expanded = true)) {
-                            AppNavigationRail(true, true, headerHeight, selectedTarget,
-                                onToggle = { scope.launch { drawer.close() } },
-                                onSelectTarget = { target ->
-                                    onSelectTarget(target)
-                                    scope.launch { drawer.close() }
-                                })
+                        ModalDrawerSheet(drawer, sheetModifier) {
+                            railContent()
                         }
                     } else {
-                        // Preserve the drawer's offscreen anchor without hidden focusable items
-                        // or a permanently registered handler that could precede a newer entry.
-                        ModalDrawerSheet(Modifier.railWidth(expanded = true)) { }
+                        // Measure the same content while closed so the drag anchor never jumps
+                        // when opening. Material leaves the closed sheet unplaced (no offscreen
+                        // focus targets) and reveals it from the first drag delta. Only the back
+                        // handler waits until opening, so it follows the active Nav3 entry.
+                        ModalDrawerSheet(sheetModifier) { railContent() }
                     }
                 }
             }
