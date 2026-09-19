@@ -5,28 +5,28 @@
     <string name="tile_label_private_dns">Privátní DNS</string>
     <string name="tile_label_usb_debugging">Ladění USB</string>
     <string name="dns_state_reverted_to">DNS vráceno na %1$s</string>
-    <string name="usb_state_reverted_to">USB ladění vráceno na %1$s</string>
+    <string name="usb_state_reverted_to">Ladění USB vráceno na %1$s</string>
     <string name="toast_developer_options_disabled_revert_cancelled">Možnosti pro vývojáře vypnuty. Obnovení USB zrušeno.</string>
-    <string name="tile_subtitle_reverting_in_seconds">Obnovení na %1$s v %2$d s…</string>
+    <string name="tile_subtitle_reverting_in_seconds">Návrat na %1$s za %2$d s…</string>
 
     <!-- DNS States -->
     <string name="dns_state_off">DNS vypnuto</string>
     <string name="dns_state_auto">DNS automaticky</string>
-    <string name="dns_state_on_with_host">DNS zapnuto (hostname)</string>
+    <string name="dns_state_on_with_host">DNS zapnuto (název hostitele)</string>
     <string name="dns_state_unknown">Neznámý stav DNS</string>
 
     <!-- USB Debugging States -->
-    <string name="usb_state_on">USB ladění zapnuto</string>
-    <string name="usb_state_off">USB ladění vypnuto</string>
+    <string name="usb_state_on">Ladění USB zapnuto</string>
+    <string name="usb_state_off">Ladění USB vypnuto</string>
     <string name="usb_dev_options_off">Možnosti pro vývojáře vypnuty</string>
 
     <!-- UI Settings Screen -->
-    <string name="setting_title_private_dns">Dlaždice Privátní DNS</string>
-    <string name="setting_title_usb_debugging">Dlaždice USB ladění</string>
-    <string name="setting_desc_tile_cycles">Vyber stavy pro přepínání dlaždice:</string>
+    <string name="setting_title_private_dns">Tlačítko Privátní DNS</string>
+    <string name="setting_title_usb_debugging">Tlačítko Ladění USB</string>
+    <string name="setting_desc_tile_cycles">Vyberte stavy, mezi kterými přepíná tlačítko v rychlém nastavení:</string>
     <string name="app_settings_title">Nastavení</string>
     <string name="tab_title_dns">Privátní DNS</string>
-    <string name="tab_title_usb">USB ladění</string>
+    <string name="tab_title_usb">Ladění USB</string>
 
     <!-- Toasts & Warnings -->
     <string name="toast_permission_not_granted_adb">Chybí oprávnění. Udělte jej prosím přes ADB.</string>
@@ -34,8 +34,8 @@
     <string name="toast_error_saving_settings">Chyba při ukládání nastavení.</string>
     <string name="toast_no_states_enabled_dns">Nejsou povoleny žádné stavy DNS pro přepínání.</string>
     <string name="toast_no_states_enabled_usb">Nejsou povoleny žádné stavy USB pro přepínání.</string>
-    <string name="toast_hostname_required">Pro zapnutí DNS je nutný hostname.</string>
-    <string name="warning_hostname_blank">Hostname nemůže být prázdný, pokud je zapnuto „DNS zapnuto“.</string>
+    <string name="toast_hostname_required">Pro zapnutí DNS zadejte název hostitele.</string>
+    <string name="warning_hostname_blank">Pokud je vybrán režim „DNS zapnuto“, název hostitele nesmí být prázdný.</string>
     <string name="warning_at_least_one_usb_option">Musí být povolen alespoň jeden stav USB.</string>
     <string name="toast_command_copied">Příkaz zkopírován!</string>
 
@@ -50,26 +50,26 @@
     <string name="dialog_close">Zavřít</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_desc">Standardní metoda vyžadující počítač s nastaveným ADB.</string>
+    <string name="permission_method_adb_desc">Standardní metoda vyžaduje počítač s nastaveným ADB.</string>
     <string name="button_show_adb_instructions">Zobrazit ADB instrukce</string>
     <string name="adb_instructions_title">ADB instrukce</string>
-    <string name="help_dialog_how_to_grant_via_adb">Spusť následující příkaz v terminálu:</string>
+    <string name="help_dialog_how_to_grant_via_adb">Spusťte tento příkaz v terminálu:</string>
     <string name="button_copy_grant_command">Kopírovat příkaz</string>
     <string name="button_copy_install_command">Kopírovat instalační příkaz</string>
-    <string name="help_dialog_apk_path_note">(Poznámka: Potřebuješ APK soubor. Při vlastním buildu bývá v app/build/outputs/apk/… nebo jej stáhneš z GitHubu.)</string>
+    <string name="help_dialog_apk_path_note">Potřebujete soubor APK. Pokud jste aplikaci sestavili sami, bývá v app/build/outputs/apk/… Můžete jej také stáhnout z GitHubu.</string>
     <string name="github_releases_link_text">Stáhnout nejnovější verzi z GitHubu</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="shizuku_ready_to_grant_desc">Shizuku je dostupné a aplikace má oprávnění jej použít. Můžeš zkusit udělit WRITE_SECURE_SETTINGS.</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku je dostupné a aplikace ho smí používat. Můžete nyní požádat o WRITE_SECURE_SETTINGS přes Shizuku.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
-    <string name="shizuku_not_available_detailed">Shizuku není dostupné nebo neběží. Nejprve jej nainstaluj a spusť.</string>
-    <string name="shizuku_permission_not_granted_to_app_detailed">Aplikace potřebuje oprávnění od Shizuku. Požádej o něj.</string>
+    <string name="shizuku_not_available_detailed">Shizuku není dostupné nebo neběží. Nejprve ho nainstalujte a spusťte.</string>
+    <string name="shizuku_permission_not_granted_to_app_detailed">Požádejte o oprávnění, aby tato aplikace mohla používat Shizuku.</string>
     <string name="button_request_shizuku_permission">Požádat o oprávnění Shizuku</string>
     <string name="button_grant_with_shizuku">Udělit přes Shizuku</string>
     <string name="shizuku_not_available">Shizuku není dostupné nebo neběží.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Této aplikaci nebylo uděleno oprávnění Shizuku. Nejprve jej prosím udělte prostřednictvím aplikace Shizuku nebo výzvy.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Povolte této aplikaci používat Shizuku v aplikaci Shizuku nebo v dialogu žádosti o oprávnění.</string>
     <string name="shizuku_permission_granted_to_app">Oprávnění Shizuku uděleno.</string>
     <string name="shizuku_permission_denied_to_app">Oprávnění Shizuku zamítnuto.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku není dostupné nebo připravené.</string>
@@ -80,44 +80,44 @@
     <string name="device_not_rooted">Zařízení není rootnuté.</string>
 
     <!-- Generic Permission Grant Results -->
-    <string name="permission_granted_shizuku_success">Oprávnění úspěšně uděleno přes Shizuku!</string>
-    <string name="permission_granted_shizuku_check_failed">Příkaz proběhl, ale kontrola selhala. Restartuj aplikaci.</string>
+    <string name="permission_granted_shizuku_success">Oprávnění uděleno přes Shizuku.</string>
+    <string name="permission_granted_shizuku_check_failed">Příkaz proběhl, ale kontrola oprávnění selhala. Restartujte aplikaci.</string>
     <string name="permission_granted_shizuku_fail">Nepodařilo se udělit oprávnění přes Shizuku. Kód: %1$d</string>
     <string name="permission_granted_shizuku_error">Chyba při udělování přes Shizuku: %1$s</string>
-    <string name="permission_granted_root_success">Oprávnění úspěšně uděleno přes root!</string>
-    <string name="permission_granted_root_check_failed">Root příkaz proběhl, ale kontrola selhala. Restartuj aplikaci.</string>
+    <string name="permission_granted_root_success">Oprávnění uděleno přes root.</string>
+    <string name="permission_granted_root_check_failed">Příkaz přes root proběhl, ale kontrola oprávnění selhala. Restartujte aplikaci.</string>
     <string name="permission_granted_root_fail">Nepodařilo se udělit oprávnění přes root. Kód: %1$d</string>
     <string name="permission_granted_root_error">Chyba při udělování přes root: %1$s</string>
 
     <!-- Permission Warning Card -->
-    <string name="warning_permission_missing_title">Chybí oprávnění!</string>
+    <string name="warning_permission_missing_title">Chybí oprávnění</string>
     <string name="warning_permission_missing_desc">Aplikace vyžaduje oprávnění WRITE_SECURE_SETTINGS. Prosím udělte jej pomocí jedné z nabízených metod.</string>
     <string name="button_show_permission_help">Zobrazit možnosti udělení</string>
-    <string name="warning_developer_options_disabled_config">Možnosti pro vývojáře jsou vypnuté. USB ladění nelze nastavit.</string>
+    <string name="warning_developer_options_disabled_config">Možnosti pro vývojáře jsou vypnuté. Ladění USB nelze nastavit.</string>
 
     <string name="setting_require_unlock">Pro přepnutí vyžadovat odemčení zařízení</string>
-    <string name="setting_require_unlock_desc">Pokud je tato možnost povolena, dlaždice vás před provedením jakýchkoli změn vyzve k odemčení zařízení.</string>
+    <string name="setting_require_unlock_desc">Před změnou nastavení pomocí tlačítka v rychlém nastavení vyžaduje odemčení zařízení.</string>
 
-    <string name="setting_also_hide_dev_options">Také přepnout Možnosti pro vývojáře</string>
-    <string name="setting_also_hide_dev_options_desc">Při zapnutí této volby bude přepnutí USB ladění zároveň zapínat nebo vypínat Možnosti pro vývojáře.</string>
-    <string name="setting_also_disable_wireless_debugging">Také přepínat Bezdrátové ladění</string>
-    <string name="setting_also_disable_wireless_debugging_desc">Pokud je zapnuto, Bezdrátové ladění se bude přepínat spolu s USB laděním.</string>
-    <string name="usb_set_active_mode">Nastavit %1$s jako aktivní USB debugovací stav</string>
+    <string name="setting_also_hide_dev_options">Přepínat i možnosti pro vývojáře</string>
+    <string name="setting_also_hide_dev_options_desc">Zapíná a vypíná možnosti pro vývojáře spolu s laděním USB.</string>
+    <string name="setting_also_disable_wireless_debugging">Přepínat i bezdrátové ladění</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Přepíná bezdrátové ladění spolu s laděním USB.</string>
+    <string name="usb_set_active_mode">Nastavit stav ladění USB na %1$s</string>
     
     <string name="setting_enable_auto_revert">Povolit automatické obnovení po prodlevě</string>
     <string name="setting_auto_revert_delay">Prodleva obnovení (sekundy)</string>
     <string name="toast_reverting_dns_to">Obnovení DNS na \n\"%1$s\" za %2$d s…</string>
-    <string name="toast_reverting_usb_to">Obnovení USB ladění na %1$s za %2$d s…</string>
+    <string name="toast_reverting_usb_to">Ladění USB se vrátí na %1$s za %2$d s…</string>
     <string name="toast_revert_cancelled">Automatické obnovení zrušeno.</string>
     <string name="on_state">Zapnuto</string>    
     <string name="off_state">Vypnuto</string>
     <string name="auto_state">Automaticky</string>
 
-    <string name="dns_select_hostnames_for_cycle">Vyber hostname pro přepínání:</string>
+    <string name="dns_select_hostnames_for_cycle">Poskytovatelé DNS</string>
     <string name="dns_sort_content_description">Zvolit třídění DNS seznamu</string>
-    <string name="dns_sort_manual">Manual</string>
+    <string name="dns_sort_manual">Ručně</string>
     <string name="dns_sort_alphabetical">Abecední (A–Z)</string>
-    <string name="dns_manual_reorder_hint">Ťukni a podrž ikonu vedle pro přemístění pořadí DNS.</string>
+    <string name="dns_manual_reorder_hint">Podržte úchyt a přetažením změňte pořadí DNS.</string>
     <string name="dns_move_up">Nahoru</string>
     <string name="dns_move_down">Dolů</string>
     <string name="dns_reorder_entry">Přemístit %1$s (%2$s)</string>
@@ -126,20 +126,20 @@
     <string name="dns_set_active">Nastavit jako aktivní DNS</string>
     <string name="dns_active">Aktivní DNS</string>
     <string name="dns_custom_entry_badge">Vlastní DNS</string>
-    <string name="dns_add_custom_hostname_button">Přidat vlastní hostname</string>
-    <string name="dns_edit_hostname_title">Upravit hostname</string>
-    <string name="dns_add_hostname_title">Přidat hostname</string>
+    <string name="dns_add_custom_hostname_button">Přidat vlastní název hostitele</string>
+    <string name="dns_edit_hostname_title">Upravit název hostitele</string>
+    <string name="dns_add_hostname_title">Přidat název hostitele</string>
     <string name="dns_hostname_name_label">Zobrazovaný název</string>
-    <string name="dns_hostname_value_label">Hostname (např. dns.example.com)</string>
+    <string name="dns_hostname_value_label">Název hostitele (např. dns.example.com)</string>
     <string name="dialog_save">Uložit</string>
     <string name="dialog_cancel">Zrušit</string>
     <string name="button_edit">Upravit</string>
     <string name="button_delete">Smazat</string>
     <string name="error_hostname_name_empty">Zobrazovaný název nemůže být prázdný.</string>
-    <string name="error_hostname_value_empty">Hostname nemůže být prázdný.</string>
-    <string name="error_hostname_value_invalid">Vyplňte platný DNS hostname.</string>
-    <string name="confirm_delete_hostname_title">Smazat hostname?</string>
-    <string name="confirm_delete_hostname_message">Opravdu chceš smazat \'%1$s\'?</string>
+    <string name="error_hostname_value_empty">Název hostitele nesmí být prázdný.</string>
+    <string name="error_hostname_value_invalid">Zadejte platný název hostitele DNS.</string>
+    <string name="confirm_delete_hostname_title">Smazat název hostitele?</string>
+    <string name="confirm_delete_hostname_message">Opravdu chcete smazat „%1$s“?</string>
 
     <!-- DNS Info Dialogs -->
     <string name="dns_info_dialog_title">O %1$s</string>
@@ -150,13 +150,13 @@
 
     <!-- About Dialog -->
     <string name="about_version">Verze %1$s</string>
-    <string name="about_description">QuickTile Settings přidává praktické dlaždice do panelu rychlých nastavení.</string>
+    <string name="about_description">QuickTile Settings přidává tlačítka do panelu rychlého nastavení.</string>
     <string name="about_features_title">Funkce</string>
     <string name="about_developer_info">Vyvinuto RBN-Apps\nOpen source projekt na GitHubu</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Záloha a obnovení</string>
-    <string name="settings_backup_description">Exportuje všechna nastavení dlaždic, DNS záznamy, automatizace a konfiguraci zkratek do souboru JSON. Obnovení nahradí aktuální nastavení aplikace vybranou zálohou.</string>
+    <string name="settings_backup_description">Exportujte všechna nastavení tlačítek, DNS záznamy, automatizace a nastavení zkratek do souboru JSON. Obnovení nahradí aktuální nastavení aplikace vybranou zálohou.</string>
     <string name="backup_export_button">Exportovat zálohu</string>
     <string name="backup_restore_button">Obnovit zálohu</string>
     <string name="backup_restore_confirm_title">Obnovit zálohu?</string>
@@ -173,27 +173,27 @@
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">Sledování VPN</string>
-    <string name="vpn_monitoring_channel_description">Sleduje VPN a upravuje nastavení Privátní DNS</string>
+    <string name="vpn_monitoring_channel_description">Sleduje VPN a upravuje nastavení privátního DNS</string>
     <string name="vpn_monitoring_notification_title">Sledování VPN aktivní</string>
-    <string name="vpn_monitoring_status_connected">VPN připojena – DNS vypnuto</string>
-    <string name="vpn_monitoring_status_disconnected">VPN odpojena – DNS obnoveno</string>
+    <string name="vpn_monitoring_status_connected">VPN připojena. DNS vypnuto</string>
+    <string name="vpn_monitoring_status_disconnected">VPN odpojena. DNS obnoveno</string>
 
     <!-- Notification Permission Dialog -->
     <string name="notification_permission_background_title">Povolit oznámení pro detekci na pozadí?</string>
     <string name="notification_permission_background_message">Detekce na pozadí funguje i bez oprávnění k oznámením. Povolte je, pokud chcete průběžný stav sledování zobrazovat v oznamovací oblasti; jinak Android zobrazí službu pouze mezi aktivními aplikacemi.</string>
     <string name="notification_permission_import_title">Povolit oznámení pro detekci na pozadí?</string>
     <string name="notification_permission_import_message">Importovaná záloha zapíná detekci změn VPN nebo sítě na pozadí. Funguje i bez oprávnění k oznámením; povolte je pouze pro zobrazení průběžného stavu v oznamovací oblasti.</string>
-    <string name="notification_permission_fallback_title">Přístup k oznámením nebyl udělen</string>
+    <string name="notification_permission_fallback_title">Oznámení nejsou povolena</string>
     <string name="notification_permission_fallback_message">Detekce na pozadí bude pokračovat. Stav se nezobrazí v oznamovací oblasti, ale Android službu stále ukáže mezi aktivními aplikacemi.</string>
     <string name="notification_permission_grant_button">Udělit oprávnění</string>
     <string name="notification_permission_continue_button">Pokračovat bez oznámení</string>
-    <string name="notification_permission_settings_title">Přístup k oznámením je vypnutý</string>
-    <string name="notification_permission_settings_message">Detekce na pozadí bude pokračovat bez stavu v oznamovací oblasti. Chcete-li jej zobrazit, povolte oznámení v nastavení aplikace.</string>
+    <string name="notification_permission_settings_title">Oznámení jsou vypnutá</string>
+    <string name="notification_permission_settings_message">Detekce na pozadí pokračuje, ale její stav se v oznamovací oblasti nezobrazuje. Pro jeho zobrazení povolte oznámení v nastavení aplikace.</string>
     <string name="notification_permission_settings_button">Otevřít nastavení</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Automaticky přepínat DNS podle typu sítě</string>
-    <string name="setting_network_type_detection_description">Automaticky mění soukromé DNS při přechodu mezi Wi-Fi a mobilními daty. Zapněte tuto možnost také pro nastavení pravidel jednotlivých sítí Wi-Fi nebo přístupových bodů.</string>
+    <string name="setting_network_type_detection_description">Automaticky mění privátní DNS při přechodu mezi Wi-Fi a mobilními daty. Zapněte tuto možnost také pro nastavení pravidel jednotlivých sítí Wi-Fi nebo přístupových bodů.</string>
     <string name="setting_network_type_detection_mode">Režim detekce sítě:</string>
 
 
@@ -201,11 +201,11 @@
     <string name="dns_mode_auto_label">Automaticky</string>
 
     <string name="network_type_info_title">Detekce typu sítě</string>
-    <string name="network_type_info_message">Tato funkce automaticky přepíná nastavení privátního DNS na základě toho, zda jste připojeni k Wi-Fi nebo mobilním datům. Funguje také při aktivní VPN, protože rozpozná podkladové připojení Wi-Fi nebo mobilní data.\n\nPriorita VPN: Pokud je detekce VPN aktivována samostatně, má prioritu a DNS bude při aktivní VPN vypnuto.\n\nPříklad použití: Pokud váš domácí WiFi router používá NextDNS, nastavte „DNS na Wi-Fi“ na Vypnuto. Nastavte „DNS na mobilních datech“ na Automaticky nebo konkrétní název hostitele pro ochranu v mobilních sítích.</string>
+    <string name="network_type_info_message">Aplikace mění nastavení privátního DNS při přechodu mezi Wi-Fi a mobilními daty. Rozpozná i připojení Wi-Fi nebo mobilní data, které používá aktivní VPN.\n\nPokud samostatně zapnete detekci VPN, má přednost a po dobu připojení k VPN vypne privátní DNS.\n\nPokud například váš domácí Wi-Fi router používá NextDNS, nastavte „DNS na Wi-Fi“ na Vypnuto. Pro mobilní data zvolte Automaticky nebo konkrétní název hostitele.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Sledování typu sítě</string>
-    <string name="network_monitoring_channel_description">Sleduje změny sítě a upravuje Privátní DNS</string>
+    <string name="network_monitoring_channel_description">Sleduje změny sítě a upravuje privátní DNS</string>
     <string name="network_monitoring_notification_title">Sledování sítě aktivní</string>
     <string name="network_type_wifi">Připojeno k Wi-Fi</string>
     <string name="network_type_mobile">Připojeno k mobilním datům</string>
@@ -213,26 +213,26 @@
     <string name="network_type_unknown">Neznámý typ sítě</string>
 
     <!-- App Shortcuts -->
-    <string name="shortcut_dns_off_short">Vypnout DNS</string>
-    <string name="shortcut_dns_off_long">Zakáže soukromou DNS</string>
+    <string name="shortcut_dns_off_short">DNS vypnuto</string>
+    <string name="shortcut_dns_off_long">Vypnout privátní DNS</string>
     <string name="shortcut_dns_auto_short">DNS Auto</string>
-    <string name="shortcut_dns_auto_long">Povolí soukromou DNS (Auto)</string>
+    <string name="shortcut_dns_auto_long">Zapnout privátní DNS (automaticky)</string>
     <string name="shortcut_dns_adguard_short">AdGuard DNS</string>
-    <string name="shortcut_dns_adguard_long">Povolí AdGuard DNS</string>
+    <string name="shortcut_dns_adguard_long">Zapnout AdGuard DNS</string>
     <string name="shortcut_dns_cloudflare_short">Cloudflare DNS</string>
-    <string name="shortcut_dns_cloudflare_long">Povolí Cloudflare DNS</string>
+    <string name="shortcut_dns_cloudflare_long">Zapnout Cloudflare DNS</string>
     <string name="shortcut_dns_quad9_short">Quad9 DNS</string>
-    <string name="shortcut_dns_quad9_long">Povolí Quad9 DNS</string>
-    <string name="shortcut_usb_on_short">Zapne USB debugování</string>
-    <string name="shortcut_usb_on_long">Povolí USB Debugging</string>
-    <string name="shortcut_usb_off_short">Vypne USB debugování</string>
-    <string name="shortcut_usb_off_long">Zakáže USB debugování</string>
-    <string name="shortcut_dns_custom_long">Povolí DNS: %1$s</string>
-    <string name="shortcut_toast_dns_off">Zakáže soukromou DNS</string>
-    <string name="shortcut_toast_dns_auto">Soukromou DNS nastaví na Auto</string>
-    <string name="shortcut_toast_dns_hostname">Soukromou DNS nastaví na %1$s</string>
-    <string name="shortcut_toast_usb_on">USB debugování povoleno</string>
-    <string name="shortcut_toast_usb_off">USB debugování zakázáno</string>
+    <string name="shortcut_dns_quad9_long">Zapnout Quad9 DNS</string>
+    <string name="shortcut_usb_on_short">Ladění USB zapnuto</string>
+    <string name="shortcut_usb_on_long">Zapnout ladění USB</string>
+    <string name="shortcut_usb_off_short">Ladění USB vypnuto</string>
+    <string name="shortcut_usb_off_long">Vypnout ladění USB</string>
+    <string name="shortcut_dns_custom_long">Zapnout DNS: %1$s</string>
+    <string name="shortcut_toast_dns_off">Privátní DNS vypnuto</string>
+    <string name="shortcut_toast_dns_auto">Privátní DNS nastaveno na automatický režim</string>
+    <string name="shortcut_toast_dns_hostname">Privátní DNS nastaveno na %1$s</string>
+    <string name="shortcut_toast_usb_on">Ladění USB zapnuto</string>
+    <string name="shortcut_toast_usb_off">Ladění USB vypnuto</string>
     <string name="shortcut_toast_permission_missing">Chybí oprávnění. Spusťte aplikaci a udělte jí oprávnění.</string>
     <string name="shortcut_toast_action_disabled">Akce zkratky je deaktivována. Nejprve ji v aplikaci povolte.</string>
     <string name="shortcut_toast_action_unavailable">Akce zkratky již není k dispozici. Zkontrolujte nastavení aplikace.</string>
@@ -240,26 +240,26 @@
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Zkratky akcí</string>
-    <string name="shortcut_settings_description">Vyberte, které akce se mají zobrazovat jako zkratky v aplikaci pro Android. Lze je používat z launcherů, v aplikaci Samsung Routines, v Taskeru nebo jako připnuté zkratky na domovské obrazovce.\n\nSystém Android omezuje počet dynamických zkratek viditelných v launcheru pro tuto aktivitu aplikace na %1$d, takže zde lze současně aktivovat pouze %1$d akcí.\n\nPomocí ikony hvězdičky můžete označit až %2$d aktivních akcí jako oblíbené. Oblíbené položky se zobrazují s nejvyšší prioritou a je větší pravděpodobnost, že se objeví jako první v nabídkách zkratek spouštěče. Zakázané akce nelze označit jako oblíbené.\n\nVe výchozím nastavení jsou zakázané akce zcela blokovány a aplikace je již nemůže provádět. Tuto možnost níže povolte pouze v případě, že chcete, aby již připnuté zkratky fungovaly i poté, co je zde zakážete.</string>
+    <string name="shortcut_settings_description">Vyberte akce, které chcete používat jako zkratky Androidu. Můžete je spouštět z launcheru, Samsung Routines nebo Taskeru, případně je připnout na domovskou obrazovku.\n\nAndroid povoluje v launcheru současně až %1$d dynamických zkratek této aplikace. V seznamu zkratek proto můžete zapnout nejvýše %1$d akcí.\n\nPomocí hvězdičky označte až %2$d aktivních akcí jako oblíbené. Mají nejvyšší prioritu, takže je launcher s větší pravděpodobností zobrazí na začátku nabídky zkratek. Zakázané akce nelze přidat do oblíbených.\n\nZakázané akce jsou ve výchozím nastavení blokovány. Pokud mají již připnuté zkratky fungovat i po vypnutí v seznamu zkratek, zapněte tam možnost „Povolit zakázané připnuté zkratky“.</string>
     <string name="shortcut_settings_limit">Aktivní zkratky: %1$d / %2$d</string>
     <string name="shortcut_settings_limit_reached_title">Limit zkratek dosažen</string>
-    <string name="shortcut_settings_limit_reached">Limit zkratek dosažen. Nejdív některou odeberte.</string>
-    <string name="shortcut_settings_favorite_limit_reached_title">Limit oblibených dosažen</string>
-    <string name="shortcut_settings_favorite_limit_reached">Můžeš označit až 4 oblíbené zkratky.</string>
+    <string name="shortcut_settings_limit_reached">Limit zkratek dosažen. Nejprve vypněte jinou akci.</string>
+    <string name="shortcut_settings_favorite_limit_reached_title">Limit oblíbených dosažen</string>
+    <string name="shortcut_settings_favorite_limit_reached">Můžete označit až 4 oblíbené zkratky.</string>
     <string name="shortcut_settings_allow_pinned_when_disabled">Povolit zakázané připnuté zkratky</string>
     <string name="shortcut_settings_allow_pinned_when_disabled_desc">Pokud je tato funkce zapnutá, zkratky, které již byly připnuty nebo spuštěny externě, mohou běžet i poté, co je zde vypnete.</string>
-    <string name="shortcut_settings_allow_pinned_info_desc">Zobrazit detaily o zákazaných připnutých zkratkách</string>
+    <string name="shortcut_settings_allow_pinned_info_desc">Zobrazit podrobnosti o zakázaných připnutých zkratkách</string>
     <string name="shortcut_settings_allow_pinned_warning_title">Povolit zakázané zkratky?</string>
-    <string name="shortcut_settings_allow_pinned_warning_message">Povolení této funkce oslabuje výchozí bezpečnostní chování. Zakázané akce zkratek mohou být i nadále spouštěny, pokud jsou spuštěny externě nebo ze zkratek, které již byly dříve připnuty.\n\nTo je užitečné zejména v případě, že chcete i nadále používat více akcí, než kolik Android povoluje jako současně aktivní zkratky.</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Zakázané akce jsou běžně blokovány. S touto možností je mohou jiné aplikace a již připnuté zkratky stále spouštět.\n\nMůžete tak používat více akcí, než kolik Android povoluje aktivních zkratek současně.</string>
     <string name="shortcut_settings_allow_pinned_warning_confirm">I tak povolit</string>
     <string name="shortcut_settings_mark_favorite_desc">Označit %1$s jako oblíbené</string>
     <string name="shortcut_settings_remove_favorite_desc">Odstranit %1$s z oblíbených</string>
     <string name="shortcut_settings_open_desc">Otevřít nastavení zkratek</string>
     <!-- Quick Action Dialog -->
     <string name="quick_action_title">Rychlé akce</string>
-    <string name="quick_action_dns_title">Soukromá DNS</string>
-    <string name="quick_action_usb_title">USB debugování</string>
-    <string name="quick_action_no_actions">Nejsou povolené žádné akce pro tuto dlaždici.</string>
+    <string name="quick_action_dns_title">Privátní DNS</string>
+    <string name="quick_action_usb_title">Ladění USB</string>
+    <string name="quick_action_no_actions">Pro toto tlačítko nejsou zapnuté žádné akce.</string>
     <string name="quick_action_open_app">Otevřít aplikaci</string>
     <!-- Pravidla DNS pro sítě Wi-Fi -->
     <string name="setting_wifi_network_rules_title">Pravidla sítí Wi-Fi</string>
@@ -271,16 +271,16 @@
     <string name="wifi_location_services_title">Zapnout služby určování polohy</string>
     <string name="wifi_location_services_description">Oprávnění je uděleno, ale Android zobrazí připojené SSID/BSSID a poslední výsledky Wi-Fi jen při zapnutých službách určování polohy.</string>
     <string name="wifi_location_services_open">Otevřít nastavení polohy</string>
-    <string name="wifi_ssid_manual_entry_notice">Pravidlo můžete zadat ručně, automatické přiřazení však tento přístup stále potřebuje. Dokud není aktuální síť známá, soukromé DNS se nezmění.</string>
-    <string name="wifi_ssid_permission_denied">K rozpoznání sítí Wi-Fi je nutné oprávnění k přesné poloze. Dokud nebude přístup povolen, soukromá DNS se nezmění.</string>
-    <string name="wifi_location_services_disabled">Zapněte služby určování polohy Androidu, aby bylo možné zjistit název připojené sítě Wi-Fi. Dokud není identita sítě dostupná, soukromá DNS se nezmění.</string>
-    <string name="wifi_rules_require_background_detection">Pravidla sítí Wi-Fi vyžadují detekci službou na pozadí. Před výběrem detekce pouze pomocí dlaždice pravidla vypněte.</string>
-    <string name="wifi_rules_enabled_background_detection">Detekce službou na pozadí byla zapnuta, protože ji pravidla pro jednotlivé sítě vyžadují.</string>
+    <string name="wifi_ssid_manual_entry_notice">Pravidlo můžete zadat ručně, automatické přiřazení však tento přístup stále potřebuje. Dokud není aktuální síť známá, privátní DNS se nezmění.</string>
+    <string name="wifi_ssid_permission_denied">K rozpoznání sítí Wi-Fi je nutné oprávnění k přesné poloze. Dokud nebude přístup povolen, privátní DNS se nezmění.</string>
+    <string name="wifi_location_services_disabled">Zapněte služby určování polohy Androidu, aby bylo možné zjistit název připojené sítě Wi-Fi. Dokud není identita sítě dostupná, privátní DNS se nezmění.</string>
+    <string name="wifi_rules_require_background_detection">Pravidla Wi-Fi vyžadují detekci na pozadí. Vypněte je, než omezíte detekci pouze na dobu, kdy je tlačítko rychlého nastavení viditelné.</string>
+    <string name="wifi_rules_enabled_background_detection">Detekce na pozadí byla zapnuta, protože ji pravidla Wi-Fi potřebují.</string>
     <string name="wifi_ssid_label">Název sítě (SSID)</string>
     <string name="wifi_network_current_title">Aktuálně připojeno</string>
     <string name="wifi_network_nearby_title">Sítě v okolí</string>
     <string name="wifi_network_history_title">Nedávno rozpoznané sítě</string>
-    <string name="wifi_network_scanning">Načítají se poslední dostupné výsledky Wi-Fi systému Android…</string>
+    <string name="wifi_network_scanning">Načítají se poslední dostupné výsledky vyhledávání Wi-Fi z Androidu…</string>
     <string name="wifi_network_none_found">Nejsou dostupné žádné nedávné výsledky Wi-Fi. Aplikace nespouští nový sken; Android může poskytnout výsledky z mezipaměti.</string>
     <string name="wifi_network_refresh">Znovu načíst výsledky</string>
     <string name="wifi_hidden_network">Skrytá síť</string>
@@ -292,9 +292,9 @@
     <string name="wifi_rule_delete_title">Odstranit pravidlo sítě?</string>
     <string name="wifi_rule_delete_message">Odstranit pravidlo pro „%1$s“?</string>
     <string name="wifi_permission_open_settings">Otevřít nastavení aplikace</string>
-    <string name="wifi_permission_blocked_description">Android již nezobrazuje dialog oprávnění k poloze. Otevři nastavení aplikace, zvol Oprávnění → Poloha a povol přesnou polohu.</string>
+    <string name="wifi_permission_blocked_description">Android již nezobrazuje dialog oprávnění k poloze. Otevřete nastavení aplikace, zvolte Oprávnění → Poloha a povolte přesnou polohu.</string>
     <string name="wifi_boot_title">Automaticky pokračovat po restartu</string>
-    <string name="wifi_boot_description">Aby pravidla Wi-Fi fungovala po restartu a odemknutí telefonu, otevři nastavení aplikace → Oprávnění → Poloha a zvol „Povolit vždy“ se zapnutou přesnou polohou. Aplikace tak může rozpoznávat sítě Wi-Fi na pozadí; souřadnice polohy nečte. Je to volitelné: bez tohoto oprávnění otevři aplikaci po každém restartu.</string>
+    <string name="wifi_boot_description">Aby pravidla Wi-Fi fungovala po restartu a odemknutí telefonu, otevřete nastavení aplikace → Oprávnění → Poloha a zvolte „Povolit vždy“ se zapnutou přesnou polohou. Aplikace tak může rozpoznávat sítě Wi-Fi na pozadí; souřadnice polohy nečte. Je to volitelné: bez tohoto oprávnění otevřete aplikaci po každém restartu.</string>
     <string name="wifi_boot_ready">Pravidla Wi-Fi se automaticky obnoví po restartu a odemknutí telefonu.</string>
     <string name="wifi_rule_use_detected_bssid">Použít zjištěnou BSSID: %1$s</string>
 </resources>

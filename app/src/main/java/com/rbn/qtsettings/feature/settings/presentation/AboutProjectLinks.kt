@@ -25,7 +25,6 @@ internal fun AboutProjectLinks(onPermissionHelp: () -> Unit, onLink: (String) ->
     )
     SettingsSection(title = stringResource(R.string.about_project_title)) {
         Text(stringResource(R.string.about_developer_info))
-        Text(stringResource(R.string.about_credits))
         SettingsGroup(items = links, itemKey = { it.first }) { (title, url) ->
             SettingsNavigationRow(stringResource(title), Icons.AutoMirrored.Outlined.OpenInNew,
                 { if (title == R.string.about_report_issue) onReport() else onLink(url) })

@@ -12,7 +12,7 @@
     <!-- DNS States -->
     <string name="dns_state_off">DNS Desativado</string>
     <string name="dns_state_auto">DNS Automático</string>
-    <string name="dns_state_on_with_host">DNS Ativado (Hostname)</string>
+    <string name="dns_state_on_with_host">DNS ativado (nome do host)</string>
     <string name="dns_state_unknown">Status do DNS desconhecido</string>
 
     <!-- USB Debugging States -->
@@ -21,9 +21,9 @@
     <string name="usb_dev_options_off">Opções do desenvolvedor desativadas</string>
 
     <!-- UI Settings Screen -->
-    <string name="setting_title_private_dns">Tile de DNS Privado</string>
-    <string name="setting_title_usb_debugging">Tile de Depuração USB</string>
-    <string name="setting_desc_tile_cycles">Selecione os estados para o ciclo do tile:</string>
+    <string name="setting_title_private_dns">Botão de DNS privado</string>
+    <string name="setting_title_usb_debugging">Botão de depuração USB</string>
+    <string name="setting_desc_tile_cycles">Escolha os estados para alternar ao tocar no botão das Configurações rápidas:</string>
     <string name="app_settings_title">Configurações</string>
     <string name="tab_title_dns">DNS Privado</string>
     <string name="tab_title_usb">Depuração USB</string>
@@ -34,8 +34,8 @@
     <string name="toast_error_saving_settings">Erro ao salvar configurações.</string>
     <string name="toast_no_states_enabled_dns">Nenhum estado de DNS ativado para alternância.</string>
     <string name="toast_no_states_enabled_usb">Nenhum estado de USB ativado para alternância.</string>
-    <string name="toast_hostname_required">Hostname obrigatório para DNS Ativado.</string>
-    <string name="warning_hostname_blank">O hostname não pode estar vazio se "DNS Ativado" estiver habilitado.</string>
+    <string name="toast_hostname_required">Informe o nome do host para ativar o DNS.</string>
+    <string name="warning_hostname_blank">O nome do host não pode ficar vazio quando a opção de ativar o DNS está selecionada.</string>
     <string name="warning_at_least_one_usb_option">Pelo menos um estado de USB deve estar habilitado.</string>
     <string name="toast_command_copied">Comando copiado!</string>
 
@@ -49,7 +49,7 @@
     <string name="dialog_close">Fechar</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_desc">Este é o método padrão e requer um computador com ADB configurado.</string>
+    <string name="permission_method_adb_desc">O método padrão usa um computador com ADB configurado.</string>
     <string name="button_show_adb_instructions">Mostrar instruções do ADB</string>
     <string name="adb_instructions_title">Instruções do ADB</string>
     <string name="help_dialog_how_to_grant_via_adb">Execute o seguinte comando no terminal/prompt:</string>
@@ -59,7 +59,7 @@
     <string name="github_releases_link_text">Baixar versão mais recente no GitHub</string>
 
     <!-- Shizuku Method -->
-    <string name="shizuku_ready_to_grant_desc">O Shizuku está disponível e este app tem permissão para usá-lo. Você pode tentar conceder WRITE_SECURE_SETTINGS.</string>
+    <string name="shizuku_ready_to_grant_desc">O Shizuku está disponível e este app pode usá-lo. Você já pode solicitar WRITE_SECURE_SETTINGS pelo Shizuku.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
     <string name="shizuku_not_available_detailed">O Shizuku não está disponível ou não está em execução. Instale e inicie o Shizuku primeiro.</string>
@@ -67,7 +67,7 @@
     <string name="button_request_shizuku_permission">Solicitar permissão do Shizuku</string>
     <string name="button_grant_with_shizuku">Conceder usando Shizuku</string>
     <string name="shizuku_not_available">O Shizuku não está disponível ou não está em execução.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Permissão do Shizuku não concedida para este app. Conceda primeiro pelo app do Shizuku ou pelo prompt.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Permita que este app use o Shizuku, pelo app do Shizuku ou pela janela de solicitação de permissão.</string>
     <string name="shizuku_permission_granted_to_app">Permissão do Shizuku concedida para este app.</string>
     <string name="shizuku_permission_denied_to_app">Permissão do Shizuku negada para este app.</string>
     <string name="shizuku_not_available_or_not_ready">O Shizuku não está disponível ou não está pronto.</string>
@@ -78,18 +78,18 @@
     <string name="device_not_rooted">O dispositivo não possui root.</string>
 
     <!-- Permission Warning Card -->
-    <string name="warning_permission_missing_title">Permissão ausente!</string>
+    <string name="warning_permission_missing_title">Permissão ausente</string>
     <string name="warning_permission_missing_desc">Este app precisa da permissão WRITE_SECURE_SETTINGS para funcionar. Conceda-a usando um dos métodos disponíveis.</string>
     <string name="button_show_permission_help">Mostrar opções de concessão</string>
     <string name="warning_developer_options_disabled_config">As opções do desenvolvedor estão desativadas. A depuração USB não pode ser configurada.</string>
 
     <string name="setting_require_unlock">Exigir desbloqueio do dispositivo para alternar</string>
-    <string name="setting_require_unlock_desc">Quando ativado, o bloco solicitará que você desbloqueie o dispositivo antes de aplicar qualquer alteração.</string>
+    <string name="setting_require_unlock_desc">Pede para desbloquear o dispositivo antes de alterar uma configuração pelo botão das Configurações rápidas.</string>
 
     <string name="setting_also_hide_dev_options">Também ativar/desativar Opções do desenvolvedor</string>
-    <string name="setting_also_hide_dev_options_desc">Quando ativado, ao ativar ou desativar a Depuração USB, as Opções do desenvolvedor também serão ativadas ou desativadas. Isso permite que o bloco funcione mesmo quando as Opções do desenvolvedor estiverem desativadas.</string>
+    <string name="setting_also_hide_dev_options_desc">Ativa ou desativa as opções do desenvolvedor junto com a depuração USB. Assim, o botão das Configurações rápidas funciona mesmo com as opções do desenvolvedor desativadas.</string>
     <string name="setting_also_disable_wireless_debugging">Também alternar Depuração sem fio</string>
-    <string name="setting_also_disable_wireless_debugging_desc">Quando ativado, a Depuração sem fio também será alternada junto com a Depuração USB.</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Ativa ou desativa a depuração sem fio junto com a depuração USB.</string>
 
     <string name="setting_enable_auto_revert">Ativar reversão automática após um atraso</string>
     <string name="setting_auto_revert_delay">Tempo para reversão (segundos)</string>
@@ -104,13 +104,13 @@
 
     <!-- About Dialog -->
     <string name="about_version">Versão %1$s</string>
-    <string name="about_description">O QuickTile Settings fornece tiles práticos de Configurações Rápidas para alternar configurações diretamente pelo painel de notificações.</string>
+    <string name="about_description">O QuickTile Settings adiciona botões às Configurações rápidas para mudar os ajustes do dispositivo.</string>
     <string name="about_features_title">Recursos</string>
     <string name="about_developer_info">Desenvolvido por RBN-Apps\nProjeto open source disponível no GitHub</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Backup e restauração</string>
-    <string name="settings_backup_description">Exporte todas as configurações dos tiles, entradas DNS, preferências de automação e configuração de atalhos para um arquivo JSON. A restauração substitui as configurações atuais do app pelo backup selecionado.</string>
+    <string name="settings_backup_description">Exporte todas as configurações dos botões, entradas DNS, preferências de automação e configurações dos atalhos para um arquivo JSON. A restauração substitui as configurações atuais do app pelo backup selecionado.</string>
     <string name="backup_export_button">Exportar backup</string>
     <string name="backup_restore_button">Restaurar backup</string>
     <string name="backup_restore_confirm_title">Restaurar backup?</string>
@@ -125,8 +125,8 @@
     <string name="vpn_monitoring_channel_name">Monitoramento de VPN</string>
     <string name="vpn_monitoring_channel_description">Monitora conexões VPN para ajustar automaticamente o DNS Privado</string>
     <string name="vpn_monitoring_notification_title">Monitoramento de VPN ativo</string>
-    <string name="vpn_monitoring_status_connected">VPN conectada — DNS Privado definido como Desligado</string>
-    <string name="vpn_monitoring_status_disconnected">VPN desconectada — DNS Privado restaurado</string>
+    <string name="vpn_monitoring_status_connected">VPN conectada. DNS Privado desligado</string>
+    <string name="vpn_monitoring_status_disconnected">VPN desconectada. DNS Privado restaurado</string>
 
     <!-- Network Monitoring -->
     <string name="network_monitoring_channel_name">Monitoramento de Tipo de Rede</string>
@@ -136,12 +136,12 @@
     <string name="notification_permission_background_message">A detecção em segundo plano já funciona sem a permissão de notificações. Permita-a para manter o status do monitoramento visível na área de notificações; caso contrário, o Android mostra o serviço apenas entre os apps ativos.</string>
     <string name="notification_permission_import_title">Permitir notificações para detecção em segundo plano?</string>
     <string name="notification_permission_import_message">O backup importado ativa a detecção em segundo plano para mudanças de VPN ou rede. Ela funciona sem permissão de notificações; permita-a apenas para manter o status visível na área de notificações.</string>
-    <string name="notification_permission_fallback_title">Acesso às notificações não concedido</string>
+    <string name="notification_permission_fallback_title">Notificações não permitidas</string>
     <string name="notification_permission_fallback_message">A detecção em segundo plano continuará. O status não aparecerá na área de notificações, mas o Android ainda mostrará o serviço entre os apps ativos.</string>
     <string name="notification_permission_grant_button">Conceder permissão</string>
     <string name="notification_permission_continue_button">Continuar sem notificações</string>
-    <string name="notification_permission_settings_title">Acesso às notificações desativado</string>
-    <string name="notification_permission_settings_message">A detecção em segundo plano continuará sem status na área de notificações. Para exibi-lo, permita notificações nas configurações do app.</string>
+    <string name="notification_permission_settings_title">Notificações desativadas</string>
+    <string name="notification_permission_settings_message">A detecção em segundo plano continua, mas seu status fica oculto na área de notificações. Para exibi-lo, permita notificações nas configurações do app.</string>
     <string name="notification_permission_settings_button">Abrir configurações</string>
     <string name="network_type_wifi">Conectado ao Wi-Fi</string>
     <string name="network_type_mobile">Conectado aos dados móveis</string>
@@ -160,13 +160,13 @@
     <string name="wifi_ssid_manual_entry_notice">Você pode inserir uma regra manualmente, mas a correspondência automática ainda precisa deste acesso. O DNS privado permanece inalterado enquanto a rede atual for desconhecida.</string>
     <string name="wifi_ssid_permission_denied">A permissão de localização precisa é necessária para identificar redes Wi-Fi. O DNS privado permanece inalterado até que o acesso seja permitido.</string>
     <string name="wifi_location_services_disabled">Ative os serviços de localização do Android para identificar o nome da rede Wi-Fi conectada. O DNS privado permanece inalterado enquanto a identidade da rede não estiver disponível.</string>
-    <string name="wifi_rules_require_background_detection">As regras de rede Wi-Fi exigem detecção pelo serviço em segundo plano. Desative as regras antes de selecionar a detecção somente pelo bloco.</string>
-    <string name="wifi_rules_enabled_background_detection">A detecção pelo serviço em segundo plano foi ativada porque as regras por rede precisam dela.</string>
+    <string name="wifi_rules_require_background_detection">As regras de Wi-Fi precisam da detecção em segundo plano. Desative as regras antes de limitar a detecção aos momentos em que o botão das Configurações rápidas está visível.</string>
+    <string name="wifi_rules_enabled_background_detection">A detecção em segundo plano foi ativada porque as regras de Wi-Fi precisam dela.</string>
     <string name="wifi_ssid_label">Nome da rede (SSID)</string>
     <string name="wifi_network_current_title">Conectada atualmente</string>
     <string name="wifi_network_nearby_title">Redes próximas</string>
     <string name="wifi_network_history_title">Redes vistas recentemente</string>
-    <string name="wifi_network_scanning">Carregando os últimos resultados de Wi-Fi disponíveis do Android…</string>
+    <string name="wifi_network_scanning">Carregando os últimos resultados de busca de Wi-Fi fornecidos pelo Android…</string>
     <string name="wifi_network_none_found">Nenhum resultado recente de Wi-Fi está disponível. O app não inicia uma nova busca; o Android pode fornecer resultados em cache.</string>
     <string name="wifi_network_refresh">Recarregar resultados</string>
     <string name="wifi_hidden_network">Rede oculta</string>
@@ -177,7 +177,7 @@
     <string name="wifi_rule_invalid_or_duplicate">Insira um SSID ou BSSID válido e verifique se a mesma regra ainda não existe.</string>
     <string name="wifi_rule_delete_title">Excluir regra de rede?</string>
     <string name="wifi_rule_delete_message">Remover a regra de “%1$s”?</string>
-    <string name="shortcut_toast_action_failed">Não foi possível aplicar a ação do atalho.</string>
+    <string name="shortcut_toast_action_failed">Não foi possível executar a ação do atalho.</string>
     <string name="wifi_permission_open_settings">Abrir configurações do app</string>
     <string name="wifi_permission_blocked_description">O Android não exibe mais o diálogo de permissão de localização. Abra as configurações do app, escolha Permissões → Localização e permita a localização precisa.</string>
     <string name="wifi_boot_title">Continuar automaticamente após reiniciar</string>

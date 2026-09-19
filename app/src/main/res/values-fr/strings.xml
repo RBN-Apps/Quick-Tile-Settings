@@ -20,9 +20,9 @@
     <string name="usb_dev_options_off">Options développeur désactivées</string>
 
     <!--  UI Settings Screen  -->
-    <string name="setting_title_private_dns">Tuile DNS privé</string>
-    <string name="setting_title_usb_debugging">Tuile Débogage USB</string>
-    <string name="setting_desc_tile_cycles">Sélectionnez les modes pour le cycle de tuiles :</string>
+    <string name="setting_title_private_dns">Bouton DNS privé</string>
+    <string name="setting_title_usb_debugging">Bouton de débogage USB</string>
+    <string name="setting_desc_tile_cycles">Choisissez les modes à parcourir en appuyant sur le bouton des réglages rapides :</string>
     <string name="app_settings_title">Paramètres</string>
     <string name="tab_title_dns">DNS privé</string>
     <string name="tab_title_usb">Débogage USB</string>
@@ -32,7 +32,7 @@
     <string name="toast_developer_options_disabled">Les options développeur sont désactivées.</string>
     <string name="toast_error_saving_settings">Erreur lors de la sauvegarde des paramètres.</string>
     <string name="toast_no_states_enabled_dns">Aucun DNS activé pour le cycle.</string>
-    <string name="toast_no_states_enabled_usb">Aucune valeur USB activé pour le cycle.</string>
+    <string name="toast_no_states_enabled_usb">Aucun mode USB activé pour le cycle.</string>
     <string name="toast_hostname_required">Nom d\'hôte requis.</string>
     <string name="warning_hostname_blank">Le nom d\'hôte ne peut pas être vide si "DNS privé" est activé.</string>
     <string name="warning_at_least_one_usb_option">Au moins un statut USB doit être activé.</string>
@@ -48,7 +48,7 @@
     <string name="dialog_close">Fermer</string>
 
     <!--  ADB Method  -->
-    <string name="permission_method_adb_desc">Il s\'agit de la méthode standard et nécessite un ordinateur avec l\'utilitaire ADB.</string>
+    <string name="permission_method_adb_desc">La méthode standard nécessite un ordinateur avec ADB configuré.</string>
     <string name="button_show_adb_instructions">Afficher les instructions</string>
     <string name="adb_instructions_title">Instructions ADB</string>
     <string name="help_dialog_how_to_grant_via_adb">Exécutez la commande suivante dans votre terminal :</string>
@@ -59,7 +59,7 @@
     <string name="adb_command_install_g">adb install -g -r chemin/vers/votre/app.apk</string>
 
     <!--  Shizuku Method  -->
-    <string name="shizuku_ready_to_grant_desc">Shizuku est disponible et cette application a la permission de l\'utiliser. Vous pouvez essayer d\'accorder WRITE_SECURE_SETTINGS.</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku est disponible et cette application peut l’utiliser. Vous pouvez maintenant demander WRITE_SECURE_SETTINGS via Shizuku.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
 
@@ -68,7 +68,7 @@
     <string name="button_request_shizuku_permission">Demander la permission Shizuku</string>
     <string name="button_grant_with_shizuku">Accorder via Shizuku</string>
     <string name="shizuku_not_available">Shizuku n\'est pas disponible ou ne fonctionne pas.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Permission Shizuku non accordée à cette application. Veuillez d\'abord l\'accorder via l\'application Shizuku ou l\'invite.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Autorisez cette application à utiliser Shizuku, dans l’application Shizuku ou dans la boîte de dialogue de demande d’autorisation.</string>
     <string name="shizuku_permission_granted_to_app">Permission Shizuku accordée à cette application.</string>
     <string name="shizuku_permission_denied_to_app">Permission Shizuku refusée à cette application.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku n\'est pas disponible ou n\'est pas prêt.</string>
@@ -80,26 +80,26 @@
     <string name="device_not_rooted">L\'appareil n\'est pas rooté.</string>
 
     <!--  Generic Permission Grant Results  -->
-    <string name="permission_granted_shizuku_success">Permission accordée avec succès via Shizuku !</string>
+    <string name="permission_granted_shizuku_success">Permission accordée via Shizuku.</string>
     <string name="permission_granted_shizuku_check_failed">Commande Shizuku exécutée, mais la vérification de la permission a échoué. Veuillez redémarrer l\'application.</string>
     <string name="permission_granted_shizuku_fail">Échec de l\'octroi de la permission via Shizuku. Code de sortie : %1$d</string>
     <string name="permission_granted_shizuku_error">Erreur lors de l\'octroi de la permission via Shizuku : %1$s</string>
-    <string name="permission_granted_root_success">Permission accordée avec succès via Root !</string>
+    <string name="permission_granted_root_success">Permission accordée via root.</string>
     <string name="permission_granted_root_check_failed">Commande Root exécutée, mais la vérification de la permission a échoué. Veuillez redémarrer l\'application.</string>
     <string name="permission_granted_root_fail">Échec de l\'octroi de la permission via Root. Code de sortie : %1$d</string>
     <string name="permission_granted_root_error">Erreur lors de l\'octroi de la permission via Root : %1$s</string>
 
     <!--  Permission Warning Card  -->
-    <string name="warning_permission_missing_title">Permission manquante !</string>
+    <string name="warning_permission_missing_title">Permission manquante</string>
     <string name="warning_permission_missing_desc">Cette application nécessite la permission WRITE_SECURE_SETTINGS pour fonctionner. Veuillez l\'accorder en utilisant l\'une des méthodes disponibles.</string>
     <string name="button_show_permission_help">Afficher les options d\'autorisation</string>
     <string name="warning_developer_options_disabled_config">Les options développeur sont désactivées. Le débogage USB ne peut pas être configuré.</string>
     <string name="setting_require_unlock">Nécessite le déverrouillage de l\'appareil pour basculer</string>
-    <string name="setting_require_unlock_desc">Lorsqu\'elle est activée, la tuile vous demandera de déverrouiller l\'appareil avant d\'appliquer les modifications.</string>
+    <string name="setting_require_unlock_desc">Demande de déverrouiller l’appareil avant que le bouton des réglages rapides ne modifie un réglage.</string>
     <string name="setting_also_hide_dev_options">Basculer également les options développeur</string>
-    <string name="setting_also_hide_dev_options_desc">Lorsqu\'elle est activée, le basculement du débogage USB activera/désactivera également les options développeur. Cela permet à la tuile de fonctionner même lorsque les options développeur sont actuellement désactivées.</string>
+    <string name="setting_also_hide_dev_options_desc">Active ou désactive les options développeur en même temps que le débogage USB. Le bouton des réglages rapides fonctionne ainsi même si les options développeur sont désactivées.</string>
     <string name="setting_also_disable_wireless_debugging">Basculer également le débogage sans fil</string>
-    <string name="setting_also_disable_wireless_debugging_desc">Lorsqu\'elle est activée, le débogage sans fil sera également basculé avec le débogage USB.</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Active ou désactive le débogage sans fil en même temps que le débogage USB.</string>
     <string name="setting_enable_auto_revert">Activer la restauration automatique après un délai</string>
     <string name="setting_auto_revert_delay">Délai de restauration (secondes)</string>
     <string name="toast_reverting_dns_to">Rétablissement du DNS sur \n« %1$s » dans %2$d s…</string>
@@ -108,7 +108,7 @@
     <string name="on_state">Activé</string>
     <string name="off_state">Désactivé</string>
     <string name="auto_state">Auto</string>
-    <string name="dns_select_hostnames_for_cycle">Sélectionnez les noms d\'hôtes à inclure dans le cycle de tuiles :</string>
+    <string name="dns_select_hostnames_for_cycle">Fournisseurs DNS</string>
     <string name="dns_custom_entry_badge">DNS perso</string>
     <string name="dns_add_custom_hostname_button">Ajouter un nom d\'hôte personnalisé</string>
     <string name="dns_edit_hostname_title">Modifier le nom d\'hôte</string>
@@ -133,13 +133,13 @@
 
     <!--  About Dialog  -->
     <string name="about_version">Version %1$s</string>
-    <string name="about_description">QuickTile Settings fournit des tuiles de paramètres rapides pratiques pour basculer les paramètres directement depuis le panneau de notifications.</string>
+    <string name="about_description">QuickTile Settings ajoute des boutons aux réglages rapides pour modifier vos paramètres.</string>
     <string name="about_features_title">Fonctionnalités</string>
     <string name="about_developer_info">Développé par RBN-Apps\nProjet open source disponible sur GitHub</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Sauvegarde et restauration</string>
-    <string name="settings_backup_description">Exportez tous les paramètres des tuiles, les entrées DNS, les préférences d’automatisation et la configuration des raccourcis dans un fichier JSON. La restauration remplace les paramètres actuels de l’application par la sauvegarde sélectionnée.</string>
+    <string name="settings_backup_description">Exportez les paramètres des boutons, les entrées DNS, les préférences d’automatisation et les raccourcis dans un fichier JSON. La restauration remplace les paramètres actuels de l’application par la sauvegarde sélectionnée.</string>
     <string name="backup_export_button">Exporter la sauvegarde</string>
     <string name="backup_restore_button">Restaurer une sauvegarde</string>
     <string name="backup_restore_confirm_title">Restaurer la sauvegarde ?</string>
@@ -163,15 +163,15 @@
 
     <!--  Notification Permission Dialog  -->
     <string name="notification_permission_background_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
-    <string name="notification_permission_background_message">La détection en arrière-plan fonctionne déjà sans autorisation de notification. Autorisez-la pour afficher l’état permanent dans le volet des notifications ; sinon Android affiche le service uniquement parmi les applications actives.</string>
+    <string name="notification_permission_background_message">Autorisez les notifications pour voir l’état de la détection en arrière-plan dans le volet des notifications. La détection fonctionne aussi sans cette autorisation. Android affiche alors le service uniquement parmi les applications actives.</string>
     <string name="notification_permission_import_title">Autoriser les notifications pour la détection en arrière-plan ?</string>
-    <string name="notification_permission_import_message">La sauvegarde importée active la détection en arrière-plan des changements de VPN ou de réseau. Elle fonctionne sans autorisation de notification ; autorisez-la uniquement pour afficher l’état permanent dans le volet des notifications.</string>
-    <string name="notification_permission_fallback_title">Accès aux notifications non accordé</string>
+    <string name="notification_permission_import_message">La sauvegarde importée active la détection en arrière-plan des changements de VPN ou de réseau. Autorisez les notifications pour voir son état dans le volet des notifications. La détection fonctionne aussi sans cette autorisation.</string>
+    <string name="notification_permission_fallback_title">Notifications non autorisées</string>
     <string name="notification_permission_fallback_message">La détection en arrière-plan continue. Son état ne s’affiche pas dans le volet des notifications, mais Android indique toujours le service parmi les applications actives.</string>
     <string name="notification_permission_grant_button">Accorder la permission</string>
     <string name="notification_permission_continue_button">Continuer sans notifications</string>
-    <string name="notification_permission_settings_title">Accès aux notifications désactivé</string>
-    <string name="notification_permission_settings_message">La détection en arrière-plan continue sans état dans le volet des notifications. Pour l’y afficher, autorisez les notifications dans les paramètres de l’application.</string>
+    <string name="notification_permission_settings_title">Notifications désactivées</string>
+    <string name="notification_permission_settings_message">La détection en arrière-plan continue, mais son état est masqué dans le volet des notifications. Pour l’afficher, autorisez les notifications dans les paramètres de l’application.</string>
     <string name="notification_permission_settings_button">Ouvrir les paramètres</string>
 
     <!--  Network Type Detection Settings  -->
@@ -181,7 +181,7 @@
     <string name="dns_mode_off_label">Désactivé</string>
     <string name="dns_mode_auto_label">Auto</string>
     <string name="network_type_info_title">Détection du type de réseau</string>
-    <string name="network_type_info_message">Cette fonctionnalité bascule automatiquement les paramètres DNS privés selon que vous êtes connecté au WiFi ou aux données mobiles. Elle fonctionne aussi lorsqu\'un VPN est actif en détectant la connexion WiFi ou mobile sous-jacente.\n\nPriorité VPN : Si la détection VPN est activée séparément, elle a la priorité et le DNS sera défini sur Désactivé tant que le VPN est actif.\n\nExemple d\'utilisation : Si votre routeur WiFi domestique utilise NextDNS, définissez « DNS sur WiFi » sur Désactivé. Définissez « DNS sur données mobiles » sur Auto ou un nom d\'hôte spécifique pour une protection sur les réseaux cellulaires.</string>
+    <string name="network_type_info_message">L’application change le réglage DNS privé lorsque vous passez du Wi-Fi aux données mobiles ou inversement. Elle détecte aussi la connexion Wi-Fi ou mobile utilisée par un VPN actif.\n\nSi vous activez séparément la détection VPN, elle a la priorité et désactive le DNS privé pendant la connexion VPN.\n\nPar exemple, si votre routeur Wi-Fi utilise NextDNS, réglez « DNS sur WiFi » sur Désactivé. Pour les données mobiles, choisissez Auto ou un nom d’hôte précis.</string>
 
     <!--  Network Monitoring Service  -->
     <string name="network_monitoring_channel_name">Surveillance du type de réseau</string>
@@ -216,21 +216,21 @@
     <string name="shortcut_toast_permission_missing">Permission manquante. Ouvrez l\'application pour l\'accorder.</string>
     <string name="shortcut_toast_action_disabled">Action de raccourci désactivée. Activez-la d\'abord dans l\'application.</string>
     <string name="shortcut_toast_action_unavailable">L\'action de raccourci n\'est plus disponible. Vérifiez la configuration de l\'application.</string>
-    <string name="shortcut_toast_action_failed">Impossible d’appliquer l’action du raccourci.</string>
+    <string name="shortcut_toast_action_failed">Impossible d’exécuter l’action du raccourci.</string>
 
     <!--  Shortcut Settings  -->
     <string name="shortcut_settings_title">Actions de raccourci</string>
-    <string name="shortcut_settings_description">Choisissez les actions exposées en tant que raccourcis d\'application Android. Elles peuvent être utilisées depuis les lanceurs, Samsung Routines, Tasker ou en tant que raccourcis épinglés sur l\'écran d\'accueil.\n\nAndroid limite le nombre de raccourcis dynamiques visibles dans le lanceur pour cette activité d\'application à %1$d, donc seules %1$d actions peuvent être activées ici en même temps.\n\nVous pouvez marquer jusqu\'à %2$d actions actives comme favorites en utilisant l\'icône étoile. Les favoris sont publiés avec la priorité la plus élevée et sont plus susceptibles d\'apparaître en premier dans les menus de raccourci du lanceur. Les actions désactivées ne peuvent pas être mises en favoris.\n\nPar défaut, les actions désactivées sont complètement bloquées et ne peuvent plus être exécutées par l\'application. Activez l\'option ci-dessous uniquement si vous souhaitez que les raccourcis déjà épinglés continuent de fonctionner après avoir été désactivés ici.</string>
+    <string name="shortcut_settings_description">Choisissez les actions à utiliser comme raccourcis Android. Vous pouvez les lancer depuis un lanceur, Samsung Routines ou Tasker, ou les épingler à l’écran d’accueil.\n\nAndroid autorise jusqu’à %1$d raccourcis dynamiques de cette application dans le lanceur à la fois. Vous pouvez donc activer au maximum %1$d actions dans la liste des raccourcis.\n\nAppuyez sur l’étoile pour ajouter jusqu’à %2$d actions actives aux favoris. Les favoris ont la priorité la plus élevée et ont donc plus de chances d’apparaître en premier dans le menu de raccourcis du lanceur. Les actions désactivées ne peuvent pas être ajoutées aux favoris.\n\nLes actions désactivées sont bloquées par défaut. Activez « Autoriser les raccourcis épinglés désactivés » dans la liste des raccourcis pour que les raccourcis déjà épinglés continuent de fonctionner après leur désactivation dans cette liste.</string>
     <string name="shortcut_settings_limit">Raccourcis actifs : %1$d / %2$d</string>
     <string name="shortcut_settings_limit_reached_title">Limite de raccourcis atteinte</string>
     <string name="shortcut_settings_limit_reached">Limite de raccourcis atteinte. Désactivez d\'abord une autre action.</string>
     <string name="shortcut_settings_favorite_limit_reached_title">Limite de favoris atteinte</string>
     <string name="shortcut_settings_favorite_limit_reached">Vous pouvez marquer jusqu\'à 4 favoris.</string>
     <string name="shortcut_settings_allow_pinned_when_disabled">Autoriser les raccourcis épinglés désactivés</string>
-    <string name="shortcut_settings_allow_pinned_when_disabled_desc">Si activé, les raccourcis qui ont déjà été épinglés ou lancés en externe peuvent toujours s\'exécuter même après les avoir désactivés ici.</string>
+    <string name="shortcut_settings_allow_pinned_when_disabled_desc">Permet aux raccourcis déjà épinglés ou lancés depuis d’autres applications de fonctionner même après leur désactivation ici.</string>
     <string name="shortcut_settings_allow_pinned_info_desc">Afficher les détails sur les raccourcis épinglés désactivés</string>
     <string name="shortcut_settings_allow_pinned_warning_title">Autoriser les raccourcis désactivés ?</string>
-    <string name="shortcut_settings_allow_pinned_warning_message">L\'activation de cette option affaiblit le comportement de sécurité par défaut. Les actions de raccourci désactivées peuvent toujours être exécutées lorsqu\'elles sont lancées en externe ou à partir de raccourcis qui ont déjà été épinglés auparavant.\n\nCeci est principalement utile si vous souhaitez continuer à utiliser plus d\'actions qu\'Android n\'en autorise simultanément comme raccourcis actifs.</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Les actions désactivées sont normalement bloquées. Avec cette option, d’autres applications et les raccourcis déjà épinglés peuvent encore les exécuter.\n\nVous pouvez ainsi utiliser plus d’actions qu’Android n’autorise de raccourcis actifs à la fois.</string>
     <string name="shortcut_settings_allow_pinned_warning_confirm">Activer quand même</string>
     <string name="shortcut_settings_mark_favorite_desc">Marquer %1$s comme favori</string>
     <string name="shortcut_settings_remove_favorite_desc">Retirer %1$s des favoris</string>
@@ -248,13 +248,13 @@
     <string name="wifi_ssid_manual_entry_notice">Vous pouvez saisir une règle manuellement, mais la correspondance automatique nécessite toujours cet accès. Le DNS privé reste inchangé tant que le réseau actuel est inconnu.</string>
     <string name="wifi_ssid_permission_denied">L’autorisation de localisation précise est nécessaire pour identifier les réseaux Wi-Fi. Le DNS privé reste inchangé tant que l’accès n’est pas accordé.</string>
     <string name="wifi_location_services_disabled">Activez les services de localisation Android pour identifier le réseau Wi-Fi connecté. Le DNS privé reste inchangé tant que l’identité du réseau est indisponible.</string>
-    <string name="wifi_rules_require_background_detection">Les règles des réseaux Wi-Fi nécessitent la détection par service en arrière-plan. Désactivez les règles avant de sélectionner la détection par tuile uniquement.</string>
-    <string name="wifi_rules_enabled_background_detection">La détection par service en arrière-plan a été activée car les règles par réseau en ont besoin.</string>
+    <string name="wifi_rules_require_background_detection">Les règles Wi-Fi nécessitent la détection en arrière-plan. Désactivez-les avant de limiter la détection aux moments où le bouton des réglages rapides est visible.</string>
+    <string name="wifi_rules_enabled_background_detection">La détection en arrière-plan est activée, car les règles Wi-Fi en ont besoin.</string>
     <string name="wifi_ssid_label">Nom du réseau (SSID)</string>
     <string name="wifi_network_current_title">Actuellement connecté</string>
     <string name="wifi_network_nearby_title">Réseaux à proximité</string>
     <string name="wifi_network_history_title">Réseaux vus récemment</string>
-    <string name="wifi_network_scanning">Chargement des derniers résultats Wi-Fi disponibles d’Android…</string>
+    <string name="wifi_network_scanning">Chargement des derniers résultats de recherche Wi-Fi fournis par Android…</string>
     <string name="wifi_network_none_found">Aucun résultat Wi-Fi récent n’est disponible. L’application ne lance pas de nouvelle analyse ; Android peut fournir des résultats en cache.</string>
     <string name="wifi_network_refresh">Recharger les résultats</string>
     <string name="wifi_hidden_network">Réseau masqué</string>

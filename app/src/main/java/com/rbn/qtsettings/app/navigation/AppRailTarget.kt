@@ -32,7 +32,7 @@ enum class AppRailTarget(
         Icons.Default.Settings, destination = AppDestination.AppSettings),
     Permissions(AppRailGroup.Help, R.string.menu_permission_help, R.string.navigation_permissions_short,
         Icons.Default.AdminPanelSettings, destination = AppDestination.Permissions),
-    About(AppRailGroup.Help, R.string.menu_about, R.string.menu_about,
+    About(AppRailGroup.Help, R.string.menu_about, R.string.navigation_about_short,
         Icons.Default.Info, destination = AppDestination.About);
 
     val testTag: String get() = if (area != null) "navigation_area_${area.name}" else "navigation_target_$name"
