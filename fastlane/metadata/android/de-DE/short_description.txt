@@ -1,1 +1,1 @@
-Privates DNS & USB-Debugging über Quick Tile Kacheln verwalten & Auto-Revert.
+Kacheln für privates DNS und USB-Debugging, Netzwerkregeln und Shortcuts.
