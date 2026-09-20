@@ -108,12 +108,10 @@ object SystemQuickActions {
         var previousWirelessDebugging = 0
         var previousStateCaptured = false
         return try {
-            previousDeveloperOptions = Settings.Global.getInt(
-                resolver,
-                DEVELOPMENT_SETTINGS_ENABLED,
-                0
-            )
-            previousUsbDebugging = Settings.Global.getInt(resolver, ADB_ENABLED, 0)
+            previousDeveloperOptions =
+                if (DebuggingSettingsReader.isDeveloperOptionsEnabled(resolver)) 1 else 0
+            previousUsbDebugging =
+                if (DebuggingSettingsReader.isUsbDebuggingEnabled(resolver)) 1 else 0
             previousWirelessDebugging = Settings.Global.getInt(resolver, ADB_WIFI_ENABLED, 0)
             previousStateCaptured = true
 
@@ -212,6 +210,6 @@ object SystemQuickActions {
 
     fun isUsbDebuggingEnabled(context: Context): Boolean = runCatching {
         PermissionUtils.isDeveloperOptionsEnabled(context) &&
-                Settings.Global.getInt(context.contentResolver, ADB_ENABLED, 0) == 1
+                DebuggingSettingsReader.isUsbDebuggingEnabled(context.contentResolver)
     }.getOrDefault(false)
 }

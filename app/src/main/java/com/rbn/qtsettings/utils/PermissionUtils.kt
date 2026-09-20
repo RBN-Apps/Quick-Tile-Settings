@@ -70,11 +70,7 @@ object PermissionUtils {
     }
 
     fun isDeveloperOptionsEnabled(context: Context): Boolean {
-        return Settings.Global.getInt(
-            context.contentResolver,
-            Constants.DEVELOPMENT_SETTINGS_ENABLED,
-            0
-        ) == 1
+        return DebuggingSettingsReader.isDeveloperOptionsEnabled(context.contentResolver)
     }
 
     fun isShizukuAvailableAndReady(): Boolean {
