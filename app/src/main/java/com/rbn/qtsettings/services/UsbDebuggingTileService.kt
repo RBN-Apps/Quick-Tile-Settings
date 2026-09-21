@@ -13,6 +13,7 @@ import com.rbn.qtsettings.R
 import com.rbn.qtsettings.data.PreferencesManager
 import com.rbn.qtsettings.utils.AutoRevertCoordinator
 import com.rbn.qtsettings.utils.Constants
+import com.rbn.qtsettings.utils.DebuggingSettingsReader
 import com.rbn.qtsettings.utils.PermissionUtils
 
 class UsbDebuggingTileService : TileService() {
@@ -121,9 +122,9 @@ class UsbDebuggingTileService : TileService() {
         }
 
         val currentUsbDebuggingState =
-            Settings.Global.getInt(contentResolver, Constants.ADB_ENABLED, 0) == 1
+            DebuggingSettingsReader.isUsbDebuggingEnabled(contentResolver)
         val currentDevOptionsState =
-            Settings.Global.getInt(contentResolver, Constants.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1
+            DebuggingSettingsReader.isDeveloperOptionsEnabled(contentResolver)
         val currentWirelessDebuggingState =
             Settings.Global.getInt(contentResolver, Constants.ADB_WIFI_ENABLED, 0) == 1
         savePreviousState(
@@ -377,7 +378,7 @@ class UsbDebuggingTileService : TileService() {
             return
         }
 
-        val adbEnabled = Settings.Global.getInt(contentResolver, Constants.ADB_ENABLED, 0) == 1
+        val adbEnabled = DebuggingSettingsReader.isUsbDebuggingEnabled(contentResolver)
 
         // When also hiding dev options, consider "active" only when both are on
         val isActive = if (alsoHideDevOptions) {
