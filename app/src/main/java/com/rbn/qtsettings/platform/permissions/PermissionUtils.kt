@@ -1,6 +1,5 @@
 package com.rbn.qtsettings.platform.permissions
 
-import com.rbn.qtsettings.utils.Constants
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -10,6 +9,7 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.core.content.edit
 import com.rbn.qtsettings.data.WifiIdentityAccessState
+import com.rbn.qtsettings.platform.usb.DebuggingSettingsReader
 import rikka.shizuku.Shizuku
 import java.io.File
 
@@ -71,11 +71,7 @@ object PermissionUtils {
     }
 
     fun isDeveloperOptionsEnabled(context: Context): Boolean {
-        return Settings.Global.getInt(
-            context.contentResolver,
-            Constants.DEVELOPMENT_SETTINGS_ENABLED,
-            0
-        ) == 1
+        return DebuggingSettingsReader.isDeveloperOptionsEnabled(context.contentResolver)
     }
 
     fun isShizukuAvailableAndReady(): Boolean {

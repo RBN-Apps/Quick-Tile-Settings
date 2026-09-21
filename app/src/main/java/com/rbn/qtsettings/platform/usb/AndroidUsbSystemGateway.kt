@@ -11,9 +11,10 @@ class AndroidUsbSystemGateway(context: Context) : UsbSystemGateway {
     private val context = context.applicationContext
     override fun hasPermission() = PermissionUtils.hasWriteSecureSettingsPermission(context)
     override fun read() = UsbSystemState(
-        get(Constants.ADB_ENABLED), get(Constants.DEVELOPMENT_SETTINGS_ENABLED), get(Constants.ADB_WIFI_ENABLED)
+        DebuggingSettingsReader.isUsbDebuggingEnabled(context.contentResolver),
+        DebuggingSettingsReader.isDeveloperOptionsEnabled(context.contentResolver),
+        Settings.Global.getInt(context.contentResolver, Constants.ADB_WIFI_ENABLED, 0) == 1
     )
-    private fun get(key: String) = Settings.Global.getInt(context.contentResolver, key, 0) == 1
     override fun write(setting: UsbSetting, enabled: Boolean): Boolean = Settings.Global.putInt(
         context.contentResolver,
         when (setting) {
