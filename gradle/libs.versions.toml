@@ -12,7 +12,7 @@ composeBom = "2026.08.00"
 materialIconsExtended = "1.7.8"
 shizuku = "13.1.0"
 gson = "2.14.0"
-robolectric = "4.16.1"
+robolectric = "4.17"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
