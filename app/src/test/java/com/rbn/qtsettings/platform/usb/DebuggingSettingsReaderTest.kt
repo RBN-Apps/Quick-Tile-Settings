@@ -3,6 +3,8 @@ package com.rbn.qtsettings.platform.usb
 import com.rbn.qtsettings.utils.Constants
 import com.rbn.qtsettings.utils.DebuggingSettingsProvider
 import com.rbn.qtsettings.platform.permissions.PermissionUtils
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActions
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActionResult
 
 import android.Manifest
 import android.app.Application
@@ -84,4 +86,12 @@ class DebuggingSettingsReaderTest {
         assertFalse(DebuggingSettingsReader.isUsbDebuggingEnabled(application.contentResolver))
     }
 
+    @Test fun quickAction_isNotBlockedByRedactedDeveloperOptions() {
+        shadowOf(application).grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
+        provider.values[Constants.DEVELOPMENT_SETTINGS_ENABLED] = "1"
+
+        assertEquals(SystemQuickActionResult.SUCCESS,
+            SystemQuickActions.setUsbDebuggingEnabled(application, true, false, false))
+        assertEquals(1, Settings.Global.getInt(application.contentResolver, Constants.ADB_ENABLED, 0))
+    }
 }

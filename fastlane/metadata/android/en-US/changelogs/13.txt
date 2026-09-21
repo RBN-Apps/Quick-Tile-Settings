@@ -1,0 +1,3 @@
+Version 1.5.1
+
+- Fixed USB debugging and developer options detection on affected Android 17 devices.

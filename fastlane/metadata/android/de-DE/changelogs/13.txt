@@ -1,0 +1,3 @@
+Version 1.5.1
+
+- Fix: USB-Debugging und Entwickleroptionen werden auf betroffenen Geräten mit Android 17 wieder korrekt erkannt.

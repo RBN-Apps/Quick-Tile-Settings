@@ -102,6 +102,7 @@
     <string name="setting_also_hide_dev_options_desc">Включает и выключает параметры разработчика вместе с отладкой по USB. Кнопка быстрых настроек работает, даже если параметры разработчика выключены.</string>
     <string name="setting_also_disable_wireless_debugging">Также переключать беспроводную отладку</string>
     <string name="setting_also_disable_wireless_debugging_desc">Включает и выключает беспроводную отладку вместе с отладкой по USB.</string>
+    <string name="usb_set_active_mode">Установить %1$s в качестве активного состояния отладки по USB</string>
 
     <string name="setting_enable_auto_revert">Включить авто-возврат с задержкой</string>
     <string name="setting_auto_revert_delay">Задержка возврата (секунды)</string>
@@ -113,6 +114,17 @@
     <string name="auto_state">Авто</string>
 
     <string name="dns_select_hostnames_for_cycle">DNS-провайдеры</string>
+    <string name="dns_sort_content_description">Выбрать сортировку списка DNS</string>
+    <string name="dns_sort_manual">Вручную</string>
+    <string name="dns_sort_alphabetical">Алфавитный (A–Z)</string>
+    <string name="dns_manual_reorder_hint">Зажмите и перетащите за ручку, чтобы изменить порядок DNS.</string>
+    <string name="dns_move_up">Выше</string>
+    <string name="dns_move_down">Ниже</string>
+    <string name="dns_reorder_entry">Изменить порядок %1$s (%2$s)</string>
+    <string name="dns_entry_actions">Действия для %1$s (%2$s)</string>
+    <string name="dns_set_active_mode">Сделать %1$s активным DNS</string>
+    <string name="dns_set_active">Сделать активным DNS</string>
+    <string name="dns_active">Активный DNS</string>
     <string name="dns_custom_entry_badge">Свой DNS</string>
     <string name="dns_add_custom_hostname_button">Добавить свой хост</string>
     <string name="dns_edit_hostname_title">Изменить имя хоста</string>
@@ -125,6 +137,7 @@
     <string name="button_delete">Удалить</string>
     <string name="error_hostname_name_empty">Отображаемое имя не может быть пустым.</string>
     <string name="error_hostname_value_empty">Имя хоста не может быть пустым.</string>
+    <string name="error_hostname_value_invalid">Введите действительное имя хоста DNS.</string>
     <string name="confirm_delete_hostname_title">Удалить хост?</string>
     <string name="confirm_delete_hostname_message">Вы уверены, что хотите удалить «%1$s»?</string>
 
@@ -242,12 +255,17 @@
     <string name="shortcut_settings_mark_favorite_desc">Пометить %1$s как избранное</string>
     <string name="shortcut_settings_remove_favorite_desc">Удалить %1$s из избранного</string>
     <string name="shortcut_settings_open_desc">Открыть настройки ярлыков</string>
+    <string name="quick_action_title">Быстрые действия</string>
+    <string name="quick_action_dns_title">Частный DNS</string>
+    <string name="quick_action_usb_title">Отладка по USB</string>
+    <string name="quick_action_no_actions">Для этой плитки нет включенных действий.</string>
+    <string name="quick_action_open_app">Открыть приложение</string>
     <!-- Правила DNS для сетей Wi-Fi -->
     <string name="setting_wifi_network_rules_title">Правила для сетей Wi-Fi</string>
     <string name="wifi_rules_enabled">Использовать правила для отдельных сетей</string>
     <string name="wifi_ssid_permission_title">Требуется точное местоположение</string>
     <string name="wifi_ssid_permission_description">Android считает имена Wi-Fi (SSID), идентификаторы точек доступа (BSSID) и результаты ближайших сетей информацией, связанной с местоположением. Для чтения требуется разрешение на точное местоположение. Функция не считывает координаты.</string>
-    <string name="wifi_ssid_permission_docs_link">Документация Android о разрешении для SSID</string>
+    <string name="wifi_ssid_permission_docs_link">Документация Android по информации о Wi-Fi, зависящей от местоположения</string>
     <string name="wifi_ssid_permission_grant">Разрешить доступ</string>
     <string name="wifi_location_services_title">Включите службы геолокации</string>
     <string name="wifi_location_services_description">Разрешение предоставлено, но Android показывает подключённый SSID/BSSID и последние результаты Wi-Fi только при включённых службах геолокации.</string>
