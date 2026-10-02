@@ -1,49 +1,29 @@
 package com.rbn.qtsettings
 
 import android.util.Log
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.rbn.qtsettings.app.AppStores
+import com.rbn.qtsettings.utils.Constants
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
-
 @RunWith(AndroidJUnit4::class)
 class AutomationFlowInstrumentedTest : AppFlowTestFixture() {
-
-    @Test
-    fun networkTypeDetection_shouldShowInDnsSettings() {
-        // Navigate to DNS area
-        composeTestRule.navigateToDnsAutomation(context)
-
-        Log.i(FLOW_TAG, "Testing Network Type Detection visibility in DNS settings")
-
-        // Scroll to Network Type Detection section
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
-
-        // Verify Network Type Detection info button is present
-        composeTestRule.onNodeWithText(
-            context.getString(R.string.automation_network_details)
-        ).performScrollTo()
-            .assertIsDisplayed()
-
-        // Note: Description text may not be in semantic tree, so we just verify main elements exist
-        Log.i(FLOW_TAG, "Network Type Detection section displayed successfully")
-    }
 
     @Test
     fun networkTypeDetection_shouldHandleEnableDisableToggle() {
@@ -125,52 +105,28 @@ class AutomationFlowInstrumentedTest : AppFlowTestFixture() {
     }
 
     @Test
-    fun networkTypeDetection_detectionModeShouldBeSelectable() {
-        // Navigate to DNS area
-        composeTestRule.navigateToDnsAutomation(context)
+    fun networkTypeDetection_detectionModeSelectionIsStored() {
+        val automation = AppStores.getInstance(context).automation
+        val originalEnabled = automation.isNetworkTypeDetectionEnabled()
+        val originalMode = automation.getNetworkTypeDetectionMode()
+        try {
+            // Start from background so choosing tile-only is an observable change.
+            automation.setNetworkTypeDetectionMode(Constants.BACKGROUND_DETECTION)
+            composeTestRule.navigateToDnsAutomation(context)
+            ensureNetworkTypeDetectionEnabled()
 
-        Log.i(FLOW_TAG, "Testing Network Type Detection mode selection")
-
-        // Scroll to Network Type Detection section
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
-
-        ensureNetworkTypeDetectionEnabled()
-
-        // Scroll to detection mode section
-        composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().assertIsDisplayed()
-
-        composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().performClick()
-        // Verify tile-only mode is visible
-        composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_TILE_OPTION)
-            .performScrollTo()
-            .assertIsDisplayed()
-
-        // Verify background mode is visible
-        composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION)
-            .performScrollTo()
-            .assertIsDisplayed()
-
-        // Test clicking background mode (requires notification permission on Android 13+)
-        if (canUseBackgroundDetection) {
-            Log.i(FLOW_TAG, "Testing background mode selection")
-            composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION)
-                .performClick()
-            composeTestRule.waitForIdle()
             composeTestRule.onNodeWithTag("automation_network_mode").performScrollTo().performClick()
-        } else {
-            Log.w(
-                FLOW_TAG,
-                "Skipping background mode selection; required permissions unavailable"
-            )
+            composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_BACKGROUND_OPTION)
+                .performScrollTo().assertIsDisplayed()
+            composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_TILE_OPTION)
+                .performScrollTo().performClick()
+            composeTestRule.runOnIdle {
+                assertEquals(Constants.TILE_ONLY_DETECTION, automation.getNetworkTypeDetectionMode())
+            }
+        } finally {
+            automation.setNetworkTypeDetectionMode(originalMode)
+            automation.setNetworkTypeDetectionEnabled(originalEnabled)
         }
-
-        // Test clicking tile-only mode
-        Log.i(FLOW_TAG, "Testing tile-only mode selection")
-        composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_TILE_OPTION)
-            .performClick()
-        composeTestRule.waitForIdle()
-
-        Log.i(FLOW_TAG, "Detection mode selection works correctly")
     }
 
     @Test
@@ -216,115 +172,56 @@ class AutomationFlowInstrumentedTest : AppFlowTestFixture() {
         Log.i(FLOW_TAG, "Network Type Detection info dialog displayed and dismissed successfully")
     }
 
+    /** Enabling one detection must not switch the other one off. */
     @Test
-    fun networkTypeDetection_shouldCoexistWithVpnDetection() {
-        // Navigate to DNS area
-        composeTestRule.navigateToDnsAutomation(context)
+    fun networkTypeDetection_andVpnDetectionCanBeEnabledTogether() {
+        val automation = AppStores.getInstance(context).automation
+        val originalVpn = automation.isVpnDetectionEnabled()
+        val originalNetwork = automation.isNetworkTypeDetectionEnabled()
+        try {
+            composeTestRule.navigateToDnsAutomation(context)
+            composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_vpn_detection_enabled))
+            val vpnToggle = composeTestRule.onNodeWithTag("vpn_detection_toggle")
+            if (vpnToggle.fetchSemanticsNode().config[SemanticsProperties.ToggleableState] != ToggleableState.On) {
+                vpnToggle.performScrollTo().performClick()
+            }
+            ensureNetworkTypeDetectionEnabled()
 
-        Log.i(FLOW_TAG, "Testing Network Type Detection and VPN Detection coexistence")
-
-        // Verify VPN Detection section is visible
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_vpn_detection_enabled))
-
-        // Read the actual switch state; mode rows remain visible while disabled.
-        val vpnAlreadyEnabled = composeTestRule.onNodeWithTag("vpn_detection_toggle")
-            .fetchSemanticsNode().config[SemanticsProperties.ToggleableState] == ToggleableState.On
-
-        if (!vpnAlreadyEnabled) {
-            Log.i(FLOW_TAG, "Enabling VPN Detection")
-            composeTestRule.onNodeWithText(context.getString(R.string.setting_vpn_detection_enabled))
-                .performClick()
-            composeTestRule.waitForIdle()
-        } else {
-            Log.i(FLOW_TAG, "VPN Detection already enabled")
+            composeTestRule.runOnIdle {
+                assertTrue(automation.isVpnDetectionEnabled())
+                assertTrue(automation.isNetworkTypeDetectionEnabled())
+            }
+            composeTestRule.onNodeWithTag("vpn_detection_toggle").assertIsOn()
+            composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_TOGGLE).assertIsOn()
+        } finally {
+            automation.setVpnDetectionEnabled(originalVpn)
+            automation.setNetworkTypeDetectionEnabled(originalNetwork)
         }
-
-        // Scroll to Network Type Detection section
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
-
-        ensureNetworkTypeDetectionEnabled()
-
-        // Verify both sections are enabled and visible
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_vpn_detection_enabled))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.setting_network_type_detection_enabled))
-
-        // Verify Network Type Detection options are visible when enabled
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_wifi))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_mobile))
-
-        Log.i(FLOW_TAG, "Network Type Detection and VPN Detection coexist correctly")
     }
 
+    /** Custom providers from the DNS feature must be offered as automation targets. */
     @Test
-    fun networkTypeDetection_shouldShowAllDnsStateOptions() {
-        // Navigate to DNS area
-        composeTestRule.navigateToDnsAutomation(context)
-
-        Log.i(FLOW_TAG, "Testing DNS state options in Network Type Detection")
-
-        ensureNetworkTypeDetectionEnabled()
-
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
-        composeTestRule.navigateToDnsProviders(context)
-        // Add a custom DNS hostname first to test hostname option
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.dns_add_custom_hostname_button))
-        composeTestRule.onNodeWithText(context.getString(R.string.dns_add_custom_hostname_button))
-            .performClick()
-        composeTestRule.waitForIdle()
-
-        // Fill in custom hostname
-        val testHostname = "Test Network Type DNS"
-        val testValue = "dns.networktype.test"
-        composeTestRule.onAllNodes(hasSetTextAction())[0]
-            .performTextInput(testHostname)
-        composeTestRule.onAllNodes(hasSetTextAction())[1]
-            .performTextInput(testValue)
-
-        // Save the hostname
-        composeTestRule.onNodeWithText(context.getString(R.string.dialog_save))
-            .performClick()
-        composeTestRule.waitForIdle()
-
-        // Verify custom hostname is added
-        composeTestRule.safeScrollToAndAssert(testHostname)
-
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
-        composeTestRule.navigateToDnsAutomation(context)
-        // Scroll back to Network Type Detection section
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_wifi))
-
-        composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL).performClick()
-        composeTestRule.onNodeWithTag("automation_target_off").performScrollTo().assertIsDisplayed()
-        composeTestRule.onNodeWithTag("automation_target_auto").performScrollTo().assertIsDisplayed()
-        composeTestRule.onNodeWithText(testHostname).performScrollTo().assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
-
-        // Verify Mobile DNS state label is displayed
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.automation_mobile))
-        composeTestRule.onNodeWithText(context.getString(R.string.automation_mobile))
-            .assertIsDisplayed()
-
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
-        composeTestRule.navigateToDnsProviders(context)
-        // Clean up: delete the test hostname
-        try {
-            composeTestRule.onNodeWithContentDescription(
-                context.getString(R.string.dns_entry_actions, testHostname, testValue)
-            )
-                .performScrollTo()
-                .performClick()
-            composeTestRule.onNodeWithTag("dns_delete_button_${testValue}_${testHostname}")
-                .performClick()
-            composeTestRule.waitForIdle()
-
-            composeTestRule.onNodeWithText(context.getString(R.string.button_delete))
-                .performClick()
-            composeTestRule.waitForIdle()
-        } catch (e: AssertionError) {
-            // If cleanup fails, log it but don't fail the test
-            Log.w(FLOW_TAG, "Failed to clean up test hostname: ${e.message}")
+    fun networkTypeDetection_offersSystemModesAndCustomProvidersAsTargets() {
+        val stores = AppStores.getInstance(context)
+        val originalNetwork = stores.automation.isNetworkTypeDetectionEnabled()
+        val name = "Test Network Type DNS"
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            stores.dns.addCustomDnsHostname(name, "dns.networktype.test")
         }
-
-        Log.i(FLOW_TAG, "DNS state options in Network Type Detection work correctly")
+        try {
+            composeTestRule.navigateToDnsAutomation(context)
+            ensureNetworkTypeDetectionEnabled()
+            composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_WIFI_STATE_LABEL)
+                .performScrollTo().performClick()
+            composeTestRule.onNodeWithTag("automation_target_off").performScrollTo().assertIsDisplayed()
+            composeTestRule.onNodeWithTag("automation_target_auto").performScrollTo().assertIsDisplayed()
+            composeTestRule.onNodeWithText(name).performScrollTo().assertIsDisplayed()
+        } finally {
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                stores.dns.dnsHostnames.value.filter { it.name == name }
+                    .forEach { stores.dns.deleteCustomDnsHostname(it.id) }
+            }
+            stores.automation.setNetworkTypeDetectionEnabled(originalNetwork)
+        }
     }
 }

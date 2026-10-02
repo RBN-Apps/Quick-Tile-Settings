@@ -174,11 +174,11 @@ class DesignSystemInstrumentedTest {
         compose.runOnIdle { assertEquals("dns.example.com", value) }
     }
 
-    @Test fun rowsGallery_lightEnglish() = renderGallery("rows-light-en", false, "en", 1f, false)
-    @Test fun rowsGallery_darkGerman() = renderGallery("rows-dark-de", true, "de", 1f, false)
+    @ScreenshotLane @Test fun rowsGallery_lightEnglish() = renderGallery("rows-light-en", false, "en", 1f, false)
+    @ScreenshotLane @Test fun rowsGallery_darkGerman() = renderGallery("rows-dark-de", true, "de", 1f, false)
     @Test fun rowsGallery_largeGerman() = renderGallery("rows-large-de", false, "de", 2f, false)
-    @Test fun inputsGallery_lightEnglish() = renderGallery("inputs-light-en", false, "en", 1f, true)
-    @Test fun inputsGallery_darkGerman() = renderGallery("inputs-dark-de", true, "de", 1f, true)
+    @ScreenshotLane @Test fun inputsGallery_lightEnglish() = renderGallery("inputs-light-en", false, "en", 1f, true)
+    @ScreenshotLane @Test fun inputsGallery_darkGerman() = renderGallery("inputs-dark-de", true, "de", 1f, true)
     @Test fun inputsGallery_largeGerman() = renderGallery("inputs-large-de", false, "de", 2f, true)
 
     private fun renderGallery(name: String, dark: Boolean, language: String, fontScale: Float, inputs: Boolean) {

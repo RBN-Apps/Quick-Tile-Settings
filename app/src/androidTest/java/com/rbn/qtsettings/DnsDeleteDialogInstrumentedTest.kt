@@ -16,6 +16,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
+@AdaptiveLayout
 class DnsDeleteDialogInstrumentedTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 

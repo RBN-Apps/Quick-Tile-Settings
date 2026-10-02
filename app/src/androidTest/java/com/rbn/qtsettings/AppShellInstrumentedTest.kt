@@ -1,5 +1,6 @@
 package com.rbn.qtsettings
 
+import androidx.test.filters.SdkSuppress
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -33,6 +34,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@AdaptiveLayout
 class AppShellInstrumentedTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -177,27 +179,35 @@ class AppShellInstrumentedTest {
 
     @Test fun repeatedWarmTileIntentsSelectTheirAreaWithoutAddingHistory() {
         launch()
-        repeat(2) {
+        repeat(2) { round ->
             compose.selectNavigationTarget(context, com.rbn.qtsettings.app.navigation.AppRailTarget.Shortcuts)
             // Deliver through Android's real onNewIntent path to the existing Activity.
-            scenario.onActivity {
-                it.startActivity(usbIntent().addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-            }
-            compose.waitForIdle()
+            deliverWarmIntent(usbIntent(), "usb-$round")
             compose.assertNavigationAreaSelected(context, AppArea.Usb)
         }
-        scenario.onActivity {
-            it.startActivity(Intent(it, MainActivity::class.java)
-                .putExtra(Intent.EXTRA_COMPONENT_NAME, PrivateDnsTileService::class.java.name)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP))
-        }
-        compose.waitForIdle()
+        deliverWarmIntent(Intent(context, MainActivity::class.java)
+            .putExtra(Intent.EXTRA_COMPONENT_NAME, PrivateDnsTileService::class.java.name), "dns")
         compose.assertNavigationAreaSelected(context, AppArea.Dns)
         systemBack()
         compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
     }
+
+    /** startActivity() returns before onNewIntent runs; wait until the Activity holds this intent. */
+    private fun deliverWarmIntent(intent: Intent, marker: String) {
+        scenario.onActivity {
+            it.startActivity(intent.putExtra(WARM_INTENT_MARKER, marker)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        }
+        compose.waitUntil(5_000) {
+            var delivered = false
+            scenario.onActivity { delivered = it.intent.getStringExtra(WARM_INTENT_MARKER) == marker }
+            delivered
+        }
+        compose.waitForIdle()
+    }
+
+    @SdkSuppress(minSdkVersion = 34)
     @Test fun realBackGestures_cancelCommitAndHome_preserveUsbScroll() {
-        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
         org.junit.Assert.assertTrue("Enable gestural navigation before running real edge-gesture tests", android.provider.Settings.Secure.getInt(context.contentResolver, "navigation_mode", 0) == 2)
         launch(usbIntent())
         text(R.string.setting_require_unlock).performScrollTo()
@@ -241,3 +251,5 @@ class AppShellInstrumentedTest {
     }
 
 }
+
+private const val WARM_INTENT_MARKER = "test.warm_intent_marker"

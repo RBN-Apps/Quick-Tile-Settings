@@ -13,6 +13,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@AdaptiveLayout
 class AboutInstrumentedTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
@@ -33,9 +34,12 @@ class AboutInstrumentedTest {
         open()
         scrollTo(R.string.about_report_issue)
         node(R.string.about_report_issue).performClick()
-        val checkbox = compose.onNode(hasText(label(R.string.about_report_include)) and isToggleable())
+        val matcher = hasText(label(R.string.about_report_include)) and isToggleable()
+        val checkbox = compose.onNode(matcher)
         checkbox.assertIsOff().performClick().assertIsOn()
         compose.activityRule.scenario.recreate()
+        // The restored dialog attaches its own window after the Activity's first frame.
+        compose.waitUntil(5_000) { compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() }
         checkbox.assertIsOn()
         node(R.string.dialog_cancel).performClick()
         node(R.string.about_report_issue).performClick()
@@ -89,7 +93,8 @@ class AboutInstrumentedTest {
         // Content scroll survives recreation; absolute coordinates can change with system insets.
         val before = offset()
         compose.activityRule.scenario.recreate()
-        node(R.string.about_license).assertIsDisplayed()
+        // The restored screen reaches its saved scroll position a few frames after RESUMED.
+        compose.waitUntil(5_000) { runCatching { node(R.string.about_license).assertIsDisplayed() }.isSuccess }
         val restored = node(R.string.about_license).fetchSemanticsNode().positionInRoot
         assertEquals(before, offset(), 1f)
         for (edge in listOf(BackEventCompat.EDGE_LEFT, BackEventCompat.EDGE_RIGHT)) {

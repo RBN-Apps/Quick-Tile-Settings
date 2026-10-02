@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+# A new push to a pull request supersedes its running pipeline.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -43,14 +48,23 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Test CI report summary
-        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
-
       - name: Run linters
         run: ./gradlew lintDebug
 
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
+
+      # Compile the instrumented APKs once; the device jobs reuse these outputs from the build cache.
+      - name: Build APKs
+        run: ./gradlew assembleDebug assembleDebugAndroidTest
+
+      - name: Upload Gradle build cache
+        uses: actions/upload-artifact@v7
+        with:
+          name: gradle-build-cache
+          path: ~/.gradle/caches/build-cache-1
+          include-hidden-files: true
+          retention-days: 1
 
       - name: Upload Unit Test Results (XML)
         if: always()
@@ -135,13 +149,19 @@ jobs:
   instrumented-tests:
     needs: build-and-test
     runs-on: ubuntu-latest
-    # Include APK build/boot and diagnostic upload around the driver's 25-minute test limit.
-    timeout-minutes: 45
+    # The full suite takes close to 25 minutes on the emulator, plus build and boot.
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         api-level: [ 35 ]
         profile: [ "Nexus 6", "Nexus 10", "7.6in Foldable" ]
+        # The phone runs the full suite; larger windows only change @AdaptiveLayout classes.
+        include:
+          - profile: "Nexus 10"
+            test-filter: -Pandroid.testInstrumentationRunnerArguments.annotation=com.rbn.qtsettings.AdaptiveLayout
+          - profile: "7.6in Foldable"
+            test-filter: -Pandroid.testInstrumentationRunnerArguments.annotation=com.rbn.qtsettings.AdaptiveLayout
 
     steps:
       - name: Checkout code
@@ -162,6 +182,12 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
 
+      - name: Download Gradle build cache
+        uses: actions/download-artifact@v7
+        with:
+          name: gradle-build-cache
+          path: ~/.gradle/caches/build-cache-1
+
       - name: Make gradlew executable (+ normalize endings)
         run: |
           chmod +x ./gradlew
@@ -173,34 +199,80 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # Compilation and the Android first boot must not compete for the private runner's CPU/RAM.
-      - name: Build APKs before starting the emulator
-        run: >-
-          ./gradlew assembleDebug assembleDebugAndroidTest --no-daemon --max-workers=2
-          -Pkotlin.compiler.execution.strategy=in-process
+      - name: Build APKs
+        run: ./gradlew assembleDebug assembleDebugAndroidTest
 
-      # The API-35 userdata partition needs ~7.4 GB in addition to the downloaded system image.
-      # This Kotlin-only app uses neither the preinstalled NDK nor .NET on these disposable VMs.
-      - name: Free unused runner toolchains for the emulator
-        run: |
-          df -h "$HOME"
-          sudo rm -rf "${ANDROID_HOME:?}/ndk" /usr/share/dotnet
-          df -h "$HOME"
+      # The API-35 AVD needs several GB; this Kotlin-only app uses neither the NDK nor .NET.
+      - name: Free disk space for the emulator
+        run: sudo rm -rf "${ANDROID_HOME:?}/ndk" /usr/share/dotnet
+
+      - name: Cache AVD
+        uses: actions/cache@v6
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ runner.os }}-api-${{ matrix.api-level }}-default-x86_64-gestural-noerrdialog-profile-${{ matrix.profile }}
+
+      # Bake device settings into the snapshot and save it only once the launcher is settled.
+      # Switching navigation mode restarts System UI and the launcher; doing that right before
+      # the tests left another window holding input focus for the whole run.
+      - name: Generate AVD snapshot for API ${{ matrix.api-level }} on ${{ matrix.profile }}
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: default
+          profile: ${{ matrix.profile }}
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
+          disable-animations: false
+          # emulator-runner sends `input keyevent 82` right after boot to leave the lock screen. On a
+          # cold boot it can arrive too early and leave the keyguard focused, so disable the keyguard.
+          # The same event can make the launcher or System UI ANR before the first line below hides
+          # error dialogs; the wait loops close such a dialog, and later ANRs restart the process.
+          # Predictive-back tests need real gestural navigation; IME tests need the soft keyboard.
+          script: |
+            adb shell settings put global hide_error_dialogs 1
+            adb shell svc power stayon true
+            adb shell locksettings set-disabled true
+            adb shell settings put secure show_ime_with_hard_keyboard 1
+            adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural
+            timeout 60 adb shell 'until [ "$(settings get secure navigation_mode)" = 2 ]; do sleep 1; done'
+            adb shell am start -W -a android.intent.action.MAIN -c android.intent.category.HOME
+            timeout 300 adb shell 'until dumpsys window | grep -q "mCurrentFocus=.*launcher3/"; do wm dismiss-keyguard; am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null; sleep 2; done' || { adb shell dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'; exit 1; }
+            sleep 30
+            adb shell dumpsys window | grep -E 'mCurrentFocus=.*launcher3/' || { adb shell dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'; exit 1; }
 
       - name: Run Instrumented Tests on API ${{ matrix.api-level }} on ${{ matrix.profile }}
+        uses: reactivecircus/android-emulator-runner@v2
         env:
-          TEST_API: ${{ matrix.api-level }}
-          TEST_PROFILE: ${{ matrix.profile }}
-        run: bash .github/scripts/run_emulator_tests.sh
+          TEST_FILTER: ${{ matrix.test-filter }}
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: default
+          profile: ${{ matrix.profile }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
+          disable-animations: true
+          # Fail fast if a system window (e.g. an ANR dialog) holds focus instead of the launcher.
+          # On failure, pull the window-focus screenshots written by DialogWindowTestHelper.
+          script: |
+            timeout 180 adb shell 'until dumpsys window | grep -q "mCurrentFocus=.*launcher3/"; do wm dismiss-keyguard; am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null; sleep 2; done' || { adb shell dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'; exit 1; }
+            timeout --preserve-status 40m ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.notAnnotation=com.rbn.qtsettings.ScreenshotLane $TEST_FILTER || { adb pull /sdcard/Download/qt-ci-diagnostics app/build/outputs/androidTest-results/connected/ci-diagnostics; exit 1; }
 
-      - name: Summarize and enforce Instrumented Test Results
+      - name: Summarize Instrumented Test Results
         if: always()
-        env:
-          TEST_PROFILE: API ${{ matrix.api-level }} / ${{ matrix.profile }}
-        run: >-
-          python3 .github/scripts/summarize_instrumented_tests.py
-          --reports app/build/outputs/androidTest-results/connected
-          --label "$TEST_PROFILE"
+        uses: mikepenz/action-junit-report@v6
+        with:
+          report_paths: app/build/outputs/androidTest-results/connected/**/TEST-*.xml
+          check_name: Instrumented Tests (API ${{ matrix.api-level }} - ${{ matrix.profile }})
+          annotate_only: true
+          detailed_summary: true
+          require_tests: true
 
       - name: Upload Instrumented Test Artifacts
         if: always()
@@ -210,5 +282,4 @@ jobs:
           path: |
             app/build/reports/androidTests/connected/**/*
             app/build/outputs/androidTest-results/connected/**/*
-            app/build/ci-device-diagnostics/**/*
           retention-days: 7

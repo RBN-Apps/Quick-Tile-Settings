@@ -32,108 +32,35 @@ import org.junit.runner.RunWith
 class DnsFlowInstrumentedTest : AppFlowTestFixture() {
 
     @Test
-    fun dnsSettings_shouldShowAllOptions() {
-        // Navigate to DNS area
-        composeTestRule.navigateToDnsArea(context)
-
-        // Verify DNS settings title
-        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns)).assertIsDisplayed()
-
-        composeTestRule.onNodeWithText(context.getString(R.string.dns_menu_providers)).performScrollTo().performClick()
-        // Verify tile cycles description
+    fun providersPage_explainsTheCycle_andOffersActivationForOffAndAuto() {
+        composeTestRule.navigateToDnsProviders(context)
         composeTestRule.onNodeWithText(context.getString(R.string.dns_cycle_explanation))
             .assertIsDisplayed()
-
-        // Verify DNS state options exist
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.dns_state_off))
-        composeTestRule.safeScrollToAndAssert(context.getString(R.string.dns_state_auto))
-
-        Log.i(FLOW_TAG, "DNS settings displayed correctly")
-    }
-
-    @Test
-    fun dnsProviderInfoButtons_shouldOpenInfoDialogs() {
-        // Navigate to DNS area
-        composeTestRule.navigateToDnsProviders(context)
-
-        // Test info buttons for predefined DNS providers
-        val predefinedProviders = listOf(
-            "AdGuard DNS" to "dns.adguard.com",
-            "Cloudflare (1.1.1.1)" to "one.one.one.one",
-            "Quad9 Security" to "dns.quad9.net"
-        )
-
-        predefinedProviders.forEach { (providerName, providerHostname) ->
-            Log.i(FLOW_TAG, "Testing info button for: $providerName")
-
-            // Open the compact row actions and select Info.
-            try {
-                composeTestRule.onNodeWithContentDescription(
-                    context.getString(
-                        R.string.dns_entry_actions,
-                        providerName,
-                        providerHostname
-                    )
-                )
-                    .performScrollTo()
-                    .performClick()
-            } catch (_: AssertionError) {
-                composeTestRule.onNodeWithContentDescription(
-                    context.getString(
-                        R.string.dns_entry_actions,
-                        providerName,
-                        providerHostname
-                    )
-                )
-                    .performClick()
-            }
-            composeTestRule.onNodeWithText(
-                context.getString(R.string.button_info_dns, providerName)
-            ).performClick()
-            composeTestRule.waitForIdle()
-
-            // Wait for info dialog to appear
-            composeTestRule.waitUntil(timeoutMillis = 3_000) {
-                composeTestRule.onAllNodesWithText(
-                    context.getString(
-                        R.string.dns_info_dialog_title,
-                        providerName
-                    )
-                )
-                    .fetchSemanticsNodes().isNotEmpty()
-            }
-
-            // Verify dialog is displayed
-            composeTestRule.onNodeWithText(
-                context.getString(
-                    R.string.dns_info_dialog_title,
-                    providerName
-                )
-            )
-                .assertIsDisplayed()
-
-            // Close dialog
-            composeTestRule.onNodeWithText(context.getString(R.string.dialog_close))
-                .performClick()
-            composeTestRule.waitForIdle()
-
-            Log.i(FLOW_TAG, "Info dialog for $providerName displayed and dismissed successfully")
+        listOf(R.string.dns_state_off, R.string.dns_state_auto).forEach { mode ->
+            composeTestRule.onNodeWithContentDescription(
+                context.getString(R.string.dns_set_active_mode, context.getString(mode))
+            ).performScrollTo().assertIsDisplayed()
         }
     }
 
+    /** One provider suffices: the dialog title is formatted from the name on a shared code path. */
     @Test
-    fun dnsOffAndAutoRows_shouldOfferSetActiveAction() {
+    fun providerInfoAction_opensAndClosesItsInfoDialog() {
         composeTestRule.navigateToDnsProviders(context)
+        composeTestRule.onNodeWithContentDescription(
+            context.getString(R.string.dns_entry_actions, "AdGuard DNS", "dns.adguard.com")
+        ).performScrollTo().performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.button_info_dns, "AdGuard DNS"))
+            .performClick()
 
-        listOf(
-            context.getString(R.string.dns_state_off),
-            context.getString(R.string.dns_state_auto)
-        ).forEach { modeLabel ->
-            composeTestRule.onNodeWithContentDescription(
-                context.getString(R.string.dns_set_active_mode, modeLabel)
-            )
-                .performScrollTo()
-                .assertIsDisplayed()
+        val title = context.getString(R.string.dns_info_dialog_title, "AdGuard DNS")
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            composeTestRule.onAllNodesWithText(title).fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithText(title).assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.dialog_close)).performClick()
+        composeTestRule.waitUntil(timeoutMillis = 3_000) {
+            composeTestRule.onAllNodesWithText(title).fetchSemanticsNodes().isEmpty()
         }
     }
 
@@ -432,41 +359,28 @@ class DnsFlowInstrumentedTest : AppFlowTestFixture() {
         Log.i(FLOW_TAG, "Custom DNS hostname CRUD test completed successfully")
     }
 
+    /** The installed app wires the DNS pages to the real store; the screens are covered by DnsUi. */
     @Test
-    fun dnsSettings_shouldHandleCheckboxInteractions() {
-        // Navigate to DNS area
-        composeTestRule.navigateToDnsProviders(context)
+    fun providersAndRevertPages_persistTheirSelections() {
+        val store = AppStores.getInstance(context).dns
+        val originalOff = store.dnsToggleOff.value
+        val originalRevert = store.dnsEnableAutoRevert.value
+        try {
+            composeTestRule.navigateToDnsProviders(context)
+            composeTestRule.onNodeWithText(context.getString(R.string.dns_state_off))
+                .performScrollTo().performClick()
+            composeTestRule.runOnIdle { assertEquals(!originalOff, store.dnsToggleOff.value) }
 
-        Log.i(FLOW_TAG, "Testing DNS checkbox interactions")
-
-        // Test DNS Off checkbox
-        composeTestRule.onNodeWithText(context.getString(R.string.dns_state_off))
-            .performClick()
-        composeTestRule.waitForIdle()
-
-        // Test DNS Auto checkbox
-        composeTestRule.onNodeWithText(context.getString(R.string.dns_state_auto))
-            .performClick()
-        composeTestRule.waitForIdle()
-
-        // Test predefined DNS provider checkbox (uncheck AdGuard DNS)
-        composeTestRule.onNodeWithText("AdGuard DNS")
-            .performClick()
-        composeTestRule.waitForIdle()
-
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
-        composeTestRule.navigateToDnsAutomation(context)
-        // Test VPN Detection checkbox
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_vpn_detection_enabled))
-            .performScrollTo().performClick()
-        composeTestRule.waitForIdle()
-
-        composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc)).performClick()
-        composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_revert)).performScrollTo().performClick()
-        // Test Auto-Revert checkbox
-        composeTestRule.onNodeWithText(context.getString(R.string.setting_enable_auto_revert))
-            .performClick()
-        composeTestRule.waitForIdle()
-
+            composeTestRule.onNodeWithContentDescription(context.getString(R.string.navigate_back_desc))
+                .performClick()
+            composeTestRule.onNodeWithText(context.getString(R.string.usb_menu_revert))
+                .performScrollTo().performClick()
+            composeTestRule.onNodeWithText(context.getString(R.string.setting_enable_auto_revert))
+                .performClick()
+            composeTestRule.runOnIdle { assertEquals(!originalRevert, store.dnsEnableAutoRevert.value) }
+        } finally {
+            store.setDnsToggleOff(originalOff)
+            store.setDnsEnableAutoRevert(originalRevert)
+        }
     }
 }

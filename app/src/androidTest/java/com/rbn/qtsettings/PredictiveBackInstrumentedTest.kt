@@ -1,5 +1,6 @@
 package com.rbn.qtsettings
 
+import androidx.test.filters.SdkSuppress
 import androidx.activity.BackEventCompat
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 
 /** Dispatcher tests exercise real NavDisplay progress/ownership, not just a mutable stack. */
+@AdaptiveLayout
 class PredictiveBackInstrumentedTest {
     @get:Rule val compose = createComposeRule(
         effectContext = object : MotionDurationScale { override val scaleFactor = 1f }
@@ -143,8 +145,8 @@ class PredictiveBackInstrumentedTest {
         compose.runOnIdle { assertEquals(2, cleared.get()) }
     }
 
+    @SdkSuppress(minSdkVersion = 34)
     @Test fun realEdgeGestures_previewCancelAndCommitFromBothEdges() {
-        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
         org.junit.Assert.assertTrue("Enable gestural navigation before running real edge-gesture tests", android.provider.Settings.Secure.getInt(
             androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.contentResolver,
             "navigation_mode", 0) == 2)
@@ -181,8 +183,8 @@ class PredictiveBackInstrumentedTest {
         compose.waitUntil(5_000) { cleared.get() == 1 }
     }
 
+    @SdkSuppress(minSdkVersion = 34)
     @Test fun realGesture_failedPreviewReleasesPointerForNextGesture() {
-        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
         val context = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(2, android.provider.Settings.Secure.getInt(context.contentResolver, "navigation_mode", 0))
         show()
@@ -212,8 +214,8 @@ class PredictiveBackInstrumentedTest {
         compose.waitUntil(5_000) { cleared.get() == 1 }
     }
 
+    @SdkSuppress(minSdkVersion = 34)
     @Test fun realGestures_imeThenDialogThenRailThenPage_noSaveOrExtraPop() {
-        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 34)
         org.junit.Assert.assertTrue("Enable gestural navigation before running real edge-gesture tests", android.provider.Settings.Secure.getInt(
             androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.contentResolver,
             "navigation_mode", 0) == 2)

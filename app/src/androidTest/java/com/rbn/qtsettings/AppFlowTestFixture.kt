@@ -11,8 +11,8 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.core.content.ContextCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import com.rbn.qtsettings.platform.permissions.PermissionUtils
@@ -64,10 +64,11 @@ abstract class AppFlowTestFixture {
 
         if (!networkTypeAlreadyEnabled) {
             Log.i(FLOW_TAG, "Enabling Network Type Detection")
-            composeTestRule.onNodeWithText(context.getString(R.string.setting_network_type_detection_enabled))
+            // The section sits above VPN detection; a click outside the viewport is silently lost.
+            composeTestRule.onNodeWithTag(FLOW_TAG_NETWORK_TYPE_DETECTION_TOGGLE)
+                .performScrollTo()
                 .performClick()
             composeTestRule.waitForIdle()
-            Thread.sleep(500) // Give animation time to complete
         } else {
             Log.i(FLOW_TAG, "Network Type Detection already enabled")
         }

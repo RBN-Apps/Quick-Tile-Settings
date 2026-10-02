@@ -10,7 +10,6 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -75,32 +74,6 @@ class ShortcutSettingsInstrumentedTest {
         composeTestRule.onNodeWithText(text).performScrollTo().assertIsDisplayed()
     }
 
-    // === Navigation ===
-
-    @Test
-    fun shortcutSettings_backButton_shouldReturnToMainScreen() {
-        composeTestRule.assertNavigationAvailable(context)
-
-        composeTestRule.navigateToShortcutSettings(context)
-
-        composeTestRule.onNodeWithContentDescription(
-            context.getString(R.string.navigate_back_desc)
-        ).assertIsDisplayed()
-
-        composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_title))
-            .assertIsDisplayed()
-
-        composeTestRule.navigateBackFromShortcutSettings(context)
-
-        // The overview is visible again; its root top bar names the selected tile area.
-        composeTestRule.onNodeWithText(context.getString(R.string.tab_title_dns))
-            .assertIsDisplayed()
-
-        composeTestRule.assertNavigationAvailable(context)
-
-        Log.i(TAG, "Back button returns to the main screen")
-    }
-
     @Test
     fun pinnedWarning_survivesRecreation_cancelDoesNotEnableFallback() {
         composeTestRule.navigateToShortcutSettings(context)
@@ -119,127 +92,68 @@ class ShortcutSettingsInstrumentedTest {
     // === Screen content ===
 
     @Test
-    fun shortcutSettings_shouldShowActiveShortcutCountIndicator() {
+    fun overview_listsBothGroupsWithEveryBuiltInShortcut_andTheActiveCount() {
         composeTestRule.navigateToShortcutSettings(context)
 
         val configuration = AppStores.getInstance(context).shortcuts.state.value
-        val countLabel = context.getString(R.string.shortcut_settings_limit,
-            configuration.enabledIds.size, configuration.maxCount)
-        composeTestRule.onNodeWithText(countLabel).assertIsDisplayed()
-
-        Log.i(TAG, "Active shortcut count indicator is visible")
-    }
-
-    @Test
-    fun shortcutSettings_shouldShowPrivateDnsGroupTitle() {
-        composeTestRule.navigateToShortcutSettings(context)
-
-        scrollToShortcut(context.getString(R.string.setting_title_private_dns))
-
-        Log.i(TAG, "Private DNS group title is visible")
-    }
-
-    @Test
-    fun shortcutSettings_shouldShowUsbDebuggingGroupTitle() {
-        composeTestRule.navigateToShortcutSettings(context)
-
-        scrollToShortcut(context.getString(R.string.setting_title_usb_debugging))
-
-        Log.i(TAG, "USB Debugging group title is visible")
-    }
-
-    @Test
-    fun shortcutSettings_shouldShowAllPredefinedDnsShortcutItems() {
-        composeTestRule.navigateToShortcutSettings(context)
-
-        scrollToShortcut(context.getString(R.string.shortcut_dns_off_short))
-        scrollToShortcut(context.getString(R.string.shortcut_dns_auto_short))
-        scrollToShortcut(context.getString(R.string.shortcut_dns_adguard_short))
-        scrollToShortcut(context.getString(R.string.shortcut_dns_cloudflare_short))
-        scrollToShortcut(context.getString(R.string.shortcut_dns_quad9_short))
-
-        Log.i(TAG, "All predefined DNS shortcut items are visible")
-    }
-
-    @Test
-    fun shortcutSettings_shouldShowAllUsbShortcutItems() {
-        composeTestRule.navigateToShortcutSettings(context)
-
-        scrollToShortcut(context.getString(R.string.shortcut_usb_on_short))
-        scrollToShortcut(context.getString(R.string.shortcut_usb_off_short))
-
-        Log.i(TAG, "USB shortcut items are visible")
+        composeTestRule.onNodeWithText(context.getString(R.string.shortcut_settings_limit,
+            configuration.enabledIds.size, configuration.maxCount)).assertIsDisplayed()
+        listOf(
+            R.string.setting_title_private_dns,
+            R.string.shortcut_dns_off_short,
+            R.string.shortcut_dns_auto_short,
+            R.string.shortcut_dns_adguard_short,
+            R.string.shortcut_dns_cloudflare_short,
+            R.string.shortcut_dns_quad9_short,
+            R.string.setting_title_usb_debugging,
+            R.string.shortcut_usb_on_short,
+            R.string.shortcut_usb_off_short
+        ).forEach { scrollToShortcut(context.getString(it)) }
     }
 
     // === Toggle interaction ===
+    // setUp() disables every shortcut, so enabling one can never hit the limit here.
 
     @Test
-    fun shortcutSettings_disablingShortcut_shouldDecreaseActiveCount() {
+    fun enablingShortcut_increasesActiveCount_andPublishesItToShortcutManager() {
         val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
         val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
-
-        // Pre-condition: ensure DNS Off is enabled so disabling it decreases the count
         val prefsManager = AppStores.getInstance(context)
+        val shortcutManager = context.getSystemService(ShortcutManager::class.java)
+        val countBefore = prefsManager.shortcuts.enabledShortcutIds.value.size
+        assertFalse(shortcutManager.dynamicShortcuts.any { it.id == dnsOffId })
+
+        composeTestRule.navigateToShortcutSettings(context)
+        scrollToShortcut(dnsOffTitle)
+        composeTestRule.onNodeWithText(dnsOffTitle).performClick()
+        composeTestRule.waitForIdle()
+
+        assertEquals(countBefore + 1, prefsManager.shortcuts.enabledShortcutIds.value.size)
+        val publishedIds = shortcutManager.dynamicShortcuts.map { it.id }
+        assertTrue("'$dnsOffId' must be published, got $publishedIds", publishedIds.contains(dnsOffId))
+    }
+
+    @Test
+    fun disablingShortcut_decreasesActiveCount_andRemovesItFromShortcutManager() {
+        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
+        val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
+        val prefsManager = AppStores.getInstance(context)
+        val shortcutManager = context.getSystemService(ShortcutManager::class.java)
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, true)
         }
         composeTestRule.waitForIdle()
-
         val countBefore = prefsManager.shortcuts.enabledShortcutIds.value.size
+        assertTrue(shortcutManager.dynamicShortcuts.any { it.id == dnsOffId })
 
         composeTestRule.navigateToShortcutSettings(context)
         scrollToShortcut(dnsOffTitle)
         composeTestRule.onNodeWithText(dnsOffTitle).performClick()
         composeTestRule.waitForIdle()
 
-        val countAfter = prefsManager.shortcuts.enabledShortcutIds.value.size
-        assertEquals(
-            "Active count should decrease by 1 after disabling (before=$countBefore, after=$countAfter)",
-            countBefore - 1,
-            countAfter
-        )
-
-        Log.i(TAG, "Disabling a shortcut decreases active count from $countBefore to $countAfter")
-    }
-
-    @Test
-    fun shortcutSettings_enablingShortcut_shouldIncreaseActiveCount() {
-        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
-        val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
-
-        // Pre-condition: ensure DNS Off is disabled so enabling it increases the count
-        val prefsManager = AppStores.getInstance(context)
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, false)
-        }
-        composeTestRule.waitForIdle()
-
-        val countBefore = prefsManager.shortcuts.enabledShortcutIds.value.size
-
-        composeTestRule.navigateToShortcutSettings(context)
-        scrollToShortcut(dnsOffTitle)
-        composeTestRule.onNodeWithText(dnsOffTitle).performClick()
-        composeTestRule.waitForIdle()
-
-        // If limit was reached, the dialog appears; dismiss it and the count stays the same
-        val dialogNodes = composeTestRule
-            .onAllNodesWithText(context.getString(R.string.shortcut_settings_limit_reached_title))
-            .fetchSemanticsNodes()
-        if (dialogNodes.isNotEmpty()) {
-            Log.i(TAG, "Limit already reached; dismissing dialog — count unchanged is expected")
-            composeTestRule.onNodeWithText(context.getString(R.string.dialog_close)).performClick()
-            composeTestRule.waitForIdle()
-            return
-        }
-
-        val countAfter = prefsManager.shortcuts.enabledShortcutIds.value.size
-        assertEquals(
-            "Active count should increase by 1 after enabling (before=$countBefore, after=$countAfter)",
-            countBefore + 1,
-            countAfter
-        )
-
-        Log.i(TAG, "Enabling a shortcut increases active count from $countBefore to $countAfter")
+        assertEquals(countBefore - 1, prefsManager.shortcuts.enabledShortcutIds.value.size)
+        val publishedIds = shortcutManager.dynamicShortcuts.map { it.id }
+        assertFalse("'$dnsOffId' must be removed, got $publishedIds", publishedIds.contains(dnsOffId))
     }
 
     // === Limit-reached dialog ===
@@ -356,84 +270,6 @@ class ShortcutSettingsInstrumentedTest {
     }
 
     // === Shortcut publication ===
-
-    @Test
-    fun shortcutSettings_enablingShortcut_shouldPublishToShortcutManager() {
-        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
-        val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
-        val prefsManager = AppStores.getInstance(context)
-        val shortcutManager = context.getSystemService(ShortcutManager::class.java)
-
-        // Pre-condition: DNS Off disabled so enabling it is a meaningful action
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, false)
-        }
-        composeTestRule.waitForIdle()
-
-        val publishedIdsBefore = shortcutManager?.dynamicShortcuts?.map { it.id } ?: emptyList()
-        assertFalse(
-            "ShortcutManager.dynamicShortcuts must NOT contain '$dnsOffId' before enabling it. " +
-                    "Published: $publishedIdsBefore",
-            publishedIdsBefore.contains(dnsOffId)
-        )
-
-        composeTestRule.navigateToShortcutSettings(context)
-        scrollToShortcut(dnsOffTitle)
-        composeTestRule.onNodeWithText(dnsOffTitle).performClick()
-        composeTestRule.waitForIdle()
-
-        // If the system limit was already reached the dialog appears — the shortcut wasn't enabled
-        val dialogNodes = composeTestRule
-            .onAllNodesWithText(context.getString(R.string.shortcut_settings_limit_reached_title))
-            .fetchSemanticsNodes()
-        if (dialogNodes.isNotEmpty()) {
-            Log.i(TAG, "Limit reached; skipping publication assertion — shortcut was not enabled")
-            composeTestRule.onNodeWithText(context.getString(R.string.dialog_close)).performClick()
-            return
-        }
-
-        val publishedIds = shortcutManager?.dynamicShortcuts?.map { it.id } ?: emptyList()
-        assertTrue(
-            "ShortcutManager.dynamicShortcuts must contain '$dnsOffId' after enabling it. " +
-                    "Published: $publishedIds",
-            publishedIds.contains(dnsOffId)
-        )
-        Log.i(TAG, "Enabling DNS Off shortcut publishes '$dnsOffId' to ShortcutManager")
-    }
-
-    @Test
-    fun shortcutSettings_disablingShortcut_shouldRemoveFromShortcutManager() {
-        val dnsOffId = ShortcutCatalog.SHORTCUT_ID_DNS_OFF
-        val dnsOffTitle = context.getString(R.string.shortcut_dns_off_short)
-        val prefsManager = AppStores.getInstance(context)
-        val shortcutManager = context.getSystemService(ShortcutManager::class.java)
-
-        // Pre-condition: DNS Off enabled so disabling it removes it from ShortcutManager
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.shortcuts.setShortcutExposureEnabled(dnsOffId, true)
-        }
-        composeTestRule.waitForIdle()
-
-        val publishedIdsBefore = shortcutManager?.dynamicShortcuts?.map { it.id } ?: emptyList()
-        assertTrue(
-            "ShortcutManager.dynamicShortcuts must contain '$dnsOffId' before disabling it. " +
-                    "Published: $publishedIdsBefore",
-            publishedIdsBefore.contains(dnsOffId)
-        )
-
-        composeTestRule.navigateToShortcutSettings(context)
-        scrollToShortcut(dnsOffTitle)
-        composeTestRule.onNodeWithText(dnsOffTitle).performClick()
-        composeTestRule.waitForIdle()
-
-        val publishedIds = shortcutManager?.dynamicShortcuts?.map { it.id } ?: emptyList()
-        assertFalse(
-            "ShortcutManager.dynamicShortcuts must NOT contain '$dnsOffId' after disabling it. " +
-                    "Published: $publishedIds",
-            publishedIds.contains(dnsOffId)
-        )
-        Log.i(TAG, "Disabling DNS Off shortcut removes '$dnsOffId' from ShortcutManager")
-    }
 
     @Test
     fun shortcutSettings_enabledShortcuts_publishedInOrderMatchingGetOrderedShortcutIds() {

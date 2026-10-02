@@ -19,6 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CopyOnWriteArrayList
 
+@AdaptiveLayout
 class DnsHostnameImeInstrumentedTest {
     @get:Rule val compose = createComposeRule()
     private data class ImeFrame(val visible: Boolean, val bottom: Int, val height: Int, val top: Int)

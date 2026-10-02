@@ -36,6 +36,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
+@AdaptiveLayout
 class AppNavigationRailInstrumentedTest {
     @get:Rule val compose = createComposeRule(
         // Animation assertions must run at normal speed even when CI disables system animations.

@@ -63,6 +63,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
+@AdaptiveLayout
 class AppDialogInstrumentedTest {
     @get:Rule val compose = createComposeRule()
     private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
@@ -263,11 +264,11 @@ class AppDialogInstrumentedTest {
         }
     }
 
-    @Test fun infoLightEnglish() = gallery("info-light-en", "en", false) { InfoDialogPreview() }
-    @Test fun infoDarkGerman() = gallery("info-dark-de", "de", true) { InfoDialogPreview() }
-    @Test fun confirmationEnglish() = gallery("confirmation-en", "en", false) { ConfirmationDialogPreview() }
-    @Test fun destructiveGerman() = gallery("delete-de", "de", false) { DeleteDialogPreview() }
-    @Test fun formErrorDarkGerman() = gallery("form-dark-de", "de", true) { FormDialogPreview() }
+    @ScreenshotLane @Test fun infoLightEnglish() = gallery("info-light-en", "en", false) { InfoDialogPreview() }
+    @ScreenshotLane @Test fun infoDarkGerman() = gallery("info-dark-de", "de", true) { InfoDialogPreview() }
+    @ScreenshotLane @Test fun confirmationEnglish() = gallery("confirmation-en", "en", false) { ConfirmationDialogPreview() }
+    @ScreenshotLane @Test fun destructiveGerman() = gallery("delete-de", "de", false) { DeleteDialogPreview() }
+    @ScreenshotLane @Test fun formErrorDarkGerman() = gallery("form-dark-de", "de", true) { FormDialogPreview() }
     @Test fun longContentLargeGerman() {
         gallery("long-large-de", "de", false, fontScale = 2f) { LongDialogPreview() }
         val scrollNode = compose.onNode(

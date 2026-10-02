@@ -35,6 +35,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.Density
@@ -78,6 +81,13 @@ class WifiRulesInstrumentedTest {
     private lateinit var backDispatcher: androidx.activity.OnBackPressedDispatcher
 
     private fun string(id: Int, vararg args: Any) = context.getString(id, *args)
+
+    /**
+     * Footer actions use the semantic click. A touch click is a down/up pair, and on slow CI
+     * emulators (~3 fps) the soft keyboard opening after text input resizes the window between
+     * them, so the up misses the button. These tests cover the editor, not touch hit-testing.
+     */
+    private fun SemanticsNodeInteraction.footerClick() = performSemanticsAction(SemanticsActions.OnClick)
     private val providers = listOf(DnsHostnameEntry("provider", "Example DNS", "dns.example.com"))
     private val campus = WifiDnsRule("campus", "Campus", actionMode = DNS_MODE_OFF)
 
@@ -222,7 +232,7 @@ class WifiRulesInstrumentedTest {
         saveRule()
         assertNull(actions.saved.single().bssid)
 
-        compose.onNodeWithTag("wifi_rule_previous").performClick()
+        compose.onNodeWithTag("wifi_rule_previous").footerClick()
         compose.onNodeWithTag("wifi_rule_use_detected_bssid").performScrollTo().performClick()
         compose.onNodeWithTag("wifi_rule_bssid").assert(editableTextEquals("AA:BB:CC:DD:EE:FF"))
         compose.onNodeWithTag("wifi_rule_use_detected_bssid").assertDoesNotExist()
@@ -236,7 +246,7 @@ class WifiRulesInstrumentedTest {
         compose.setContent { Editor(null, state(), actions) }
 
         compose.onNodeWithTag("wifi_rule_ssid").performTextInput("Campus")
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         compose.onNodeWithText(string(R.string.wifi_rule_action_default_summary, string(R.string.dns_mode_auto_label)))
             .performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("automation_target_provider").performScrollTo().performClick()
@@ -252,7 +262,7 @@ class WifiRulesInstrumentedTest {
         compose.setContent { Editor("campus", state(rules = listOf(campus)), actions, onLeave = { left++ }) }
 
         compose.onNodeWithTag("wifi_rule_ssid").assert(editableTextEquals("Campus"))
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         compose.onNodeWithTag("automation_target_default").performScrollTo().performClick()
         saveRule()
         assertEquals(Saved("campus", "Campus", null, WIFI_DNS_ACTION_DEFAULT, null), actions.saved.single())
@@ -326,8 +336,8 @@ class WifiRulesInstrumentedTest {
             }
         }
         compose.onNodeWithTag("wifi_rule_ssid").performTextInput("Campus")
-        compose.onNodeWithTag("wifi_rule_next").assertIsDisplayed().performClick()
-        compose.onNodeWithTag("wifi_rule_save").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("wifi_rule_next").assertIsDisplayed().footerClick()
+        compose.onNodeWithTag("wifi_rule_save").assertIsDisplayed().footerClick()
         compose.onNodeWithText(string(R.string.wifi_rule_invalid_or_duplicate)).assertIsDisplayed()
         compose.onNodeWithTag("wifi_rule_next").assertIsDisplayed()
     }
@@ -341,19 +351,19 @@ class WifiRulesInstrumentedTest {
         compose.onNodeWithTag("wifi_rule_network_search").performScrollTo().performTextInput("aa:bb")
         compose.onNodeWithText("Home").assertDoesNotExist()
         compose.onNodeWithText("Campus").performScrollTo().performClick()
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         compose.onNodeWithTag("wifi_rule_ssid").assertDoesNotExist()
         assertTrue(actions.saved.isEmpty())
         compose.onNodeWithTag("wifi_rule_target_search").performTextInput("DNS.EXAMPLE")
         compose.onNodeWithTag("automation_target_off").assertDoesNotExist()
         compose.onNodeWithTag("automation_target_provider").performScrollTo().performClick()
-        compose.onNodeWithTag("wifi_rule_previous").performClick()
+        compose.onNodeWithTag("wifi_rule_previous").footerClick()
         compose.onNodeWithTag("wifi_rule_ssid").assert(editableTextEquals("Campus"))
         compose.onNodeWithTag("wifi_rule_network_search").performScrollTo().assert(editableTextEquals("aa:bb"))
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         compose.onNodeWithTag("wifi_rule_target_search").assert(editableTextEquals("DNS.EXAMPLE"))
         compose.onNodeWithTag("automation_target_provider").assert(SemanticsMatcher.expectValue(SemanticsProperties.Selected, true))
-        compose.onNodeWithTag("wifi_rule_save").performClick()
+        compose.onNodeWithTag("wifi_rule_save").footerClick()
         assertEquals(Saved(null, "Campus", null, DNS_MODE_ON, "dns.example.com"), actions.saved.single())
     }
 
@@ -365,12 +375,12 @@ class WifiRulesInstrumentedTest {
         compose.onNodeWithText(string(R.string.wifi_rule_search_empty)).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("wifi_rule_network_search").performScrollTo().performTextReplacement("camp")
         compose.onNodeWithText("Campus").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         compose.onNodeWithTag("wifi_rule_target_search").performTextInput("missing")
         compose.onNodeWithText(string(R.string.wifi_rule_search_empty)).assertIsDisplayed()
         compose.onNodeWithTag("wifi_rule_target_search").performTextReplacement("")
         compose.onNodeWithTag("automation_target_off").assertIsDisplayed()
-        compose.onNodeWithTag("wifi_rule_previous").performClick()
+        compose.onNodeWithTag("wifi_rule_previous").footerClick()
         compose.onNodeWithTag("wifi_rule_ssid").assert(editableTextEquals("Manual"))
     }
 
@@ -379,7 +389,7 @@ class WifiRulesInstrumentedTest {
         val actions = RecordingActions()
         compose.setContent { Editor(null, state(), actions) }
         compose.onNodeWithTag("wifi_rule_ssid").performTextInput("Campus")
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         androidx.test.espresso.Espresso.pressBack()
         compose.onNodeWithTag("wifi_rule_ssid").assert(editableTextEquals("Campus"))
         compose.onNodeWithTag("wifi_rule_next").assertIsDisplayed()
@@ -391,7 +401,7 @@ class WifiRulesInstrumentedTest {
         val actions = RecordingActions()
         compose.setContent { Editor(null, state(), actions) }
         compose.onNodeWithTag("wifi_rule_ssid").performTextInput("Campus")
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         compose.onNodeWithTag("automation_target_provider").performScrollTo().performClick()
         // The tag sits on the navigation entry, so this follows the page rather than its content.
         fun x() = compose.onNodeWithTag("wifi_rule_step_1").fetchSemanticsNode().positionInRoot.x
@@ -413,17 +423,17 @@ class WifiRulesInstrumentedTest {
         compose.onNodeWithTag("wifi_rule_step_1").assertDoesNotExist()
         compose.onNodeWithTag("wifi_rule_ssid").assert(editableTextEquals("Campus"))
         assertTrue(actions.saved.isEmpty())
-        compose.onNodeWithTag("wifi_rule_next").performClick()
+        compose.onNodeWithTag("wifi_rule_next").footerClick()
         compose.onNodeWithTag("automation_target_provider").assert(SemanticsMatcher.expectValue(SemanticsProperties.Selected, true))
     }
 
     // ---- Helpers ----
     private fun saveRule() {
         if (compose.onAllNodes(androidx.compose.ui.test.hasTestTag("wifi_rule_next")).fetchSemanticsNodes().isNotEmpty()) {
-            compose.onNodeWithTag("wifi_rule_next").performClick()
+            compose.onNodeWithTag("wifi_rule_next").footerClick()
         }
         if (compose.onAllNodes(androidx.compose.ui.test.hasTestTag("wifi_rule_save")).fetchSemanticsNodes().isNotEmpty()) {
-            compose.onNodeWithTag("wifi_rule_save").performClick()
+            compose.onNodeWithTag("wifi_rule_save").footerClick()
         }
     }
 

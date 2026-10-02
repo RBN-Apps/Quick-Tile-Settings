@@ -10,6 +10,7 @@ import com.rbn.qtsettings.app.AppStores
 import org.junit.Rule
 import org.junit.Test
 
+@AdaptiveLayout
 class GlobalHelpNavigationInstrumentedTest {
     @get:Rule val compose = createEmptyComposeRule()
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
