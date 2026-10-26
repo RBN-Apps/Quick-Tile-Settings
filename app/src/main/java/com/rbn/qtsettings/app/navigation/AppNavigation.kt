@@ -67,6 +67,7 @@ class AppNavigation internal constructor(
             AppDestination.ShortcutHelp -> AppRoute.ShortcutHelp
             AppDestination.AppSettings -> AppRoute.Settings(area)
             AppDestination.About -> AppRoute.About
+            AppDestination.Licenses -> AppRoute.Licenses
             AppDestination.Permissions -> AppRoute.Permissions
             AppDestination.AdbInstructions -> AppRoute.AdbInstructions
             AppDestination.UsbTile -> if (area == AppArea.Usb) AppRoute.UsbTile else return
@@ -75,7 +76,7 @@ class AppNavigation internal constructor(
         }
         val targetStack = if (route is AppRoute.Shortcuts || route is AppRoute.Settings ||
             route == AppRoute.About || route == AppRoute.Permissions || route == AppRoute.AdbInstructions ||
-            route == AppRoute.ShortcutHelp)
+            route == AppRoute.ShortcutHelp || route == AppRoute.Licenses)
             globalStack else activeStack
         if (targetStack === globalStack) {
             val existing = targetStack.indexOf(route)

@@ -1,0 +1,6 @@
+{
+  "uniqueId": "^dev\\.rikka\\.shizuku:.*::regex",
+  "licenses": [
+    "shizuku-mit"
+  ]
+}

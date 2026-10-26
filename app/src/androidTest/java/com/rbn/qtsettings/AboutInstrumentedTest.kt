@@ -1,6 +1,8 @@
 package com.rbn.qtsettings
 
 import android.content.ClipboardManager
+import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.util.withJson
 import androidx.activity.BackEventCompat
 import androidx.compose.ui.test.*
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -29,6 +31,44 @@ class AboutInstrumentedTest {
         compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(label(id)))
     }
     private fun back() = compose.onNodeWithContentDescription(label(R.string.navigate_back_desc)).performClick()
+
+    @Test fun thirdPartyLicensesAreBundled_andReturnToAboutAfterRecreation() {
+        val libraries = Libs.Builder().withJson(context, R.raw.aboutlibraries).build()
+        val ids = libraries.libraries.map { it.uniqueId }
+        assertTrue(ids.contains("dev.rikka.shizuku:api"))
+        assertTrue(ids.contains("com.google.code.gson:gson"))
+        assertTrue(ids.any { it.startsWith("androidx.compose.ui:") })
+        assertTrue(ids.any { it.startsWith("org.jetbrains.kotlin:kotlin-stdlib") })
+        assertTrue(ids.any { it.startsWith("org.jetbrains.kotlinx:kotlinx-coroutines") })
+        libraries.libraries.forEach { library ->
+            assertTrue("Missing license for ${library.uniqueId}", library.licenses.isNotEmpty())
+            library.licenses.forEach { license ->
+                assertTrue("Missing bundled text for ${library.uniqueId}: ${license.name}",
+                    !license.licenseContent.isNullOrBlank())
+            }
+        }
+
+        assertTrue(libraries.libraries.first { it.uniqueId == "dev.rikka.shizuku:api" }
+            .licenses.any { it.licenseContent?.contains("Copyright (c) 2021 RikkaW") == true })
+
+        open()
+        scrollTo(R.string.about_third_party_licenses)
+        node(R.string.about_third_party_licenses).performClick()
+        val firstLibrary = libraries.libraries.first().name
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithText(firstLibrary).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText(firstLibrary).assertIsDisplayed().performClick()
+        compose.onNodeWithText("TERMS AND CONDITIONS", substring = true).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.dialog_close)).performClick()
+        compose.activityRule.scenario.recreate()
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithText(firstLibrary).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText(firstLibrary).assertIsDisplayed()
+        back()
+        node(R.string.about_third_party_licenses).assertIsDisplayed()
+    }
 
     @Test fun reportMetadataIsOptIn_andNewDraftResetsConsent() {
         open()

@@ -41,7 +41,7 @@ enum class AppRailTarget(
         fun forDestination(destination: AppDestination, area: AppArea): AppRailTarget = when (destination) {
             AppDestination.ShortcutSettings, AppDestination.ShortcutHelp -> Shortcuts
             AppDestination.AppSettings -> Settings
-            AppDestination.About -> About
+            AppDestination.About, AppDestination.Licenses -> About
             AppDestination.Permissions, AppDestination.AdbInstructions -> Permissions
             AppDestination.DnsProviders, AppDestination.DnsAutomation, AppDestination.DnsWifiTarget,
             AppDestination.DnsMobileTarget, AppDestination.WifiRules, AppDestination.WifiRule, AppDestination.DnsRevert -> Dns

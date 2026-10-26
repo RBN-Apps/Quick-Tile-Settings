@@ -527,4 +527,6 @@
     <string name="platform_tools_url" translatable="false">https://developer.android.com/tools/releases/platform-tools</string>
     <string name="onboarding_tile_add_summary">Add it to the quick settings panel</string>
     <string name="onboarding_tile_added">In the quick settings panel</string>
+    <string name="about_third_party_licenses">Third-party licenses</string>
+    <string name="licenses_intro">This app is built on these open-source libraries. Tap a library to read its license.</string>
 </resources>

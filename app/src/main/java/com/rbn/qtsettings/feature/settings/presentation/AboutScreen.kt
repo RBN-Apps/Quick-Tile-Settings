@@ -33,7 +33,8 @@ fun AboutScreen(
     onLink: (String) -> Unit,
     onCopy: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onReport: () -> Unit = {}
+    onReport: () -> Unit = {},
+    onLicenses: () -> Unit = {}
 ) {
     LazyColumn(
         modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -55,6 +56,6 @@ fun AboutScreen(
         }
         item("features") { AboutFeatures(onShortcuts, onSettings) }
         item("technical") { AboutTechnicalInfo(info, onCopy) }
-        item("project") { AboutProjectLinks(onPermissionHelp, onLink, onReport) }
+        item("project") { AboutProjectLinks(onPermissionHelp, onLink, onReport, onLicenses) }
     }
 }

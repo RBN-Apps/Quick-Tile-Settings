@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
 
 /** Loads immutable installation metadata off the UI thread; never reads application settings. */
 @Composable
-fun AboutRoot(onPermissionHelp: () -> Unit, onShortcuts: () -> Unit, onSettings: () -> Unit) {
+fun AboutRoot(onPermissionHelp: () -> Unit, onShortcuts: () -> Unit, onSettings: () -> Unit, onLicenses: () -> Unit) {
     val context = LocalContext.current
     val report: AboutReportViewModel = viewModel()
     val reportDetails by report.details.collectAsStateWithLifecycle()
@@ -59,6 +59,7 @@ fun AboutRoot(onPermissionHelp: () -> Unit, onShortcuts: () -> Unit, onSettings:
         onPermissionHelp = onPermissionHelp,
         onShortcuts = onShortcuts,
         onSettings = onSettings,
+        onLicenses = onLicenses,
         onLink = { openLink(it) },
         onReport = { report.open(issueTechnicalDetails(context, loaded.details)) },
         onCopy = { text ->

@@ -44,6 +44,7 @@ import com.rbn.qtsettings.feature.permissions.presentation.AppPermissionViewMode
 import com.rbn.qtsettings.feature.settings.presentation.AppSettingsViewModel
 import com.rbn.qtsettings.feature.settings.presentation.AppSettingsRoot
 import com.rbn.qtsettings.feature.settings.presentation.AboutRoot
+import com.rbn.qtsettings.feature.settings.presentation.LicensesScreen
 
 /** Binds feature owners to the app shell and Navigation 3 destinations. */
 @Composable
@@ -151,8 +152,11 @@ fun AppRoot(
                 AboutRoot(
                     onPermissionHelp = showPermissionHelp,
                     onShortcuts = { navigation.open(AppDestination.ShortcutSettings) },
-                    onSettings = { navigation.open(AppDestination.AppSettings) }
+                    onSettings = { navigation.open(AppDestination.AppSettings) },
+                    onLicenses = { navigation.open(AppDestination.Licenses) }
                 )
+            } else if (route == AppRoute.Licenses) {
+                LicensesScreen()
             } else if (route is AppRoute.Settings) {
                 AppSettingsRoot(settingsViewModel, onRestartOnboarding,
                     Modifier.padding(horizontal = 16.dp).fillMaxSize())

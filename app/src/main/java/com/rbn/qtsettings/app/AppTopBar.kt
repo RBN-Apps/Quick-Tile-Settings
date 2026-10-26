@@ -53,6 +53,7 @@ private val AppDestination.title: Int get() = when (this) {
     AppDestination.Permissions -> R.string.menu_permission_help
     AppDestination.AdbInstructions -> R.string.adb_instructions_title
     AppDestination.About -> R.string.menu_about
+    AppDestination.Licenses -> R.string.about_third_party_licenses
     AppDestination.UsbTile -> R.string.usb_menu_tile
     AppDestination.UsbActions -> R.string.usb_menu_actions
     AppDestination.DnsProviders -> R.string.dns_menu_providers

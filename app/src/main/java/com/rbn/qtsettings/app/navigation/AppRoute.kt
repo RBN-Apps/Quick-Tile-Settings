@@ -33,6 +33,7 @@ sealed interface AppRoute : NavKey {
     @Serializable @SerialName("shortcut_help") data object ShortcutHelp : AppRoute
     @Serializable @SerialName("permissions") data object Permissions : AppRoute
     @Serializable @SerialName("adb_instructions") data object AdbInstructions : AppRoute
+    @Serializable @SerialName("licenses") data object Licenses : AppRoute
     @Serializable @SerialName("about") data object About : AppRoute
     @Serializable @SerialName("settings") data class Settings(val origin: AppArea) : AppRoute
 }
@@ -56,6 +57,7 @@ internal val AppNavigationSavedState = SavedStateConfiguration {
             subclass(AppRoute.ShortcutHelp.serializer())
             subclass(AppRoute.Settings.serializer())
             subclass(AppRoute.About.serializer())
+            subclass(AppRoute.Licenses.serializer())
             subclass(AppRoute.Permissions.serializer())
             subclass(AppRoute.AdbInstructions.serializer())
         }
@@ -68,6 +70,7 @@ internal val AppRoute.destination: AppDestination get() = when (this) {
     AppRoute.ShortcutHelp -> AppDestination.ShortcutHelp
     is AppRoute.Settings -> AppDestination.AppSettings
     AppRoute.About -> AppDestination.About
+    AppRoute.Licenses -> AppDestination.Licenses
     AppRoute.Permissions -> AppDestination.Permissions
     AppRoute.AdbInstructions -> AppDestination.AdbInstructions
     AppRoute.DnsProviders -> AppDestination.DnsProviders

@@ -63,6 +63,7 @@ class AppNavigationInstrumentedTest {
                             AppRoute.Permissions -> "Permissions"
                             AppRoute.AdbInstructions -> "ADB instructions"
                             AppRoute.About -> "About"
+                            AppRoute.Licenses -> "Licenses"
                             is AppRoute.Settings -> "${route.origin} settings"
                             is AppRoute.Shortcuts -> "${route.origin} shortcuts"
                             AppRoute.ShortcutHelp -> "Shortcut help"
