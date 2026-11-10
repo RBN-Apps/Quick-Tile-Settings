@@ -233,13 +233,10 @@
     <string name="setting_wifi_network_rules_title">Правила для сетей Wi-Fi</string>
     <string name="setting_wifi_network_rules_description">Переопределяет стандартную настройку DNS через Wi-Fi для отдельных сетей или точек доступа (SSID/BSSID). Для применения нужны разрешение приложения управлять частным DNS и фоновое обнаружение. Уведомления необязательны и только показывают состояние.</string>
     <string name="wifi_rules_enabled">Использовать правила для отдельных сетей</string>
-    <string name="wifi_rules_enabled_description">Правила сопоставления переопределяют настройки DNS Wi-Fi для всех остальных идентифицированных сетей.</string>
     <string name="wifi_ssid_permission_title">Требуется точное местоположение</string>
-    <string name="wifi_ssid_permission_description">Android рассматривает имена Wi-Fi (SSID), идентификаторы точек доступа (BSSID) и результаты сканирования сетей как данные, связанные с местоположением. Для их чтения необходимо разрешение на доступ к точному местоположению. Сама функция не определяет и не считывает географические координаты.</string>
     <string name="wifi_ssid_permission_docs_link">Документация Android по информации о Wi-Fi, зависящей от местоположения</string>
     <string name="wifi_ssid_permission_grant">Разрешить доступ</string>
     <string name="wifi_location_services_title">Включите службы геолокации</string>
-    <string name="wifi_location_services_description">Разрешение предоставлено, но Android также требует, чтобы служба геолокации была включена, прежде чем приложение сможет получить данные о подключенном SSID/BSSID и результатах поиска сетей Wi-Fi.</string>
     <string name="wifi_location_services_open">Открыть настройки геолокации</string>
     <string name="wifi_ssid_manual_entry_notice">Правило можно ввести вручную, но для автоматического сопоставления этот доступ всё равно нужен. Пока текущая сеть неизвестна, частный DNS не изменяется.</string>
     <string name="wifi_ssid_permission_denied">Для распознавания сетей Wi-Fi требуется разрешение на точное местоположение. Пока доступ не предоставлен, частный DNS не изменяется.</string>
@@ -277,13 +274,8 @@
     <string name="wifi_boot_description">Чтобы правила Wi-Fi работали после перезагрузки и разблокировки телефона, откройте настройки приложения → Разрешения → Местоположение и выберите «Разрешать всегда», включив точное местоположение. Это позволяет распознавать сети Wi-Fi в фоне; координаты не считываются. Это необязательно: без разрешения открывайте приложение после каждой перезагрузки.</string>
     <string name="wifi_boot_ready">Правила Wi-Fi автоматически возобновляются после перезагрузки и разблокировки телефона.</string>
     <string name="wifi_rule_use_detected_bssid">Использовать обнаруженный BSSID: %1$s</string>
-    <string name="wifi_location_services_open">Открыть настройки геолокации</string>
-    <string name="wifi_rules_enabled">Использовать правила для отдельных сетей</string>
     <string name="wifi_rules_enabled_description">Подходящие правила переопределяют настройку DNS через Wi-Fi для всех остальных распознанных сетей.</string>
-    <string name="wifi_ssid_permission_title">Требуется точное местоположение</string>
     <string name="wifi_ssid_permission_description">Android считает имена Wi-Fi (SSID), идентификаторы точек доступа (BSSID) и результаты ближайших сетей информацией, связанной с местоположением. Для чтения требуется разрешение на точное местоположение. Функция не считывает координаты.</string>
-    <string name="wifi_ssid_permission_docs_link">Документация Android о разрешении для SSID</string>
-    <string name="wifi_ssid_permission_grant">Разрешить доступ</string>
     <string name="wifi_location_services_description">Разрешение предоставлено, но Android показывает подключённый SSID/BSSID и последние результаты Wi-Fi только при включённых службах геолокации.</string>
 
     
@@ -353,11 +345,11 @@
     <string name="quick_action_usb_title">Отладка по USB</string>
     <string name="quick_action_no_actions">Для этой плитки нет включенных действий.</string>
     <string name="quick_action_open_app">Открыть приложение</string>
-    <string name="wifi_permission_open_settings">Открыть настройки приложения</string>
-    <string name="wifi_permission_blocked_description">Android больше не показывает диалоговое окно запроса разрешения на доступ к местоположению. Откройте настройки приложения, перейдите в раздел «Разрешения» → «Местоположение» и разрешите доступ к точному местоположению.</string>
-    <string name="wifi_boot_title">Продолжать работу автоматически после перезагрузки</string>
-    <string name="wifi_boot_description">Чтобы правила Wi-Fi применялись после перезагрузки и разблокировки телефона, откройте настройки приложения → Разрешения → Местоположение и выберите «Разрешить в любом режиме», включив доступ к точному местоположению. Это позволит приложению определять Wi-Fi сети в фоновом режиме; координаты местоположения не считываются. Настройка необязательна: без неё достаточно открыть приложение один раз после перезагрузки.</string>
-    <string name="wifi_boot_ready">Работа правил Wi-Fi автоматически возобновляется после перезагрузки и разблокировки телефона.</string>
-    <string name="wifi_rule_use_detected_bssid">Использовать обнаруженный BSSID: %1$s</string>
+   
+  
+    
+ 
+   
+    
 
 </resources>
