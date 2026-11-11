@@ -1,0 +1,7 @@
+Version 2.0.0
+
+- Neues Design mit eigenen Seiten für privates DNS, USB-Debugging, Automatisierung und Shortcuts, angepasst an Smartphone, Tablet und Foldable.
+- Geführte Einrichtung beim ersten Start für Berechtigung und Kacheln.
+- DNS und USB-Debugging direkt in der App umschalten. Das automatische Zurücksetzen läuft auch nach dem Schließen der Schnelleinstellungen weiter.
+- WLAN-Regeln Schritt für Schritt mit durchsuchbaren Listen einrichten.
+- Texte und Übersetzungen überarbeitet.
