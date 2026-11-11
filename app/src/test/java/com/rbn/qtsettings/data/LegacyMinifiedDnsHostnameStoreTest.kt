@@ -1,5 +1,6 @@
 package com.rbn.qtsettings.data
 
+import com.rbn.qtsettings.app.AppStores
 import android.content.Context
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -23,21 +24,21 @@ class LegacyMinifiedDnsHostnameStoreTest {
     @Before
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
         clearPreferences()
     }
 
     @After
     fun tearDown() {
         clearPreferences()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
     }
 
     @Test
     fun load_recoversCustomHostnamesWrittenByMinifiedRelease() {
         writeStoredHostnames(LEGACY_MINIFIED_STORE)
 
-        val hostnames = PreferencesManager.getInstance(context).dnsHostnames.value
+        val hostnames = AppStores.getInstance(context).dns.dnsHostnames.value
 
         val custom = hostnames.firstOrNull { it.id == "custom_legacy" }
         assertNotNull("custom hostname was dropped", custom)
@@ -50,7 +51,7 @@ class LegacyMinifiedDnsHostnameStoreTest {
     fun load_keepsPredefinedSelectionWrittenByMinifiedRelease() {
         writeStoredHostnames(LEGACY_MINIFIED_STORE)
 
-        val hostnames = PreferencesManager.getInstance(context).dnsHostnames.value
+        val hostnames = AppStores.getInstance(context).dns.dnsHostnames.value
 
         val adguard = hostnames.first { it.id == "adguard_default" }
         assertTrue(adguard.isPredefined)
@@ -62,7 +63,7 @@ class LegacyMinifiedDnsHostnameStoreTest {
     fun load_rewritesStoreWithStableFieldNames() {
         writeStoredHostnames(LEGACY_MINIFIED_STORE)
 
-        PreferencesManager.getInstance(context)
+        AppStores.getInstance(context)
 
         val rewritten = readStoredHostnames()
         assertTrue("store was not upgraded", rewritten.contains("\"hostname\""))
@@ -76,7 +77,7 @@ class LegacyMinifiedDnsHostnameStoreTest {
                "isPredefined":false,"isSelectedForCycle":true}]"""
         )
 
-        val hostnames = PreferencesManager.getInstance(context).dnsHostnames.value
+        val hostnames = AppStores.getInstance(context).dns.dnsHostnames.value
 
         assertNotNull(hostnames.firstOrNull { it.hostname == "current.example.com" })
     }
@@ -85,7 +86,7 @@ class LegacyMinifiedDnsHostnameStoreTest {
     fun load_keepsEntriesAddedOnVersion141() {
         writeStoredHostnames(VERSION_141_STORE)
 
-        val hostnames = PreferencesManager.getInstance(context).dnsHostnames.value
+        val hostnames = AppStores.getInstance(context).dns.dnsHostnames.value
 
         val added = hostnames.firstOrNull { it.id == "added_on_141" }
         assertNotNull("hostname added on 1.4.1 was dropped", added)
@@ -106,7 +107,7 @@ class LegacyMinifiedDnsHostnameStoreTest {
             ]"""
         )
 
-        val hostnames = PreferencesManager.getInstance(context).dnsHostnames.value
+        val hostnames = AppStores.getInstance(context).dns.dnsHostnames.value
 
         assertNotNull(hostnames.firstOrNull { it.hostname == "dns.example.com" })
         assertNotNull(hostnames.firstOrNull { it.hostname == "added.example.com" })
@@ -116,7 +117,7 @@ class LegacyMinifiedDnsHostnameStoreTest {
     fun load_survivesUnparseableStore() {
         writeStoredHostnames("not json at all")
 
-        val hostnames = PreferencesManager.getInstance(context).dnsHostnames.value
+        val hostnames = AppStores.getInstance(context).dns.dnsHostnames.value
 
         assertEquals(DnsHostnamePolicy.defaultHostnames().size, hostnames.size)
     }
@@ -134,8 +135,8 @@ class LegacyMinifiedDnsHostnameStoreTest {
         prefs().edit().clear().commit()
     }
 
-    private fun resetPreferencesManagerSingleton() {
-        val instanceField = PreferencesManager::class.java.getDeclaredField("INSTANCE")
+    private fun resetAppStoresSingleton() {
+        val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)
     }

@@ -1,5 +1,6 @@
 package com.rbn.qtsettings.data
 
+import com.rbn.qtsettings.app.AppStores
 import android.content.Context
 import com.rbn.qtsettings.utils.Constants.BACKGROUND_DETECTION
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
@@ -21,25 +22,25 @@ import org.robolectric.RuntimeEnvironment
 class LegacyMinifiedBackupRestoreTest {
 
     private lateinit var context: Context
-    private lateinit var preferencesManager: PreferencesManager
+    private lateinit var preferencesManager: AppStores
 
     @Before
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
         clearPreferences()
-        preferencesManager = PreferencesManager.getInstance(context)
+        preferencesManager = AppStores.getInstance(context)
     }
 
     @After
     fun tearDown() {
         clearPreferences()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
     }
 
     @Test
     fun restoreSettingsBackupJson_importsMinifiedVersion130Backup() {
-        preferencesManager.restoreSettingsBackupJson(LEGACY_1_3_BACKUP)
+        preferencesManager.backup.restoreSettingsBackupJson(LEGACY_1_3_BACKUP)
 
         assertRestoredCommonSettings(
             customId = "legacy13",
@@ -48,17 +49,17 @@ class LegacyMinifiedBackupRestoreTest {
             expectedDelay = 17,
             expectedUsbDelay = 23
         )
-        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dnsListSortMode.value)
-        assertFalse(preferencesManager.dnsToggleAuto.value)
-        assertEquals(DNS_MODE_ON, preferencesManager.dnsStateOnWifi.value)
-        assertEquals("legacy13.example.com", preferencesManager.dnsHostnameOnWifi.value)
-        assertEquals(DNS_MODE_AUTO, preferencesManager.dnsStateOnMobile.value)
-        assertNull(preferencesManager.dnsHostnameOnMobile.value)
+        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dns.dnsListSortMode.value)
+        assertFalse(preferencesManager.dns.dnsToggleAuto.value)
+        assertEquals(DNS_MODE_ON, preferencesManager.automation.dnsStateOnWifi.value)
+        assertEquals("legacy13.example.com", preferencesManager.automation.dnsHostnameOnWifi.value)
+        assertEquals(DNS_MODE_AUTO, preferencesManager.automation.dnsStateOnMobile.value)
+        assertNull(preferencesManager.automation.dnsHostnameOnMobile.value)
     }
 
     @Test
     fun restoreSettingsBackupJson_importsMinifiedVersion140Backup() {
-        preferencesManager.restoreSettingsBackupJson(LEGACY_1_4_BACKUP)
+        preferencesManager.backup.restoreSettingsBackupJson(LEGACY_1_4_BACKUP)
 
         assertRestoredCommonSettings(
             customId = "legacy14",
@@ -67,12 +68,12 @@ class LegacyMinifiedBackupRestoreTest {
             expectedDelay = 18,
             expectedUsbDelay = 24
         )
-        assertEquals(DnsListSortMode.MANUAL, preferencesManager.dnsListSortMode.value)
-        assertTrue(preferencesManager.dnsToggleAuto.value)
-        assertEquals(DNS_MODE_OFF, preferencesManager.dnsStateOnWifi.value)
-        assertNull(preferencesManager.dnsHostnameOnWifi.value)
-        assertEquals(DNS_MODE_ON, preferencesManager.dnsStateOnMobile.value)
-        assertEquals("legacy14.example.com", preferencesManager.dnsHostnameOnMobile.value)
+        assertEquals(DnsListSortMode.MANUAL, preferencesManager.dns.dnsListSortMode.value)
+        assertTrue(preferencesManager.dns.dnsToggleAuto.value)
+        assertEquals(DNS_MODE_OFF, preferencesManager.automation.dnsStateOnWifi.value)
+        assertNull(preferencesManager.automation.dnsHostnameOnWifi.value)
+        assertEquals(DNS_MODE_ON, preferencesManager.automation.dnsStateOnMobile.value)
+        assertEquals("legacy14.example.com", preferencesManager.automation.dnsHostnameOnMobile.value)
     }
 
     private fun assertRestoredCommonSettings(
@@ -82,34 +83,34 @@ class LegacyMinifiedBackupRestoreTest {
         expectedDelay: Int,
         expectedUsbDelay: Int
     ) {
-        val restoredEntry = preferencesManager.dnsHostnames.value
+        val restoredEntry = preferencesManager.dns.dnsHostnames.value
             .firstOrNull { it.id == customId }
         assertNotNull(restoredEntry)
         assertEquals(expectedName, restoredEntry?.name)
         assertEquals(expectedHostname, restoredEntry?.hostname)
         assertFalse(restoredEntry?.isSelectedForCycle ?: true)
 
-        assertFalse(preferencesManager.dnsToggleOff.value)
-        assertTrue(preferencesManager.dnsEnableAutoRevert.value)
-        assertEquals(expectedDelay, preferencesManager.dnsAutoRevertDelaySeconds.value)
-        assertTrue(preferencesManager.dnsRequireUnlock.value)
-        assertTrue(preferencesManager.vpnDetectionEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, preferencesManager.vpnDetectionMode.value)
-        assertTrue(preferencesManager.networkTypeDetectionEnabled.value)
-        assertEquals(BACKGROUND_DETECTION, preferencesManager.networkTypeDetectionMode.value)
+        assertFalse(preferencesManager.dns.dnsToggleOff.value)
+        assertTrue(preferencesManager.dns.dnsEnableAutoRevert.value)
+        assertEquals(expectedDelay, preferencesManager.dns.dnsAutoRevertDelaySeconds.value)
+        assertTrue(preferencesManager.dns.dnsRequireUnlock.value)
+        assertTrue(preferencesManager.automation.vpnDetectionEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, preferencesManager.automation.vpnDetectionMode.value)
+        assertTrue(preferencesManager.automation.networkTypeDetectionEnabled.value)
+        assertEquals(BACKGROUND_DETECTION, preferencesManager.automation.networkTypeDetectionMode.value)
 
-        assertFalse(preferencesManager.usbToggleEnable.value)
-        assertTrue(preferencesManager.usbToggleDisable.value)
-        assertTrue(preferencesManager.usbAlsoHideDevOptions.value)
-        assertTrue(preferencesManager.usbAlsoDisableWirelessDebugging.value)
-        assertTrue(preferencesManager.usbEnableAutoRevert.value)
-        assertEquals(expectedUsbDelay, preferencesManager.usbAutoRevertDelaySeconds.value)
-        assertTrue(preferencesManager.usbRequireUnlock.value)
+        assertFalse(preferencesManager.usb.state.value.toggleEnable)
+        assertTrue(preferencesManager.usb.state.value.toggleDisable)
+        assertTrue(preferencesManager.usb.state.value.alsoHideDevOptions)
+        assertTrue(preferencesManager.usb.state.value.alsoDisableWirelessDebugging)
+        assertTrue(preferencesManager.usb.state.value.enableAutoRevert)
+        assertEquals(expectedUsbDelay, preferencesManager.usb.state.value.autoRevertDelaySeconds)
+        assertTrue(preferencesManager.usb.state.value.requireUnlock)
 
         val shortcutId = "dns_custom_$customId"
-        assertEquals(setOf(shortcutId), preferencesManager.enabledShortcutIds.value)
-        assertEquals(setOf(shortcutId), preferencesManager.favoriteShortcutIds.value)
-        assertTrue(preferencesManager.allowPinnedShortcutsWhenDisabled.value)
+        assertEquals(setOf(shortcutId), preferencesManager.shortcuts.enabledShortcutIds.value)
+        assertEquals(setOf(shortcutId), preferencesManager.shortcuts.favoriteShortcutIds.value)
+        assertTrue(preferencesManager.shortcuts.allowPinnedShortcutsWhenDisabled.value)
     }
 
     private fun clearPreferences() {
@@ -119,8 +120,8 @@ class LegacyMinifiedBackupRestoreTest {
             .commit()
     }
 
-    private fun resetPreferencesManagerSingleton() {
-        val instanceField = PreferencesManager::class.java.getDeclaredField("INSTANCE")
+    private fun resetAppStoresSingleton() {
+        val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)
     }

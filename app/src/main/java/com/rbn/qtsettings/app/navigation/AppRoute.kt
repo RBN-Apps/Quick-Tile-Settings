@@ -1,0 +1,94 @@
+package com.rbn.qtsettings.app.navigation
+
+import androidx.navigation3.runtime.NavKey
+import androidx.savedstate.serialization.SavedStateConfiguration
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
+
+/** Stable wire names and explicit serializers keep saved routes independent of R8 class names. */
+@Serializable
+sealed interface AppRoute : NavKey {
+    @Serializable @SerialName("dns_revert") data object DnsRevert : AppRoute
+    @Serializable @SerialName("dns_automation") data object DnsAutomation : AppRoute
+    @Serializable @SerialName("dns_providers") data object DnsProviders : AppRoute
+    @Serializable @SerialName("dns_wifi_target") data object DnsWifiTarget : AppRoute
+    @Serializable @SerialName("dns_mobile_target") data object DnsMobileTarget : AppRoute
+    @Serializable @SerialName("wifi_rules") data object WifiRules : AppRoute
+    /**
+     * `ruleId == null` edits a new rule; an existing rule ID keeps its stored identity.
+     * Both editor steps are ordinary entries, so Back previews the whole page instead of
+     * redrawing only the part of it a nested back stack would own.
+     */
+    @Serializable @SerialName("wifi_rule")
+    data class WifiRule(val ruleId: String?, val targetStep: Boolean = false) : AppRoute
+    @Serializable @SerialName("usb_tile") data object UsbTile : AppRoute
+    @Serializable @SerialName("usb_actions") data object UsbActions : AppRoute
+    @Serializable @SerialName("usb_revert") data object UsbRevert : AppRoute
+    @Serializable @SerialName("dns") data object Dns : AppRoute
+    @Serializable @SerialName("usb") data object Usb : AppRoute
+    @Serializable @SerialName("shortcuts") data class Shortcuts(val origin: AppArea, val focusOrigin: Boolean = false) : AppRoute
+    @Serializable @SerialName("shortcut_help") data object ShortcutHelp : AppRoute
+    @Serializable @SerialName("permissions") data object Permissions : AppRoute
+    @Serializable @SerialName("adb_instructions") data object AdbInstructions : AppRoute
+    @Serializable @SerialName("licenses") data object Licenses : AppRoute
+    @Serializable @SerialName("about") data object About : AppRoute
+    @Serializable @SerialName("settings") data class Settings(val origin: AppArea) : AppRoute
+}
+
+internal val AppNavigationSavedState = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(AppRoute.DnsRevert.serializer())
+            subclass(AppRoute.DnsAutomation.serializer())
+            subclass(AppRoute.DnsProviders.serializer())
+            subclass(AppRoute.DnsWifiTarget.serializer())
+            subclass(AppRoute.DnsMobileTarget.serializer())
+            subclass(AppRoute.WifiRules.serializer())
+            subclass(AppRoute.WifiRule.serializer())
+            subclass(AppRoute.UsbTile.serializer())
+            subclass(AppRoute.UsbActions.serializer())
+            subclass(AppRoute.UsbRevert.serializer())
+            subclass(AppRoute.Dns.serializer())
+            subclass(AppRoute.Usb.serializer())
+            subclass(AppRoute.Shortcuts.serializer())
+            subclass(AppRoute.ShortcutHelp.serializer())
+            subclass(AppRoute.Settings.serializer())
+            subclass(AppRoute.About.serializer())
+            subclass(AppRoute.Licenses.serializer())
+            subclass(AppRoute.Permissions.serializer())
+            subclass(AppRoute.AdbInstructions.serializer())
+        }
+    }
+}
+
+internal val AppRoute.destination: AppDestination get() = when (this) {
+    AppRoute.Dns, AppRoute.Usb -> AppDestination.TileSettings
+    is AppRoute.Shortcuts -> AppDestination.ShortcutSettings
+    AppRoute.ShortcutHelp -> AppDestination.ShortcutHelp
+    is AppRoute.Settings -> AppDestination.AppSettings
+    AppRoute.About -> AppDestination.About
+    AppRoute.Licenses -> AppDestination.Licenses
+    AppRoute.Permissions -> AppDestination.Permissions
+    AppRoute.AdbInstructions -> AppDestination.AdbInstructions
+    AppRoute.DnsProviders -> AppDestination.DnsProviders
+    AppRoute.DnsAutomation -> AppDestination.DnsAutomation
+    AppRoute.DnsWifiTarget -> AppDestination.DnsWifiTarget
+    AppRoute.DnsMobileTarget -> AppDestination.DnsMobileTarget
+    AppRoute.WifiRules -> AppDestination.WifiRules
+    is AppRoute.WifiRule -> AppDestination.WifiRule
+    AppRoute.DnsRevert -> AppDestination.DnsRevert
+    AppRoute.UsbTile -> AppDestination.UsbTile
+    AppRoute.UsbActions -> AppDestination.UsbActions
+    AppRoute.UsbRevert -> AppDestination.UsbRevert
+}
+
+/** Stable, stack-scoped decorator identity when the same feature also appears in a help path. */
+internal val AppRoute.entryId: String get() = when (this) {
+    is AppRoute.Shortcuts -> "shortcuts:${origin.name}:$focusOrigin"
+    is AppRoute.Settings -> "settings:${origin.name}"
+    is AppRoute.WifiRule -> "wifi_rule:$ruleId:$targetStep"
+    else -> destination.name
+}

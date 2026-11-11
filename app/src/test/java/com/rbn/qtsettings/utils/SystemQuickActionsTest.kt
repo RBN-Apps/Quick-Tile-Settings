@@ -1,5 +1,8 @@
 package com.rbn.qtsettings.utils
 
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActionResult
+import com.rbn.qtsettings.platform.revert.AutoRevertCoordinator
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActions
 import android.Manifest
 import android.app.Application
 import android.provider.Settings
@@ -41,6 +44,13 @@ class SystemQuickActionsTest {
     @After
     fun tearDown() {
         shadowOf(application).denyPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
+    }
+
+    @Test
+    fun blankSystemHostnameDoesNotAppearAsAnActiveProvider() {
+        Settings.Global.putString(application.contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
+        Settings.Global.putString(application.contentResolver, PRIVATE_DNS_SPECIFIER, "")
+        assertNull(SystemQuickActions.getActiveDnsHostname(application))
     }
 
     @Test

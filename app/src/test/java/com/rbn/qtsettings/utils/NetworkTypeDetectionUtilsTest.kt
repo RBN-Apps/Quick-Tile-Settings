@@ -1,5 +1,6 @@
 package com.rbn.qtsettings.utils
 
+import com.rbn.qtsettings.platform.automation.NetworkTypeDetectionUtils
 import android.Manifest
 import android.content.Context
 import android.location.LocationManager

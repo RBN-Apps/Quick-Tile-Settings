@@ -1,0 +1,7 @@
+Version 2.0.0
+
+- Redesigned app with clear pages for Private DNS, USB debugging, automation and shortcuts, and navigation that adapts to phones, tablets and foldables.
+- A guided first-launch setup helps you grant the permission and add the tiles.
+- Switch DNS or USB debugging right in the app. Auto-revert now keeps running after Quick Settings is closed.
+- Wi-Fi rules are set up step by step with searchable lists.
+- Texts and translations revised.

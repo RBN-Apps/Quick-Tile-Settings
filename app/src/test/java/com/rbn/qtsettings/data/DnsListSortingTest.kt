@@ -1,10 +1,11 @@
 package com.rbn.qtsettings.data
 
+import com.rbn.qtsettings.app.AppStores
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -19,7 +20,7 @@ import org.robolectric.RuntimeEnvironment
 class DnsListSortingTest {
 
     private lateinit var context: Context
-    private lateinit var preferencesManager: PreferencesManager
+    private lateinit var preferencesManager: AppStores
     private val gson = Gson()
     private val hostnameListType = object : TypeToken<List<DnsHostnameEntry>>() {}.type
 
@@ -27,14 +28,14 @@ class DnsListSortingTest {
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
         clearPreferences()
-        resetPreferencesManagerSingleton()
-        preferencesManager = PreferencesManager.getInstance(context)
+        resetAppStoresSingleton()
+        preferencesManager = AppStores.getInstance(context)
     }
 
     @After
     fun tearDown() {
         clearPreferences()
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
     }
 
     @Test
@@ -48,16 +49,16 @@ class DnsListSortingTest {
             sortMode = null
         )
 
-        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dnsListSortMode.value)
+        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dns.dnsListSortMode.value)
         assertEquals(
             listOf("custom-a", "custom-b", "custom-c"),
-            preferencesManager.dnsHostnames.value
+            preferencesManager.dns.dnsHostnames.value
                 .filterNot { it.isPredefined }
                 .map { it.id }
         )
         assertEquals(
             DnsListSortMode.ALPHABETICAL,
-            preferencesManager.getDnsListSortModeBlocking()
+            preferencesManager.dns.getDnsListSortModeBlocking()
         )
     }
 
@@ -66,53 +67,53 @@ class DnsListSortingTest {
         val quad9Id = "quad9_default"
         val quad9First = orderWithEntryAt(quad9Id, 0)
 
-        assertFalse(preferencesManager.reorderDnsHostnames(quad9First))
+        assertFalse(preferencesManager.dns.reorderDnsHostnames(quad9First))
 
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        assertTrue(preferencesManager.reorderDnsHostnames(quad9First))
-        assertEquals(quad9Id, preferencesManager.dnsHostnames.value.first().id)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        assertTrue(preferencesManager.dns.reorderDnsHostnames(quad9First))
+        assertEquals(quad9Id, preferencesManager.dns.dnsHostnames.value.first().id)
         assertEquals(quad9Id, readPersistedManualEntries().first().id)
 
-        preferencesManager.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
-        assertEquals("adguard_default", preferencesManager.dnsHostnames.value.first().id)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
+        assertEquals("adguard_default", preferencesManager.dns.dnsHostnames.value.first().id)
 
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        assertEquals(quad9Id, preferencesManager.dnsHostnames.value.first().id)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        assertEquals(quad9Id, preferencesManager.dns.dnsHostnames.value.first().id)
     }
 
     @Test
     fun reorder_commitsWholeManualOrderOnce_andRejectsIncompleteOrDuplicateIds() {
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        val originalIds = preferencesManager.dnsHostnames.value.map { it.id }
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        val originalIds = preferencesManager.dns.dnsHostnames.value.map { it.id }
         val reversedIds = originalIds.reversed()
 
-        assertTrue(preferencesManager.reorderDnsHostnames(reversedIds))
-        assertEquals(reversedIds, preferencesManager.dnsHostnames.value.map { it.id })
+        assertTrue(preferencesManager.dns.reorderDnsHostnames(reversedIds))
+        assertEquals(reversedIds, preferencesManager.dns.dnsHostnames.value.map { it.id })
         assertEquals(reversedIds, readPersistedManualEntries().map { it.id })
 
-        assertFalse(preferencesManager.reorderDnsHostnames(reversedIds.dropLast(1)))
+        assertFalse(preferencesManager.dns.reorderDnsHostnames(reversedIds.dropLast(1)))
         assertFalse(
-            preferencesManager.reorderDnsHostnames(
+            preferencesManager.dns.reorderDnsHostnames(
                 reversedIds.dropLast(1) + reversedIds.first()
             )
         )
-        assertEquals(reversedIds, preferencesManager.dnsHostnames.value.map { it.id })
+        assertEquals(reversedIds, preferencesManager.dns.dnsHostnames.value.map { it.id })
     }
 
     @Test
     fun editAddAndDeleteWhileAlphabetical_preserveCanonicalPositionsAndAppendNewEntries() {
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        preferencesManager.addCustomDnsHostname("Zulu", "z.example.com")
-        preferencesManager.addCustomDnsHostname("Alpha", "a.example.com")
-        val zulu = preferencesManager.dnsHostnames.value.first { it.name == "Zulu" }
-        val alpha = preferencesManager.dnsHostnames.value.first { it.name == "Alpha" }
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        preferencesManager.dns.addCustomDnsHostname("Zulu", "z.example.com")
+        preferencesManager.dns.addCustomDnsHostname("Alpha", "a.example.com")
+        val zulu = preferencesManager.dns.dnsHostnames.value.first { it.name == "Zulu" }
+        val alpha = preferencesManager.dns.dnsHostnames.value.first { it.name == "Alpha" }
         val zuluManualIndex = readPersistedManualEntries().indexOfFirst { it.id == zulu.id }
         val alphaManualIndex = readPersistedManualEntries().indexOfFirst { it.id == alpha.id }
 
-        preferencesManager.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
-        preferencesManager.updateDnsHostnameEntry(zulu.copy(name = "000 First"))
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
+        preferencesManager.dns.updateDnsHostnameEntry(zulu.copy(name = "000 First"))
 
-        assertEquals(zulu.id, preferencesManager.dnsHostnames.value.first().id)
+        assertEquals(zulu.id, preferencesManager.dns.dnsHostnames.value.first().id)
         assertEquals(
             zuluManualIndex,
             readPersistedManualEntries().indexOfFirst { it.id == zulu.id }
@@ -122,12 +123,12 @@ class DnsListSortingTest {
             readPersistedManualEntries().indexOfFirst { it.id == alpha.id }
         )
 
-        preferencesManager.deleteCustomDnsHostname(zulu.id)
-        preferencesManager.addCustomDnsHostname("Beta", "b.example.com")
-        val beta = preferencesManager.dnsHostnames.value.first { it.name == "Beta" }
+        preferencesManager.dns.deleteCustomDnsHostname(zulu.id)
+        preferencesManager.dns.addCustomDnsHostname("Beta", "b.example.com")
+        val beta = preferencesManager.dns.dnsHostnames.value.first { it.name == "Beta" }
 
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        val manualIds = preferencesManager.dnsHostnames.value.map { it.id }
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        val manualIds = preferencesManager.dns.dnsHostnames.value.map { it.id }
         assertFalse(manualIds.contains(zulu.id))
         assertTrue(manualIds.indexOf(alpha.id) < manualIds.indexOf(beta.id))
         assertEquals(beta.id, manualIds.last())
@@ -135,83 +136,83 @@ class DnsListSortingTest {
 
     @Test
     fun manualOrderAndMode_surviveManagerRecreation() {
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
         assertTrue(
-            preferencesManager.reorderDnsHostnames(
+            preferencesManager.dns.reorderDnsHostnames(
                 orderWithEntryAt("quad9_default", 0)
             )
         )
 
-        resetPreferencesManagerSingleton()
-        preferencesManager = PreferencesManager.getInstance(context)
+        resetAppStoresSingleton()
+        preferencesManager = AppStores.getInstance(context)
 
-        assertEquals(DnsListSortMode.MANUAL, preferencesManager.dnsListSortMode.value)
-        assertEquals("quad9_default", preferencesManager.dnsHostnames.value.first().id)
+        assertEquals(DnsListSortMode.MANUAL, preferencesManager.dns.dnsListSortMode.value)
+        assertEquals("quad9_default", preferencesManager.dns.dnsHostnames.value.first().id)
         assertEquals("quad9_default", readPersistedManualEntries().first().id)
     }
 
     @Test
     fun cycleAndBlockingReads_followEffectiveMode() {
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
         assertTrue(
-            preferencesManager.reorderDnsHostnames(
+            preferencesManager.dns.reorderDnsHostnames(
                 orderWithEntryAt("quad9_default", 0)
             )
         )
 
         assertEquals(
             "quad9_default",
-            preferencesManager.getDnsHostnamesSelectedForCycle().first().id
+            preferencesManager.dns.getDnsHostnamesSelectedForCycle().first().id
         )
-        assertEquals("quad9_default", preferencesManager.getAllDnsHostnamesBlocking().first().id)
+        assertEquals("quad9_default", preferencesManager.dns.getAllDnsHostnamesBlocking().first().id)
 
-        preferencesManager.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
 
         assertEquals(
             "adguard_default",
-            preferencesManager.getDnsHostnamesSelectedForCycle().first().id
+            preferencesManager.dns.getDnsHostnamesSelectedForCycle().first().id
         )
-        assertEquals("adguard_default", preferencesManager.getAllDnsHostnamesBlocking().first().id)
+        assertEquals("adguard_default", preferencesManager.dns.getAllDnsHostnamesBlocking().first().id)
     }
 
     @Test
     fun backupRoundTrip_preservesModeAndCanonicalManualOrder() {
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        preferencesManager.addCustomDnsHostname("Custom", "custom.example.com")
-        val custom = preferencesManager.dnsHostnames.value.first { !it.isPredefined }
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        preferencesManager.dns.addCustomDnsHostname("Custom", "custom.example.com")
+        val custom = preferencesManager.dns.dnsHostnames.value.first { !it.isPredefined }
         assertTrue(
-            preferencesManager.reorderDnsHostnames(
+            preferencesManager.dns.reorderDnsHostnames(
                 orderWithEntryAt(custom.id, 0)
             )
         )
-        preferencesManager.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.ALPHABETICAL)
 
-        val backupJson = preferencesManager.exportSettingsBackupJson()
+        val backupJson = preferencesManager.backup.exportSettingsBackupJson()
         val backup = gson.fromJson(backupJson, SettingsBackup::class.java)
         assertEquals(DnsListSortMode.ALPHABETICAL.persistedValue, backup.dns?.sortMode)
         assertEquals(custom.id, backup.dns?.hostnames?.first()?.id)
 
-        preferencesManager.deleteCustomDnsHostname(custom.id)
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        preferencesManager.restoreSettingsBackupJson(backupJson)
+        preferencesManager.dns.deleteCustomDnsHostname(custom.id)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        preferencesManager.backup.restoreSettingsBackupJson(backupJson)
 
-        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dnsListSortMode.value)
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        assertEquals(custom.id, preferencesManager.dnsHostnames.value.first().id)
+        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dns.dnsListSortMode.value)
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        assertEquals(custom.id, preferencesManager.dns.dnsHostnames.value.first().id)
     }
 
     @Test
     fun schemaV1BackupWithoutSortMode_remainsCompatibleAndDefaultsToAlphabetical() {
         val backupObject = JsonParser.parseString(
-            preferencesManager.exportSettingsBackupJson()
+            preferencesManager.backup.exportSettingsBackupJson()
         ).asJsonObject
         backupObject.getAsJsonObject("dns").remove("sortMode")
 
-        preferencesManager.setDnsListSortMode(DnsListSortMode.MANUAL)
-        preferencesManager.restoreSettingsBackupJson(gson.toJson(backupObject))
+        preferencesManager.dns.setDnsListSortMode(DnsListSortMode.MANUAL)
+        preferencesManager.backup.restoreSettingsBackupJson(gson.toJson(backupObject))
 
         assertEquals(1, backupObject.get("schemaVersion").asInt)
-        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dnsListSortMode.value)
+        assertEquals(DnsListSortMode.ALPHABETICAL, preferencesManager.dns.dnsListSortMode.value)
     }
 
     @Test
@@ -240,7 +241,7 @@ class DnsListSortingTest {
             sortMode = DnsListSortMode.MANUAL
         )
 
-        val entries = preferencesManager.dnsHostnames.value
+        val entries = preferencesManager.dns.dnsHostnames.value
         assertEquals(
             listOf(
                 "custom-b",
@@ -277,7 +278,7 @@ class DnsListSortingTest {
             sortMode = DnsListSortMode.MANUAL
         )
 
-        val restoredCustomEntries = preferencesManager.dnsHostnames.value
+        val restoredCustomEntries = preferencesManager.dns.dnsHostnames.value
             .filterNot { it.isPredefined }
 
         assertEquals(
@@ -311,7 +312,7 @@ class DnsListSortingTest {
             customEntry(id = "a", name = "Alpha", hostname = "a.example.com")
         )
 
-        val customShortcutIds = ShortcutUtils.getOrderedShortcutIds(entries)
+        val customShortcutIds = ShortcutCatalog.getOrderedShortcutIds(entries)
             .filter { it.startsWith("dns_custom_") }
 
         assertEquals(listOf("dns_custom_z", "dns_custom_a"), customShortcutIds)
@@ -321,7 +322,7 @@ class DnsListSortingTest {
         entries: List<DnsHostnameEntry>,
         sortMode: DnsListSortMode?
     ) {
-        resetPreferencesManagerSingleton()
+        resetAppStoresSingleton()
         val editor = preferences().edit()
             .clear()
             .putString(KEY_DNS_HOSTNAMES, gson.toJson(entries))
@@ -329,7 +330,7 @@ class DnsListSortingTest {
             editor.putString(KEY_DNS_LIST_SORT_MODE, sortMode.persistedValue)
         }
         editor.commit()
-        preferencesManager = PreferencesManager.getInstance(context)
+        preferencesManager = AppStores.getInstance(context)
     }
 
     private fun readPersistedManualEntries(): List<DnsHostnameEntry> {
@@ -338,7 +339,7 @@ class DnsListSortingTest {
     }
 
     private fun orderWithEntryAt(entryId: String, targetIndex: Int): List<String> {
-        val orderedIds = preferencesManager.dnsHostnames.value.map { it.id }.toMutableList()
+        val orderedIds = preferencesManager.dns.dnsHostnames.value.map { it.id }.toMutableList()
         val sourceIndex = orderedIds.indexOf(entryId)
         require(sourceIndex >= 0) { "Unknown DNS entry ID: $entryId" }
         orderedIds.add(targetIndex, orderedIds.removeAt(sourceIndex))
@@ -362,8 +363,8 @@ class DnsListSortingTest {
         }
     }
 
-    private fun resetPreferencesManagerSingleton() {
-        val instanceField = PreferencesManager::class.java.getDeclaredField("INSTANCE")
+    private fun resetAppStoresSingleton() {
+        val instanceField = com.rbn.qtsettings.app.AppStores::class.java.getDeclaredField("INSTANCE")
         instanceField.isAccessible = true
         instanceField.set(null, null)
     }

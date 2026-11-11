@@ -1,234 +1,132 @@
-[![GitHub issues](https://img.shields.io/github/issues/RBN-Apps/Quick-Tile-Settings)](https://github.com/RBN-Apps/Quick-Tile-Settings/issues)
-[![GitHub last commit](https://img.shields.io/github/last-commit/RBN-Apps/Quick-Tile-Settings)](https://github.com/RBN-Apps/Quick-Tile-Settings/commits/main)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/RBN-Apps/Quick-Tile-Settings)](https://github.com/RBN-Apps/Quick-Tile-Settings/releases/latest)
-[![Android API](https://img.shields.io/badge/API-29%2B-brightgreen.svg)](https://android-arsenal.com/api?level=29)
-[![GitHub stars](https://img.shields.io/github/stars/RBN-Apps/Quick-Tile-Settings?style=social)](https://github.com/RBN-Apps/Quick-Tile-Settings/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/RBN-Apps/Quick-Tile-Settings?style=social)](https://github.com/RBN-Apps/Quick-Tile-Settings/network/members)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/RBN-Apps/Quick-Tile-Settings)
+<div align="center">
+  <img src="docs/assets/app-icon-rounded.svg" alt="" width="96" />
+  <h1>QuickTile Settings</h1>
+  <p>Private DNS and USB debugging, one tile away.</p>
+  <p>Choose your DNS provider, switch settings for each network, and keep your most-used actions close.</p>
 
-# Quick-Tile Settings
+  <a href="https://github.com/RBN-Apps/Quick-Tile-Settings/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/RBN-Apps/Quick-Tile-Settings?style=flat-square" /></a>
+  <img alt="Android 10 or later" src="https://img.shields.io/badge/Android-10%2B-3DDC84?style=flat-square" />
+  <a href="LICENSE"><img alt="GPL v3 license" src="https://img.shields.io/badge/License-GPL_v3-5567A5?style=flat-square" /></a>
 
-**Quick-Tile Settings** is an Android application that provides customizable Quick Settings tiles
-for managing Private DNS and USB Debugging. It allows users to quickly toggle these settings and
-configure the behavior of each tile, including an auto-revert feature.
-
-A significant portion of the Private DNS tile functionality and concept is inspired by Joshua
-Wolfsohn's [Private DNS Quick Tile](https://github.com/joshuawolfsohn/Private-DNS-Quick-Tile) app.
-This project aims to expand on that idea by adding more features, a USB Debugging tile, and a modern
-Jetpack Compose UI.
-
-## Download
-
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-alt="Get it on F-Droid"
-height="80">](https://f-droid.org/packages/com.rbn.qtsettings/)
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
-alt="Get it on IzzyOnDroid"
-height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.rbn.qtsettings/)
-[<img src="https://i.ibb.co/q0mdc4Z/get-it-on-github.png"
-alt="Get it on GitHub Releases"
-height="80">](https://github.com/RBN-Apps/Quick-Tile-Settings/releases)
-
-## Features
-
-* **Private DNS Quick Tile:**
-    * Cycle through Off, Auto, and user-selected Private DNS hostnames.
-    * Manage a list of DNS hostnames:
-        * Includes predefined options: Cloudflare (Performance & Privacy), AdGuard DNS (Ad & Tracker
-          Blocking), Quad9 (Security Focus).
-        * Add, edit, and delete custom DNS hostname entries.
-        * Select which hostnames (along with Off/Auto) are included in the tile's cycle.
-    * View information about the benefits of each predefined DNS provider directly in the app.
-    * Optional: Automatically revert to the previous DNS state after a configurable delay.
-* **Smart DNS Automation:**
-    * Optionally auto-disable Private DNS when a VPN connection is active.
-    * Optionally auto-switch Private DNS based on network type (WiFi vs mobile data).
-    * Choose between tile-only detection or continuous background detection.
-* **USB Debugging Quick Tile:**
-    * Toggle USB Debugging On or Off.
-    * Configure whether to cycle between On/Off or only include specific states.
-    * Optional: Automatically revert to the previous USB Debugging state after a configurable delay.
-* **User-Friendly Configuration:**
-    * In-app settings screen to customize tile behavior and auto-revert options.
-    * Tabbed interface for easy navigation between Private DNS and USB Debugging settings.
-* **Shortcut Actions (App Shortcuts):**
-    * Choose which actions are exposed as Android app shortcuts.
-    * Use these actions from launchers and automation tools (e.g., Samsung Routines, Tasker).
-    * Disabled actions are blocked by default, with an optional setting to keep already pinned
-      shortcuts working.
-* **Multiple Permission Granting Options:**
-    * Clear instructions and an in-app dialog for granting the required `WRITE_SECURE_SETTINGS`
-      permission via ADB (Android Debug Bridge), Shizuku, or Root.
-    * Convenient "Copy Command" buttons for ADB commands.
-* **Modern UI:** Built with Jetpack Compose, supporting dynamic color (Material You) on Android 12+.
-* **Localization:** Available in English, German, Czech, Turkish, Russian, and Brazilian Portuguese.
-
-## Screenshots
+</div>
 
 <p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="DNS Tab" height="320"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="USB Tab" height="320"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Permission Grant Dialog" height="320"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" alt="Quick Tile Panel" height="320"/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-banner.png" />
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/readme-banner-light.png" />
+    <img src="docs/assets/readme-banner-light.png" alt="QuickTile Settings: Your settings. One tap away. Private DNS and USB debugging, shown in the app's light and dark designs." width="100%" />
+  </picture>
 </p>
 
-## Requirements
+<p align="center">
+  <a href="https://f-droid.org/packages/com.rbn.qtsettings/"><img src="docs/assets/badges/f-droid.svg" alt="Get it on F-Droid" width="160" height="54" /></a>
+  <a href="https://apt.izzysoft.de/fdroid/index/apk/com.rbn.qtsettings/"><img src="docs/assets/badges/izzyondroid.svg" alt="Get it on IzzyOnDroid" width="160" height="54" /></a>
+</p>
+<p align="center">
+  <a href="https://github.com/RBN-Apps/Quick-Tile-Settings/releases/latest"><img src="docs/assets/badges/github.svg" alt="Get it on GitHub Releases" width="160" height="54" /></a>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522com.rbn.qtsettings%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fgithub.com%252FRBN-Apps%252FQuick-Tile-Settings%2522%252C%2522author%2522%253A%2522RBN-Apps%2522%252C%2522name%2522%253A%2522QuickTile%2520Settings%2522%257D"><img src="docs/assets/badges/obtainium.svg" alt="Add to Obtainium" width="160" height="54" /></a>
+</p>
 
-* Android 9 (Pie, API 29) or higher.
-* The `WRITE_SECURE_SETTINGS` permission. This **must** be granted using one of the methods
-  described below as it's a protected permission not available to regular apps.
-* On Android 13+, enabling background monitoring modes may require `POST_NOTIFICATIONS`
-  permission for the persistent service notification.
+## Make the tiles yours
 
-## Setup and Usage
+QuickTile Settings adds two tiles to Android's Quick Settings panel. Tap to move through the states you choose. Open the app to manage providers, set up automation or change a setting directly.
 
-### 1. Granting the `WRITE_SECURE_SETTINGS` Permission
+| Private DNS | USB debugging |
+| --- | --- |
+| Switch between Off, Auto and your chosen providers. | Turn USB debugging on or off from its tile. |
+| Start with AdGuard, Cloudflare or Quad9, or add a custom hostname. | Optionally toggle Developer Options and Wireless Debugging at the same time. |
+| Choose and sort the providers included in the tile cycle. | Choose which states the tile cycles through. |
+| Restore the previous DNS setting after a delay. | Restore the previous debugging setting after a delay. |
 
-This app requires the `WRITE_SECURE_SETTINGS` permission to modify system settings for Private DNS
-and USB Debugging. This permission cannot be granted by the app itself through the standard Android
-permission dialog. You must use one of the following methods. The app provides an in-app dialog (
-accessible via the help icon "?" in the toolbar) that guides you through these options.
+Both tiles can require device unlock before changing a setting.
 
-#### Method 1: ADB (Android Debug Bridge) - Recommended for most users without Root/Shizuku
+## Let DNS follow your network
 
-This method requires a computer with ADB set up.
+Choose separate DNS targets for Wi-Fi and mobile data. Add rules for individual Wi-Fi networks using their name (SSID), with an optional BSSID to match a specific access point. Networks without a matching rule use your Wi-Fi default. Search helps you find a network or DNS target in longer lists.
 
-1. **Enable Developer Options and USB Debugging on your Android device:**
-    * Go to `Settings > About phone`.
-    * Tap on `Build number` repeatedly (usually 7 times) until you see a message saying "You are now
-      a developer!".
-    * Go to `Settings > System > Developer options` (the location might vary slightly by device).
-    * Enable `USB debugging`.
-2. **Connect your device to your computer** via USB.
-3. **Ensure ADB is installed** on your computer. (Search "install ADB" for instructions specific to
-   your OS).
-4. **Grant the permission using one of the following ADB commands:**
-    * **Option A (If app is already installed):**
-     ```bash
-     adb shell pm grant com.rbn.qtsettings android.permission.WRITE_SECURE_SETTINGS
-     ```
-    * **Option B (Grant during installation):**
-      (First, uninstall the app if it's already present without the permission)
-     ```bash
-     adb install -g -r path/to/your/app.apk
-     ```
+You can also turn Private DNS off while a VPN is connected and restore it after disconnection. Detection can run while the tile is visible or in the background. Per-network Wi-Fi rules require background detection and the location access described in the app.
 
-   Replace `path/to/your/app.apk` with the actual path to the APK file. The `-g` flag grants all
-   runtime permissions listed in the manifest, which for this app effectively grants
-   `WRITE_SECURE_SETTINGS` due to how it's declared.
+## Keep your actions within reach
 
-   The in-app help dialog provides copy buttons for these commands.
+Enable shortcut actions for your launcher and compatible automation apps, or pin them to your home screen. DNS and USB share the available shortcut slots and four favorites. The app shows the action limit reported by your device.
 
-#### Method 2: Shizuku
+The navigation menu takes you to either tile, Shortcut Actions, Settings, permission setup and About. Light and dark themes follow your system, with dynamic colors on Android 12 and later.
 
-[Shizuku](https://shizuku.rikka.app/) allows apps to use system APIs with elevated privileges. If
-you have Shizuku installed and running (either via ADB or Root), you can grant the permission
-through it.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/gallery/providers-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" />
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Provider selection with DNS Off, Auto, AdGuard, Cloudflare and Quad9" width="30%" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" />
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/gallery/shortcuts-light.png" />
+    <img src="docs/assets/gallery/shortcuts-light.png" alt="Shortcut actions with shared action and favorite counts" width="30%" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" />
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/gallery/permission-light.png" />
+    <img src="docs/assets/gallery/permission-light.png" alt="Permission setup with ADB, Shizuku and root options" width="30%" />
+  </picture>
+</p>
 
-1. **Install and set up Shizuku** on your device. Follow the instructions provided by the Shizuku
-   app.
-2. Open **Quick-Tile Settings**. If Shizuku is running, the in-app permission dialog will offer a "
-   Grant using Shizuku" option.
-3. If Quick-Tile Settings doesn't yet have permission to *use* Shizuku, you'll first be prompted to
-   grant that via a Shizuku system dialog.
-4. Once Quick-Tile Settings has permission to use Shizuku, tapping "Grant using Shizuku" will
-   attempt to set the `WRITE_SECURE_SETTINGS` permission.
+More screenshots: [English](fastlane/metadata/android/en-US/images/phoneScreenshots) · [Deutsch](fastlane/metadata/android/de-DE/images/phoneScreenshots).
 
-#### Method 3: Root
+## Get started
 
-If your device is rooted, the app can attempt to grant the permission using root privileges.
+You need Android 10 or later. Changing Private DNS and USB debugging requires `WRITE_SECURE_SETTINGS`, a protected Android permission. The welcome flow explains the features and walks you through setup. You can return to **Permission setup** from the navigation menu at any time.
 
-1. Ensure your device is properly rooted and a root management app (like Magisk) is installed and
-   allows root access requests.
-2. Open **Quick-Tile Settings**. The in-app permission dialog will detect root and offer a "Grant
-   using Root" option.
-3. Tapping this button will prompt your root management app to grant root access to Quick-Tile
-   Settings for executing the permission grant command.
+1. Install the app from one of the download links above.
+2. Grant the permission using ADB, a running Shizuku installation or existing root access.
+3. Open your Quick Settings panel, edit its tiles, and add **Private DNS** and **USB Debugging**.
+4. Choose your providers and tile behavior in the app.
 
-**After granting the permission using any method, the app should detect it. You might need to
-restart the app or pull down the Quick Settings panel again for the tiles to become fully
-functional.**
+### ADB setup
 
-### 2. Configure Tiles in the App
+Enable Developer Options and USB debugging in Android settings, connect your phone to a computer with ADB installed, and approve the computer on your phone. Run:
 
-1. Open the **Quick-Tile Settings** app.
-2. If the permission hasn't been granted, you'll see a warning. Use the help icon (`?`) in the
-   toolbar to access the permission granting options.
-3. Navigate to the **"Private DNS"** or **"USB Debugging"** tab.
-4. **For Private DNS:**
-    * **Select Cycle States:** Check the boxes for "DNS Off" and "DNS Auto" if you want them in the
-      cycle.
-    * **Manage Hostnames:**
-        * A list of DNS providers (predefined and custom) is shown.
-        * Check the box next to each hostname to include it in the tile's cycle.
-        * For predefined hostnames, tap the info icon (ⓘ) to learn about their benefits.
-        * Tap "Add Custom Hostname" to add your own DNS provider (you'll need a display name and the
-          actual hostname).
-        * Custom hostnames can be edited or deleted.
-    * **Automation Options (Optional):**
-        * Enable automatic DNS handling for VPN connections.
-        * Enable network type detection and configure separate DNS behavior for WiFi and mobile data.
-        * Choose tile-only detection (battery-friendly) or background detection (instant switching).
-5. **For USB Debugging:**
-    * **Select Cycle States:** Check "USB Debug On" and/or "USB Debug Off" to include them in the
-      cycle.
-6. **Auto-Revert (Optional):**
-    * Enable "Enable auto-revert after a delay".
-    * Set the "Revert delay (seconds)". The setting will revert to its previous state after this
-      many seconds.
-7. Settings are saved automatically as you make changes in the app.
-8. **For Shortcut Actions (Optional):**
-    * Open the shortcut settings screen from the app (shortcut icon in the top bar).
-    * Enable the actions you want to expose as app shortcuts.
-    * Keep automation-required actions enabled so Tasker/Samsung Routines can discover them.
-    * If needed, you can allow already pinned shortcuts to keep working after an action is disabled.
+```sh
+adb shell pm grant com.rbn.qtsettings android.permission.WRITE_SECURE_SETTINGS
+```
 
-### 3. Add Tiles to Your Quick Settings Panel
+The in-app ADB guide includes the individual steps and a copy button. Root is not required for this method. If you use [Shizuku](https://shizuku.rikka.app/) or already have root access, choose that method on the permission setup page and follow its prompts.
 
-1. Pull down your notification shade fully to reveal the Quick Settings panel.
-2. Tap the **"edit" icon** (often a pencil) or an option like "Edit tiles".
-3. Find the **"Private DNS"** and **"USB Debugging"** tiles provided by this app (they will have the
-   app's icon or a relevant icon for DNS/USB).
-4. Drag and drop them from the "available tiles" area to your active tiles area.
-5. Arrange them as desired and tap "Done" or the checkmark.
+### Background detection and permissions
 
-### 4. Using the Tiles
+Background detection uses a foreground service. On Android 13 and later, notification permission is optional: detection still works without it, and Android lists the service in its active apps area. Earlier Android versions require the ongoing service notification.
 
-* **Tap a tile** in your Quick Settings panel to cycle it to the next configured state.
-* **Long-press a tile** to open the Quick-Tile Settings app.
+Wi-Fi network identification needs location access and enabled location services. The app explains the additional access needed for background Wi-Fi rules. These permissions are separate from the permission used to change system settings.
 
-## Auto-Revert Feature Explained
+## Back up your setup
 
-* When auto-revert is enabled for a tile:
-    * Tapping the tile to change a setting will initiate a countdown timer (visible via a toast
-      message).
-    * If no further action is taken, the setting will automatically revert to the state it was in
-      *before* you tapped the tile once the timer finishes.
-    * If you tap the tile *again* before the timer finishes, the auto-revert for the *previous*
-      change is cancelled. The tile will proceed to its next state, and if that new state change
-      also has auto-revert configured, a *new* timer will begin.
-* This feature is useful for temporarily enabling a setting (like USB Debugging for a quick ADB
-  command or you want to visit an advertisement website on purpose once) and having it automatically
-  disable itself for security or convenience.
+Open **Settings → Backup & restore** to export tile preferences, DNS entries, automation rules and shortcut configuration to a JSON file. Restore a current or supported older backup on another installation.
 
-## Building from Source
+Restoring replaces the app's current configuration. System permissions are not part of the backup and must be granted separately on each device. Keep a copy before experimenting with your settings.
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/RBN-Apps/Quick-Tile-Settings.git
-   ```
-2. Open the project in Android Studio.
-3. Let Gradle sync and download dependencies.
-4. Build the project (e.g., `Build > Make Project` or `Run 'app'`).
-   The APK will typically be found in `app/build/outputs/apk/debug/` or
-   `app/build/outputs/apk/release/`.
+## Help and contributions
 
-## Star History
+Found a bug? Open **About → Report an issue** in the app to prepare a GitHub report. You can optionally include technical information and review it before submitting. About also has a feature request link.
 
-<a href="https://star-history.dera.page/#RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left">
+You can [report bugs or suggest features on GitHub](https://github.com/RBN-Apps/Quick-Tile-Settings/issues). Contributions to code, translations and documentation are welcome.
+
+### Build from source
+
+Clone the project and open it in Android Studio. Let Gradle sync, then run the `app` configuration on a device or emulator. From a configured Android development environment:
+
+```sh
+git clone https://github.com/RBN-Apps/Quick-Tile-Settings.git
+cd Quick-Tile-Settings
+./gradlew assembleDebug
+```
+
+The debug APK is written to `app/build/outputs/apk/debug/`. The app uses Kotlin, Jetpack Compose and Navigation 3.
+
+## Star history
+
+<a href="https://www.star-history.com/?repos=RBN-Apps%2FQuick-Tile-Settings&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=RBN-Apps/Quick-Tile-Settings&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=RBN-Apps/Quick-Tile-Settings&type=date&legend=top-left" />
  </picture>
 </a>

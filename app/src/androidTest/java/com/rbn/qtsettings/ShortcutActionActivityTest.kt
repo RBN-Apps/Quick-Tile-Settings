@@ -8,17 +8,17 @@ import android.util.Log
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.app.AppStores
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import com.rbn.qtsettings.utils.Constants
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.ShortcutUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 /**
  * Instrumented tests for [ShortcutActionActivity].
@@ -32,20 +32,20 @@ import java.io.InputStreamReader
 class ShortcutActionActivityTest {
 
     private lateinit var context: Context
-    private lateinit var prefsManager: PreferencesManager
+    private lateinit var prefsManager: AppStores
 
     @Before
     fun setUp() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        prefsManager = PreferencesManager.getInstance(context)
+        prefsManager = AppStores.getInstance(context)
         grantWriteSecureSettings()
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.dnsHostnames.value
+            prefsManager.dns.dnsHostnames.value
                 .filter { !it.isPredefined }
-                .forEach { prefsManager.deleteCustomDnsHostname(it.id) }
-            prefsManager.setAllowPinnedShortcutsWhenDisabled(false)
-            ShortcutUtils.getAvailableShortcutIds(prefsManager.dnsHostnames.value)
-                .forEach { prefsManager.setShortcutExposureEnabled(it, true) }
+                .forEach { prefsManager.dns.deleteCustomDnsHostname(it.id) }
+            prefsManager.shortcuts.setAllowPinnedShortcutsWhenDisabled(false)
+            ShortcutCatalog.getAvailableShortcutIds(prefsManager.dns.dnsHostnames.value)
+                .forEach { prefsManager.shortcuts.setShortcutExposureEnabled(it, true) }
         }
     }
 
@@ -110,13 +110,13 @@ class ShortcutActionActivityTest {
 
     private fun setShortcutEnabled(shortcutId: String, enabled: Boolean) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.setShortcutExposureEnabled(shortcutId, enabled)
+            prefsManager.shortcuts.setShortcutExposureEnabled(shortcutId, enabled)
         }
     }
 
     private fun setAllowPinnedShortcutsWhenDisabled(enabled: Boolean) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.setAllowPinnedShortcutsWhenDisabled(enabled)
+            prefsManager.shortcuts.setAllowPinnedShortcutsWhenDisabled(enabled)
         }
     }
 
@@ -331,12 +331,12 @@ class ShortcutActionActivityTest {
         val customHostname = "dns.example.com"
         val customDisplayName = "Example DNS"
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.addCustomDnsHostname(customDisplayName, customHostname)
+            prefsManager.dns.addCustomDnsHostname(customDisplayName, customHostname)
         }
-        val customEntry = prefsManager.dnsHostnames.value.first {
+        val customEntry = prefsManager.dns.dnsHostnames.value.first {
             !it.isPredefined && it.hostname == customHostname
         }
-        setShortcutEnabled(ShortcutUtils.getShortcutIdForDnsEntry(customEntry), true)
+        setShortcutEnabled(ShortcutCatalog.getShortcutIdForDnsEntry(customEntry), true)
 
         launchWithAction(Constants.ACTION_DNS_CUSTOM) {
             putExtra(Constants.EXTRA_DNS_ENTRY_ID, customEntry.id)
@@ -395,12 +395,12 @@ class ShortcutActionActivityTest {
     fun shortcutActionActivity_dnsCustom_whenShortcutDisabled_shouldNotModifySettings() {
         val customHostname = "dns.disabled.example.com"
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            prefsManager.addCustomDnsHostname("Disabled DNS", customHostname)
+            prefsManager.dns.addCustomDnsHostname("Disabled DNS", customHostname)
         }
-        val customEntry = prefsManager.dnsHostnames.value.first {
+        val customEntry = prefsManager.dns.dnsHostnames.value.first {
             !it.isPredefined && it.hostname == customHostname
         }
-        setShortcutEnabled(ShortcutUtils.getShortcutIdForDnsEntry(customEntry), false)
+        setShortcutEnabled(ShortcutCatalog.getShortcutIdForDnsEntry(customEntry), false)
 
         Settings.Global.putString(
             context.contentResolver, Constants.PRIVATE_DNS_MODE, Constants.DNS_MODE_OFF
@@ -420,7 +420,7 @@ class ShortcutActionActivityTest {
 
     @Test
     fun shortcutActionActivity_dnsOff_whenShortcutDisabled_shouldNotModifySettings() {
-        setShortcutEnabled(ShortcutUtils.SHORTCUT_ID_DNS_OFF, false)
+        setShortcutEnabled(ShortcutCatalog.SHORTCUT_ID_DNS_OFF, false)
 
         Settings.Global.putString(
             context.contentResolver,
@@ -439,7 +439,7 @@ class ShortcutActionActivityTest {
 
     @Test
     fun shortcutActionActivity_dnsOff_whenPinnedFallbackEnabled_shouldStillExecute() {
-        setShortcutEnabled(ShortcutUtils.SHORTCUT_ID_DNS_OFF, false)
+        setShortcutEnabled(ShortcutCatalog.SHORTCUT_ID_DNS_OFF, false)
         setAllowPinnedShortcutsWhenDisabled(true)
 
         Settings.Global.putString(

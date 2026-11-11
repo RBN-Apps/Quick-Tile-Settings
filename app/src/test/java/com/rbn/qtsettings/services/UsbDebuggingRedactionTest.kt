@@ -6,7 +6,9 @@ import android.os.Looper
 import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.rbn.qtsettings.data.PreferencesManager
+import com.rbn.qtsettings.QuickTileSettingsApplication
+import com.rbn.qtsettings.app.AppStores
+import com.rbn.qtsettings.feature.usb.data.UsbSettingsStore
 import com.rbn.qtsettings.utils.Constants
 import com.rbn.qtsettings.utils.DebuggingSettingsProvider
 import org.junit.After
@@ -36,19 +38,19 @@ class UsbDebuggingRedactionTest {
     }
 
     private lateinit var application: Application
-    private lateinit var prefs: PreferencesManager
+    private lateinit var prefs: UsbSettingsStore
     private lateinit var provider: DebuggingSettingsProvider
 
     @Before fun setUp() {
         application = RuntimeEnvironment.getApplication()
         resetPreferences()
-        prefs = PreferencesManager.getInstance(application)
-        prefs.setUsbToggleEnable(true)
-        prefs.setUsbToggleDisable(true)
-        prefs.setUsbAlsoHideDevOptions(true)
-        prefs.setUsbAlsoDisableWirelessDebugging(true)
-        prefs.setUsbEnableAutoRevert(false)
-        prefs.setUsbRequireUnlock(false)
+        prefs = AppStores.getInstance(application).usb
+        prefs.setToggleEnable(true)
+        prefs.setToggleDisable(true)
+        prefs.setAlsoHideDevOptions(true)
+        prefs.setAlsoDisableWirelessDebugging(true)
+        prefs.setEnableAutoRevert(false)
+        prefs.setRequireUnlock(false)
         shadowOf(application).grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
         provider = DebuggingSettingsProvider().apply { register(application) }
         Settings.Global.putInt(application.contentResolver, Constants.ADB_ENABLED, 0)
@@ -59,6 +61,7 @@ class UsbDebuggingRedactionTest {
     }
 
     @After fun tearDown() {
+        (application as QuickTileSettingsApplication).container.usbAutoRevert.cancel()
         shadowOf(application).denyPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
         resetPreferences()
     }
@@ -81,6 +84,7 @@ class UsbDebuggingRedactionTest {
         try {
             controller.get().onStartListening()
             assertEquals(Tile.STATE_ACTIVE, controller.get().qsTile.state)
+            controller.get().onStopListening()
             provider.values[Constants.ADB_ENABLED] = "0"
             controller.get().onStartListening()
             assertEquals(Tile.STATE_INACTIVE, controller.get().qsTile.state)
@@ -88,7 +92,7 @@ class UsbDebuggingRedactionTest {
     }
 
     @Test fun tileWithoutDeveloperOptionsCompanion_isNotBlockedByRedaction() {
-        prefs.setUsbAlsoHideDevOptions(false)
+        prefs.setAlsoHideDevOptions(false)
         provider.values[Constants.ADB_ENABLED] = "0"
         val controller = Robolectric.buildService(UsbDebuggingTileService::class.java).create()
         try {
@@ -98,8 +102,8 @@ class UsbDebuggingRedactionTest {
     }
 
     @Test fun autoRevert_restoresActualOnState_insteadOfRedactedOff() {
-        prefs.setUsbEnableAutoRevert(true)
-        prefs.setUsbAutoRevertDelaySeconds(5)
+        prefs.setEnableAutoRevert(true)
+        prefs.setAutoRevertDelaySeconds(5)
         val controller = Robolectric.buildService(UsbDebuggingTileService::class.java).create()
         try {
             controller.get().onClick()
@@ -119,7 +123,9 @@ class UsbDebuggingRedactionTest {
     }
 
     private fun resetPreferences() {
-        PreferencesManager::class.java.getDeclaredField("INSTANCE").apply { isAccessible = true }.set(null, null)
-        application.getSharedPreferences("usb_tile_service_state", 0).edit().clear().commit()
+        listOf("qt_settings_prefs", "usb_tile_service_state", "auto_revert_coordination").forEach { name ->
+            application.getSharedPreferences(name, 0).edit().clear().commit()
+        }
+        AppStores::class.java.getDeclaredField("INSTANCE").apply { isAccessible = true }.set(null, null)
     }
 }

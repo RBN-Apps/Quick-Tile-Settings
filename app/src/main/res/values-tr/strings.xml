@@ -21,9 +21,9 @@
     <string name="usb_dev_options_off">Geliştirici Seçenekleri Kapalı</string>
 
     <!-- UI Settings Screen -->
-    <string name="setting_title_private_dns">Özel DNS Kutucuğu</string>
-    <string name="setting_title_usb_debugging">USB Hata Ayıklama Kutucuğu</string>
-    <string name="setting_desc_tile_cycles">Kutucuk döngüsü için durumları seçin:</string>
+    <string name="setting_title_private_dns">Özel DNS düğmesi</string>
+    <string name="setting_title_usb_debugging">USB hata ayıklama düğmesi</string>
+    <string name="setting_desc_tile_cycles">Hızlı Ayarlar düğmesine dokunduğunuzda geçiş yapılacak durumları seçin:</string>
     <string name="app_settings_title">Ayarlar</string>
     <string name="tab_title_dns">Özel DNS</string>
     <string name="tab_title_usb">USB Hata Ayıklama</string>
@@ -41,9 +41,6 @@
 
     
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">İzin Gerekli</string>
-    <string name="permission_grant_dialog_intro">Özel DNS ve USB Hata Ayıklama gibi sistem ayarlarını değiştirmek için bu uygulamanın özel WRITE_SECURE_SETTINGS iznine ihtiyacı var. Lütfen bu izni vermek için aşağıdaki yöntemlerden birini seçin:</string>
-    <string name="help_dialog_after_grant">İzni verdikten sonra, kutucukların çalışması için uygulamayı yeniden başlatın veya Hızlı Ayarlar panelini tekrar açın.</string>
     <string name="app_menu_desc">Uygulama menüsünü aç</string>
     <string name="navigate_back_desc">Geri</string>
     <string name="menu_settings">Ayarlar</string>
@@ -53,24 +50,18 @@
     <string name="dialog_close">Kapat</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Yöntem %1$d: ADB (Android Hata Ayıklama Köprüsü) %2$s</string>
-    <string name="permission_method_adb_desc">Bu, standart yöntemdir ve ADB kurulu bir bilgisayar gerektirir.</string>
+    <string name="permission_method_adb_desc">Standart yöntem için ADB kurulu bir bilgisayar gerekir.</string>
     <string name="button_show_adb_instructions">ADB Talimatlarını Göster</string>
     <string name="adb_instructions_title">ADB Talimatları</string>
-    <string name="adb_instructions_intro">Cihazınızı ADB kurulu bir bilgisayara bağlayın. Cihazınızda Geliştirici Seçenekleri ve USB Hata Ayıklama\'nın etkin olduğundan emin olun.</string>
-    <string name="help_dialog_method_1_title">Seçenek A: Mevcut uygulamaya izin verin</string>
     <string name="help_dialog_how_to_grant_via_adb">Aşağıdaki komutu terminalinizde/komut istemcinizde çalıştırın:</string>
     <string name="button_copy_grant_command">İzin Verme Komutunu Kopyala</string>
-    <string name="help_dialog_method_2_title">Seçenek B: İzinle birlikte yükleyin</string>
-    <string name="help_dialog_how_to_install_via_adb">Önce mevcut sürümü kaldırın, ardından bu komutu kullanın (path/to/your/app.apk kısmını gerçek APK yolu ile değiştirin):</string>
     <string name="button_copy_install_command">Yükleme Komutunu Kopyala</string>
     <string name="help_dialog_apk_path_note">(Not: Yükleme komutu için APK dosyasına ihtiyacınız var. Uygulamayı kendiniz derlediyseniz, genellikle app/build/outputs/apk/debug/ veya app/build/outputs/apk/release/ klasöründedir. Ayrıca en son sürümü GitHub\'dan indirebilirsiniz.)</string>
     <string name="github_releases_link_text">En son sürümü GitHub\'dan indirin</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Yöntem %1$d: Shizuku %2$s</string>
-    <string name="shizuku_ready_to_grant_desc">Shizuku mevcut ve bu uygulamanın onu kullanma izni var. WRITE_SECURE_SETTINGS iznini vermeyi deneyebilirsiniz.</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku kullanılabilir durumda ve bu uygulamanın onu kullanma izni var. Artık Shizuku üzerinden WRITE_SECURE_SETTINGS iznini isteyebilirsiniz.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
     <string name="shizuku_not_available_detailed">Shizuku mevcut değil veya çalışmıyor. Lütfen önce Shizuku\'yu kurun ve başlatın.</string>
@@ -78,44 +69,42 @@
     <string name="button_request_shizuku_permission">Shizuku Uygulama İznini İste</string>
     <string name="button_grant_with_shizuku">Shizuku kullanarak izin ver</string>
     <string name="shizuku_not_available">Shizuku mevcut değil veya çalışmıyor.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Bu uygulamaya Shizuku izni verilmemiş. Lütfen önce Shizuku uygulaması veya istem aracılığıyla izni verin.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Shizuku uygulamasından veya izin isteği penceresinden bu uygulamanın Shizuku kullanmasına izin verin.</string>
     <string name="shizuku_permission_granted_to_app">Bu uygulamaya Shizuku izni verildi.</string>
     <string name="shizuku_permission_denied_to_app">Bu uygulamaya Shizuku izni reddedildi.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku mevcut değil veya hazır değil.</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Yöntem %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Cihazınız rootlanmış. Root ayrıcalıklarını kullanarak WRITE_SECURE_SETTINGS iznini vermeyi deneyebilirsiniz.</string>
     <string name="device_not_rooted_detailed">Cihazınız rootlu görünmüyor veya root erişimi verilmemiş. Bu yöntem kullanılamaz.</string>
     <string name="button_grant_with_root">Root kullanarak izin ver</string>
     <string name="device_not_rooted">Cihaz rootlu değil.</string>
 
     <!-- Generic Permission Grant Results -->
-    <string name="permission_granted_shizuku_success">İzin, Shizuku aracılığıyla başarıyla verildi!</string>
+    <string name="permission_granted_shizuku_success">İzin Shizuku aracılığıyla verildi.</string>
     <string name="permission_granted_shizuku_check_failed">Shizuku komutu çalıştırıldı, ancak izin kontrolü başarısız oldu. Lütfen uygulamayı yeniden başlatın.</string>
     <string name="permission_granted_shizuku_fail">Shizuku aracılığıyla izin verilemedi. Çıkış kodu: %1$d</string>
     <string name="permission_granted_shizuku_error">Shizuku aracılığıyla izin verilirken hata: %1$s</string>
-    <string name="permission_granted_root_success">İzin, Root aracılığıyla başarıyla verildi!</string>
+    <string name="permission_granted_root_success">İzin Root aracılığıyla verildi.</string>
     <string name="permission_granted_root_check_failed">Root komutu çalıştırıldı, ancak izin kontrolü başarısız oldu. Lütfen uygulamayı yeniden başlatın.</string>
     <string name="permission_granted_root_fail">Root aracılığıyla izin verilemedi. Çıkış kodu: %1$d</string>
     <string name="permission_granted_root_error">Root aracılığıyla izin verilirken hata: %1$s</string>
 
     <!-- Permission Warning Card -->
-    <string name="warning_permission_missing_title">İzin Eksik!</string>
+    <string name="warning_permission_missing_title">İzin eksik</string>
     <string name="warning_permission_missing_desc">Bu uygulamanın çalışabilmesi için WRITE_SECURE_SETTINGS izni gereklidir. Lütfen mevcut yöntemlerden birini kullanarak bu izni verin.</string>
     <string name="button_show_permission_help">İzin Verme Seçeneklerini Göster</string>
     <string name="warning_developer_options_disabled_config">Geliştirici seçenekleri devre dışı. USB Hata Ayıklama yapılandırılamaz.</string>
 
     <string name="setting_require_unlock">Değiştirmek için cihaz kilidinin açılmasını gerektir</string>
-    <string name="setting_require_unlock_desc">Etkinleştirildiğinde, kutucuk herhangi bir değişikliği uygulamadan önce cihazınızın kilidini açmanızı isteyecektir.</string>
+    <string name="setting_require_unlock_desc">Hızlı Ayarlar düğmesi bir ayarı değiştirmeden önce cihazınızın kilidini açmanızı ister.</string>
 
     <string name="setting_also_hide_dev_options">Geliştirici Seçenekleri\'ni de aç/kapat</string>
-    <string name="setting_also_hide_dev_options_desc">Etkinleştirildiğinde, USB Hata Ayıklama\'yı açıp kapatmak Geliştirici Seçenekleri\'ni de etkinleştirir/devre dışı bırakır. Bu, Geliştirici Seçenekleri şu anda kapalı olsa bile kutucuğun çalışmasını sağlar.</string>
+    <string name="setting_also_hide_dev_options_desc">Geliştirici seçeneklerini USB hata ayıklamayla birlikte açıp kapatır. Böylece geliştirici seçenekleri kapalıyken de Hızlı Ayarlar düğmesi çalışır.</string>
     <string name="setting_also_disable_wireless_debugging">Kablosuz Hata Ayıklama\'yı da aç/kapat</string>
-    <string name="setting_also_disable_wireless_debugging_desc">Etkinleştirildiğinde, Kablosuz Hata Ayıklama da USB Hata Ayıklama ile birlikte açılıp kapatılacaktır.</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Kablosuz hata ayıklamayı USB hata ayıklamayla birlikte açıp kapatır.</string>
 
     <string name="setting_enable_auto_revert">Belirli bir süre sonra otomatik geri almayı etkinleştir</string>
-    <string name="setting_auto_revert_delay">Geri alma gecikmesi (saniye):</string>
+    <string name="setting_auto_revert_delay">Geri alma gecikmesi (saniye)</string>
     <string name="toast_reverting_dns_to">DNS, %2$d sn. içinde \n\"%1$s\" durumuna geri alınıyor…</string>
     <string name="toast_reverting_usb_to">USB Hata Ayıklama, %2$d sn. içinde %1$s durumuna geri alınıyor…</string>
     <string name="toast_revert_cancelled">Otomatik geri alma iptal edildi.</string>
@@ -123,7 +112,7 @@
     <string name="off_state">Kapalı</string>
     <string name="auto_state">Otomatik</string>
 
-    <string name="dns_select_hostnames_for_cycle">Kutucuk döngüsüne dahil edilecek ana bilgisayar adlarını seçin:</string>
+    <string name="dns_select_hostnames_for_cycle">DNS sağlayıcıları</string>
     <string name="dns_custom_entry_badge">Özel DNS</string>
     <string name="dns_add_custom_hostname_button">Özel Ana Bilgisayar Adı Ekle</string>
     <string name="dns_edit_hostname_title">Ana Bilgisayar Adını Düzenle</string>
@@ -145,23 +134,16 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (one.one.one.one veya 1.1.1.1), yüksek hızı ve gizlilik odaklılığıyla bilinir. İçeriği filtrelemez ve kullanıcı verilerini kaydetmemeyi taahhüt eder. Gizlilik ve performansa öncelik veren kullanıcılar için idealdir.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com), reklamları, izleyicileri ve bilinen kötü amaçlı alan adlarını doğrudan DNS seviyesinde engeller. Bu, daha temiz ve güvenli bir gezinme deneyimi sağlar. Reklamları azaltmak ve gizliliğini korumak isteyen kullanıcılar için iyidir.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net), kötü amaçlı yazılım, kimlik avı ve botnet\'lerle ilişkili alan adlarını engelleyerek güvenliğe odaklanır. Bu, çevrimiçi tehditlere karşı korumayı artırır. İnternet güvenliğinin en önemli öncelik olduğu kullanıcılar için uygundur.</string>
-    <string name="recommended_for_you">(Sizin için önerilir)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Sürüm %1$s</string>
-    <string name="about_description">QuickTile Ayarları, bildirim panelinden ayarları doğrudan değiştirmek için kullanışlı Hızlı Ayarlar kutucukları sağlar.</string>
+    <string name="about_description">QuickTile Ayarları, cihaz ayarlarını değiştirmek için Hızlı Ayarlar paneline düğmeler ekler.</string>
     <string name="about_features_title">Özellikler</string>
-    <string name="about_feature_private_dns">• Özel ana bilgisayar adı destekli Özel DNS kutucuğu</string>
-    <string name="about_feature_usb_debugging">• Geliştirme için USB Hata Ayıklama kutucuğu</string>
-    <string name="about_feature_auto_revert">• Geçici değişiklikler için otomatik geri alma işlevi</string>
-    <string name="about_feature_custom_dns">• Dahili popüler DNS sağlayıcıları (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Geliştirici</string>
     <string name="about_developer_info">RBN-Apps tarafından geliştirildi\nGitHub\'da bulunan açık kaynaklı bir projedir</string>
-    <string name="about_button_permission_help">İzin Kurulum Yardımı</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Yedekleme ve Geri Yükleme</string>
-    <string name="settings_backup_description">Tüm kutucuk ayarlarını, DNS kayıtlarını, otomasyon tercihlerini ve kısayol yapılandırmasını bir JSON dosyasına aktarın. Geri yükleme, mevcut uygulama ayarlarını seçilen yedekle değiştirir.</string>
+    <string name="settings_backup_description">Tüm düğme ayarlarını, DNS kayıtlarını, otomasyon tercihlerini ve kısayol ayarlarını bir JSON dosyasına aktarın. Geri yükleme, mevcut uygulama ayarlarını seçilen yedekle değiştirir.</string>
     <string name="backup_export_button">Yedeği dışa aktar</string>
     <string name="backup_restore_button">Yedeği geri yükle</string>
     <string name="backup_restore_confirm_title">Yedek geri yüklensin mi?</string>
@@ -175,10 +157,6 @@
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">VPN bağlantılarında DNS\'i otomatik olarak devre dışı bırak</string>
     <string name="setting_vpn_detection_mode">VPN Algılama Modu:</string>
-    <string name="vpn_detection_tile_only_title">Yalnızca Kutucuktan Algılama</string>
-    <string name="vpn_detection_tile_only_description">Hızlı Ayarlar açıldığında VPN bağlantılarını kontrol eder. Daha pil dostudur, ancak VPN bağlantılarını yalnızca Hızlı Ayarlar açıldığında algılar. Genellikle VPN\'i Hızlı Ayarlar üzerinden etkinleştiriyor veya devre dışı bırakıyorsanız, bu seçenek yeterlidir.</string>
-    <string name="vpn_detection_background_title">Arka Plan Hizmetiyle Algılama</string>
-    <string name="vpn_detection_background_description">VPN durumunu sürekli olarak izler. Anında tepki verir, ancak daha fazla pil kullanır ve aktif kalmak için kalıcı bir bildirim gösterir.</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">VPN İzleme</string>
@@ -188,37 +166,29 @@
     <string name="vpn_monitoring_status_disconnected">VPN bağlantısı kesildi - Özel DNS geri yüklendi</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_settings_description">Ayarları aç</string>
     <string name="notification_permission_background_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
     <string name="notification_permission_background_message">Arka plan algılama bildirim izni olmadan da çalışır. Sürekli izleme durumunu bildirim alanında görmek istiyorsanız izin verin; aksi halde Android hizmeti yalnızca etkin uygulamalar arasında gösterir.</string>
     <string name="notification_permission_import_title">Arka plan algılama için bildirimlere izin verilsin mi?</string>
     <string name="notification_permission_import_message">İçe aktarılan yedek, VPN veya ağ değişiklikleri için arka plan algılamayı etkinleştiriyor. Bildirim izni olmadan da çalışır; izni yalnızca sürekli durumu bildirim alanında görmek için verin.</string>
-    <string name="notification_permission_fallback_title">Bildirim erişimi verilmedi</string>
+    <string name="notification_permission_fallback_title">Bildirimlere izin verilmedi</string>
     <string name="notification_permission_fallback_message">Arka plan algılama çalışmaya devam edecek. Durum bildirim alanında görünmez, ancak Android hizmeti etkin uygulamalar arasında göstermeye devam eder.</string>
     <string name="notification_permission_grant_button">İzin ver</string>
     <string name="notification_permission_continue_button">Bildirimler olmadan devam et</string>
-    <string name="notification_permission_settings_title">Bildirim erişimi devre dışı</string>
-    <string name="notification_permission_settings_message">Arka plan algılama, bildirim alanında durum göstermeden devam edecek. Durumu göstermek için uygulama ayarlarından bildirimlere izin verin.</string>
+    <string name="notification_permission_settings_title">Bildirimler kapalı</string>
+    <string name="notification_permission_settings_message">Arka plan algılama devam eder, ancak durumu bildirim alanında gizlenir. Durumu görmek için uygulama ayarlarından bildirimlere izin verin.</string>
     <string name="notification_permission_settings_button">Ayarları aç</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Ağ türüne göre DNS\'i otomatik değiştir</string>
     <string name="setting_network_type_detection_description">Wi-Fi ile mobil veri arasında geçiş yaparken Özel DNS’i otomatik olarak değiştirir. Tek tek Wi-Fi ağları veya erişim noktaları için kural ayarlamak üzere de bunu etkinleştirin.</string>
     <string name="setting_network_type_detection_mode">Ağ Algılama Modu:</string>
-    <string name="network_type_detection_tile_only_title">Yalnızca Kutucuktan Algılama</string>
-    <string name="network_type_detection_tile_only_description">Hızlı Ayarlar açıldığında ağ türünü kontrol eder. Pil dostudur, ancak ağ değişikliklerini yalnızca Hızlı Ayarlar açıldığında algılar.</string>
-    <string name="network_type_detection_background_title">Arka Plan Hizmetiyle Algılama</string>
-    <string name="network_type_detection_background_description">Ağ türü değişikliklerini sürekli olarak izler. Ağlar arasında geçiş yaparken anında tepki verir, ancak daha fazla pil kullanır ve kalıcı bir bildirim gösterir.</string>
 
-    <string name="setting_dns_state_on_wifi">WiFi\'de DNS:</string>
-    <string name="setting_dns_state_on_mobile">Mobil Veride DNS:</string>
-    <string name="setting_select_hostname">Ana bilgisayar adı seçin…</string>
 
     <string name="dns_mode_off_label">Kapalı</string>
     <string name="dns_mode_auto_label">Otomatik</string>
 
     <string name="network_type_info_title">Ağ Türü Algılama</string>
-    <string name="network_type_info_message">Bu özellik, WiFi\'ye mi yoksa mobil veriye mi bağlı olduğunuza göre Özel DNS ayarlarını otomatik olarak değiştirir. Ayrıca, VPN etkinken altta kullanılan WiFi veya mobil bağlantıyı algılayarak da çalışır.\n\nVPN Önceliği: VPN algılama ayrı olarak etkinleştirilmişse, öncelik ona verilir ve VPN etkinken DNS Kapalı olarak ayarlanır.\n\nÖrnek kullanım: Ev WiFi yönlendiriciniz NextDNS kullanıyorsa, "WiFi\'de DNS" seçeneğini Kapalı olarak ayarlayın. Hücresel ağlardayken koruma için "Mobil Veride DNS" seçeneğini Otomatik veya belirli bir ana bilgisayar adına ayarlayın.</string>
+    <string name="network_type_info_message">Uygulama, Wi-Fi ile mobil veri arasında geçiş yaptığınızda Özel DNS ayarını değiştirir. Etkin bir VPN’in kullandığı Wi-Fi veya mobil bağlantıyı da algılar.\n\nVPN algılamayı ayrıca açarsanız öncelik ona verilir ve VPN bağlıyken Özel DNS kapatılır.\n\nÖrneğin evinizdeki Wi-Fi yönlendiricisi NextDNS kullanıyorsa \"WiFi\'de DNS\" seçeneğini Kapalı olarak ayarlayın. Mobil veri için Otomatik veya belirli bir ana bilgisayar adı seçin.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Ağ Türü İzleme</string>
@@ -252,12 +222,12 @@
     <string name="shortcut_toast_usb_off">USB Hata Ayıklama devre dışı bırakıldı</string>
     <string name="shortcut_toast_permission_missing">İzin eksik. Vermek için uygulamayı açın.</string>
     <string name="shortcut_toast_action_disabled">Kısayol eylemi devre dışı. Önce uygulamada etkinleştirin.</string>
-    <string name="shortcut_toast_action_unavailable">Kısayol eylemi artık kullanılamıyor. Uygulama yapılandırmasını kontrol edin.</string>
-    <string name="shortcut_toast_action_failed">Kısayol eylemi uygulanamadı.</string>
+    <string name="shortcut_toast_action_unavailable">Kısayol eylemi artık kullanılamıyor. Uygulama ayarlarını kontrol edin.</string>
+    <string name="shortcut_toast_action_failed">Kısayol eylemi çalıştırılamadı.</string>
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Kısayol Eylemleri</string>
-    <string name="shortcut_settings_description">Hangi eylemlerin Android uygulama kısayolları olarak sunulacağını seçin. Bunlar başlatıcılardan, Samsung Rutinleri\'nden, Tasker\'dan veya ana ekrana sabitlenmiş kısayollar olarak kullanılabilir.\n\nAndroid, bu uygulama etkinliği için başlatıcıda görünen dinamik kısayol sayısını %1$d ile sınırlar, bu nedenle burada aynı anda yalnızca %1$d eylem etkinleştirilebilir.\n\nYıldız simgesini kullanarak en fazla %2$d etkin eylemi favori olarak işaretleyebilirsiniz. Favoriler en yüksek öncelikle sunulur ve başlatıcı kısayol menülerinde ilk sırada görünme olasılıkları daha yüksektir. Devre dışı bırakılan eylemler favorilere eklenemez.\n\nVarsayılan olarak, devre dışı bırakılan eylemler tamamen engellenir ve uygulama tarafından artık çalıştırılamaz. Zaten sabitlenmiş kısayolların burada devre dışı bırakıldıktan sonra da çalışmaya devam etmesini istiyorsanız aşağıdaki seçeneği etkinleştirin.</string>
+    <string name="shortcut_settings_description">Android uygulama kısayolu olarak kullanmak istediğiniz eylemleri seçin. Bunları başlatıcıdan, Samsung Rutinleri’nden veya Tasker’dan çalıştırabilir ya da ana ekrana sabitleyebilirsiniz.\n\nAndroid, bu uygulama için başlatıcıda aynı anda en fazla %1$d dinamik kısayola izin verir. Bu yüzden kısayol listesinde en fazla %1$d eylemi etkinleştirebilirsiniz.\n\nYıldız simgesiyle en fazla %2$d etkin eylemi favorilere ekleyebilirsiniz. Favoriler en yüksek önceliği alır; böylece başlatıcının kısayol menüsünde ilk sırada görünme olasılıkları artar. Devre dışı eylemler favorilere eklenemez.\n\nDevre dışı eylemler varsayılan olarak engellenir. Daha önce sabitlenmiş kısayolların listede devre dışı bırakıldıktan sonra da çalışmasını istiyorsanız kısayol listesindeki “Devre dışı bırakılmış sabitlenmiş kısayollara izin ver” seçeneğini açın.</string>
     <string name="shortcut_settings_limit">Etkin kısayollar: %1$d / %2$d</string>
     <string name="shortcut_settings_limit_reached_title">Kısayol sınırına ulaşıldı</string>
     <string name="shortcut_settings_limit_reached">Kısayol sınırına ulaşıldı. Önce başka bir eylemi devre dışı bırakın.</string>
@@ -267,17 +237,14 @@
     <string name="shortcut_settings_allow_pinned_when_disabled_desc">Etkinleştirilirse, daha önce sabitlenmiş veya harici olarak başlatılmış kısayollar, burada devre dışı bıraksanız bile çalışmaya devam edebilir.</string>
     <string name="shortcut_settings_allow_pinned_info_desc">Devre dışı sabitlenmiş kısayollar hakkında ayrıntıları göster</string>
     <string name="shortcut_settings_allow_pinned_warning_title">Devre dışı kısayollara izin verilsin mi?</string>
-    <string name="shortcut_settings_allow_pinned_warning_message">Bunu etkinleştirmek, varsayılan güvenlik davranışını zayıflatır. Devre dışı bırakılan kısayol eylemleri, harici olarak veya daha önce sabitlenmiş kısayollardan başlatıldığında yine de çalıştırılabilir.\n\nBu, Android\'in aynı anda etkin kısayol olarak izin verdiğinden daha fazla eylemi kullanmaya devam etmek istemeniz durumunda özellikle faydalıdır.</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Devre dışı bırakılan eylemler normalde engellenir. Bu seçenek açıkken diğer uygulamalar ve daha önce sabitlenmiş kısayollar bu eylemleri çalıştırabilir.\n\nBöylece Android’in aynı anda etkin kısayol olarak izin verdiğinden daha fazla eylemi kullanabilirsiniz.</string>
     <string name="shortcut_settings_allow_pinned_warning_confirm">Yine de etkinleştir</string>
     <string name="shortcut_settings_mark_favorite_desc">%1$s\'i favori olarak işaretle</string>
     <string name="shortcut_settings_remove_favorite_desc">%1$s\'i favorilerden kaldır</string>
     <string name="shortcut_settings_open_desc">Kısayol ayarlarını aç</string>
     <!-- Wi-Fi ağına özel DNS kuralları -->
-    <string name="setting_dns_state_on_wifi_other_networks">Diğer tüm ağlar için Wi-Fi DNS:</string>
     <string name="setting_wifi_network_rules_title">Wi-Fi ağ kuralları</string>
-    <string name="setting_wifi_network_rules_description">Belirli ağlar veya erişim noktaları (SSID/BSSID) için varsayılan Wi-Fi DNS ayarını geçersiz kılar. Değişiklikleri uygulamak için uygulamanın Özel DNS denetim izni ve arka plan algılama gerekir. Bildirimler isteğe bağlıdır ve yalnızca durumu gösterir.</string>
     <string name="wifi_rules_enabled">Ağa özel kuralları kullan</string>
-    <string name="wifi_rules_enabled_description">Eşleşen kurallar, tanımlanan diğer tüm ağların Wi-Fi DNS ayarını geçersiz kılar.</string>
     <string name="wifi_ssid_permission_title">Kesin konum gerekli</string>
     <string name="wifi_ssid_permission_description">Android; Wi-Fi adlarını (SSID), erişim noktası kimliklerini (BSSID) ve yakındaki Wi-Fi sonuçlarını konuma duyarlı bilgi olarak değerlendirir. Bunları okumak için kesin konum izni gerekir. Bu özellik konum koordinatlarını okumaz.</string>
     <string name="wifi_ssid_permission_docs_link">SSID izinleriyle ilgili Android belgeleri</string>
@@ -288,24 +255,16 @@
     <string name="wifi_ssid_manual_entry_notice">Bir kuralı elle girebilirsiniz, ancak otomatik eşleştirme bu erişime yine de ihtiyaç duyar. Geçerli ağ bilinmiyorken Özel DNS değiştirilmez.</string>
     <string name="wifi_ssid_permission_denied">Wi-Fi ağlarını tanımlamak için kesin konum izni gereklidir. Erişim verilene kadar Özel DNS değiştirilmez.</string>
     <string name="wifi_location_services_disabled">Bağlı Wi-Fi adının belirlenebilmesi için Android konum hizmetlerini açın. Ağ kimliği kullanılamazken Özel DNS değiştirilmez.</string>
-    <string name="wifi_rules_require_background_detection">Wi-Fi ağ kuralları arka plan hizmeti algılaması gerektirir. Yalnızca kutucuk algılamasını seçmeden önce kuralları devre dışı bırakın.</string>
-    <string name="wifi_rules_enabled_background_detection">Ağa özel kurallar gerektirdiği için arka plan hizmeti algılaması etkinleştirildi.</string>
+    <string name="wifi_rules_require_background_detection">Wi-Fi kuralları için arka planda algılama gerekir. Algılamayı yalnızca Hızlı Ayarlar düğmesinin göründüğü zamanlarla sınırlamadan önce kuralları kapatın.</string>
+    <string name="wifi_rules_enabled_background_detection">Wi-Fi kuralları gerektirdiği için arka planda algılama açıldı.</string>
     <string name="wifi_ssid_label">Ağ adı (SSID)</string>
-    <string name="wifi_rules_title">Ağ kuralları</string>
-    <string name="wifi_rules_empty">Ağ kuralı eklenmedi.</string>
-    <string name="wifi_rule_add_current">Şu anda bağlı olunan ağı kullan</string>
-    <string name="wifi_rule_choose_network">Yakındaki veya son kullanılan bir ağı seç</string>
-    <string name="wifi_rule_add_manual">SSID veya BSSID’yi elle gir</string>
-    <string name="wifi_network_picker_title">Wi-Fi ağı seç</string>
     <string name="wifi_network_current_title">Şu anda bağlı</string>
     <string name="wifi_network_nearby_title">Yakındaki ağlar</string>
     <string name="wifi_network_history_title">Yakın zamanda görülen ağlar</string>
-    <string name="wifi_network_scanning">Android’in son kullanılabilir Wi-Fi sonuçları yükleniyor…</string>
+    <string name="wifi_network_scanning">Android’in sağladığı son Wi-Fi tarama sonuçları yükleniyor…</string>
     <string name="wifi_network_none_found">Yakın tarihli Wi-Fi sonucu yok. Uygulama yeni tarama başlatmaz; Android önbelleğe alınmış sonuçlar sağlayabilir.</string>
     <string name="wifi_network_refresh">Sonuçları yeniden yükle</string>
     <string name="wifi_hidden_network">Gizli ağ</string>
-    <string name="wifi_rule_add_title">Ağ kuralı ekle</string>
-    <string name="wifi_rule_edit_title">Ağ kuralını düzenle</string>
     <string name="wifi_bssid_label">Erişim noktası MAC adresi (BSSID, isteğe bağlı)</string>
     <string name="wifi_bssid_hint">Bu SSID’ye sahip tüm erişim noktalarını eşleştirmek için boş bırakın.</string>
     <string name="wifi_rule_action_label">Bu ağ için eylem</string>
@@ -313,8 +272,6 @@
     <string name="wifi_rule_invalid_or_duplicate">Geçerli bir SSID veya BSSID girin ve aynı kuralın zaten bulunmadığından emin olun.</string>
     <string name="wifi_rule_delete_title">Ağ kuralı silinsin mi?</string>
     <string name="wifi_rule_delete_message">“%1$s” için olan kural kaldırılsın mı?</string>
-    <string name="wifi_rule_edit_description">%1$s için kuralı düzenle</string>
-    <string name="wifi_rule_delete_description">%1$s için kuralı sil</string>
     <string name="wifi_permission_open_settings">Uygulama ayarlarını aç</string>
     <string name="wifi_permission_blocked_description">Android artık konum izni iletişim kutusunu göstermiyor. Uygulama ayarlarını açın, İzinler → Konum seçeneğine gidin ve kesin konum erişimine izin verin.</string>
     <string name="wifi_boot_title">Yeniden başlatmadan sonra otomatik devam et</string>

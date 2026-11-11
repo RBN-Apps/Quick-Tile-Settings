@@ -2,11 +2,10 @@ package com.rbn.qtsettings
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import com.rbn.qtsettings.data.PreferencesManager
-import com.rbn.qtsettings.utils.Constants.ADB_ENABLED
+import com.rbn.qtsettings.feature.shortcuts.data.ShortcutSettingsStore
+import com.rbn.qtsettings.feature.shortcuts.domain.ShortcutCatalog
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_ADGUARD
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_AUTO
 import com.rbn.qtsettings.utils.Constants.ACTION_DNS_CLOUDFLARE
@@ -16,13 +15,11 @@ import com.rbn.qtsettings.utils.Constants.ACTION_DNS_QUAD9
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_OFF
 import com.rbn.qtsettings.utils.Constants.ACTION_USB_ON
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
+import com.rbn.qtsettings.utils.Constants.DNS_MODE_OFF
 import com.rbn.qtsettings.utils.Constants.EXTRA_DNS_ENTRY_ID
-import com.rbn.qtsettings.utils.Constants.DNS_MODE_ON
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_MODE
-import com.rbn.qtsettings.utils.Constants.PRIVATE_DNS_SPECIFIER
-import com.rbn.qtsettings.utils.PermissionUtils
-import com.rbn.qtsettings.utils.ShortcutUtils
-import com.rbn.qtsettings.utils.VpnDetectionUtils
+import com.rbn.qtsettings.platform.permissions.PermissionUtils
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActionResult
+import com.rbn.qtsettings.platform.shortcuts.SystemQuickActions
 
 class ShortcutActionActivity : ComponentActivity() {
 
@@ -35,7 +32,7 @@ class ShortcutActionActivity : ComponentActivity() {
 
     private fun handleAction(action: String?) {
         if (action == null) return
-        val prefsManager = PreferencesManager.getInstance(this)
+        val shortcutSettings = (application as QuickTileSettingsApplication).container.shortcutSettingsStore
 
         if (!PermissionUtils.hasWriteSecureSettingsPermission(this)) {
             Toast.makeText(this, R.string.shortcut_toast_permission_missing, Toast.LENGTH_LONG)
@@ -48,8 +45,8 @@ class ShortcutActionActivity : ComponentActivity() {
 
         when (action) {
             ACTION_DNS_OFF -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_OFF)) return
-                val message = if (VpnDetectionUtils.setPrivateDnsOff(this)) {
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_OFF)) return
+                val message = if (SystemQuickActions.setDnsMode(this, DNS_MODE_OFF) == SystemQuickActionResult.SUCCESS) {
                     R.string.shortcut_toast_dns_off
                 } else {
                     R.string.shortcut_toast_action_failed
@@ -58,13 +55,14 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_DNS_AUTO -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_AUTO)) return
-                VpnDetectionUtils.restorePrivateDns(this, DNS_MODE_AUTO)
-                Toast.makeText(this, R.string.shortcut_toast_dns_auto, Toast.LENGTH_SHORT).show()
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_AUTO)) return
+                val result = SystemQuickActions.setDnsMode(this, DNS_MODE_AUTO)
+                Toast.makeText(this, if (result == SystemQuickActionResult.SUCCESS)
+                    R.string.shortcut_toast_dns_auto else R.string.shortcut_toast_action_failed, Toast.LENGTH_SHORT).show()
             }
 
             ACTION_DNS_ADGUARD -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_ADGUARD)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_ADGUARD)) return
                 setDnsHostname(
                     hostname = "dns.adguard.com",
                     displayName = getString(R.string.shortcut_dns_adguard_short)
@@ -73,8 +71,8 @@ class ShortcutActionActivity : ComponentActivity() {
 
             ACTION_DNS_CLOUDFLARE -> {
                 if (!isShortcutAllowed(
-                        prefsManager,
-                        ShortcutUtils.SHORTCUT_ID_DNS_CLOUDFLARE
+                        shortcutSettings,
+                        ShortcutCatalog.SHORTCUT_ID_DNS_CLOUDFLARE
                     )
                 ) return
                 setDnsHostname(
@@ -84,7 +82,7 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_DNS_QUAD9 -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_DNS_QUAD9)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_DNS_QUAD9)) return
                 setDnsHostname(
                     hostname = "dns.quad9.net",
                     displayName = getString(R.string.shortcut_dns_quad9_short)
@@ -92,7 +90,7 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_DNS_CUSTOM -> {
-                val entry = prefsManager.resolveCustomDnsShortcutEntry(
+                val entry = shortcutSettings.resolveCustomDnsShortcutEntry(
                     intent?.getStringExtra(EXTRA_DNS_ENTRY_ID)
                 )
                 if (entry == null) {
@@ -108,22 +106,22 @@ class ShortcutActionActivity : ComponentActivity() {
             }
 
             ACTION_USB_ON -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_USB_ON)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_USB_ON)) return
                 handleUsbDebuggingAction(enable = true)
             }
 
             ACTION_USB_OFF -> {
-                if (!isShortcutAllowed(prefsManager, ShortcutUtils.SHORTCUT_ID_USB_OFF)) return
+                if (!isShortcutAllowed(shortcutSettings, ShortcutCatalog.SHORTCUT_ID_USB_OFF)) return
                 handleUsbDebuggingAction(enable = false)
             }
         }
     }
 
     private fun isShortcutAllowed(
-        prefsManager: PreferencesManager,
+        shortcutSettings: ShortcutSettingsStore,
         shortcutId: String
     ): Boolean {
-        if (prefsManager.canExecuteShortcutId(shortcutId)) {
+        if (shortcutSettings.canExecuteShortcutId(shortcutId)) {
             return true
         }
 
@@ -132,29 +130,26 @@ class ShortcutActionActivity : ComponentActivity() {
     }
 
     private fun setDnsHostname(hostname: String, displayName: String) {
-        Settings.Global.putString(contentResolver, PRIVATE_DNS_MODE, DNS_MODE_ON)
-        Settings.Global.putString(contentResolver, PRIVATE_DNS_SPECIFIER, hostname)
+        val result = SystemQuickActions.setActiveDns(this, hostname)
         Toast.makeText(
             this,
-            getString(R.string.shortcut_toast_dns_hostname, displayName),
+            if (result == SystemQuickActionResult.SUCCESS) getString(R.string.shortcut_toast_dns_hostname, displayName)
+            else getString(R.string.shortcut_toast_action_failed),
             Toast.LENGTH_SHORT
         ).show()
     }
 
     private fun handleUsbDebuggingAction(enable: Boolean) {
-        if (!PermissionUtils.isDeveloperOptionsEnabled(this)) {
-            Toast.makeText(
-                this,
-                R.string.toast_developer_options_disabled,
-                Toast.LENGTH_LONG
-            ).show()
-            return
+        val result = SystemQuickActions.setUsbDebuggingEnabled(
+            this, enable, toggleDeveloperOptions = false, toggleWirelessDebugging = false
+        )
+        val message = when (result) {
+            SystemQuickActionResult.SUCCESS ->
+                if (enable) R.string.shortcut_toast_usb_on else R.string.shortcut_toast_usb_off
+            SystemQuickActionResult.DEVELOPER_OPTIONS_DISABLED -> R.string.toast_developer_options_disabled
+            SystemQuickActionResult.PERMISSION_MISSING -> R.string.toast_permission_not_granted_adb
+            else -> R.string.toast_error_saving_settings
         }
-        Settings.Global.putInt(contentResolver, ADB_ENABLED, if (enable) 1 else 0)
-        Toast.makeText(
-            this,
-            if (enable) R.string.shortcut_toast_usb_on else R.string.shortcut_toast_usb_off,
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

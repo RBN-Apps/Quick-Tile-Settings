@@ -1,52 +1,43 @@
-<p><strong>Quick-Tile Settings</strong> offers customizable Quick Settings tiles for Private DNS and
-    USB debugging. Quickly toggle settings and auto-revert when needed.</p>
+<p>Switch Private DNS and USB debugging from your Quick Settings panel. Choose the states each tile cycles through, or restore the previous setting automatically after a delay.</p>
 
-<p><strong>Features:</strong></p>
+<p><b>Private DNS</b></p>
 <ul>
-    <li><strong>Private DNS Tile</strong>
-        <ul>
-            <li>Cycle: Off, Auto, custom hostnames</li>
-            <li>Predefined providers: Cloudflare (Performance &amp; Privacy), AdGuard (Ad/Tracker
-                Blocking), Quad9 (Security)
-            </li>
-            <li>Add, edit, or delete custom DNS entries</li>
-            <li>Select which entries appear in the cycle</li>
-            <li>Optional auto-revert after a configurable delay</li>
-        </ul>
-    </li>
-    <li><strong>USB Debugging Tile</strong>
-        <ul>
-            <li>Toggle: On ↔ Off</li>
-            <li>Configurable cycle or fixed states</li>
-            <li>Optional auto-revert</li>
-        </ul>
-    </li>
-    <li><strong>User-Friendly Configuration</strong>
-        <ul>
-            <li>In-app settings with tab navigation</li>
-            <li>Clear ADB guidance for granting <code>WRITE_SECURE_SETTINGS</code></li>
-        </ul>
-    </li>
-    <li><strong>Modern UI</strong>: Jetpack Compose, Material You (Android 12+)</li>
+<li>Switch between Off, Auto and your chosen DNS providers.</li>
+<li>Use AdGuard, Cloudflare or Quad9, or add your own hostname.</li>
+<li>Choose and sort the providers included in the tile cycle.</li>
+<li>Set a DNS target directly from the app.</li>
 </ul>
 
-<p><strong>Requirements:</strong></p>
+<p><b>DNS for each connection</b></p>
 <ul>
-    <li>Android 9 (API 29) or higher</li>
-    <li><code>WRITE_SECURE_SETTINGS</code> permission via ADB (one-time setup)</li>
+<li>Choose separate DNS targets for Wi-Fi and mobile data.</li>
+<li>Add rules for individual Wi-Fi networks by name (SSID), with an optional BSSID for a specific access point.</li>
+<li>Search network and DNS lists when setting up rules.</li>
+<li>Turn Private DNS off while a VPN is connected and restore it afterwards.</li>
+<li>Detect changes while the tile is visible or in the background.</li>
 </ul>
 
-<p><strong>Setup &amp; Usage:</strong></p>
-<ol>
-    <li><strong>Grant ADB permission:</strong> Follow the in-app instructions for a one-time setup.
-    </li>
-    <li><strong>Configure tiles:</strong>
-        <ul>
-            <li>DNS: select Off/Auto and manage hostnames.</li>
-            <li>USB Debugging: select On/Off.</li>
-            <li>Set auto-revert delays as desired.</li>
-        </ul>
-    </li>
-    <li><strong>Add tiles:</strong> Add "DNS" and "USB Debugging" to your Quick Settings panel.</li>
-    <li><strong>Use:</strong> Tap to toggle; long-press to open settings.</li>
-</ol>
+<p><b>USB debugging</b></p>
+<ul>
+<li>Turn USB debugging on or off from its tile.</li>
+<li>Optionally toggle Developer Options and Wireless Debugging at the same time.</li>
+<li>Choose the tile's states and set an automatic return to the previous setting.</li>
+</ul>
+
+<p><b>Shortcuts and settings</b></p>
+<ul>
+<li>Run actions from your launcher or compatible automation apps, and pin shortcuts to the home screen.</li>
+<li>Choose up to four favorites. DNS and USB share the shortcut limit shown for your device.</li>
+<li>Require device unlock before either tile changes a setting.</li>
+<li>Export settings, DNS entries, network rules and shortcut configuration to a backup file.</li>
+<li>Use light or dark mode, with dynamic colors on Android 12 and later.</li>
+</ul>
+
+<p><b>Setup</b></p>
+<p>Requires Android 10 or later and WRITE_SECURE_SETTINGS permission. The welcome flow and permission setup page guide you through granting it with ADB, Shizuku or existing root access. Root is not required when using ADB. Then add Private DNS and USB Debugging to your Quick Settings panel.</p>
+
+<p>Background detection uses a foreground service. On Android 13 and later, notification permission is optional; Android still lists the service in its active apps area. Earlier versions require an ongoing service notification. Wi-Fi network rules need background detection and location access; the app explains the required permissions.</p>
+
+<p>Backups restore app configuration, replacing current settings. System permissions must be granted separately on each device.</p>
+
+<p>QuickTile Settings is open source under the GNU GPL v3 license.</p>

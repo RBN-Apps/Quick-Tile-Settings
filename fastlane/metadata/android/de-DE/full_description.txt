@@ -1,55 +1,43 @@
-<p><strong>Quick-Tile Settings</strong> bietet anpassbare Schnelleinstellungs-Kacheln für privates
-    DNS und USB-Debugging. Schnell umschalten und bei Bedarf automatisch zurücksetzen.</p>
+<p>Schalte privates DNS und USB-Debugging direkt in den Schnelleinstellungen um. Bestimme, zwischen welchen Zuständen die Kacheln wechseln, oder lasse nach einer festgelegten Zeit die vorherige Einstellung wiederherstellen.</p>
 
-<p><strong>Funktionen:</strong></p>
+<p><b>Privates DNS</b></p>
 <ul>
-    <li><strong>Privates DNS-Kachel</strong>
-        <ul>
-            <li>Zyklus: Aus, Automatisch, benutzerdefinierte Hostnamen</li>
-            <li>Vordefinierte Anbieter: Cloudflare (Performance &amp; Datenschutz), AdGuard
-                (Werbe-/Tracker-Blocker), Quad9 (Sicherheit)
-            </li>
-            <li>Eigene DNS-Einträge hinzufügen, bearbeiten, löschen</li>
-            <li>Auswahl, welche Einträge im Zyklus enthalten sind</li>
-            <li>Optionale Auto-Revert-Funktion nach einstellbarer Verzögerung</li>
-        </ul>
-    </li>
-    <li><strong>USB-Debugging-Kachel</strong>
-        <ul>
-            <li>Umschalten: Ein ↔ Aus</li>
-            <li>Konfigurierbarer Zyklus oder feste Zustände</li>
-            <li>Optionale Auto-Revert-Funktion</li>
-        </ul>
-    </li>
-    <li><strong>Benutzerfreundliche Konfiguration</strong>
-        <ul>
-            <li>In-App-Einstellungen mit Tab-Navigation</li>
-            <li>Klare Hilfe zum Erteilen der <code>WRITE_SECURE_SETTINGS</code>-Berechtigung via ADB
-            </li>
-        </ul>
-    </li>
-    <li><strong>Moderne UI</strong>: Jetpack Compose, Material You (Android 12+)</li>
+<li>Wechsle zwischen Aus, Auto und deinen ausgewählten DNS-Anbietern.</li>
+<li>Nutze AdGuard, Cloudflare oder Quad9, oder füge eigene Hostnamen hinzu.</li>
+<li>Wähle und sortiere die Anbieter für den Kachelzyklus.</li>
+<li>Aktiviere ein DNS-Ziel direkt in der App.</li>
 </ul>
 
-<p><strong>Voraussetzungen:</strong></p>
+<p><b>DNS passend zur Verbindung</b></p>
 <ul>
-    <li>Android 9 (API 29) oder höher</li>
-    <li><code>WRITE_SECURE_SETTINGS</code>-Berechtigung via ADB (einmalig)</li>
+<li>Lege getrennte DNS-Ziele für WLAN und mobile Daten fest.</li>
+<li>Erstelle Regeln für einzelne WLANs anhand ihres Namens (SSID). Mit einer optionalen BSSID gilt die Regel für einen bestimmten Zugangspunkt.</li>
+<li>Durchsuche die Netzwerk- und DNS-Listen beim Einrichten einer Regel.</li>
+<li>Schalte privates DNS während einer VPN-Verbindung aus und stelle es danach wieder her.</li>
+<li>Lasse Änderungen erkennen, während die Kachel sichtbar ist oder im Hintergrund.</li>
 </ul>
 
-<p><strong>Einrichtung &amp; Nutzung:</strong></p>
-<ol>
-    <li><strong>ADB-Berechtigung erteilen:</strong> Einmalig nach Anleitung.</li>
-    <li><strong>Kacheln konfigurieren:</strong>
-        <ul>
-            <li>DNS: Aus/Auto auswählen, Hostnamen-Liste verwalten.</li>
-            <li>USB-Debugging: Ein/Aus auswählen.</li>
-            <li>Auto-Revert nach Wunsch einstellen.</li>
-        </ul>
-    </li>
-    <li><strong>Kacheln hinzufügen:</strong> In den Schnelleinstellungen „DNS“ und „USB-Debugging“
-        einfügen.
-    </li>
-    <li><strong>Verwenden:</strong> Tippen zum Wechseln, lange drücken für Einstellungen.</li>
-</ol>
+<p><b>USB-Debugging</b></p>
+<ul>
+<li>Schalte USB-Debugging über die Kachel ein oder aus.</li>
+<li>Schalte auf Wunsch die Entwickleroptionen und Wireless Debugging gleichzeitig um.</li>
+<li>Wähle die Zustände der Kachel und lasse bei Bedarf die vorherige Einstellung automatisch wiederherstellen.</li>
+</ul>
 
+<p><b>Shortcuts und Einstellungen</b></p>
+<ul>
+<li>Starte Aktionen über den Launcher oder kompatible Automatisierungs-Apps und hefte Shortcuts an den Startbildschirm.</li>
+<li>Wähle bis zu vier Favoriten. DNS und USB teilen sich das für dein Gerät angezeigte Shortcut-Limit.</li>
+<li>Verlange vor dem Umschalten einer Kachel das Entsperren des Geräts.</li>
+<li>Sichere Einstellungen, DNS-Einträge, Netzwerkregeln und Shortcuts in einer Backup-Datei.</li>
+<li>Nutze das helle oder dunkle Design, ab Android 12 auch mit dynamischen Farben.</li>
+</ul>
+
+<p><b>Einrichtung</b></p>
+<p>Du brauchst Android 10 oder neuer und die Berechtigung WRITE_SECURE_SETTINGS. Der Willkommensablauf und die Seite zur Berechtigungseinrichtung führen dich durch die Vergabe mit ADB, Shizuku oder vorhandenem Root-Zugriff. Für die ADB-Methode brauchst du kein Root. Füge anschließend Privates DNS und USB-Debugging zu deinen Schnelleinstellungen hinzu.</p>
+
+<p>Die Hintergrunderkennung nutzt einen Vordergrunddienst. Ab Android 13 ist die Benachrichtigungsberechtigung optional; Android zeigt den Dienst weiterhin bei den aktiven Apps an. Ältere Versionen benötigen eine dauerhafte Dienstbenachrichtigung. WLAN-Regeln brauchen die Hintergrunderkennung und Standortzugriff. Die App erklärt die dafür nötigen Berechtigungen.</p>
+
+<p>Das Wiederherstellen eines Backups ersetzt die aktuellen App-Einstellungen. Systemberechtigungen musst du auf jedem Gerät separat erteilen.</p>
+
+<p>QuickTile Settings ist Open Source und steht unter der GNU GPL v3.</p>

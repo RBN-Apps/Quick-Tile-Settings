@@ -1,6 +1,5 @@
 package com.rbn.qtsettings.utils
 
-import com.rbn.qtsettings.data.PrivateDnsTarget
 import com.rbn.qtsettings.data.WifiDnsRule
 import com.rbn.qtsettings.data.WifiNetworkIdentity
 import com.rbn.qtsettings.utils.Constants.DNS_MODE_AUTO
@@ -18,28 +17,6 @@ object WifiNetworkRuleUtils {
         } else {
             ssid
         }.takeIf { it.isNotEmpty() }
-    }
-
-    /**
-     * Resolves explicit per-network rules. Access-point-specific BSSID matches take precedence over
-     * SSID-only matches. When rules are enabled but Android redacts the current network identity,
-     * no target is returned so callers leave DNS unchanged instead of applying an unsafe guess.
-     */
-    fun resolveDnsTarget(
-        rulesEnabled: Boolean,
-        rules: List<WifiDnsRule>,
-        currentNetwork: WifiNetworkIdentity?,
-        defaultTarget: PrivateDnsTarget
-    ): PrivateDnsTarget? {
-        if (!rulesEnabled || rules.isEmpty()) return defaultTarget
-
-        val normalizedCurrent = currentNetwork?.let(::normalizeIdentity) ?: return null
-        val matchingRule = rules.asSequence()
-            .mapNotNull(::normalizeRule)
-            .filter { it.matches(normalizedCurrent) }
-            .maxByOrNull { it.matcherSpecificity() }
-
-        return matchingRule?.toTarget(defaultTarget) ?: defaultTarget
     }
 
     fun normalizeIdentity(identity: WifiNetworkIdentity): WifiNetworkIdentity? {
@@ -104,25 +81,4 @@ object WifiNetworkRuleUtils {
         DNS_MODE_ON
     )
 
-    private fun WifiDnsRule.matches(identity: WifiNetworkIdentity): Boolean {
-        val ssidMatches = ssid == null || ssid == identity.ssid
-        val bssidMatches = bssid == null || bssid == identity.bssid
-        return ssidMatches && bssidMatches
-    }
-
-    private fun WifiDnsRule.matcherSpecificity(): Int =
-        (if (ssid != null) 1 else 0) + (if (bssid != null) 2 else 0)
-
-    private fun WifiDnsRule.toTarget(defaultTarget: PrivateDnsTarget): PrivateDnsTarget {
-        return when (actionMode) {
-            WIFI_DNS_ACTION_DEFAULT -> defaultTarget
-            DNS_MODE_OFF -> PrivateDnsTarget(DNS_MODE_OFF)
-            DNS_MODE_AUTO -> PrivateDnsTarget(DNS_MODE_AUTO)
-            DNS_MODE_ON -> dnsHostname
-                ?.takeIf { it.isNotBlank() }
-                ?.let { PrivateDnsTarget(DNS_MODE_ON, it) }
-                ?: defaultTarget
-            else -> defaultTarget
-        }
-    }
 }

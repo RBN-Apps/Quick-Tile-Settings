@@ -12,7 +12,7 @@
     <!-- DNS States -->
     <string name="dns_state_off">DNS выкл.</string>
     <string name="dns_state_auto">DNS авто</string>
-    <string name="dns_state_on_with_host">DNS вкл. (Hostname)</string>
+    <string name="dns_state_on_with_host">DNS вкл. (имя хоста)</string>
     <string name="dns_state_unknown">Статус DNS неизвестен</string>
 
     <!-- USB Debugging States -->
@@ -21,9 +21,9 @@
     <string name="usb_dev_options_off">Параметры разработчика выкл</string>
 
     <!-- UI Settings Screen -->
-    <string name="setting_title_private_dns">Плитка «Частный DNS»</string>
-    <string name="setting_title_usb_debugging">Плитка «Отладка по USB»</string>
-    <string name="setting_desc_tile_cycles">Выберите состояния для цикла плитки:</string>
+    <string name="setting_title_private_dns">Кнопка «Частный DNS»</string>
+    <string name="setting_title_usb_debugging">Кнопка «Отладка по USB»</string>
+    <string name="setting_desc_tile_cycles">Выберите состояния для переключения кнопкой быстрых настроек:</string>
     <string name="app_settings_title">Настройки</string>
     <string name="tab_title_dns">Частный DNS</string>
     <string name="tab_title_usb">Отладка по USB</string>
@@ -35,15 +35,12 @@
     <string name="toast_no_states_enabled_dns">Не выбрано ни одного состояния DNS для переключения.</string>
     <string name="toast_no_states_enabled_usb">Не выбрано ни одного состояния USB для переключения.</string>
     <string name="toast_hostname_required">Требуется имя хоста для включения DNS.</string>
-    <string name="warning_hostname_blank">Имя хоста не может быть пустым, если включен «DNS вкл.».</string>
+    <string name="warning_hostname_blank">Укажите имя хоста, если выбран режим «DNS вкл.».</string>
     <string name="warning_at_least_one_usb_option">Должен быть включен хотя бы один статус USB.</string>
     <string name="toast_command_copied">Команда скопирована!</string>
 
 
     <!-- Permission Grant Dialog -->
-    <string name="permission_grant_dialog_title">Требуется разрешение</string>
-    <string name="permission_grant_dialog_intro">Для изменения системных настроек, таких как Частный DNS и Отладка по USB, этому приложению требуется специальное разрешение WRITE_SECURE_SETTINGS. Пожалуйста, выберите метод ниже, чтобы предоставить его:</string>
-    <string name="help_dialog_after_grant">После предоставления разрешения перезапустите приложение или заново откройте QuickTile Settings, чтобы плитки заработали.</string>
     <string name="app_menu_desc">Открыть меню приложения</string>
     <string name="navigate_back_desc">Назад</string>
     <string name="menu_settings">Настройки</string>
@@ -53,24 +50,18 @@
     <string name="dialog_close">Закрыть</string>
 
     <!-- ADB Method -->
-    <string name="permission_method_adb_title">Способ %1$d: ADB (Android Debug Bridge) %2$s</string>
-    <string name="permission_method_adb_desc">Это стандартный способ, требующий наличия компьютера с настроенным ADB.</string>
+    <string name="permission_method_adb_desc">Для стандартного способа нужен компьютер с настроенным ADB.</string>
     <string name="button_show_adb_instructions">Показать инструкции ADB</string>
     <string name="adb_instructions_title">Инструкции ADB</string>
-    <string name="adb_instructions_intro">Подключите устройство к компьютеру с настроенным ADB. Убедитесь, что параметры разработчика и отладка по USB включены на вашем устройстве.</string>
-    <string name="help_dialog_method_1_title">Вариант А: Предоставить для текущей установки</string>
     <string name="help_dialog_how_to_grant_via_adb">Запустите следующую команду в терминале / командной строке:</string>
     <string name="button_copy_grant_command">Копировать команду разрешения</string>
-    <string name="help_dialog_method_2_title">Вариант Б: Установка с разрешением</string>
-    <string name="help_dialog_how_to_install_via_adb">Сначала удалите текущую версию, затем используйте эту команду (замените path/to/your/app.apk на фактический путь к APK):</string>
     <string name="button_copy_install_command">Копировать команду установки</string>
     <string name="help_dialog_apk_path_note">(Примечание: Вам понадобится файл APK для команды установки. Если вы собрали приложение самостоятельно, оно обычно находится в app/build/outputs/apk/debug/ или app/build/outputs/apk/release/. Вы также можете скачать последний релиз с GitHub.)</string>
     <string name="github_releases_link_text">Скачать последний релиз с GitHub</string>
     <string name="adb_command_install_g">adb install -g -r path/to/your/app.apk</string>
 
     <!-- Shizuku Method -->
-    <string name="permission_method_shizuku_title">Способ %1$d: Shizuku %2$s</string>
-    <string name="shizuku_ready_to_grant_desc">Shizuku доступен, и у этого приложения есть разрешение на его использование. Вы можете попытаться предоставить WRITE_SECURE_SETTINGS.</string>
+    <string name="shizuku_ready_to_grant_desc">Shizuku доступен, и этому приложению разрешено его использовать. Теперь можно запросить WRITE_SECURE_SETTINGS через Shizuku.</string>
     <string name="button_open_shizuku_play_store_short">Shizuku (Play Store)</string>
     <string name="button_open_shizuku_github_short">Shizuku (GitHub)</string>
     <string name="shizuku_not_available_detailed">Shizuku недоступен или не запущен. Пожалуйста, сначала установите и запустите Shizuku.</string>
@@ -78,46 +69,43 @@
     <string name="button_request_shizuku_permission">Запросить разрешение Shizuku</string>
     <string name="button_grant_with_shizuku">Предоставить через Shizuku</string>
     <string name="shizuku_not_available">Shizuku недоступен или не запущен.</string>
-    <string name="shizuku_permission_not_granted_to_app_prompt">Разрешение Shizuku не предоставлено этому приложению. Пожалуйста, сначала предоставьте его через приложение Shizuku или по запросу.</string>
+    <string name="shizuku_permission_not_granted_to_app_prompt">Разрешите этому приложению использовать Shizuku в приложении Shizuku или в диалоге запроса разрешения.</string>
     <string name="shizuku_permission_granted_to_app">Разрешение Shizuku предоставлено этому приложению.</string>
     <string name="shizuku_permission_denied_to_app">В разрешении Shizuku отказано.</string>
     <string name="shizuku_not_available_or_not_ready">Shizuku недоступен или не готов.</string>
 
     <!-- Root Method -->
-    <string name="permission_method_root_title">Способ %1$d: Root %2$s</string>
-    <string name="root_ready_to_grant_desc">Ваше устройство имеет Root-права. Вы можете попытаться предоставить WRITE_SECURE_SETTINGS, используя привилегии суперпользователя.</string>
     <string name="device_not_rooted_detailed">Похоже, ваше устройство не имеет Root-прав или доступ не был предоставлен. Этот метод недоступен.</string>
     <string name="button_grant_with_root">Предоставить через Root</string>
     <string name="device_not_rooted">Устройство не имеет Root-прав.</string>
 
     <!-- Generic Permission Grant Results -->
-    <string name="permission_granted_shizuku_success">Разрешение успешно предоставлено через Shizuku!</string>
+    <string name="permission_granted_shizuku_success">Разрешение предоставлено через Shizuku.</string>
     <string name="permission_granted_shizuku_check_failed">Команда Shizuku выполнена, но проверка разрешений не удалась. Пожалуйста, перезапустите приложение.</string>
     <string name="permission_granted_shizuku_fail">Не удалось предоставить разрешение через Shizuku. Код ошибки: %1$d</string>
     <string name="permission_granted_shizuku_error">Ошибка при предоставлении разрешения через Shizuku: %1$s</string>
-    <string name="permission_granted_root_success">Разрешение успешно предоставлено через Root!</string>
+    <string name="permission_granted_root_success">Разрешение предоставлено через Root.</string>
     <string name="permission_granted_root_check_failed">Команда Root выполнена, но проверка разрешений не удалась. Пожалуйста, перезапустите приложение.</string>
     <string name="permission_granted_root_fail">Не удалось предоставить разрешение через Root. Код ошибки: %1$d</string>
     <string name="permission_granted_root_error">Ошибка при предоставлении разрешения через Root: %1$s</string>
 
     <!-- Permission Warning Card -->
-    <string name="warning_permission_missing_title">Разрешение отсутствует!</string>
+    <string name="warning_permission_missing_title">Разрешение отсутствует</string>
     <string name="warning_permission_missing_desc">Для работы этого приложения требуется разрешение WRITE_SECURE_SETTINGS. Пожалуйста, предоставьте его одним из доступных способов.</string>
     <string name="button_show_permission_help">Показать варианты</string>
     <string name="warning_developer_options_disabled_config">Параметры разработчика отключены. Отладка по USB не может быть настроена.</string>
 
     <string name="setting_require_unlock">Требовать разблокировку устройства</string>
-    <string name="setting_require_unlock_desc">Если включено, плитка предложит вам разблокировать устройство перед применением любых изменений.</string>
+    <string name="setting_require_unlock_desc">Запрашивать разблокировку устройства перед изменением настройки через кнопку быстрых настроек.</string>
 
-    <string name="setting_also_hide_dev_options">Также переключать опции разработчика</string>
-    <string name="setting_also_hide_dev_options_desc">Если включено, переключение отладки по USB также будет включать/выключать параметры разработчика. Это позволяет плитке работать даже когда параметры разработчика сейчас выключены.</string>
+    <string name="setting_also_hide_dev_options">Также переключать параметры разработчика</string>
+    <string name="setting_also_hide_dev_options_desc">Включает и выключает параметры разработчика вместе с отладкой по USB. Кнопка быстрых настроек работает, даже если параметры разработчика выключены.</string>
     <string name="setting_also_disable_wireless_debugging">Также переключать беспроводную отладку</string>
-    <string name="setting_also_disable_wireless_debugging_desc">Если включено, беспроводная отладка будет переключаться вместе с отладкой по USB.</string>
+    <string name="setting_also_disable_wireless_debugging_desc">Включает и выключает беспроводную отладку вместе с отладкой по USB.</string>
     <string name="usb_set_active_mode">Установить %1$s в качестве активного состояния отладки по USB</string>
-    <string name="usb_active">Активное состояние отладки по USB</string>
-    
+
     <string name="setting_enable_auto_revert">Включить авто-возврат с задержкой</string>
-    <string name="setting_auto_revert_delay">Задержка возврата (секунды):</string>
+    <string name="setting_auto_revert_delay">Задержка возврата (секунды)</string>
     <string name="toast_reverting_dns_to">Возврат DNS к \n\"%1$s\" через %2$d сек…</string>
     <string name="toast_reverting_usb_to">Возврат USB отладки к %1$s через %2$d сек…</string>
     <string name="toast_revert_cancelled">Авто-возврат отменен.</string>
@@ -125,7 +113,7 @@
     <string name="off_state">Выкл.</string>
     <string name="auto_state">Авто</string>
 
-    <string name="dns_select_hostnames_for_cycle">Выберите хосты для переключения плитки:</string>
+    <string name="dns_select_hostnames_for_cycle">DNS-провайдеры</string>
     <string name="dns_sort_content_description">Выбрать сортировку списка DNS</string>
     <string name="dns_sort_manual">Вручную</string>
     <string name="dns_sort_alphabetical">Алфавитный (A–Z)</string>
@@ -159,23 +147,16 @@
     <string name="dns_info_cloudflare">Cloudflare DNS (1.1.1.1) известен своей высокой скоростью и упором на конфиденциальность. Он не фильтрует контент и обещает не записывать данные пользователей. Идеально подходит для тех, кто ценит приватность и производительность.</string>
     <string name="dns_info_adguard">AdGuard DNS (dns.adguard.com) блокирует рекламу, трекеры и известные вредоносные домены прямо на уровне DNS. Это обеспечивает более чистый и безопасный просмотр страниц. Хорошо подходит для уменьшения количества рекламы.</string>
     <string name="dns_info_quad9">Quad9 (dns.quad9.net) фокусируется на безопасности, блокируя домены, связанные с вредоносным ПО, фишингом и ботнетами. Это усиливает защиту от онлайн-угроз. Подходит для пользователей, для которых безопасность в приоритете.</string>
-    <string name="recommended_for_you">(Рекомендуется вам)</string>
 
     <!-- About Dialog -->
     <string name="about_version">Версия %1$s</string>
-    <string name="about_description">QuickTile Settings предоставляет удобные плитки быстрых настроек для управления параметрами прямо из панели уведомлений.</string>
+    <string name="about_description">QuickTile Settings добавляет кнопки на панель быстрых настроек для изменения параметров устройства.</string>
     <string name="about_features_title">Возможности</string>
-    <string name="about_feature_private_dns">• Плитка Частный DNS с поддержкой кастомных имен хостов</string>
-    <string name="about_feature_usb_debugging">• Плитка отладки по USB для разработки</string>
-    <string name="about_feature_auto_revert">• Функция авто-возврата для временных изменений</string>
-    <string name="about_feature_custom_dns">• Встроенные популярные DNS-провайдеры (Cloudflare, AdGuard, Quad9)</string>
-    <string name="about_developer_title">Разработчик</string>
     <string name="about_developer_info">Разработано RBN-Apps\nOpen-source проект доступен на GitHub</string>
-    <string name="about_button_permission_help">Справка по настройке разрешений</string>
 
     <!-- App Settings -->
     <string name="settings_backup_title">Резервное копирование и восстановление</string>
-    <string name="settings_backup_description">Экспортируйте все настройки плиток, записи DNS, параметры автоматизации и конфигурацию ярлыков в JSON-файл. Восстановление заменит текущие настройки приложения выбранной резервной копией.</string>
+    <string name="settings_backup_description">Экспортируйте все настройки кнопок, записи DNS, параметры автоматизации и настройки ярлыков в JSON-файл. Восстановление заменит текущие настройки приложения выбранной резервной копией.</string>
     <string name="backup_export_button">Экспортировать резервную копию</string>
     <string name="backup_restore_button">Восстановить резервную копию</string>
     <string name="backup_restore_confirm_title">Восстановить резервную копию?</string>
@@ -189,102 +170,38 @@
     <!-- VPN Detection Settings -->
     <string name="setting_vpn_detection_enabled">Автоматически отключать DNS при VPN-подключениях</string>
     <string name="setting_vpn_detection_mode">Режим обнаружения VPN:</string>
-    <string name="vpn_detection_tile_only_title">Обнаружение только плиткой</string>
-    <string name="vpn_detection_tile_only_description">Проверяет наличие VPN при открытии быстрых настроек. Бережнее расходует заряд, но обнаруживает VPN только при открытии панели. Если вы обычно переключаете VPN через шторку, этого достаточно.</string>
-    <string name="vpn_detection_background_title">Обнаружение фоновой службой</string>
-    <string name="vpn_detection_background_description">Постоянно отслеживает статус VPN. Обеспечивает мгновенную реакцию, но потребляет больше энергии и показывает постоянное уведомление для работы в фоне.</string>
 
     <!-- VPN Monitoring Service -->
     <string name="vpn_monitoring_channel_name">Мониторинг VPN</string>
     <string name="vpn_monitoring_channel_description">Отслеживает VPN-подключения для автоматической настройки Частного DNS</string>
     <string name="vpn_monitoring_notification_title">Мониторинг VPN активен</string>
-    <string name="vpn_monitoring_status_connected">VPN подключен — Частный DNS выключен</string>
-    <string name="vpn_monitoring_status_disconnected">VPN отключен — Частный DNS восстановлен</string>
+    <string name="vpn_monitoring_status_connected">VPN подключен. Частный DNS выключен</string>
+    <string name="vpn_monitoring_status_disconnected">VPN отключен. Частный DNS восстановлен</string>
 
     <!-- Notification Permission Dialog -->
-    <string name="notification_permission_dialog_settings_description">Открыть настройки</string>
     <string name="notification_permission_background_title">Разрешить уведомления для фонового обнаружения?</string>
     <string name="notification_permission_background_message">Фоновое обнаружение уже работает без разрешения на уведомления. Разрешите их, чтобы постоянно видеть состояние мониторинга в панели уведомлений; иначе Android покажет службу только среди активных приложений.</string>
     <string name="notification_permission_import_title">Разрешить уведомления для фонового обнаружения?</string>
     <string name="notification_permission_import_message">Импортированная резервная копия включает фоновое обнаружение изменений VPN или сети. Оно работает без разрешения на уведомления; разрешите их только для отображения состояния в панели уведомлений.</string>
-    <string name="notification_permission_fallback_title">Доступ к уведомлениям не предоставлен</string>
+    <string name="notification_permission_fallback_title">Уведомления не разрешены</string>
     <string name="notification_permission_fallback_message">Фоновое обнаружение продолжит работу. Состояние не появится в панели уведомлений, но Android всё равно покажет службу среди активных приложений.</string>
     <string name="notification_permission_grant_button">Предоставить разрешение</string>
     <string name="notification_permission_continue_button">Продолжить без уведомлений</string>
-    <string name="notification_permission_settings_title">Доступ к уведомлениям отключён</string>
-    <string name="notification_permission_settings_message">Фоновое обнаружение продолжит работу без состояния в панели уведомлений. Чтобы показывать его, разрешите уведомления в настройках приложения.</string>
+    <string name="notification_permission_settings_title">Уведомления отключены</string>
+    <string name="notification_permission_settings_message">Фоновое обнаружение продолжит работу, но его состояние будет скрыто в панели уведомлений. Чтобы его видеть, разрешите уведомления в настройках приложения.</string>
     <string name="notification_permission_settings_button">Открыть настройки</string>
 
     <!-- Network Type Detection Settings -->
     <string name="setting_network_type_detection_enabled">Авто-переключение DNS по типу сети</string>
     <string name="setting_network_type_detection_description">Автоматически меняет частный DNS при переключении между Wi-Fi и мобильными данными. Включите эту функцию также для настройки правил отдельных сетей Wi-Fi или точек доступа.</string>
     <string name="setting_network_type_detection_mode">Режим обнаружения сети:</string>
-    <string name="network_type_detection_tile_only_title">Обнаружение только плиткой</string>
-    <string name="network_type_detection_tile_only_description">Проверяет тип сети при открытии быстрых настроек. Экономит заряд, но обнаруживает смену сети только при открытии панели.</string>
-    <string name="network_type_detection_background_title">Обнаружение фоновой службой</string>
-    <string name="network_type_detection_background_description">Постоянно отслеживает смену типа сети. Мгновенная реакция при переключении сетей, но расходует больше заряда и требует уведомления.</string>
 
-    <string name="setting_dns_state_on_wifi">DNS через WiFi:</string>
-    <string name="setting_dns_state_on_wifi_other_networks">DNS через Wi-Fi для всех остальных сетей:</string>
-    <string name="setting_dns_state_on_mobile">DNS через мобильные данные:</string>
-    <string name="setting_select_hostname">Выберите имя хоста…</string>
 
-    <!-- WiFi Network Rules -->
-    <string name="setting_wifi_network_rules_title">Правила для сетей Wi-Fi</string>
-    <string name="setting_wifi_network_rules_description">Переопределяет стандартную настройку DNS через Wi-Fi для отдельных сетей или точек доступа (SSID/BSSID). Для применения нужны разрешение приложения управлять частным DNS и фоновое обнаружение. Уведомления необязательны и только показывают состояние.</string>
-    <string name="wifi_rules_enabled">Использовать правила для отдельных сетей</string>
-    <string name="wifi_ssid_permission_title">Требуется точное местоположение</string>
-    <string name="wifi_ssid_permission_docs_link">Документация Android по информации о Wi-Fi, зависящей от местоположения</string>
-    <string name="wifi_ssid_permission_grant">Разрешить доступ</string>
-    <string name="wifi_location_services_title">Включите службы геолокации</string>
-    <string name="wifi_location_services_open">Открыть настройки геолокации</string>
-    <string name="wifi_ssid_manual_entry_notice">Правило можно ввести вручную, но для автоматического сопоставления этот доступ всё равно нужен. Пока текущая сеть неизвестна, частный DNS не изменяется.</string>
-    <string name="wifi_ssid_permission_denied">Для распознавания сетей Wi-Fi требуется разрешение на точное местоположение. Пока доступ не предоставлен, частный DNS не изменяется.</string>
-    <string name="wifi_location_services_disabled">Включите службы геолокации Android, чтобы определить имя подключённой сети Wi-Fi. Пока сеть не распознана, частный DNS не изменяется.</string>
-    <string name="wifi_rules_require_background_detection">Для правил сетей Wi-Fi требуется обнаружение фоновым сервисом. Отключите правила перед выбором обнаружения только через плитку.</string>
-    <string name="wifi_rules_enabled_background_detection">Обнаружение фоновым сервисом включено, поскольку оно необходимо для правил отдельных сетей.</string>
-    <string name="wifi_ssid_label">Имя сети (SSID)</string>
-    <string name="wifi_rules_title">Правила сети</string>
-    <string name="wifi_rules_empty">Правила сети не добавлены.</string>
-    <string name="wifi_rule_add_current">Использовать текущую подключённую сеть</string>
-    <string name="wifi_rule_choose_network">Выбрать ближайшую или недавнюю сеть</string>
-    <string name="wifi_rule_add_manual">Ввести SSID или BSSID вручную</string>
-    <string name="wifi_network_picker_title">Выбор сети Wi-Fi</string>
-    <string name="wifi_network_current_title">Текущее подключение</string>
-    <string name="wifi_network_nearby_title">Сети поблизости</string>
-    <string name="wifi_network_history_title">Недавно обнаруженные сети</string>
-    <string name="wifi_network_scanning">Загружаются последние доступные Android результаты Wi-Fi…</string>
-    <string name="wifi_network_none_found">Недавние результаты Wi-Fi недоступны. Приложение не запускает новое сканирование; Android может предоставить сохранённые результаты.</string>
-    <string name="wifi_network_refresh">Загрузить результаты снова</string>
-    <string name="wifi_hidden_network">Скрытая сеть</string>
-    <string name="wifi_rule_add_title">Добавить правило сети</string>
-    <string name="wifi_rule_edit_title">Изменить правило сети</string>
-    <string name="wifi_bssid_label">MAC-адрес точки доступа (BSSID, необязательно)</string>
-    <string name="wifi_bssid_hint">Оставьте пустым, чтобы правило соответствовало всем точкам доступа с этим SSID.</string>
-    <string name="wifi_rule_action_label">Действие для этой сети</string>
-    <string name="wifi_rule_action_default">Использовать стандартную настройку DNS для Wi-Fi</string>
-    <string name="wifi_rule_invalid_or_duplicate">Введите допустимый SSID или BSSID и убедитесь, что такое правило ещё не существует.</string>
-    <string name="wifi_rule_delete_title">Удалить правило сети?</string>
-    <string name="wifi_rule_delete_message">Удалить правило для «%1$s»?</string>
-    <string name="wifi_rule_edit_description">Изменить правило для %1$s</string>
-    <string name="wifi_rule_delete_description">Удалить правило для %1$s</string>
-    <string name="wifi_permission_open_settings">Открыть настройки приложения</string>
-    <string name="wifi_permission_blocked_description">Android больше не показывает запрос разрешения на геолокацию. Откройте настройки приложения, выберите Разрешения → Местоположение и разрешите точное местоположение.</string>
-    <string name="wifi_boot_title">Продолжать автоматически после перезагрузки</string>
-    <string name="wifi_boot_description">Чтобы правила Wi-Fi работали после перезагрузки и разблокировки телефона, откройте настройки приложения → Разрешения → Местоположение и выберите «Разрешать всегда», включив точное местоположение. Это позволяет распознавать сети Wi-Fi в фоне; координаты не считываются. Это необязательно: без разрешения открывайте приложение после каждой перезагрузки.</string>
-    <string name="wifi_boot_ready">Правила Wi-Fi автоматически возобновляются после перезагрузки и разблокировки телефона.</string>
-    <string name="wifi_rule_use_detected_bssid">Использовать обнаруженный BSSID: %1$s</string>
-    <string name="wifi_rules_enabled_description">Подходящие правила переопределяют настройку DNS через Wi-Fi для всех остальных распознанных сетей.</string>
-    <string name="wifi_ssid_permission_description">Android считает имена Wi-Fi (SSID), идентификаторы точек доступа (BSSID) и результаты ближайших сетей информацией, связанной с местоположением. Для чтения требуется разрешение на точное местоположение. Функция не считывает координаты.</string>
-    <string name="wifi_location_services_description">Разрешение предоставлено, но Android показывает подключённый SSID/BSSID и последние результаты Wi-Fi только при включённых службах геолокации.</string>
-
-    
-    
     <string name="dns_mode_off_label">Выкл.</string>
     <string name="dns_mode_auto_label">Авто</string>
 
     <string name="network_type_info_title">Обнаружение типа сети</string>
-    <string name="network_type_info_message">Эта функция автоматически переключает настройки Частного DNS в зависимости от того, подключены ли вы к WiFi или мобильным данным. Она также работает при активном VPN, определяя базовое подключение WiFi или мобильной сети.\n\nПриоритет VPN: Если обнаружение VPN включено отдельно, оно имеет приоритет, и DNS будет выключен, пока VPN активен.\n\nПример использования: Если ваш домашний WiFi роутер уже использует NextDNS, установите «DNS через WiFi» в значение «Выкл.». Для мобильных данных установите «Авто» или конкретный хост для защиты в сотовых сетях.</string>
+    <string name="network_type_info_message">Приложение меняет настройки частного DNS при переключении между Wi-Fi и мобильными данными. Оно также определяет подключение Wi-Fi или мобильной сети, которое использует активный VPN.\n\nЕсли отдельно включить обнаружение VPN, оно получит приоритет и отключит частный DNS на время VPN-подключения.\n\nНапример, если домашний Wi-Fi роутер использует NextDNS, установите «DNS через WiFi» в значение «Выкл.». Для мобильных данных выберите «Авто» или конкретное имя хоста.</string>
 
     <!-- Network Monitoring Service -->
     <string name="network_monitoring_channel_name">Мониторинг типа сети</string>
@@ -312,18 +229,18 @@
     <string name="shortcut_usb_off_long">Отключить отладку по USB</string>
     <string name="shortcut_dns_custom_long">Включить DNS: %1$s</string>
     <string name="shortcut_toast_dns_off">Частный DNS отключен</string>
-    <string name="shortcut_toast_dns_auto">Частный DNS установлен в Авто</string>
-    <string name="shortcut_toast_dns_hostname">Частный DNS установлен на %1$s</string>
+    <string name="shortcut_toast_dns_auto">Частный DNS переключен в автоматический режим</string>
+    <string name="shortcut_toast_dns_hostname">Частный DNS настроен на %1$s</string>
     <string name="shortcut_toast_usb_on">Отладка по USB включена</string>
     <string name="shortcut_toast_usb_off">Отладка по USB отключена</string>
     <string name="shortcut_toast_permission_missing">Отсутствует разрешение. Откройте приложение, чтобы предоставить его.</string>
     <string name="shortcut_toast_action_disabled">Действие ярлыка отключено. Сначала включите его в приложении.</string>
-    <string name="shortcut_toast_action_unavailable">Действие ярлыка больше недоступно. Проверьте конфигурацию приложения.</string>
+    <string name="shortcut_toast_action_unavailable">Действие ярлыка больше недоступно. Проверьте настройки приложения.</string>
     <string name="shortcut_toast_action_failed">Не удалось выполнить действие ярлыка.</string>
 
     <!-- Shortcut Settings -->
     <string name="shortcut_settings_title">Действия ярлыков</string>
-    <string name="shortcut_settings_description">Выберите, какие действия будут доступны как ярлыки Android. Их можно использовать в лаунчерах, сценариях Samsung, Tasker или как закрепленные ярлыки на главном экране.\n\nAndroid ограничивает количество видимых динамических ярлыков для этого приложения до %1$d, поэтому одновременно здесь можно активировать только %1$d действий.\n\nВы можете пометить до %2$d активных действий как избранные, используя иконку звезды. Избранные публикуются с наивысшим приоритетом и с большей вероятностью появятся первыми в меню ярлыков. Отключенные действия нельзя добавить в избранное.\n\nПо умолчанию отключенные действия полностью заблокированы и больше не могут быть выполнены приложением. Включайте опцию ниже только если вы хотите, чтобы уже закрепленные ярлыки продолжали работать после того, как они будут отключены здесь.</string>
+    <string name="shortcut_settings_description">Выберите действия для ярлыков Android. Их можно запускать из лаунчера, сценариев Samsung или Tasker либо закрепить на главном экране.\n\nAndroid позволяет одновременно показывать в лаунчере до %1$d динамических ярлыков этого приложения. Поэтому в списке ярлыков можно включить не более %1$d действий.\n\nНажмите на звезду, чтобы добавить до %2$d активных действий в избранное. Они получают наивысший приоритет, поэтому лаунчер с большей вероятностью покажет их первыми в меню ярлыков. Отключенные действия нельзя добавить в избранное.\n\nОтключенные действия по умолчанию заблокированы. Включите «Разрешить отключенные закрепленные ярлыки» в списке ярлыков, если ранее закрепленные ярлыки должны работать и после отключения в этом списке.</string>
     <string name="shortcut_settings_limit">Активные ярлыки: %1$d / %2$d</string>
     <string name="shortcut_settings_limit_reached_title">Лимит ярлыков достигнут</string>
     <string name="shortcut_settings_limit_reached">Лимит ярлыков достигнут. Сначала отключите другое действие.</string>
@@ -333,23 +250,50 @@
     <string name="shortcut_settings_allow_pinned_when_disabled_desc">Если включено, ярлыки, которые уже были закреплены или запущены извне, могут срабатывать даже после того, как вы отключите их здесь.</string>
     <string name="shortcut_settings_allow_pinned_info_desc">Показать детали об отключенных закрепленных ярлыках</string>
     <string name="shortcut_settings_allow_pinned_warning_title">Разрешить отключенные ярлыки?</string>
-    <string name="shortcut_settings_allow_pinned_warning_message">Включение этой опции ослабляет стандартное поведение безопасности. Действия отключенных ярлыков все равно могут быть выполнены, если они запускаются извне или из ярлыков, которые были закреплены ранее.\n\nЭто полезно в основном если вы хотите использовать больше действий, чем Android позволяет держать активными одновременно.</string>
+    <string name="shortcut_settings_allow_pinned_warning_message">Отключенные действия обычно заблокированы. С этой опцией другие приложения и ранее закрепленные ярлыки смогут их запускать.\n\nТак можно использовать больше действий, чем Android разрешает держать активными одновременно.</string>
     <string name="shortcut_settings_allow_pinned_warning_confirm">Все равно включить</string>
     <string name="shortcut_settings_mark_favorite_desc">Пометить %1$s как избранное</string>
     <string name="shortcut_settings_remove_favorite_desc">Удалить %1$s из избранного</string>
     <string name="shortcut_settings_open_desc">Открыть настройки ярлыков</string>
-    
-    <!-- Quick Action Dialog -->
     <string name="quick_action_title">Быстрые действия</string>
     <string name="quick_action_dns_title">Частный DNS</string>
     <string name="quick_action_usb_title">Отладка по USB</string>
     <string name="quick_action_no_actions">Для этой плитки нет включенных действий.</string>
     <string name="quick_action_open_app">Открыть приложение</string>
-   
-  
-    
- 
-   
-    
-
+    <!-- Правила DNS для сетей Wi-Fi -->
+    <string name="setting_wifi_network_rules_title">Правила для сетей Wi-Fi</string>
+    <string name="wifi_rules_enabled">Использовать правила для отдельных сетей</string>
+    <string name="wifi_ssid_permission_title">Требуется точное местоположение</string>
+    <string name="wifi_ssid_permission_description">Android считает имена Wi-Fi (SSID), идентификаторы точек доступа (BSSID) и результаты ближайших сетей информацией, связанной с местоположением. Для чтения требуется разрешение на точное местоположение. Функция не считывает координаты.</string>
+    <string name="wifi_ssid_permission_docs_link">Документация Android по информации о Wi-Fi, зависящей от местоположения</string>
+    <string name="wifi_ssid_permission_grant">Разрешить доступ</string>
+    <string name="wifi_location_services_title">Включите службы геолокации</string>
+    <string name="wifi_location_services_description">Разрешение предоставлено, но Android показывает подключённый SSID/BSSID и последние результаты Wi-Fi только при включённых службах геолокации.</string>
+    <string name="wifi_location_services_open">Открыть настройки геолокации</string>
+    <string name="wifi_ssid_manual_entry_notice">Правило можно ввести вручную, но для автоматического сопоставления этот доступ всё равно нужен. Пока текущая сеть неизвестна, частный DNS не изменяется.</string>
+    <string name="wifi_ssid_permission_denied">Для распознавания сетей Wi-Fi требуется разрешение на точное местоположение. Пока доступ не предоставлен, частный DNS не изменяется.</string>
+    <string name="wifi_location_services_disabled">Включите службы геолокации Android, чтобы определить имя подключённой сети Wi-Fi. Пока сеть не распознана, частный DNS не изменяется.</string>
+    <string name="wifi_rules_require_background_detection">Для правил Wi-Fi нужно фоновое обнаружение. Отключите правила, прежде чем ограничить обнаружение временем, когда кнопка быстрых настроек видна на экране.</string>
+    <string name="wifi_rules_enabled_background_detection">Фоновое обнаружение включено, так как оно нужно для правил Wi-Fi.</string>
+    <string name="wifi_ssid_label">Имя сети (SSID)</string>
+    <string name="wifi_network_current_title">Текущее подключение</string>
+    <string name="wifi_network_nearby_title">Сети поблизости</string>
+    <string name="wifi_network_history_title">Недавно обнаруженные сети</string>
+    <string name="wifi_network_scanning">Загружаются последние доступные результаты поиска сетей Wi-Fi от Android…</string>
+    <string name="wifi_network_none_found">Недавние результаты Wi-Fi недоступны. Приложение не запускает новое сканирование; Android может предоставить сохранённые результаты.</string>
+    <string name="wifi_network_refresh">Загрузить результаты снова</string>
+    <string name="wifi_hidden_network">Скрытая сеть</string>
+    <string name="wifi_bssid_label">MAC-адрес точки доступа (BSSID, необязательно)</string>
+    <string name="wifi_bssid_hint">Оставьте пустым, чтобы правило соответствовало всем точкам доступа с этим SSID.</string>
+    <string name="wifi_rule_action_label">Действие для этой сети</string>
+    <string name="wifi_rule_action_default">Использовать стандартную настройку DNS для Wi-Fi</string>
+    <string name="wifi_rule_invalid_or_duplicate">Введите допустимый SSID или BSSID и убедитесь, что такое правило ещё не существует.</string>
+    <string name="wifi_rule_delete_title">Удалить правило сети?</string>
+    <string name="wifi_rule_delete_message">Удалить правило для «%1$s»?</string>
+    <string name="wifi_permission_open_settings">Открыть настройки приложения</string>
+    <string name="wifi_permission_blocked_description">Android больше не показывает запрос разрешения на геолокацию. Откройте настройки приложения, выберите Разрешения → Местоположение и разрешите точное местоположение.</string>
+    <string name="wifi_boot_title">Продолжать автоматически после перезагрузки</string>
+    <string name="wifi_boot_description">Чтобы правила Wi-Fi работали после перезагрузки и разблокировки телефона, откройте настройки приложения → Разрешения → Местоположение и выберите «Разрешать всегда», включив точное местоположение. Это позволяет распознавать сети Wi-Fi в фоне; координаты не считываются. Это необязательно: без разрешения открывайте приложение после каждой перезагрузки.</string>
+    <string name="wifi_boot_ready">Правила Wi-Fi автоматически возобновляются после перезагрузки и разблокировки телефона.</string>
+    <string name="wifi_rule_use_detected_bssid">Использовать обнаруженный BSSID: %1$s</string>
 </resources>

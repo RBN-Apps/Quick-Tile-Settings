@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -13,8 +15,8 @@ android {
         applicationId = "com.rbn.qtsettings"
         minSdk = 29
         targetSdk = 37
-        versionCode = 13
-        versionName = "1.5.1"
+        versionCode = 14
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments += mapOf(
@@ -37,6 +39,9 @@ android {
             matchingFallbacks += listOf("release")
             proguardFiles("minified-test-target-proguard-rules.pro")
         }
+    }
+    if (providers.gradleProperty("minifiedTests").isPresent) {
+        sourceSets.getByName("androidTest").kotlin.directories.add("src/minifiedAndroidTest/java")
     }
     testBuildType = if (providers.gradleProperty("minifiedTests").isPresent) {
         "minifiedTest"
@@ -72,12 +77,24 @@ kotlin {
     }
 }
 
+aboutLibraries {
+    collect {
+        configPath = file("license-config")
+    }
+}
+
 dependencies {
+    implementation(libs.aboutlibraries.compose.core)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.kotlinx.serialization.core)
     implementation(libs.rikkax.shizuku.api)
     implementation(libs.rikkax.shizuku.provider)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

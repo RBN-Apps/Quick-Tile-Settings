@@ -1,0 +1,317 @@
+package com.rbn.qtsettings
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.MotionDurationScale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.StateRestorationTester
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.test.espresso.Espresso
+import androidx.test.platform.app.InstrumentationRegistry
+import com.rbn.qtsettings.app.AppScaffold
+import com.rbn.qtsettings.app.navigation.*
+import com.rbn.qtsettings.core.designsystem.theme.QuickTileSettingsTheme
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+
+@AdaptiveLayout
+class AppNavigationRailInstrumentedTest {
+    @get:Rule val compose = createComposeRule(
+        // Animation assertions must run at normal speed even when CI disables system animations.
+        effectContext = object : MotionDurationScale { override val scaleFactor = 1f }
+    )
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+    private var width by mutableIntStateOf(390)
+
+    private fun show(restoration: StateRestorationTester? = null, fontScale: Float = 1f) {
+        val content: @androidx.compose.runtime.Composable () -> Unit = {
+            // Use actual layout constraints at a predictable density. No production breakpoint
+            // override: resizing this container exercises the same measurement as split-screen.
+            CompositionLocalProvider(LocalDensity provides Density(1f, fontScale)) {
+                QuickTileSettingsTheme {
+                    val nav = rememberAppNavigation()
+                    // Keep the rail inside the physical window when the simulated tablet
+                    // width exceeds a phone's pixels. requiredWidth alone centers overflow
+                    // and can push the menu off-screen, unrelated to rail state or timing.
+                    Box(Modifier.wrapContentWidth(Alignment.Start, unbounded = true).requiredWidth(width.dp)) {
+                        AppScaffold(nav.destination, nav.selectedTarget, nav::selectTarget,
+                            remember { SnackbarHostState() }, nav::back) { modifier ->
+                            AppNavigationContent(nav, modifier.testTag("screen")) { route ->
+                                var draft by rememberSaveable { mutableStateOf("") }
+                                Column {
+                                    Text(route.toString())
+                                    BasicTextField(draft, { draft = it }, Modifier.testTag("draft"))
+                                    Button(onClick = { nav.open(if (nav.area == AppArea.Dns) AppDestination.DnsProviders else AppDestination.UsbTile) }) { Text("Edit settings") }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (restoration == null) compose.setContent(content) else restoration.setContent(content)
+    }
+
+    private fun icon(id: Int) = compose.onNodeWithContentDescription(context.getString(id))
+    private fun resize(value: Int) { compose.runOnIdle { width = value } }
+    private fun draft(value: String) { compose.onNodeWithTag("draft").performTextReplacement(value) }
+    private fun assertDraft(value: String) { compose.onNodeWithTag("draft").assertTextEquals(value) }
+
+    @Test fun compactRail_followsFingerBeforeRelease_andCanBeDraggedBack() {
+        show()
+        draft("Keep this draft")
+        val screen = compose.onNodeWithTag("screen")
+        fun sheetRight() = compose.onNodeWithTag("modal_navigation_sheet")
+            .fetchSemanticsNode().boundsInRoot.right
+
+        // Start well inside the screen, keep the pointer down across frames, and inspect
+        // actual placement. A swipe-end callback or animated opening cannot satisfy this.
+        screen.performTouchInput {
+            down(Offset(90f, centerY))
+            moveBy(Offset(120f, 0f), delayMillis = 300)
+        }
+        val firstRight = sheetRight()
+        assertTrue("Rail must already be partially revealed", firstRight in 1f..120f)
+        compose.onNodeWithTag("navigation_area_Dns").assertExists()
+        compose.mainClock.advanceTimeBy(300)
+        assertEquals("Holding the finger must hold the rail", firstRight, sheetRight(), 1f)
+
+        screen.performTouchInput { moveBy(Offset(40f, 0f), delayMillis = 300) }
+        assertEquals("Rail must follow the finger 1:1", firstRight + 40f, sheetRight(), 1f)
+        screen.performTouchInput { moveBy(Offset(-90f, 0f), delayMillis = 300) }
+        assertEquals("Reversing must pull the rail back", firstRight - 50f, sheetRight(), 1f)
+        screen.performTouchInput {
+            advanceEventTime(300)
+            up()
+        }
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        assertDraft("Keep this draft")
+    }
+
+    @Test fun compactSwipeFromContent_opensRail_andBackDismissesBeforeDetail() {
+        show()
+        compose.onNodeWithText("Edit settings").performClick()
+        compose.onNodeWithTag("screen").performTouchInput {
+            swipe(Offset(80f, centerY), Offset(380f, centerY), durationMillis = 600)
+        }
+        compose.onNodeWithTag("modal_navigation_open").assertExists()
+        compose.onNodeWithTag("navigation_area_Dns").assertIsDisplayed().assertIsSelected()
+        Espresso.pressBack()
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        icon(R.string.navigate_back_desc).assertIsDisplayed()
+    }
+
+    @Test fun railOpeningGesture_onlyAppliesToCompactHorizontalDrags() {
+        show()
+        compose.onNodeWithTag("screen").performTouchInput { swipeUp() }
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        compose.onNodeWithTag("screen").performTouchInput { swipeLeft() }
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        for (layoutWidth in listOf(700, 1000)) {
+            resize(layoutWidth)
+            val rail = compose.onNodeWithTag("persistent_navigation_rail")
+            val before = rail.fetchSemanticsNode().boundsInRoot
+            compose.onNodeWithTag("screen").performTouchInput {
+                swipe(Offset(30f, centerY), Offset(200f, centerY))
+            }
+            assertEquals(before, rail.fetchSemanticsNode().boundsInRoot)
+            compose.onNodeWithTag("modal_navigation_sheet").assertDoesNotExist()
+        }
+    }
+
+    @Test fun resizeDefaultsAndManualToggle_preserveBothAreaStacksAndDrafts() {
+        val restoration = StateRestorationTester(compose)
+        show(restoration)
+        compose.onNodeWithTag("persistent_navigation_rail").assertDoesNotExist()
+        compose.onNodeWithTag("screen").assertWidthIsEqualTo(390.dp)
+        draft("DNS root draft")
+        compose.onNodeWithTag("screen").performTouchInput { swipeLeft() }
+        assertDraft("DNS root draft")
+        compose.onNodeWithText("Edit settings").performClick()
+        draft("DNS draft")
+        // Compact navigation stays reachable alongside Up on a detail screen.
+        icon(R.string.navigate_back_desc).assertIsDisplayed()
+        compose.selectNavigationArea(context, AppArea.Usb)
+        compose.onNodeWithTag("navigation_area_Usb").assertDoesNotExist()
+        compose.onNodeWithText("Edit settings").performClick()
+        draft("USB draft")
+        resize(700)
+        icon(R.string.navigation_expand).assertIsDisplayed().performClick()
+        resize(750) // Same breakpoint must retain manual expansion.
+        icon(R.string.navigation_collapse).assertIsDisplayed()
+        restoration.emulateSavedInstanceStateRestore()
+        icon(R.string.navigation_collapse).assertIsDisplayed()
+        assertDraft("USB draft")
+        icon(R.string.navigation_collapse).performClick()
+        resize(1000) // Entering expanded resets its presentation default.
+        icon(R.string.navigation_collapse).assertIsDisplayed().performClick()
+        resize(1050)
+        icon(R.string.navigation_expand).assertIsDisplayed()
+        compose.selectNavigationArea(context, AppArea.Dns)
+        assertDraft("DNS draft")
+        compose.selectNavigationArea(context, AppArea.Dns) // Reselect is a no-op.
+        assertDraft("DNS draft")
+        resize(390)
+        compose.onNodeWithTag("screen").assertWidthIsEqualTo(390.dp)
+        compose.selectNavigationArea(context, AppArea.Usb)
+        assertDraft("USB draft")
+    }
+
+    @Test fun compactBackDismissesRailBeforeDetail_andDoesNotChangeArea() {
+        show()
+        compose.onNodeWithText("Edit settings").performClick()
+        icon(R.string.navigation_open).performClick()
+        compose.onNodeWithTag("navigation_area_Dns").assertIsSelected()
+        Espresso.pressBack()
+        compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        icon(R.string.navigate_back_desc).assertIsDisplayed().performClick()
+        icon(R.string.navigate_back_desc).assertDoesNotExist()
+        compose.assertNavigationAreaSelected(context, AppArea.Dns)
+    }
+
+    @Test fun largeFont_destinationsRemainReachableAndHaveAccessibleTouchTargets() {
+        width = 700
+        show(fontScale = 2f)
+        compose.onNodeWithTag("navigation_area_Usb")
+            .assertIsDisplayed().assertHeightIsAtLeast(48.dp).assertWidthIsAtLeast(48.dp)
+            .assertContentDescriptionEquals(context.getString(R.string.tab_title_usb))
+        icon(R.string.navigation_expand).performClick()
+        compose.onNodeWithTag("navigation_area_Usb").assertIsDisplayed()
+        compose.selectNavigationArea(context, AppArea.Usb)
+        compose.onNodeWithTag("navigation_area_Usb").assertIsSelected()
+    }
+
+    @Test fun menuAlignmentAndSpacing_matchToolbarAndRemainStableWhenExpanding() {
+        show(fontScale = 1.5f)
+        val toolbarY = icon(R.string.navigation_open).fetchSemanticsNode().boundsInRoot.center.y
+        icon(R.string.navigation_open).performClick()
+        val menu = icon(R.string.navigation_collapse).fetchSemanticsNode().boundsInRoot
+        assertEquals(toolbarY, menu.center.y, 1f)
+        val first = compose.onNodeWithTag("navigation_area_Dns").fetchSemanticsNode().boundsInRoot
+        assertTrue("Compact gap below menu: ${first.top - menu.bottom}", first.top - menu.bottom <= 64f)
+        icon(R.string.navigation_collapse).performClick()
+        resize(700)
+        val narrowY = icon(R.string.navigation_expand).fetchSemanticsNode().boundsInRoot.center.y
+        icon(R.string.navigation_expand).performClick()
+        assertEquals(narrowY, icon(R.string.navigation_collapse).fetchSemanticsNode().boundsInRoot.center.y, 1f)
+    }
+
+    @Test fun closingModal_keepsFullLabelsForEveryAnimationFrame_afterSelectionAndManualClose() {
+        show()
+        listOf(false, true).forEach { selectDestination ->
+            icon(R.string.navigation_open).performClick()
+            compose.waitForIdle()
+            compose.mainClock.autoAdvance = false
+            try {
+                if (selectDestination) compose.onNodeWithTag("navigation_area_Usb").performClick()
+                else icon(R.string.navigation_collapse).performClick()
+                var visibleFrames = 0
+                repeat(30) {
+                    compose.mainClock.advanceTimeByFrame()
+                    if (compose.onAllNodesWithTag("navigation_area_Dns").fetchSemanticsNodes().isNotEmpty()) {
+                        visibleFrames++
+                        compose.onNodeWithTag("navigation_area_Dns").assertContentDescriptionEquals(context.getString(R.string.tab_title_dns))
+                        compose.onNodeWithTag("navigation_area_Usb").assertContentDescriptionEquals(context.getString(R.string.tab_title_usb))
+                    }
+                }
+                assertTrue("Must inspect visible closing frames", visibleFrames > 0)
+            } finally {
+                compose.mainClock.autoAdvance = true
+            }
+            compose.onNodeWithTag("navigation_area_Dns").assertDoesNotExist()
+        }
+    }
+
+    @Test fun allSixTargets_groupedScrollableAndSelected_menuPrecedesBackInEveryLayout() {
+        show(fontScale = 1.5f)
+        for (layoutWidth in listOf(390, 700, 1000)) {
+            resize(layoutWidth)
+            for (target in AppRailTarget.entries) {
+                compose.selectNavigationTarget(context, target)
+                val compact = compose.openNavigationIfNeeded(context)
+                compose.onNodeWithTag(target.testTag).performScrollTo().assertIsSelected()
+                AppRailTarget.entries.filter { it != target }.forEach {
+                    compose.onNodeWithTag(it.testTag).assertIsNotSelected()
+                }
+                if (compact) icon(R.string.navigation_collapse).performClick()
+                if (target.area == null) {
+                    val back = icon(R.string.navigate_back_desc).fetchSemanticsNode().boundsInRoot
+                    val menuId = if (layoutWidth < 600) R.string.navigation_open
+                        else if (layoutWidth < 840) R.string.navigation_expand else R.string.navigation_collapse
+                    val menu = icon(menuId).fetchSemanticsNode().boundsInRoot
+                    assertTrue("Menu precedes Back", menu.right <= back.left)
+                    assertEquals("Aligned menu and Back", menu.center.y, back.center.y, 1f)
+                }
+                icon(R.string.app_menu_desc).assertDoesNotExist()
+                icon(R.string.shortcut_settings_open_desc).assertDoesNotExist()
+            }
+        }
+    }
+
+    @Test fun expandedRail_tapBesideShortLabelPill_selectsTarget() {
+        show()
+        icon(R.string.navigation_open).performClick()
+        val about = compose.onNodeWithTag(AppRailTarget.About.testTag).performScrollTo()
+        val pill = about.fetchSemanticsNode().boundsInRoot
+        val widerPill = compose.onNodeWithTag(AppRailTarget.Dns.testTag).fetchSemanticsNode().boundsInRoot
+        // "Über"/"About" is far narrower than the drawer; the empty row space must still react.
+        val beside = maxOf(widerPill.right, pill.right) + 24f
+        compose.onRoot().performTouchInput { click(Offset(beside, pill.center.y)) }
+        compose.waitForIdle()
+        compose.openNavigationIfNeeded(context)
+        compose.onNodeWithTag(AppRailTarget.About.testTag).performScrollTo().assertIsSelected()
+    }
+
+    @Test fun collapsingPersistentRail_shortLabelsStayCenteredDuringAnimation() {
+        width = 1000
+        show()
+        compose.waitForIdle()
+        compose.mainClock.autoAdvance = false
+        try {
+            icon(R.string.navigation_collapse).performClick()
+            var inspectedFrames = 0
+            repeat(40) {
+                compose.mainClock.advanceTimeByFrame()
+                AppArea.entries.forEach { area ->
+                    val label = compose.onNodeWithTag("navigation_short_label_${area.name}", true)
+                        .fetchSemanticsNode().boundsInRoot
+                    val icon = compose.onNodeWithTag("navigation_icon_${area.name}", true)
+                        .fetchSemanticsNode().boundsInRoot
+                    // Material first fades the horizontal label out, then reveals it below the
+                    // icon. At every frame in that vertical arrangement it must be centered.
+                    if (label.top >= icon.bottom) {
+                        inspectedFrames++
+                        assertEquals("${area.name} label shifted sideways", icon.center.x, label.center.x, 1f)
+                    }
+                }
+            }
+            assertTrue("Must inspect intermediate vertical label frames", inspectedFrames > 10)
+        } finally {
+            compose.mainClock.autoAdvance = true
+        }
+        compose.onNodeWithTag("persistent_navigation_rail").assertWidthIsEqualTo(96.dp)
+    }
+
+}
